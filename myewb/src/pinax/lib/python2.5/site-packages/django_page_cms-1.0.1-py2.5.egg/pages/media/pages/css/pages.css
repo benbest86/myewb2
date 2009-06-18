@@ -1,0 +1,161 @@
+/* specific CSS for the django page admin application */
+
+.change-list tr{
+    padding-left:1.5em;
+}
+
+.change-list .move-target-container{
+    display:none;
+    float:right;
+}
+
+.change-list .table-selected .move-target-container{
+    display:block;
+}
+
+.change-list .table-selected .selected .move-target-container{
+    display:none;
+}
+
+.change-list tr.selected {
+    background:#ffb;
+}
+
+.change-list table tr.target {
+    background:#fff;
+}
+
+.change-list table td input{
+    margin-top:-1px;
+    margin-bottom:1px;
+}
+
+.change-list .publish-select {
+    margin:2px;
+    padding:1px;
+}
+
+.change-list .publish-cell {
+    padding:0 5px;
+}
+
+
+.placeholder-row textarea, .placeholder-row input {
+    float:left;
+}
+
+.placeholder-row .revisions {
+    float:left;
+    margin-left:2em;
+}
+
+.placeholder-row .revisions ul {
+    padding:0;
+    margin-left:0;
+}
+
+.revisions-list .selected {
+    font-weight:bold;
+}
+
+#status-row ul li {
+    list-style-type:none;
+}
+
+#traduction-helper-content {
+    margin-top:1em;
+    background:#ffc;
+    padding:1em;
+    display:none;
+    overflow:hidden;
+}
+
+.expand-collapse span{
+    font-family: monospace;
+    font-size:16px;
+    margin:2px 4px;
+}
+
+.expand-collapse .collapse {
+    display: none;
+}
+
+.expand-collapse .expand {
+    display: inline;
+}
+
+.expanded .collapse {
+    display: inline;
+}
+
+.expanded .expand {
+    display: none;
+}
+
+.sidebar {
+    width: 24em;
+    float: left;
+    margin-right: 1em;
+}
+
+.sidebar div.description {
+    margin: 5px;
+}
+
+.clear {
+    clear: both;
+}
+
+.float-left {
+    float: left;
+    width: 60%;
+}
+
+.ac_results {
+    padding: 0px;
+    border: 1px solid #ccc;
+    background-color: white;
+    overflow: hidden;
+    z-index: 99999;
+}
+
+.ac_results ul {
+    width: 100%;
+    list-style-position: outside;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.ac_results li {
+    margin: 0px;
+    padding: 2px 4px;
+    cursor: default;
+    display: block;
+    /*
+    if width will be 100% horizontal scrollbar will apear
+    when scroll mode will be used
+    */
+    /*width: 100%;*/
+    font: menu;
+    font-size: 11px;
+    /*
+    it is very important, if line-height not setted or setted
+    in relative units scroll will be broken in firefox
+    */
+    line-height: 14px;
+    overflow: hidden;
+}
+
+.ac_loading {
+    background: white url('../indicator.gif') right center no-repeat;
+}
+
+.ac_odd {
+    background-color: #eee;
+}
+
+.ac_over {
+    background-color: #999;
+    color: white;
+}

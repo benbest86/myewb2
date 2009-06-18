@@ -1,0 +1,32 @@
+Metadata-Version: 1.0
+Name: feedparser
+Version: 4.1
+Summary: Universal feed parser, handles RSS 0.9x, RSS 1.0, RSS 2.0, CDF, Atom 0.3, and Atom 1.0 feeds
+Home-page: http://feedparser.org/
+Author: Mark Pilgrim
+Author-email: mark@diveintomark.org
+License: BSD
+Download-URL: http://sourceforge.net/projects/feedparser/
+Description: Universal feed parser
+        ---------------------
+        
+        Handles RSS 0.9x, RSS 1.0, RSS 2.0, CDF, Atom 0.3, Atom 1.0 feeds
+        
+        Required: Python 2.1 or later
+        Recommended: Python 2.3 or later
+        Recommended: libxml2 <http://xmlsoft.org/python.html>
+        
+Keywords: feed parser,feeds,rss,atom,cdf
+Platform: POSIX
+Platform: Windows
+Classifier: Development Status :: 5 - Production/Stable
+Classifier: Environment :: Other Environment
+Classifier: Environment :: Web Environment
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: BSD License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python
+Classifier: Topic :: Communications
+Classifier: Topic :: Internet :: WWW/HTTP
+Classifier: Topic :: Other/Nonlisted Topic
+Classifier: Topic :: Software Development :: Libraries :: Python Modules

@@ -1,0 +1,61 @@
+{% load pages_tags i18n adminmedia cache %}
+
+{% if has_permission %}
+<tr id="page-row-{{ page.id }}" class="child-of-{{ page.parent_id }}">
+<td style="text-align:left;padding-left:{{ page.margin_level }}em">
+    <span id="move-target-{{ page.id }}" class="move-target-container">
+        <a href="#" class="move-target left" title="{% trans "as left sibling"%}"><img alt="" src="{% admin_media_prefix %}img/admin/arrow-up.gif"/></a> |
+        <a href="#" class="move-target right" title="{% trans "as right sibling"%}"><img alt="" src="{% admin_media_prefix %}img/admin/arrow-down.gif"/></a></a> |
+        <a href="#" class="move-target first-child" title="{% trans "as child"%}">↘</a>
+    </span>
+    {% if page.children.count %}
+    <a href="#" class="expand-collapse {% if expanded %}expanded{% endif %}" id="c{{ page.id }}">
+        <span class="expand">+</span>
+        <span class="collapse">-</span>
+    </a>
+    {% endif %} 
+    <a href="{{ url }}{{ page.id }}/" class="changelink" style="margin-right:1em;">{% show_content page "slug" %}</a>
+</td>
+<td>
+    <a href="#" class="move" id="move-link-{{ page.id }}">{% trans "move" %}</a> |
+    <a href="#" class="addlink" id="add-link-{{ page.id }}">{% trans "add" %}</a> |
+    <a href="{{ page.get_absolute_url }}" class="selector-add">{% trans "view" %}</a> |
+    <a href="{{ page.id }}/delete/" class="deletelink">{% trans "delete" %}</a>
+</td>
+<td>
+    {% for lang in page.get_languages %} 
+        <a href="{{ url }}{{ page.id }}/?language={{ lang }}" class="changelink">{{ lang }}</a>
+        <span style="font-weight:normal">{% if not forloop.last %}|{% endif %}</span>
+    {% endfor %}
+</td>
+<td class="publish-cell">
+
+{% ifequal page.status page.DRAFT %}
+    <img alt="False" src="{% admin_media_prefix %}img/admin/icon-no.gif" />
+{% else %}
+    <img alt="True" src="{% admin_media_prefix %}img/admin/icon-yes.gif"/>
+{% endifequal %}
+    &nbsp;
+    <select class="publish-select" name="select-status-{{ page.id }}">
+        <option {% ifequal page.status page.DRAFT %}selected="selected"{% endifequal %}>{% trans "Draft" %}</option>
+        <option {% ifequal page.status page.PUBLISHED %}selected="selected"{% endifequal %}>{% trans "In navigation" %}</option>
+        <option {% ifequal page.status page.HIDDEN %}selected="selected"{% endifequal %}>{% trans "Hidden" %}</option>
+    </select>
+
+</td>
+<td>
+    {{ page.get_template }}
+</td>
+<td>
+{% cache 10000 page_author page.author_id %}
+    {% firstof page.author.get_full_name page.author.first_name page.author.username %}
+{% endcache %}
+</td>
+</tr>
+{% endif %}
+
+{% if expanded %}
+    {% for child in page.children.all %}
+        {% pages_admin_menu child url level %}
+    {% endfor %}
+{% endif %}
