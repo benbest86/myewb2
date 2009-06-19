@@ -6,6 +6,7 @@
 {% load analytics %}
 
 {% block extra_head_base %}
+	<link rel="SHORTCUT ICON" href="{{ MEDIA_URL}}favicon.ico" />
     <link rel="stylesheet" href="{{ MEDIA_URL }}css/site_tabs.css" />
     <link rel="stylesheet" href="{{ MEDIA_URL }}pinax/css/topics.css" />
     <script type="text/javascript" src="{{ MEDIA_URL }}pinax/js/topics.js"></script>
@@ -63,7 +64,7 @@
 
 {% block footer %}
 <div class="legal">
-    {% trans "&copy; 2008 &lt;your company here&gt;" %}
+    {% trans "&copy; 2009 Engineers Without Borders (Canada) Organisation" %}
     - <a href="{% url about %}">{% trans "About" %}</a>
     - <a href="{% url terms %}">{% trans "Terms of Service" %}</a>
     - <a href="{% url privacy %}">{% trans "Privacy Policy" %}</a>
