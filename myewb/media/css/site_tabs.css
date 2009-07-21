@@ -56,7 +56,7 @@
 #locations_tab .rtab_locations div
 {
     margin: 0;
-    background-color: #DEF !important; /* selected tab colour */
+    background-color: #FC9 !important; /* selected tab colour */
     border-left: 1px solid #000 !important; /* tab border */
     border-top: 1px solid #000 !important; /* tab border */
     border-right: 1px solid #000 !important; /* tab border */

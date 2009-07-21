@@ -1,0 +1,78 @@
+"""myEWB profile template tags
+
+This file is part of myEWB
+Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
+
+Created on: 2009-06-30
+Last modified: 2009-07-21
+@author: Joshua Gorner
+"""
+from django import template
+from django.contrib.auth.models import User
+from django.shortcuts import get_object_or_404
+from profiles.forms import StudentRecordForm, WorkRecordForm
+from profiles.models import StudentRecord, WorkRecord
+
+register = template.Library()
+
+def show_student_record(user, record_id, is_me):
+    """Used with the student_record template to display a single record."""
+    record = get_object_or_404(StudentRecord, id=record_id)
+    return {"user": user, "record": record, "is_me": is_me}
+register.inclusion_tag("profiles/student_record.html")(show_student_record)
+
+def show_student_records(user, is_me):
+    """Used with the student_records template to display all of the user's student records."""
+    records = StudentRecord.objects.filter(user=user)
+    return {"user": user, "records": records, "is_me": is_me}
+register.inclusion_tag("profiles/student_records.html")(show_student_records)
+
+def show_work_record(user, record_id, is_me):
+    """Used with the work_record template to display a single record."""
+    record = get_object_or_404(WorkRecord, id=record_id)
+    return {"user": user, "record": record, "is_me": is_me}
+register.inclusion_tag("profiles/work_record.html")(show_work_record)
+
+def show_work_records(user, is_me):
+    """Used with the work_records template to display all of the user's work records."""
+    records = WorkRecord.objects.filter(user=user)
+    return {"user": user, "records": records, "is_me": is_me}
+register.inclusion_tag("profiles/work_records.html")(show_work_records)
+
+
+# These may be useful down the road, specifically if we have time to develop a means of dynamically
+# fetching record forms
+
+# def do_get_student_record_form(parser, token):
+#     try:
+#         tag_name, as_, context_name = token.split_contents()
+#     except ValueError:
+#         tagname = token.contents.split()[0]
+#         raise template.TemplateSyntaxError, "%(tagname)r tag syntax is as follows: {%% %(tagname)r as VARIABLE %%}" % locals()
+#     return StudentRecordFormNode(context_name)
+# 
+# class StudentRecordFormNode(template.Node):
+#     def __init__(self, context_name):
+#         self.context_name = context_name
+#     def render(self, context):
+#         context[self.context_name] = StudentRecordForm()
+#         return ''
+# 
+# register.tag('get_student_record_form', do_get_student_record_form)
+# 
+# def do_get_work_record_form(parser, token):
+#     try:
+#         tag_name, as_, context_name = token.split_contents()
+#     except ValueError:
+#         tagname = token.contents.split()[0]
+#         raise template.TemplateSyntaxError, "%(tagname)r tag syntax is as follows: {%% %(tagname)r as VARIABLE %%}" % locals()
+#     return WordRecordFormNode(context_name)
+# 
+# class WorkRecordFormNode(template.Node):
+#     def __init__(self, context_name):
+#         self.context_name = context_name
+#     def render(self, context):
+#         context[self.context_name] = WorkRecordForm()
+#         return ''
+# 
+# register.tag('get_work_record_form', do_get_work_record_form)

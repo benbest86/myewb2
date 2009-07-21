@@ -1,0 +1,195 @@
+[
+	{
+		"pk": 1,
+		"model": "auth.user",
+		"fields": {
+			"username": "bob",
+			"first_name": "Bob",
+			"last_name": "Roberts",
+			"is_active": true,
+			"is_superuser": false,
+			"is_staff": false,
+			"last_login": "2009-03-31 19:11:56",
+			"groups": [],
+			"user_permissions": [],
+			"password": "sha1$a75af$7b2c7b5e7ac635e80477fece6291508d6af30b9d",
+			"email": "",
+			"date_joined": "2009-03-31 15:14:06"
+		}
+	},
+	{
+		"pk": 2,
+		"model": "auth.user",
+		"fields": {
+			"username": "joe",
+			"first_name": "Joe",
+			"last_name": "Smith",
+			"is_active": true,
+			"is_superuser": false,
+			"is_staff": false,
+			"last_login": "2009-03-31 19:11:56",
+			"groups": [],
+			"user_permissions": [],
+			"password": "sha1$a75af$7b2c7b5e7ac635e80477fece6291508d6af30b9d",
+			"email": "",
+			"date_joined": "2009-03-31 15:14:06"
+		}
+	},
+	{
+		"pk": 3,
+		"model": "auth.user",
+		"fields": {
+			"username": "john",
+			"first_name": "John",
+			"last_name": "Doe",
+			"is_active": true,
+			"is_superuser": false,
+			"is_staff": false,
+			"last_login": "2009-03-31 19:11:56",
+			"groups": [],
+			"user_permissions": [],
+			"password": "sha1$a75af$7b2c7b5e7ac635e80477fece6291508d6af30b9d",
+			"email": "",
+			"date_joined": "2009-03-31 15:14:06"
+		}
+	},
+	{
+		"pk": 4,
+		"model": "auth.user",
+		"fields": {
+			"username": "jane",
+			"first_name": "Jane",
+			"last_name": "Doe",
+			"is_active": true,
+			"is_superuser": false,
+			"is_staff": false,
+			"last_login": "2009-03-31 19:11:56",
+			"groups": [],
+			"user_permissions": [],
+			"password": "sha1$a75af$7b2c7b5e7ac635e80477fece6291508d6af30b9d",
+			"email": "",
+			"date_joined": "2009-03-31 15:14:06"
+		}
+	},
+	{
+		"pk": 1,
+		"model": "profiles.memberprofile",
+		"fields": {
+			"user": 1,
+			"name": "Bob Roberts",
+			"about": "The problem with Bob is that he doesn't like beer",
+			"location": "Someplace dull",
+			"website": "http://pinaxproject.com",
+
+			"first_name": "Robert",
+			"preferred_first_name": "Bob",
+			"last_name": "Roberts",
+			
+			"country": "CA",
+			"street_address": "366 Adelaide Street West",
+			"street_address_two": "Suite 601",
+			"city": "Toronto",
+			"province": "ON",
+			"postal_code": "M5V 1R9",
+			
+			"work_phone_number": "416-481-3696",
+			"gender": "M",
+			"date_of_birth": "1979-05-23"
+		}
+	},
+	{
+		"pk": 2,
+		"model": "profiles.memberprofile",
+		"fields": {
+			"user": 2,
+			"name": "Joe Smith",
+			"about": "Joe like beer",
+			"location": "Germany perhaps?",
+			"website": "http://djangoproject.com"
+		}
+	},
+	{
+		"pk": 3,
+		"model": "profiles.memberprofile",
+		"fields": {
+			"user": 3,
+			"name": "John Doe",
+			"about": "Just your average John Doe",
+			"location": "Toronto, ON",
+			"website": "http://www.ewb.ca"
+		}
+	},	
+	{
+		"pk": 4,
+		"model": "profiles.memberprofile",
+		"fields": {
+			"user": 4,
+			"name": "Jane Doe",
+			"about": "Yummmm.",
+			"location": "Toronto, ON",
+			"website": "http://www.ingenieurssansfrontieres.ca"
+		}
+	},
+	{
+		"pk": 1,
+		"model": "profiles.studentrecord",
+		"fields": {
+			"user": 1,
+			"institution": "University of Toronto",
+			"student_number": "123456789",
+			"level": "UG",
+			"field": "Mechanical Engineering",
+			"start_date": "2004-09-01",
+			"graduation_date": "2009-04-30"
+		}
+	},
+	{
+		"pk": 2,
+		"model": "profiles.studentrecord",
+		"fields": {
+			"user": 2,
+			"institution": "University of Toronto",
+			"student_number": "234567890",
+			"level": "UG",
+			"field": "Mechanical Engineering",
+			"start_date": "2009-05-01",
+			"graduation_date": "2029-04-30"
+		}
+	},
+	{
+		"pk": 3,
+		"model": "profiles.studentrecord",
+		"fields": {
+			"user": 3,
+			"institution": "University of Toronto",
+			"student_number": "345678901",
+			"level": "UG",
+			"field": "Mechanical Engineering",
+			"start_date": "2009-05-01"
+		}
+	},
+	{
+		"pk": 4,
+		"model": "profiles.studentrecord",
+		"fields": {
+			"user": 4,
+			"institution": "University of Toronto",
+			"student_number": "456789012",
+			"level": "UG",
+			"field": "Mechanical Engineering"
+		}
+	},
+	{
+		"pk": 1,
+		"model": "profiles.workrecord",
+		"fields": {
+			"user": 1,
+			"employer": "Engineers Without Borders Canada",
+			"sector": "Non-profit",
+			"position": "Assistant Deputy Substitute Director of Technology",
+			"start_date": "2009-05-01",
+			"company_size": "small",
+			"income_level": "low"
+		}
+	}
+]

@@ -1,0 +1,12 @@
+{% comment %}
+This file is part of myEWB
+Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
+{% endcomment %}
+
+{% load i18n %}
+{% load extra_tagging_tags %}
+{% load profile_tags %}
+
+{% for record in records %}
+	{% show_work_record user record.id is_me %}
+{% endfor %}
