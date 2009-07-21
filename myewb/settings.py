@@ -175,7 +175,7 @@ ABSOLUTE_URL_OVERRIDES = {
     "auth.user": lambda o: "/profiles/%s/" % o.username,
 }
 
-AUTH_PROFILE_MODULE = 'profiles.Profile'
+AUTH_PROFILE_MODULE = 'profiles.MemberProfile'
 NOTIFICATION_LANGUAGE_MODULE = 'account.Account'
 
 EMAIL_CONFIRMATION_DAYS = 2
