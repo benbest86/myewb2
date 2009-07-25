@@ -1,3 +1,4 @@
+
 {% extends "profiles/base.html" %}
 
 {% comment %}
@@ -10,24 +11,24 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% load app_plugins %}
 {% load uni_form %}
 
-{% block head_title %}{% blocktrans %}Edit work record{% endblocktrans %}{% endblock %}
+{% block head_title %}{% blocktrans %}Add work record{% endblocktrans %}{% endblock %}
 
 {% block body %}
 	{% if user.is_authenticated %}
 	
     <div class="left_panel">
         <div id="profile_avatar">
-            <div>{% avatar user 80 %}</div>
+            <div>{% avatar other_user 80 %}</div>
         </div>
         
-        <h1>{% if user.get_profile.name %}{{ user.get_profile.name }}{% else %}{{user}}{% endif %}</h1>
+        <h1>{% if other_user.get_profile.name %}{{ other_user.get_profile.name }}{% else %}{{ other_user }}{% endif %}</h1>
 
         <form class="uniForm" id="edit-record" method="POST" action="">
             <fieldset class="inlineLabels">  
                 {{ form|as_uni_form }}
                 <div class="form_block">
-                <input type="hidden" name="action" value="update" />
-                <input type="submit" value="{% trans "update" %}"/>
+                <input type="hidden" name="action" value="add" />
+                <input type="submit" value="{% trans "add" %}"/>
                 </div>
             </fieldset>
         </form>

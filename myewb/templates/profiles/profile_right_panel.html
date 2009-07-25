@@ -5,6 +5,13 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 
 {% load i18n %}
 {% load avatar_tags %}
+{% load profile_tags %}
+
+{# should probably pull this CSS stuff out into the css file... #}
+<div style="padding-bottom: 15px;">
+	<h2 style="margin-bottom: 0px; padding-bottom: 0px;">{% trans "Find other people" %}</h2>
+	{% show_profile_search user %}
+</div>
 
 {% if is_me %}
     <div class="tribes">
@@ -38,31 +45,31 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
             <p>{% blocktrans %}None. You should look at the list of <a href="/profiles/">profiles</a> and see if there's anyone you know.{% endblocktrans %}</p>
         {% endif %}
     </div>
-{% endif %}
-
-{% if is_friend %}
-    <div class="tribes">
-        <h2>{% blocktrans %}{{ other_user }}'s Tribes{% endblocktrans %}</h2>
-        {% if other_user.tribe_set.all %}
-            {% for tribe in other_user.tribe_set.all %}
-                <a href="{% url tribe_detail tribe.slug %}">{{ tribe.name }}</a>
-            {% endfor %}
-        {% else %}
-            <p>{% blocktrans %}Not yet a member of any tribes.{% endblocktrans %}</p>
-        {% endif %}
-    </div>
-    <div class="friends">
-        <h2>{% blocktrans %}{{ other_user }}'s Friends{% endblocktrans %}</h2>
-        <table width="100%">
-            {% for friendship in other_friends %}
-                {% if forloop.counter0|divisibleby:"3" %}<tr>{% endif %}
-                <td>
-                    <div class="avatar">{% avatar friendship.friend 40 %}</div>
-                    <div class="details"><a href="{% url profile_detail friendship.friend.username %}" title="{{ friendship.friend.username }}">{{ friendship.friend.username }}</a></div>
-                </td>
-                {% if forloop.counter0|add:"1"|divisibleby:"3" %}</tr>{% endif %}
-            {% endfor %}
-        {% if other_friends|length|divisibleby:"3" %}{% else %}</tr>{% endif %}
-        </table>
-    </div>
+{% else %}
+	{% if is_friend or user.is_staff %}
+	    <div class="tribes">
+	        <h2>{% blocktrans %}{{ other_user }}'s Tribes{% endblocktrans %}</h2>
+	        {% if other_user.tribe_set.all %}
+	            {% for tribe in other_user.tribe_set.all %}
+	                <a href="{% url tribe_detail tribe.slug %}">{{ tribe.name }}</a>
+	            {% endfor %}
+	        {% else %}
+	            <p>{% blocktrans %}Not yet a member of any tribes.{% endblocktrans %}</p>
+	        {% endif %}
+	    </div>
+	    <div class="friends">
+	        <h2>{% blocktrans %}{{ other_user }}'s Friends{% endblocktrans %}</h2>
+	        <table width="100%">
+	            {% for friendship in other_friends %}
+	                {% if forloop.counter0|divisibleby:"3" %}<tr>{% endif %}
+	                <td>
+	                    <div class="avatar">{% avatar friendship.friend 40 %}</div>
+	                    <div class="details"><a href="{% url profile_detail friendship.friend.username %}" title="{{ friendship.friend.username }}">{{ friendship.friend.username }}</a></div>
+	                </td>
+	                {% if forloop.counter0|add:"1"|divisibleby:"3" %}</tr>{% endif %}
+	            {% endfor %}
+	        {% if other_friends|length|divisibleby:"3" %}{% else %}</tr>{% endif %}
+	        </table>
+	    </div>
+	{% endif %}
 {% endif %}

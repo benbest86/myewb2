@@ -16,6 +16,6 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 	{% if record.income_level %}<p><b>{% trans "Income level" %}</b>: {{ record.get_income_level_display }}</p>{% endif %}
 	
 	{% if is_me %}
-		<a href="{% url profile_work_record user.username record.id %}">Edit</a>
+		<a href="{% url edit_work_record user.username record.id %}">Edit</a>
 	{% endif %}
 </div>

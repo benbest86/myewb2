@@ -15,6 +15,6 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 	{% if record.student_number %}<p><b>{% trans "Student number" %}</b>: {{ record.student_number }}</p>{% endif %}
 	
 	{% if is_me %}
-		<a href="{% url profile_student_record user.username record.id %}">Edit</a>
+		<a href="{% url edit_student_record user.username record.id %}">Edit</a>
 	{% endif %}
 </div>

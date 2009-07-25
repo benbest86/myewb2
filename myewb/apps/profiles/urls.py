@@ -9,12 +9,28 @@ Last modified: 2009-07-21
 """
 from django.conf.urls.defaults import *
 
-urlpatterns = patterns('',
-    url(r'^username_autocomplete/$', 'misc.views.username_autocomplete_friends', name='profile_username_autocomplete'),
-    url(r'^$', 'profiles.views.profiles', name='profile_list'),    
-    url(r'^(?P<username>[\w\._-]+)/$', 'profiles.views.profile', name='profile_detail'),
-    url(r'^(?P<username>[\w\._-]+)/student/(?P<record_id>\d+)/$', 'profiles.views.student_record', name='profile_student_record'),
-    url(r'^(?P<username>[\w\._-]+)/student/$', 'profiles.views.add_student_record', name='profile_add_student_record'),
-    url(r'^(?P<username>[\w\._-]+)/work/(?P<record_id>\d+)/$', 'profiles.views.work_record', name='profile_work_record'),
-    url(r'^(?P<username>[\w\._-]+)/work/$', 'profiles.views.add_work_record', name='profile_add_work_record'),
+urlpatterns = patterns('profiles.views',
+    url(r'^$', 'profiles', name='profiles_index'),    
+    url(r'^$', 'profiles', name='profile_list'),    
+    url(r'^(?P<username>[\w\._-]+)/$', 'profile', name='profile_detail'),
+
+    url(r'^(?P<username>[\w\._-]+)/student/(?P<student_record_id>\d+)/$', 'student_record_detail', name='profile_student_record'),
+    url(r'^(?P<username>[\w\._-]+)/student/(?P<student_record_id>\d+)/$', 'student_record_detail', name='student_record_detail'),
+    url(r'^(?P<username>[\w\._-]+)/student/(?P<student_record_id>\d+)/delete/$', 'delete_student_record', name='delete_student_record'),
+    url(r'^(?P<username>[\w\._-]+)/student/$', 'student_records_index', name='student_records_index'),
+    url(r'^(?P<username>[\w\._-]+)/student/new/$', 'new_student_record', name='new_student_record'),
+    url(r'^(?P<username>[\w\._-]+)/student/(?P<student_record_id>\d+)/edit/$', 'edit_student_record', name='edit_student_record'),
+
+    url(r'^(?P<username>[\w\._-]+)/work/(?P<work_record_id>\d+)/$', 'work_record_detail', name='profile_work_record'),
+    url(r'^(?P<username>[\w\._-]+)/work/(?P<work_record_id>\d+)/$', 'work_record_detail', name='work_record_detail'),
+    url(r'^(?P<username>[\w\._-]+)/work/(?P<work_record_id>\d+)/delete/$', 'delete_work_record', name='delete_work_record'),
+    url(r'^(?P<username>[\w\._-]+)/work/$', 'work_records_index', name='work_records_index'),
+    url(r'^(?P<username>[\w\._-]+)/work/new/$', 'new_work_record', name='new_work_record'),
+    url(r'^(?P<username>[\w\._-]+)/work/(?P<work_record_id>\d+)/edit/$', 'edit_work_record', name='edit_work_record'),
+    
+    url(r'^(?P<username>[\w\._-]+)/search/$', 'search_profile', name='profile_search'),
+)
+
+urlpatterns = urlpatterns + patterns('misc.views',
+    url(r'^username_autocomplete/$', 'username_autocomplete_friends', name='profile_username_autocomplete'),
 )

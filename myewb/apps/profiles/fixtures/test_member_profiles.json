@@ -8,11 +8,11 @@
 			"last_name": "Roberts",
 			"is_active": true,
 			"is_superuser": false,
-			"is_staff": false,
+			"is_staff": true,
 			"last_login": "2009-03-31 19:11:56",
 			"groups": [],
 			"user_permissions": [],
-			"password": "sha1$a75af$7b2c7b5e7ac635e80477fece6291508d6af30b9d",
+			"password": "sha1$7bd83$fefdb3f02366048ce73773764b8a7dfa39489195",
 			"email": "",
 			"date_joined": "2009-03-31 15:14:06"
 		}
@@ -30,7 +30,7 @@
 			"last_login": "2009-03-31 19:11:56",
 			"groups": [],
 			"user_permissions": [],
-			"password": "sha1$a75af$7b2c7b5e7ac635e80477fece6291508d6af30b9d",
+			"password": "sha1$7bd83$fefdb3f02366048ce73773764b8a7dfa39489195",
 			"email": "",
 			"date_joined": "2009-03-31 15:14:06"
 		}
@@ -48,7 +48,7 @@
 			"last_login": "2009-03-31 19:11:56",
 			"groups": [],
 			"user_permissions": [],
-			"password": "sha1$a75af$7b2c7b5e7ac635e80477fece6291508d6af30b9d",
+			"password": "sha1$7bd83$fefdb3f02366048ce73773764b8a7dfa39489195",
 			"email": "",
 			"date_joined": "2009-03-31 15:14:06"
 		}
@@ -66,20 +66,59 @@
 			"last_login": "2009-03-31 19:11:56",
 			"groups": [],
 			"user_permissions": [],
-			"password": "sha1$a75af$7b2c7b5e7ac635e80477fece6291508d6af30b9d",
+			"password": "sha1$7bd83$fefdb3f02366048ce73773764b8a7dfa39489195",
 			"email": "",
 			"date_joined": "2009-03-31 15:14:06"
 		}
 	},
 	{
 		"pk": 1,
-		"model": "profiles.memberprofile",
+		"model": "profiles.profile",
 		"fields": {
 			"user": 1,
 			"name": "Bob Roberts",
 			"about": "The problem with Bob is that he doesn't like beer",
-			"location": "Someplace dull",
-			"website": "http://pinaxproject.com",
+			"location": "Toronto, ON",
+			"website": "http://pinaxproject.com"
+		}
+	},
+	{
+		"pk": 2,
+		"model": "profiles.profile",
+		"fields": {
+			"user": 2,
+			"name": "Joe Smith",
+			"about": "Joe like beer",
+			"location": "Berlin",
+			"website": "http://djangoproject.com"
+		}
+	},
+	{
+		"pk": 3,
+		"model": "profiles.profile",
+		"fields": {
+			"user": 3,
+			"name": "John Doe",
+			"about": "Just your average John Doe",
+			"location": "Toronto, ON",
+			"website": "http://www.ewb.ca"
+		}
+	},	
+	{
+		"pk": 4,
+		"model": "profiles.profile",
+		"fields": {
+			"user": 4,
+			"name": "Jane Doe",
+			"about": "Yummmm.",
+			"location": "Toronto, ON"
+		}
+	},
+	{
+		"pk": 1,
+		"model": "profiles.memberprofile",
+		"fields": {
+			"profile_ptr": 1,
 
 			"first_name": "Robert",
 			"preferred_first_name": "Bob",
@@ -101,33 +140,25 @@
 		"pk": 2,
 		"model": "profiles.memberprofile",
 		"fields": {
-			"user": 2,
-			"name": "Joe Smith",
-			"about": "Joe like beer",
-			"location": "Germany perhaps?",
-			"website": "http://djangoproject.com"
+			"profile_ptr": 2,
+			
+			"city": "Berlin"
 		}
 	},
 	{
 		"pk": 3,
 		"model": "profiles.memberprofile",
 		"fields": {
-			"user": 3,
-			"name": "John Doe",
-			"about": "Just your average John Doe",
-			"location": "Toronto, ON",
-			"website": "http://www.ewb.ca"
+			"profile_ptr": 3,
+			
+			"city": "Toronto"
 		}
 	},	
 	{
 		"pk": 4,
 		"model": "profiles.memberprofile",
 		"fields": {
-			"user": 4,
-			"name": "Jane Doe",
-			"about": "Yummmm.",
-			"location": "Toronto, ON",
-			"website": "http://www.ingenieurssansfrontieres.ca"
+			"profile_ptr": 4
 		}
 	},
 	{
@@ -190,6 +221,15 @@
 			"start_date": "2009-05-01",
 			"company_size": "small",
 			"income_level": "low"
+		}
+	},
+	{
+		"pk": 1,
+		"model": "friends.friendship",
+		"fields": {
+			"to_user": 2,
+			"from_user": 3,
+			"added": "2009-07-22"
 		}
 	}
 ]

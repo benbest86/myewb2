@@ -32,7 +32,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
         <div class="profile_info">
             {% if other_user.get_profile.about %}<p><b>{% trans "About" %}</b>: {{ other_user.get_profile.about }}</p>{% endif %}
 
-			{% if user.is_authenticated %}
+			{% if is_me or is_friend or user.is_staff %}
 				{% if other_user.get_profile.street_address %}<p><b>{% trans "Street address" %}</b>:</p> <p>{{ other_user.get_profile.street_address }}</p>{% endif %}
 				{% if other_user.get_profile.street_address_two %}<p>{{ other_user.get_profile.street_address_two }}</p>{% endif %}
 				{% if other_user.get_profile.location %}<p>{{ other_user.get_profile.location }}</p>{% endif %}
@@ -46,33 +46,34 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 						<p>{{ address.email }}</p>
 					{% endfor %}
 				{% else %} 
-					{% if is_me %}
-						<p><a href="{% url acct_email %}">{% trans "Add email addresses" %}</a></p>
-					{% endif %}
+					<p><a href="{% url acct_email %}">{% trans "Add email addresses" %}</a></p>
 				{% endif %}
-			{% else %}
-				{% if other_user.get_profile.location%}<p><b>{% trans "Location" %}</b>: {{ other_user.get_profile.location }}</p>{% endif %}
-			{% endif %}
 			
-			{% if other_user.get_profile.website %}<p><b>{% trans "Website" %}</b>: <a href="{{ other_user.get_profile.website }}">{{ other_user.get_profile.website }}</a></p>{% endif %}
+				{% if other_user.get_profile.website %}<p><b>{% trans "Website" %}</b>: <a href="{{ other_user.get_profile.website }}">{{ other_user.get_profile.website }}</a></p>{% endif %}
+				
+			{% else %}
+				Contact information is only available for your friends. See below if you wish to add this user as a friend.
+			{% endif %}
         </div>
 
-		<div class="student_records">
-			<p><b>Student records:</b></p>
-			{% show_student_records other_user is_me %}
-		</div>
+		{% if is_me or is_friend or user.is_staff %}
+			<div class="student_records">
+				<p><b>Student records:</b></p>
+				{% show_student_records other_user is_me %}
+			</div>
 		
-		{% if is_me %}
-			<a href="{% url profile_add_student_record user.username %}">Add student record</a>
-		{% endif %}
+			{% if is_me %}
+				<a href="{% url new_student_record other_user.username %}">Add student record</a>
+			{% endif %}
 		
-		<div class="work_records">
-			<p><b>Work records:</b></p>
-			{% show_work_records other_user is_me %}
-		</div>
+			<div class="work_records">
+				<p><b>Work records:</b></p>
+				{% show_work_records other_user is_me %}
+			</div>
 		
-		{% if is_me %}
-			<a href="{% url profile_add_work_record user.username %}">Add work record</a>
+			{% if is_me %}
+				<a href="{% url new_work_record other_user.username %}">Add work record</a>
+			{% endif %}
 		{% endif %}
         
         {% if user.is_authenticated %}

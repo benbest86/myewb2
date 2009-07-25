@@ -1,0 +1,32 @@
+{% extends "profiles/base.html" %}
+
+{% comment %}
+This file is part of myEWB
+Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
+{% endcomment %}
+
+{% load i18n %}
+{% load avatar_tags %}
+{% load app_plugins %}
+{% load uni_form %}
+{% load profile_tags %}
+
+{% block head_title %}{% blocktrans %}Profile Search{% endblocktrans %}{% endblock %}
+
+{% block body %}
+<h1>Profile Search</h1>
+
+<p>Results matching <em>{{term}}</em>:</p>
+
+{# TODO: style the list #}
+{% if profiles %}
+	<ul>
+	{% for profile in profiles %}
+		<li><a href="{% url profile_detail profile %}">{{ profile.name }}</a> ( {{profile}} )</li>
+	{% endfor %}
+	</ul>
+{% else %}
+	No results.
+{% endif %}
+
+{%endblock%}
