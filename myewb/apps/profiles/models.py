@@ -181,7 +181,14 @@ class StudentRecord(models.Model):
         @returns: True if user is the profile owner, False otherwise
         """
         return (user.id == self.user_id)
-    
+
+class WorkRecordManager(models.Manager):
+    def get_from_view_args(self, **kwargs):
+        id = kwargs.get('work_record_id', None) or kwargs.get('record_id', None)
+        if id:
+            return WorkRecord.objects.get(pk=id)
+        return None
+
 class WorkRecord(models.Model):
     """ Represents a record of a member's current or past employment. A member may have one or more such records.
     """
@@ -210,10 +217,12 @@ class WorkRecord(models.Model):
     )
     income_level = models.CharField(_('income level'), max_length=10, choices=INCOME_LEVELS, null=True, blank=True)
     
+    objects = WorkRecordManager()
+    
     def is_owner(self, user):
         """
         Determine whether or not a given user owns this record.
         @params: user - user object
         @returns: True if user is the profile owner, False otherwise
         """
-        return (user.id == user.user_id)
+        return (user.id == self.user_id)
