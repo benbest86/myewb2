@@ -30,7 +30,3 @@ class WorkRecordForm(forms.ModelForm):
 	class Meta:
 		model = WorkRecord
 		exclude = ('user')
-		
-class ProfileSearchForm(forms.Form):
-	"""Oneline text box for user search"""
-	searchterm = forms.CharField()

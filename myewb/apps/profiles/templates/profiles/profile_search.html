@@ -7,11 +7,10 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% load extra_tagging_tags %}
 {% load profile_tags %}
 
-<form class="uniForm" id="search-profile" method="POST" action="{% url profile_search user.username %}">
-
+<form class="uniForm" id="search-profile" method="GET" action="{% url profiles_index %}">
 	<fieldset class="inlineLabels">  
 		<div class="form_block">
-			{{ search_form.searchterm }}
+			<input type="text" name="search" value="{{ search_terms }}" />
 			<input type="submit" value="{% trans "search" %}"/>
 		</div>
 	</fieldset>

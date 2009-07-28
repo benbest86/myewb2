@@ -18,7 +18,21 @@ from django.contrib.auth.models import User
 
 from siteutils.decorators import owner_required
 from profiles.models import MemberProfile, StudentRecord, WorkRecord
-from profiles.forms import StudentRecordForm, WorkRecordForm, ProfileSearchForm
+from profiles.forms import StudentRecordForm, WorkRecordForm
+
+def profiles(request, template_name="profiles/profiles.html"):
+    search_terms = request.GET.get('search', '')
+    if search_terms:
+        users = User.objects.filter(profile__name__icontains=search_terms) | \
+                        User.objects.filter(username__icontains=search_terms)
+        users = users.order_by("profile__name")
+    else:
+        users = User.objects.all().order_by("profile__name")
+    
+    return render_to_response(template_name, {
+        "users": users,        
+        'search_terms': search_terms,
+    }, context_instance=RequestContext(request))
 
 def student_records_index(request, username, template_name='profiles/student_records_index.html'):
     if request.method == 'POST':
@@ -263,25 +277,4 @@ def delete_work_record(request, username, work_record_id, object=None):
     if request.method == 'POST':
         work_record.delete()
         return HttpResponseRedirect(reverse('work_record_index', kwargs={'username': username}))
-    
-def search_profile(request, username):
-	profiles = []
-	term = ""
-	
-	if request.method == 'POST':
-		form = ProfileSearchForm(request.POST)
-
-		if form.is_valid():
-			term = form.cleaned_data['searchterm']
-			profiles = MemberProfile.objects.filter(
-							name__icontains=form.cleaned_data['searchterm']) | \
-                            MemberProfile.objects.filter(
-                            user__username__icontains=form.cleaned_data['searchterm'])
-			
-#		profiles = MemberProfile.objects.all()
-		
-	return render_to_response("profiles/searchresult.html", {
-		"profiles": profiles,
-		"term": term,
-    }, context_instance=RequestContext(request))
 

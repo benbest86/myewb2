@@ -27,8 +27,6 @@ urlpatterns = patterns('profiles.views',
     url(r'^(?P<username>[\w\._-]+)/work/$', 'work_records_index', name='work_records_index'),
     url(r'^(?P<username>[\w\._-]+)/work/new/$', 'new_work_record', name='new_work_record'),
     url(r'^(?P<username>[\w\._-]+)/work/(?P<work_record_id>\d+)/edit/$', 'edit_work_record', name='edit_work_record'),
-    
-    url(r'^(?P<username>[\w\._-]+)/search/$', 'search_profile', name='profile_search'),
 )
 
 urlpatterns = urlpatterns + patterns('misc.views',

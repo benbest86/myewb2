@@ -10,7 +10,7 @@ Last modified: 2009-07-21
 from django import template
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
-from profiles.forms import StudentRecordForm, WorkRecordForm, ProfileSearchForm
+from profiles.forms import StudentRecordForm, WorkRecordForm
 from profiles.models import StudentRecord, WorkRecord
 
 register = template.Library()
@@ -39,12 +39,10 @@ def show_work_records(user, is_me):
     return {"user": user, "records": records, "is_me": is_me}
 register.inclusion_tag("profiles/work_records.html")(show_work_records)
 
-def show_profile_search(user):
+def show_profile_search(search_terms):
     """Load and show the profile search box (really, only here for consistency)"""
-    form = ProfileSearchForm()
-    return {"user": user, "search_form" : form}
+    return {"search_terms": search_terms}
 register.inclusion_tag("profiles/profile_search.html")(show_profile_search)
-
 
 # These may be useful down the road, specifically if we have time to develop a means of dynamically
 # fetching record forms

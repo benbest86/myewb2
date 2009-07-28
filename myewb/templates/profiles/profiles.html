@@ -1,0 +1,27 @@
+{% extends "profiles/base.html" %}
+
+{% load i18n %}
+{% load pagination_tags %}
+{% load avatar_tags %}
+{% load humanize %}
+{% load profile_tags %}
+
+{% block head_title %}{% blocktrans %}All Profiles{% endblocktrans %}{% endblock %}
+
+{% block body %}
+    <h1>{% trans "Profiles" %}</h1>
+
+	{% show_profile_search search_terms %}
+    
+    {% autopaginate users %}
+    
+    {% for user in users %}
+        <div class="profile clearfix">
+            {# @@@ factor out style into css file #}
+            <div style="float: left;">{% avatar user 40 %}</div>
+            <div style="padding: 5px; margin-left: 50px;"><a href="{% url profile_detail user.username %}">{{ user.first_name }} {{ user.last_name }} ({{ user.username }})</a></div>
+        </div>
+    {% endfor %}
+    
+    {% paginate %}
+{% endblock %}
