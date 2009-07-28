@@ -1,0 +1,22 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+
+{% block rtab_id %}id="networks_tab"{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ MEDIA_URL }}networks/css/networks.css" />
+<link rel="stylesheet" href="{{ MEDIA_URL }}pinax/css/topics.css" />
+<script type="text/javascript" src="{{ MEDIA_URL }}pinax/js/topics.js"></script>
+{% endblock %}
+
+{% block subnav %}
+    <ul>
+		{% comment %}
+        {% if user.is_authenticated %}
+            <li><a href="{% url your_networks %} ">{% trans "Your Networks" %}</a></li>
+        {% endif %}
+		{% endcomment %}
+        <li><a href="{% url networks_index %}">{% trans "All Networks" %}</a></li>
+    </ul>
+{% endblock %}

@@ -1,0 +1,3 @@
+The templates in this directory are not currently used, but are included for now since we *might* 
+eventually be able to figure out how to get them to derive from the applicable implementing class.
+As things stand we have to use separate templates (using the applicable base.html for that group).

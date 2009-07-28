@@ -17,8 +17,6 @@ def run():
         '/messages/',
         '/announcements/',
         '/tweets/',
-        '/tribes/',
-        '/projects/',
         '/robots.txt',
         '/photos/',
         '/bookmarks/',

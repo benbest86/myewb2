@@ -1,0 +1,125 @@
+[
+    {
+		"pk": 1,
+		"model": "auth.user",
+		"fields": {
+			"username": "bob",
+			"first_name": "Bob",
+			"last_name": "Roberts",
+			"is_active": true,
+			"is_superuser": false,
+			"is_staff": false,
+			"last_login": "2009-03-31 19:11:56",
+			"groups": [],
+			"user_permissions": [],
+			"password": "sha1$a75af$7b2c7b5e7ac635e80477fece6291508d6af30b9d",
+			"email": "",
+			"date_joined": "2009-03-31 15:14:06"
+		}
+	},
+	{
+		"pk": 2,
+		"model": "auth.user",
+		"fields": {
+			"username": "joe",
+			"first_name": "Joe",
+			"last_name": "Smith",
+			"is_active": true,
+			"is_superuser": false,
+			"is_staff": false,
+			"last_login": "2009-03-31 19:11:56",
+			"groups": [],
+			"user_permissions": [],
+			"password": "sha1$a75af$7b2c7b5e7ac635e80477fece6291508d6af30b9d",
+			"email": "",
+			"date_joined": "2009-03-31 15:14:06"
+		}
+	},	
+	{
+        "pk": 1,
+        "model": "base_groups.basegroup",
+        "fields": {
+            "slug": "ewb-utoronto",
+			"name": "University of Toronto Chapter",
+			"description": "Toronto, ON",
+			"private": false,
+			"creator": 1,
+			"created": "2009-07-17 12:34:56"
+        }
+    }, {
+        "pk": 2,
+        "model": "base_groups.basegroup",
+        "fields": {
+            "slug": "ewb-uwaterloo",
+			"name": "University of Waterloo Chapter",
+			"description": "Waterloo, ON",
+			"private": false,
+			"creator": 2,
+			"created": "2009-07-18 12:35:56"
+        }
+    },
+	{
+        "pk": 1,
+        "model": "base_groups.grouplocation",
+        "fields": {
+			"group": 1
+        }
+    },
+	{
+        "pk": 2,
+        "model": "base_groups.grouplocation",
+        "fields": {
+			"group": 2
+        }
+    },
+	{
+        "pk": 1,
+        "model": "networks.network",
+        "fields": {
+			"basegroup_ptr": 1,
+			"network_type": "U"
+        }
+    }, {
+        "pk": 2,
+        "model": "networks.network",
+        "fields": {
+			"basegroup_ptr": 2,
+			"network_type": "U"
+        }
+    },
+	{
+		"pk": 1,
+		"model": "base_groups.groupmember",
+		"fields": {
+			"group": 1,
+			"user": 1,
+			"is_admin": true,
+			"admin_title": "Random Admin Title",
+			"joined": "2009-07-19 12:34:56"
+		}
+	},
+	{
+		"pk": 2,
+		"model": "base_groups.groupmember",
+		"fields": {
+			"group": 2,
+			"user": 2,
+			"is_admin": false,
+			"joined": "2009-07-19 12:34:57"
+		}
+	},
+	{
+		"pk": 1,
+		"model": "networks.networkmember",
+		"fields": {
+			"groupmember_ptr": 1
+		}
+	},
+	{
+		"pk": 2,
+		"model": "networks.networkmember",
+		"fields": {
+			"groupmember_ptr": 2
+		}
+	}
+]

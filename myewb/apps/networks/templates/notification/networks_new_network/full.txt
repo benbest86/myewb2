@@ -1,0 +1,4 @@
+{% load i18n %}{% blocktrans with network.get_absolute_url as network_url %}A new network {{ network }} has been created.
+
+http://{{ current_site }}{{ network_url }}
+{% endblocktrans %}

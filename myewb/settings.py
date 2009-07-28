@@ -82,6 +82,8 @@ MIDDLEWARE_CLASSES = (
     'misc.middleware.SortOrderMiddleware',
     'djangodblog.middleware.DBLogMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
+    
+    'django_sorting.middleware.SortingMiddleware',
 )
 
 ROOT_URLCONF = 'myewb.urls'
@@ -161,11 +163,15 @@ INSTALLED_APPS = (
     'profiles',
     'staticfiles',
     'account',
-    'tribes',
-    'projects',
     'misc',
     'photos',
     'tag_app',
+    
+    'django_sorting',
+    'topics',
+    'groups',
+    'base_groups',
+    'networks',
     
     'django.contrib.admin',
 
