@@ -140,9 +140,11 @@ def network_detail(request, group_slug, form_class=NetworkForm, template_name='n
             )
 
 @permission_required('networks.change')
-def edit_network(request, group_slug, form_class=NetworkForm, template_name='networks/edit_network.html'):
+def edit_network(request, group_slug, form_class=NetworkForm, template_name='networks/edit_network.html',
+        detail_template_name='networks/network_detail.html'):
     if request.method == 'POST':
-        return HttpResponseRedirect(reverse('network_detail', kwargs={'group_slug': group_slug}))
+        # this results in a non-ideal URL (/networks/<slug>/edit) but only way we can save changes
+        return network_detail(request, group_slug, form_class, detail_template_name, template_name)
     network = get_object_or_404(Network, slug=group_slug)
     form = form_class(instance=network)
     return render_to_response(

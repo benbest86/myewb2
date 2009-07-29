@@ -60,6 +60,7 @@ def members_index(request, group_model, group_slug, form_class=GroupMemberForm,
                 context_instance=RequestContext(request),
             )
 
+@login_required
 def new_member(request, group_model, group_slug, form_class=GroupMemberForm,
         template_name='base_groups/new_member.html', index_template_name='base_groups/members_index.html'):
     group = get_object_or_404(group_model, slug=group_slug)
@@ -121,12 +122,14 @@ def member_detail(request, group_model, group_slug, username, form_class=GroupMe
                 context_instance=RequestContext(request),
             )
 
+@login_required
 def edit_member(request, group_model, group_slug, username, form_class=GroupMemberForm, 
         template_name='base_groups/edit_member.html', detail_template_name='base_groups/member_detail.html'):
     group = get_object_or_404(group_model, slug=group_slug)
     user = get_object_or_404(User, username=username)
     if request.method == 'POST':
-        return HttpResponseRedirect(reverse('%s_member_detail' % group_model._meta.module_name, kwargs={'group_slug': group_slug, 'username': username}))
+        # this results in a non-ideal URL (/../edit) but only way we can save changes
+        return member_detail(request, group_model, group_slug, username, form_class, detail_template_name, template_name)
     member = get_object_or_404(GroupMember, group=group, user=user)
     form = form_class(instance=member)
     return render_to_response(
@@ -140,6 +143,7 @@ def edit_member(request, group_model, group_slug, username, form_class=GroupMemb
         context_instance=RequestContext(request),
     )
 
+@login_required
 def delete_member(request, group_model, group_slug, username):
     group = get_object_or_404(group_model, slug=group_slug)
     user = get_object_or_404(User, username=username)
