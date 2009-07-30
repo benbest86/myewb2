@@ -1,3 +1,13 @@
+"""myEWB networks models declarations
+
+This file is part of myEWB
+Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
+Some code derived from Pinax, copyright 2008-2009 James Tauber and Pinax Team, licensed under the MIT License
+
+Last modified on 2009-07-29
+@author Joshua Gorner, Benjamin Best
+"""
+
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import  User
 from django.utils.translation import ugettext_lazy as _
@@ -21,6 +31,10 @@ class Network(BaseGroup):
     
     def get_url_kwargs(self):
         return {'group_slug': self.slug}
+        
+    def save(self, force_insert=False, force_update=False):
+        self.model = "network"
+        return super(Network, self).save(force_insert, force_update)
         
 class NetworkMember(GroupMember):
     parent_model = Network

@@ -1,6 +1,17 @@
+"""myEWB network form declarations
+
+This file is part of myEWB
+Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
+Some code derived from Pinax, copyright 2008-2009 James Tauber and Pinax Team, licensed under the MIT License
+
+Last modified on 2009-07-29
+@author Joshua Gorner
+"""
+
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
+from base_groups.models import BaseGroup
 from networks.models import Network, NetworkMember
 
 # @@@ we should have auto slugs, even if suggested and overrideable
@@ -13,25 +24,25 @@ class NetworkForm(forms.ModelForm):
             
     def clean_slug(self):
         
-        if Network.objects.filter(slug__iexact=self.cleaned_data["slug"]).count() > 0:
+        if BaseGroup.objects.filter(slug__iexact=self.cleaned_data["slug"]).count() > 0:
             if self.instance and self.cleaned_data["slug"] == self.instance.slug:
                 pass # same instance
             else:
-                raise forms.ValidationError(_("A network already exists with that slug."))
+                raise forms.ValidationError(_("A group (network, community or project) already exists with that slug."))
         return self.cleaned_data["slug"].lower()
     
     def clean_name(self):
 
-        if Network.objects.filter(name__iexact=self.cleaned_data["name"]).count() > 0:
+        if BaseGroup.objects.filter(name__iexact=self.cleaned_data["name"]).count() > 0:
             if self.instance and self.cleaned_data["name"] == self.instance.name:
                 pass # same instance
             else:
-                raise forms.ValidationError(_("A network already exists with that name."))
+                raise forms.ValidationError(_("A group (network, community or project) already exists with that name."))
         return self.cleaned_data["name"]
     
     class Meta:
         model = Network
-        fields = ('name', 'slug', 'network_type', 'description')
+        fields = ('name', 'slug', 'network_type', 'description', 'parent')
 
 
 # @@@ is this the right approach, to have two forms where creation and update fields differ?

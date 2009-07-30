@@ -14,6 +14,19 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 </div>
 
 {% if is_me %}
+	<div class="groups">
+        <h2>{% trans "Your Groups" %}</h2>
+        {% if other_user.basegroup_set.all %}
+			<ul>
+            {% for group in other_user.basegroup_set.all %}
+                <li><a href="{% url group_detail group.slug %}">{{ group.name }}</a></li>
+            {% endfor %}
+			</ul>
+        {% else %}
+			{% url groups_index as groups_url %}
+            <p>{% blocktrans %}You are not yet a member of any <a href="{{ groups_url }}">groups</a>.{% endblocktrans %}</p>
+        {% endif %}
+    </div>
     <div class="friends">
         <h2>{% trans "Your Friends" %}</h2>
         {% if other_friends %}
@@ -34,6 +47,18 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
     </div>
 {% else %}
 	{% if is_friend or user.is_staff %}
+		<div class="groups">
+	        <h2>{% blocktrans %}{{ other_user }}'s Groups{% endblocktrans %}</h2>
+	        {% if other_user.basegroup_set.all %}
+				<ul>
+	            {% for group in other_user.basegroup_set.all %}
+	                <li><a href="{% url group_detail group.slug %}">{{ group.name }}</a></li>
+	            {% endfor %}
+				</ul>
+	        {% else %}
+	            <p>{% blocktrans %}Not yet a member of any groups.{% endblocktrans %}</p>
+	        {% endif %}
+	    </div>
 	    <div class="friends">
 	        <h2>{% blocktrans %}{{ other_user }}'s Friends{% endblocktrans %}</h2>
 	        <table width="100%">

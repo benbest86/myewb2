@@ -1,3 +1,13 @@
+"""myEWB base groups models declarations
+
+This file is part of myEWB
+Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
+Some code derived from Pinax, copyright 2008-2009 James Tauber and Pinax Team, licensed under the MIT License
+
+Last modified on 2009-07-29
+@author Joshua Gorner, Benjamin Best
+"""
+
 import datetime
 
 from django.core.urlresolvers import reverse
@@ -13,6 +23,9 @@ class BaseGroup(Group):
     Not intended to be instantiated by itself.
     """
     
+    model = models.CharField(_('group model'), max_length=500, null=True, blank=True)
+    parent = models.ForeignKey('self', related_name="children", verbose_name=_('parent'), null=True, blank=True)
+    
     member_users = models.ManyToManyField(User, through="GroupMember", verbose_name=_('members'))
     # TODO: parent groups
 	
@@ -20,18 +33,13 @@ class BaseGroup(Group):
     private = models.BooleanField(_('private'), default=False)
 	
     def user_is_member(self, user):
-        if GroupMember.objects.filter(group=self, user=user).count() > 0: # @@@ is there a better way?
-            return True
-        else:
-            return False
+        return (self.members.filter(user=user).count() > 0)
             
     def user_is_admin(self, user):
-        member_objects = GroupMember.objects.filter(group=self, user=user)
-        if member_objects.count() > 0:
-            member = member_objects[0]
-            return member.is_admin
-        else:
-            return False
+        return (self.members.filter(user=user, is_admin=True).count() > 0)
+
+    def get_absolute_url(self):
+        return reverse('group_detail', kwargs={'group_slug': self.slug})
 	
 	# TODO:
 	# mailing list

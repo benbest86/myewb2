@@ -1,3 +1,13 @@
+"""myEWB networks testing
+
+This file is part of myEWB
+Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
+Some code derived from Pinax, copyright 2008-2009 James Tauber and Pinax Team, licensed under the MIT License
+
+Last modified on 2009-07-29
+@author Joshua Gorner, Benjamin Best
+"""
+
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
@@ -17,8 +27,8 @@ else:
 from networks.models import Network, NetworkMember
 from networks.forms import NetworkForm, NetworkMemberForm
 
-from base_groups import member_views
-from base_groups.models import GroupMember, GroupLocation
+from base_groups.views import members
+from base_groups.models import BaseGroup, GroupMember, GroupLocation
 from base_groups.forms import GroupLocationForm
 
 TOPIC_COUNT_SQL = """
@@ -104,6 +114,8 @@ def network_detail(request, group_slug, form_class=NetworkForm, template_name='n
     is_member = request.user.is_authenticated() and network.user_is_member(request.user)
     is_admin = network.user_is_admin(request.user)
     
+    children = BaseGroup.objects.filter(parent=network)
+    
     # retrieve details
     if request.method == 'GET':
         return render_to_response(
@@ -112,6 +124,7 @@ def network_detail(request, group_slug, form_class=NetworkForm, template_name='n
                 'network': network,                
                 'is_member': is_member,
                 'is_admin': is_admin,
+                'children': children,
             },
             context_instance=RequestContext(request)
         )
@@ -124,7 +137,10 @@ def network_detail(request, group_slug, form_class=NetworkForm, template_name='n
             return render_to_response(
                 template_name,
                 {
-                    'network': network,
+                    'network': network,                
+                    'is_member': is_member,
+                    'is_admin': is_admin,
+                    'children': children,
                 },
                 context_instance=RequestContext(request)
             )
@@ -158,7 +174,12 @@ def edit_network(request, group_slug, form_class=NetworkForm, template_name='net
 
 @permission_required('networks.delete')
 def delete_network(request, group_slug, form_class=NetworkForm, detail_template_name='networks/network_detail.html'):
-    network = get_object_or_404(Network, slug=group_slug)
+    network = get_object_or_404(Network, slug=group_slug)    
+    is_member = request.user.is_authenticated() and network.user_is_member(request.user)
+    is_admin = network.user_is_admin(request.user)
+    
+    children = BaseGroup.objects.filter(parent=network)
+    
     group_member = GroupMember.objects.get(group=network, user=request.user)
     if request.method == 'POST':
         if group_member and group_member.is_admin:
@@ -171,6 +192,9 @@ def delete_network(request, group_slug, form_class=NetworkForm, detail_template_
                 detail_template_name,
                 {
                     'network': network,
+                    'is_member': is_member,
+                    'is_admin': is_admin,
+                    'children': children,
                 },
                 context_instance=RequestContext(request)
             )
@@ -224,19 +248,19 @@ def edit_network_location(request, group_slug, form_class=GroupLocationForm, tem
         
 def members_index(request, group_slug, form_class=NetworkMemberForm, template_name='networks/members_index.html', 
         new_template_name='networks/new_member.html'):
-    return member_views.members_index(request, Network, group_slug, form_class, template_name, new_template_name)
+    return members.members_index(request, group_slug, Network, form_class, template_name, new_template_name)
     
 def new_member(request, group_slug, form_class=NetworkMemberForm, template_name='networks/new_member.html',
         index_template_name='networks/members_index.html'):
-    return member_views.new_member(request, Network, group_slug, form_class, template_name, index_template_name)
+    return members.new_member(request, group_slug, Network, form_class, template_name, index_template_name)
     
 def member_detail(request, group_slug, username, form_class=NetworkMemberForm, template_name='networks/member_detail.html',
         edit_template_name='networks/edit_member.html'):
-    return member_views.member_detail(request, Network, group_slug, username, form_class, template_name, edit_template_name)
+    return members.member_detail(request, group_slug, username, Network, form_class, template_name, edit_template_name)
     
 def edit_member(request, group_slug, username, form_class=NetworkMemberForm, template_name='networks/edit_member.html',
         detail_template_name='networks/member_detail.html'):
-    return member_views.edit_member(request, Network, group_slug, username, form_class, template_name, detail_template_name)
+    return members.edit_member(request, group_slug, username, Network, form_class, template_name, detail_template_name)
     
 def delete_member(request, group_slug, username):
-    return member_views.delete_member(request, Network, group_slug, username)
+    return members.delete_member(request, group_slug, username, Network)

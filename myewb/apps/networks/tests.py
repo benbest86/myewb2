@@ -1,3 +1,12 @@
+"""myEWB networks testing
+
+This file is part of myEWB
+Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
+
+Last modified on 2009-07-29
+@author Joshua Gorner
+"""
+
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase

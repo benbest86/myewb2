@@ -49,8 +49,21 @@
         </p>
         
         <p>{{ network.description }}</p>
+
+		{% if network.parent %}
+			<p>{% trans "Parent:" %} <a href="{% url group_detail network.parent.slug %}">{{ network.parent.name }}</a></p>
+		{% endif %}
+		
+		{% if children.count %}
+			<p>{% trans "Child groups:" %}</p>
+			<ul>
+			{% for child in children %}
+				<li><a href="{% url group_detail child.slug %}">{{ child.name }}</a></li>
+			{% endfor %}
+			</ul>
+		{% endif %}
         
-        {% if perms.chapters.change %}
+        {% if perms.networks.change %}
 
 			<p><a href="{% url edit_network network.slug %}">{% trans "Edit details" %}</a></p>
             

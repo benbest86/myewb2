@@ -1,3 +1,13 @@
+"""myEWB networks management (notifications)
+
+This file is part of myEWB
+Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
+Some code derived from Pinax, copyright 2008-2009 James Tauber and Pinax Team, licensed under the MIT License
+
+Last modified on 2009-07-29
+@author Joshua Gorner
+"""
+
 from django.conf import settings
 from django.db.models import signals
 from django.utils.translation import ugettext_noop as _

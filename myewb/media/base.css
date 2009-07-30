@@ -358,6 +358,15 @@ div.tribes h2 {
     margin: 0 0 5px 0;
     padding: 0;
 }
+div.groups {
+    background: #FC9;
+    padding: 8px;
+    margin-bottom: 20px;
+}
+div.groups h2 {
+    margin: 0 0 5px 0;
+    padding: 0;
+}
 div.members {
     background: #FC9;
     padding: 8px;

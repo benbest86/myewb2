@@ -12,11 +12,6 @@
 
 {% block subnav %}
     <ul>
-		{% comment %}
-        {% if user.is_authenticated %}
-            <li><a href="{% url your_networks %} ">{% trans "Your Networks" %}</a></li>
-        {% endif %}
-		{% endcomment %}
         <li><a href="{% url networks_index %}">{% trans "All Networks" %}</a></li>
     </ul>
 {% endblock %}
