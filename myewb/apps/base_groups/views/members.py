@@ -87,7 +87,7 @@ def new_member(request, group_slug, group_model=None, form_class=GroupMemberForm
     group = get_object_or_404(group_model, slug=group_slug)
     
     if request.method == 'POST':
-        return members_index(request, group_slug, form_class, group_model, index_template_name, template_name)
+        return members_index(request, group_slug, group_model, form_class, index_template_name, template_name)
     form = form_class()
     return render_to_response(
         template_name,

@@ -55,4 +55,4 @@ urlpatterns = patterns('networks.views',
     url(r'^(?P<group_slug>[-\w]+)/members/(?P<username>[\w\._-]+)/delete/$', 'delete_member', name='network_delete_member',),
 )
 
-urlpatterns += bridge.include_urls('topics.urls', r'^network/(?P<group_slug>[-\w]+)/topics/')
+urlpatterns += bridge.include_urls('topics.urls', r'^(?P<group_slug>[-\w]+)/topics/')

@@ -17,8 +17,9 @@
     
     {% paginate %}
     
+    <h2>{% trans "New Topic" %}</h2>
+
     {% if is_member %}
-        <h2>{% trans "New Topic" %}</h2>
         
         <form class="uniForm" method="POST" action="">
             <fieldset class="inlineLabels">
@@ -29,6 +30,12 @@
                 </div>
             </fieldset>
         </form>
+    {% else %}
+    <p> 
+        {% trans "You must be a member of this network to add new topics. Please " %}
+        <a href="{% url network_new_member group.slug %}">{% trans "join" %}</a>
+        {% trans " if you wish to create topics." %}
+    </p>
     {% endif %}
     
 {% endblock %}
