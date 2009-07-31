@@ -12,8 +12,8 @@
 			"last_login": "2009-03-31 19:11:56",
 			"groups": [],
 			"user_permissions": [],
-			"password": "sha1$a75af$7b2c7b5e7ac635e80477fece6291508d6af30b9d",
-			"email": "",
+			"password": "sha1$7bd83$fefdb3f02366048ce73773764b8a7dfa39489195",
+			"email": "bob@roberts.com",
 			"date_joined": "2009-03-31 15:14:06"
 		}
 	},
@@ -30,7 +30,43 @@
 			"last_login": "2009-03-31 19:11:56",
 			"groups": [],
 			"user_permissions": [],
-			"password": "sha1$a75af$7b2c7b5e7ac635e80477fece6291508d6af30b9d",
+			"password": "sha1$7bd83$fefdb3f02366048ce73773764b8a7dfa39489195",
+			"email": "joe@smith.com",
+			"date_joined": "2009-03-31 15:14:06"
+		}
+	},	
+	{
+		"pk": 3,
+		"model": "auth.user",
+		"fields": {
+			"username": "ben",
+			"first_name": "Ben",
+			"last_name": "Best",
+			"is_active": true,
+			"is_superuser": false,
+			"is_staff": false,
+			"last_login": "2009-03-31 19:11:56",
+			"groups": [],
+			"user_permissions": [],
+			"password": "sha1$7bd83$fefdb3f02366048ce73773764b8a7dfa39489195",
+			"email": "ben.best@gmail.com",
+			"date_joined": "2009-03-31 15:14:06"
+		}
+	},	
+	{
+		"pk": 4,
+		"model": "auth.user",
+		"fields": {
+			"username": "ben_noemail",
+			"first_name": "Ben",
+			"last_name": "Best",
+			"is_active": true,
+			"is_superuser": false,
+			"is_staff": false,
+			"last_login": "2009-03-31 19:11:56",
+			"groups": [],
+			"user_permissions": [],
+			"password": "sha1$7bd83$fefdb3f02366048ce73773764b8a7dfa39489195",
 			"email": "",
 			"date_joined": "2009-03-31 15:14:06"
 		}
@@ -60,6 +96,19 @@
 			"model": "network"
         }
     },
+    {
+        "pk": 3,
+        "model": "base_groups.basegroup",
+        "fields": {
+            "slug": "ewb",
+			"name": "Engineers Without Borders",
+			"description": "The National Network",
+			"private": false,
+			"creator": 1,
+			"created": "2009-07-18 12:35:56",
+			"model": "network"
+        }
+    },
 	{
         "pk": 1,
         "model": "base_groups.grouplocation",
@@ -72,6 +121,13 @@
         "model": "base_groups.grouplocation",
         "fields": {
 			"group": 2
+        }
+    },
+	{
+        "pk": 3,
+        "model": "base_groups.grouplocation",
+        "fields": {
+			"group": 3
         }
     },
 	{
@@ -88,7 +144,15 @@
 			"basegroup_ptr": 2,
 			"network_type": "U"
         }
+    }, {
+        "pk": 3,
+        "model": "networks.network",
+        "fields": {
+			"basegroup_ptr": 3,
+			"network_type": "N"
+        }
     },
+
 	{
 		"pk": 1,
 		"model": "base_groups.groupmember",
@@ -111,6 +175,56 @@
 		}
 	},
 	{
+		"pk": 3,
+		"model": "base_groups.groupmember",
+		"fields": {
+			"group": 3,
+			"user": 1,
+			"is_admin": false,
+			"joined": "2009-07-19 12:34:57"
+		}
+	},
+	{
+		"pk": 4,
+		"model": "base_groups.groupmember",
+		"fields": {
+			"group": 3,
+			"user": 2,
+			"is_admin": false,
+			"joined": "2009-07-19 12:34:57"
+		}
+	},
+	{
+		"pk": 5,
+		"model": "base_groups.groupmember",
+		"fields": {
+			"group": 3,
+			"user": 3,
+			"is_admin": false,
+			"joined": "2009-07-19 12:34:57"
+		}
+	},
+	{
+		"pk": 6,
+		"model": "base_groups.groupmember",
+		"fields": {
+			"group": 3,
+			"user": 4,
+			"is_admin": false,
+			"joined": "2009-07-19 12:34:57"
+		}
+	},
+	{
+		"pk": 7,
+		"model": "base_groups.groupmember",
+		"fields": {
+			"group": 2,
+			"user": 3,
+			"is_admin": false,
+			"joined": "2009-07-19 12:34:57"
+		}
+	},
+	{
 		"pk": 1,
 		"model": "networks.networkmember",
 		"fields": {
@@ -122,6 +236,41 @@
 		"model": "networks.networkmember",
 		"fields": {
 			"groupmember_ptr": 2
+		}
+	},
+	{
+		"pk": 3,
+		"model": "networks.networkmember",
+		"fields": {
+			"groupmember_ptr": 3
+		}
+	},
+	{
+		"pk": 4,
+		"model": "networks.networkmember",
+		"fields": {
+			"groupmember_ptr": 4
+		}
+	},
+	{
+		"pk": 5,
+		"model": "networks.networkmember",
+		"fields": {
+			"groupmember_ptr": 5
+		}
+	},
+	{
+		"pk": 6,
+		"model": "networks.networkmember",
+		"fields": {
+			"groupmember_ptr": 6
+		}
+	},
+	{
+		"pk": 7,
+		"model": "networks.networkmember",
+		"fields": {
+			"groupmember_ptr": 7
 		}
 	}
 ]

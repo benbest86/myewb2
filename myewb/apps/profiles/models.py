@@ -12,7 +12,7 @@ Last modified: 2009-07-01
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_save
 from django.utils.translation import ugettext_lazy as _
 
 from emailconfirmation.models import EmailAddress
@@ -142,6 +142,18 @@ def create_member_profile(sender, instance=None, **kwargs):
 
 post_save.disconnect(create_profile, sender=User)
 post_save.connect(create_member_profile, sender=User)
+
+def set_primary_email(sender, instance=None, **kwargs):
+    """
+    Automatically sets a verified email to primary if no verified address exists yet.
+    """
+    if instance is not None and instance.verified and instance.primary == False:
+        user = instance.user
+        # if we only have one email it is this one
+        if user.emailaddress_set.count() == 1:
+            instance.set_as_primary()
+
+post_save.connect(set_primary_email, sender=EmailAddress)
     
 class StudentRecordManager(models.Manager):
     def get_from_view_args(self, **kwargs):

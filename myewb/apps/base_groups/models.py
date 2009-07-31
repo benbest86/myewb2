@@ -13,7 +13,8 @@ import datetime
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import  User
 from django.utils.translation import ugettext_lazy as _
-from django.db import models
+from django.db import models, connection
+from django.core.mail import EmailMessage
 
 from groups.base import Group
 
@@ -40,6 +41,31 @@ class BaseGroup(Group):
 
     def get_absolute_url(self):
         return reverse('group_detail', kwargs={'group_slug': self.slug})
+
+    def get_member_emails(self):
+        members_with_emails = self.members.select_related(depth=1).exclude(user__email='')
+        return [member.user.email for member in members_with_emails]
+
+    def send_mail_to_members(self, subject, body, html=False, fail_silently=False):
+        """
+        Creates and sends an email to all members of a network using Django's
+        EmailMessage.
+        Takes in a a subject and a message and an optional fail_silently flag.
+        Automatically sets:
+        from_email: group_name <group_slug@ewb.ca>
+        to: list-group_slug@ewb.ca
+        bcc: list of member emails
+        """
+        msg = EmailMessage(
+                subject=subject, 
+                body=body, 
+                from_email='%s <%s@ewb.ca>' % (self.name, self.slug), 
+                to=['list-%s@ewb.ca' % self.slug],
+                bcc=self.get_member_emails(),
+                )
+        if html:
+            msg.content_subtype = "html"
+        msg.send(fail_silently=fail_silently)
 	
 	# TODO:
 	# mailing list

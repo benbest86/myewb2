@@ -14,6 +14,8 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
 
+from emailconfirmation.models import EmailAddress
+
 from profiles.forms import ProfileForm, StudentRecordForm
 from profiles.models import MemberProfile, StudentRecord
 
@@ -166,3 +168,46 @@ class TestMemberProfileForm(TestCase):
     def test_is_student_no_dates(self):
         # "jane" has a student record with no dates indicated
         self.assertEquals(True, self.profile_four.student())
+
+class TestEmailVerification(TestCase):
+    fixtures = ['test_member_profiles.json']
+
+    def setUp(self):
+        self.joe = User.objects.get(username='joe')
+
+    def tearDown(self):
+        pass
+
+    def test_verify_email(self):
+        email_address = EmailAddress.objects.create(user=self.joe, email='joe@joe.com')
+        # address added but not verified, User email should still be blank
+        self.assertEquals(self.joe.email, '')
+        email_address.verified = True
+        email_address.save()
+        self.assertEquals(email_address.primary, True)
+    
+    def test_add_second_email(self):
+        email_address = EmailAddress.objects.create(user=self.joe, email='joe@joe.com', verified=True)
+
+        # add a second email address
+        other_email_address = EmailAddress.objects.create(user=self.joe, email='joe@otherdomain.com', verified=True)
+
+        # primary address should not change
+        self.joe = User.objects.get(pk=self.joe.pk)
+        self.assertEquals(self.joe.email, 'joe@joe.com')
+        other_email_address = EmailAddress.objects.get(pk=other_email_address.pk)
+        self.assertEquals(other_email_address.primary, False)
+
+    def test_set_change_primary(self):
+        email_address = EmailAddress.objects.create(user=self.joe, email='joe@joe.com', verified=True)
+        other_email_address = EmailAddress.objects.create(user=self.joe, email='joe@otherdomain.com', verified=True)
+
+        # set second email address as primary
+        other_email_address.set_as_primary()
+        # should update user's email
+        self.joe = User.objects.get(pk=self.joe.pk)
+        self.assertEquals(self.joe.email, 'joe@otherdomain.com')
+        email_address = EmailAddress.objects.get(pk=email_address.pk)
+        self.assertEquals(email_address.primary, False)
+
+

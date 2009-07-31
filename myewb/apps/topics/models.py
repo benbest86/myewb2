@@ -33,6 +33,7 @@ class Topic(models.Model):
     created = models.DateTimeField(_('created'), default=datetime.now)
     modified = models.DateTimeField(_('modified'), default=datetime.now) # topic modified when commented on
     body = models.TextField(_('body'), blank=True)
+    send_as_email = models.BooleanField(_('send as email'), default=False)
     
     tags = TagField()
     
@@ -47,6 +48,10 @@ class Topic(models.Model):
     class Meta:
         ordering = ('-modified', )
 
+def send_topic_email(sender, instance, **kwargs):
+    if instance.send_as_email:
+        instance.group.send_mail_to_members(instance.title, instance.body)
+models.signals.post_save.connect(send_topic_email, sender=Topic)
 
 def new_comment(sender, instance, **kwargs):
     if isinstance(instance.content_object, Topic):
