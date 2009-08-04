@@ -62,12 +62,12 @@ def groups_index(request, template_name='base_groups/groups_index.html'):
 
 def group_detail(request, group_slug):
     group = get_object_or_404(BaseGroup, slug=group_slug)
-    return HttpResponseRedirect(reverse("%s_detail" % group.model, kwargs={'group_slug': group_slug}))
+    return HttpResponseRedirect(reverse("%s_detail" % group.model.lower(), kwargs={'group_slug': group_slug}))
 
 def edit_group(request, group_slug):
     group = get_object_or_404(BaseGroup, slug=group_slug)
-    return HttpResponseRedirect(reverse("edit_%s" % group.model, kwargs={'group_slug': group_slug}))
+    return HttpResponseRedirect(reverse("edit_%s" % group.model.lower(), kwargs={'group_slug': group_slug}))
 
 def delete_group(request, group_slug):
     group = get_object_or_404(BaseGroup, slug=group_slug)
-    return HttpResponseRedirect(reverse("delete_%s" % group.model, kwargs={'group_slug': group_slug}))
+    return HttpResponseRedirect(reverse("delete_%s" % group.model.lower(), kwargs={'group_slug': group_slug}))

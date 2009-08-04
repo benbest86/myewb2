@@ -9,6 +9,7 @@ Last modified on 2009-07-29
 """
 
 import datetime
+import re
 
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import  User
@@ -70,6 +71,35 @@ class BaseGroup(Group):
 	# TODO:
 	# mailing list
 	# list of members (NOT CSV)
+
+    def save(self, force_insert=False, force_update=False):
+        # if we are updating a group, don't change the slug (for consistency)
+        if not self.id:
+            slug = self.slug
+            slug = slug.replace(' ', '-')
+            # FIXME: anything else we need to escape??
+            #(?P<group_slug>[-\w]+) yes, lots of things. This is the
+            # regex definition of a slug so if we don't match on this we 
+            # should remove illegal characters.
+            match = re.match(r'[-\w]+', slug)
+            if match is None or not match.group(0) == slug:
+                slug = re.sub(r'[^-\w]+', '', slug)
+            
+            # check if slug is in use; increment until we find a good one.
+            # (is there anything better than numerical incrementing?)
+            temp_groups = BaseGroup.objects.filter(slug__contains=slug, model=self.model)
+
+            if (temp_groups.count() != 0):
+                slugs = [n.slug for n in temp_groups]
+                old_slug = slug
+                i = 0
+                while slug in slugs:
+                    i = i + 1
+                    slug = old_slug + "%d" % (i, )
+            self.slug = slug
+        super(BaseGroup, self).save(force_insert=force_insert, force_update=force_update)
+
+
 	
 class GroupMember(models.Model):
     group = models.ForeignKey(BaseGroup, related_name="members", verbose_name=_('group'))

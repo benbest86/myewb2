@@ -33,7 +33,7 @@ class Network(BaseGroup):
         return {'group_slug': self.slug}
         
     def save(self, force_insert=False, force_update=False):
-        self.model = "network"
+        self.model = "Network"
         return super(Network, self).save(force_insert, force_update)
         
 class NetworkMember(GroupMember):

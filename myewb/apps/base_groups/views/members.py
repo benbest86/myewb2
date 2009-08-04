@@ -4,7 +4,7 @@ This file is part of myEWB
 Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
 Some code derived from Pinax, copyright 2008-2009 James Tauber and Pinax Team, licensed under the MIT License
 
-Last modified on 2009-07-29
+Last modified on 2009-08-02
 @author Joshua Gorner, Benjamin Best
 """
 
@@ -25,7 +25,7 @@ def members_index(request, group_slug, group_model=None, form_class=GroupMemberF
     # handle generic call
     if group_model is None:
         group = get_object_or_404(BaseGroup, slug=group_slug)
-        return HttpResponseRedirect(reverse('%s_members_index' % group.model, kwargs={'group_slug': group_slug}))
+        return HttpResponseRedirect(reverse('%s_members_index' % group.model.lower(), kwargs={'group_slug': group_slug}))
         
     user = request.user    
         
@@ -81,8 +81,7 @@ def new_member(request, group_slug, group_model=None, form_class=GroupMemberForm
     # handle generic call
     if group_model is None:
         group = get_object_or_404(BaseGroup, slug=group_slug)
-        model_name = group.model
-        return HttpResponseRedirect(reverse('%s_new_member' % group.model, kwargs={'group_slug': group_slug}))    
+        return HttpResponseRedirect(reverse('%s_new_member' % group.model.lower(), kwargs={'group_slug': group_slug}))    
         
     group = get_object_or_404(group_model, slug=group_slug)
     
@@ -104,7 +103,7 @@ def member_detail(request, group_slug, username, group_model=None, form_class=Gr
     # handle generic call
     if group_model is None:
         group = get_object_or_404(BaseGroup, slug=group_slug)
-        return HttpResponseRedirect(reverse('%s_member_detail' % group.model, kwargs={'group_slug': group_slug, 'username': username}))    
+        return HttpResponseRedirect(reverse('%s_member_detail' % group.model.lower(), kwargs={'group_slug': group_slug, 'username': username}))    
         
     group = get_object_or_404(group_model, slug=group_slug)
     user = get_object_or_404(User, username=username)
@@ -154,7 +153,7 @@ def edit_member(request, group_slug, username, group_model=None, form_class=Grou
     # handle generic call
     if group_model is None:
         group = get_object_or_404(BaseGroup, slug=group_slug)
-        return HttpResponseRedirect(reverse('%s_edit_member' % group.model, kwargs={'group_slug': group_slug, 'username': username}))         
+        return HttpResponseRedirect(reverse('%s_edit_member' % group.model.lower(), kwargs={'group_slug': group_slug, 'username': username}))         
     
     group = get_object_or_404(group_model, slug=group_slug)
     user = get_object_or_404(User, username=username)
@@ -179,12 +178,12 @@ def delete_member(request, group_slug, username, group_model=None):
     # handle generic call
     if group_model is None:
         group = get_object_or_404(BaseGroup, slug=group_slug)
-        return HttpResponseRedirect(reverse('%s_delete_member' % group.model, kwargs={'group_slug': group_slug, 'username': username}))
+        return HttpResponseRedirect(reverse('%s_delete_member' % group.model.lower(), kwargs={'group_slug': group_slug, 'username': username}))
         
     group = get_object_or_404(group_model, slug=group_slug)
     user = get_object_or_404(User, username=username)
     member = get_object_or_404(GroupMember, group=group, user=user)
     if request.method == 'POST':
         member.delete()
-        return HttpResponseRedirect(reverse('%s_members_index' % group_model._meta.module_name, kwargs={'group_slug': group_slug,}))
+        return HttpResponseRedirect(reverse('%s_members_index' % group.model.lower(), kwargs={'group_slug': group_slug,}))
     

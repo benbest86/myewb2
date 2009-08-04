@@ -25,7 +25,10 @@ urlpatterns = patterns('networks.views',
     # GET - new network form
     # POST - create network (redirects to 'networks_index'
     url(r'^new/$', 'new_network', name='new_network',),
-
+    
+    # GET - ajax list of matching groups
+    url(r'^ajax/(?P<network_type>[-\w]+)/$', 'ajax_search', name='ajax_search_network',),
+    
     # GET - retrieve network detail
     # POST - update network
     url(r'^(?P<group_slug>[-\w]+)/$', 'network_detail', name='network_detail',),

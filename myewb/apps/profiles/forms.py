@@ -4,8 +4,8 @@ This file is part of myEWB
 Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
 
 Created on 2009-06-22
-Last modified on 2009-07-01
-@author Joshua Gorner
+Last modified on 2009-07-31
+@author Joshua Gorner, Francis Kung, Ben Best
 """
 from django import forms
 from profiles.models import MemberProfile, StudentRecord, WorkRecord
@@ -23,10 +23,10 @@ class StudentRecordForm(forms.ModelForm):
 	"""Add/edit form for the StudentRecord class."""
 	class Meta:
 		model = StudentRecord
-		exclude = ('user')
+		exclude = ('user', 'network')
         
 class WorkRecordForm(forms.ModelForm):
 	"""Add/edit form for the StudentRecord class."""
 	class Meta:
 		model = WorkRecord
-		exclude = ('user')
+		exclude = ('user', 'network')

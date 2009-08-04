@@ -264,3 +264,19 @@ def edit_member(request, group_slug, username, form_class=NetworkMemberForm, tem
     
 def delete_member(request, group_slug, username):
     return members.delete_member(request, group_slug, username, Network)
+    
+def ajax_search(request, network_type):
+    search_term = request.GET.get('q', '')
+    networks = []
+    
+    if search_term:
+        # TODO: implement public/private visibility
+        networks = Network.objects.all()
+        networks = networks.filter(name__icontains=search_term)
+        networks = networks.filter(network_type__iexact=network_type)
+        networks = networks.order_by("name")
+    
+    return render_to_response('networks/ajax_search.html', {
+        "networks": networks        
+    }, context_instance=RequestContext(request))
+    

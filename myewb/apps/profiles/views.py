@@ -5,7 +5,7 @@ This file is part of myEWB
 Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
 
 Created on: 2009-06-22
-Last modified: 2009-07-21
+Last modified: 2009-08-02
 @author: Joshua Gorner, Francis Kung, Ben Best
 """
 
@@ -19,6 +19,9 @@ from django.contrib.auth.models import User
 from siteutils.decorators import owner_required
 from profiles.models import MemberProfile, StudentRecord, WorkRecord
 from profiles.forms import StudentRecordForm, WorkRecordForm
+
+from networks.models import Network
+from base_groups.models import GroupMember
 
 def profiles(request, template_name="profiles/profiles.html"):
     search_terms = request.GET.get('search', '')
@@ -54,6 +57,29 @@ def create_student_record(request, username, object=None):
     if form.is_valid():
         student_record = form.save(commit=False)
         student_record.user = other_user
+        
+        # find network ID (based on name they entered)
+        # TODO: remove from network when someone ends their employment
+        institution = form.cleaned_data['institution']
+        networks = Network.objects.filter(name=institution)
+        # networks = networks.filter(network_type='U')
+        
+        if networks.count() == 0:
+            network = Network(network_type='U', slug=institution,
+                              name=institution,
+                              creator=other_user)
+            network.save()
+        else:
+            network = networks[0]
+
+        existing_members=GroupMember.objects.filter(group=network, user=other_user)
+        if existing_members.count() == 0:
+            network_member = GroupMember(group=network, user=other_user, is_admin=False)
+            network.members.add(network_member)
+            network_member.save()
+
+        student_record.network = network
+        
         student_record.save()
         return HttpResponseRedirect(reverse('profile_detail', kwargs={'username': other_user.username }))
         
@@ -176,6 +202,32 @@ def create_work_record(request, username, object=None):
     if form.is_valid():
         work_record = form.save(commit=False)
         work_record.user = other_user
+        
+        employer = form.cleaned_data['employer']
+        # find network ID (based on name they entered)
+        # TODO: remove from network when someone ends their employment
+        networks = Network.objects.filter(name=employer)
+        # networks = networks.filter(network_type='C')
+        
+        if networks.count() == 0:
+            # FIXME: this is duplicated in networks.views.networks_index
+            # (refactor to centralize)
+            # also kinda dupicated below, create_work_record
+            network = Network(network_type='C', slug=employer,
+                              name=employer,
+                              creator=other_user)
+            network.save()
+        else:
+            network = networks[0]
+
+        existing_members=GroupMember.objects.filter(group=network, user=other_user)
+        if existing_members.count() == 0:
+            network_member = GroupMember(group=network, user=other_user, is_admin=False)
+            network.members.add(network_member)
+            network_member.save()
+
+        work_record.network = network
+        
         work_record.save()
         return HttpResponseRedirect(reverse('profile_detail', kwargs={'username': other_user.username }))
 

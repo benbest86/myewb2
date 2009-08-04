@@ -5,8 +5,8 @@ This file is part of myEWB
 Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
 
 Created on: 2009-06-22
-Last modified: 2009-07-01
-@author: Joshua Gorner
+Last modified: 2009-07-31
+@author: Joshua Gorner, Francis Kung, Ben Best
 """
 
 from django.db import models
@@ -18,6 +18,7 @@ from django.utils.translation import ugettext_lazy as _
 from emailconfirmation.models import EmailAddress
 
 from pinax.apps.profiles.models import Profile, create_profile
+from networks.models import Network
 from countries import COUNTRIES
 from datetime import date
 
@@ -168,6 +169,7 @@ class StudentRecord(models.Model):
     """
     
     user = models.ForeignKey(User, verbose_name=_('user'))
+    network = models.ForeignKey(Network, verbose_name=_('network'))
     
     institution = models.CharField(_('institution'), max_length=50, null=True, blank=True)
     student_number = models.IntegerField(_('student number'), null=True, blank=True)
@@ -205,7 +207,8 @@ class WorkRecord(models.Model):
     """ Represents a record of a member's current or past employment. A member may have one or more such records.
     """
     
-    user = models.ForeignKey(User, unique=True, verbose_name=_('user'))
+    user = models.ForeignKey(User, verbose_name=_('user'))
+    network = models.ForeignKey(Network, verbose_name=_('network'))
     
     employer = models.CharField(_('employer'), max_length=50, null=True, blank=True)
     sector = models.CharField(_('sector'), max_length=40, null=True, blank=True)

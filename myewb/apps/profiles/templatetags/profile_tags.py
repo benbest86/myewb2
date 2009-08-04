@@ -4,8 +4,8 @@ This file is part of myEWB
 Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
 
 Created on: 2009-06-30
-Last modified: 2009-07-21
-@author: Joshua Gorner
+Last modified: 2009-07-31
+@author: Joshua Gorner, Francis Kung
 """
 from django import template
 from django.contrib.auth.models import User
@@ -15,29 +15,30 @@ from profiles.models import StudentRecord, WorkRecord
 
 register = template.Library()
 
-def show_student_record(user, record_id, is_me):
-    """Used with the student_record template to display a single record."""
-    record = get_object_or_404(StudentRecord, id=record_id)
-    return {"user": user, "record": record, "is_me": is_me}
-register.inclusion_tag("profiles/student_record.html")(show_student_record)
-
 def show_student_records(user, is_me):
     """Used with the student_records template to display all of the user's student records."""
     records = StudentRecord.objects.filter(user=user)
     return {"user": user, "records": records, "is_me": is_me}
 register.inclusion_tag("profiles/student_records.html")(show_student_records)
 
-def show_work_record(user, record_id, is_me):
-    """Used with the work_record template to display a single record."""
-    record = get_object_or_404(WorkRecord, id=record_id)
-    return {"user": user, "record": record, "is_me": is_me}
-register.inclusion_tag("profiles/work_record.html")(show_work_record)
+def show_student_records_js(user, is_me):
+    """Used with the above function, but called from the javascript block"""
+    """ does this result in a second db query? that'd be bad =( can we save the list from above? """
+    records = StudentRecord.objects.filter(user=user)
+    return {"user": user, "records": records, "is_me": is_me}
+register.inclusion_tag("profiles/student_records_js.html")(show_student_records_js)
 
 def show_work_records(user, is_me):
     """Used with the work_records template to display all of the user's work records."""
     records = WorkRecord.objects.filter(user=user)
     return {"user": user, "records": records, "is_me": is_me}
 register.inclusion_tag("profiles/work_records.html")(show_work_records)
+
+def show_work_records_js(user, is_me):
+    """See above"""
+    records = WorkRecord.objects.filter(user=user)
+    return {"user": user, "records": records, "is_me": is_me}
+register.inclusion_tag("profiles/work_records_js.html")(show_work_records_js)
 
 def show_profile_search(search_terms):
     """Load and show the profile search box (really, only here for consistency)"""

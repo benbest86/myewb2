@@ -39,3 +39,12 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
         <p>{% blocktrans %}This option is not available unless you are logged in. <a href="{{ signup_url }}">Sign up</a> or <a href="{{ login_url }}">log in</a>.{% endblocktrans %}</p>
 	{% endif %}
 {% endblock %}
+
+{% block extra_body %}
+	    <script type="text/javascript" src="{{ MEDIA_URL }}jquery.autocomplete.min.js"></script>
+        <script type="text/javascript">
+	        $(document).ready(function() {
+        		$('#id_institution').autocomplete('/networks/ajax/u/');
+        		});
+        </script>
+{%endblock %}
