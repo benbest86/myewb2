@@ -1,4 +1,0 @@
-{% load i18n %}{% blocktrans with network.get_absolute_url as network_url %}{{ user }} has joined the network {{ network }}.
-
-http://{{ current_site }}{{ network_url }}
-{% endblocktrans %}

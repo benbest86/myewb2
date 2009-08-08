@@ -28,13 +28,13 @@ class Network(BaseGroup):
     
     def get_absolute_url(self):
         return reverse('network_detail', kwargs={'group_slug': self.slug})
-    
-    def get_url_kwargs(self):
-        return {'group_slug': self.slug}
         
     def save(self, force_insert=False, force_update=False):
         self.model = "Network"
         return super(Network, self).save(force_insert, force_update)
+        
+    class Meta:
+        verbose_name_plural = "networks"
         
 class NetworkMember(GroupMember):
     parent_model = Network

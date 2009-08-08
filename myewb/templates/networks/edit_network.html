@@ -7,18 +7,19 @@
 {% load pagination_tags %}
 {% load extra_tagging_tags %}
 {% load networks_tags %}
+{% load base_groups_tags %}
 {% load group_tags %}
 {% load topics_tags %}
 
-{% block head_title %}{{ network.name }}{% endblock %}
+{% block head_title %}{{ group.name }}{% endblock %}
 
 {% block body %}
     
     <div style="width: 550px;">
         
-        <h1>{% trans "Network" %} {{ network.name }}</h1>
+        <h1>{% trans "Network" %} {{ group.name }}</h1>
         
-        <p>{{ network.description }}</p>
+        <p>{{ group.description }}</p>
             
             <form class="uniForm" id="edit-network" method="POST" action="">
                 <fieldset class="inlineLabels">

@@ -69,7 +69,6 @@ class BaseGroup(Group):
         msg.send(fail_silently=fail_silently)
 	
 	# TODO:
-	# mailing list
 	# list of members (NOT CSV)
 
     def save(self, force_insert=False, force_update=False):
@@ -99,6 +98,8 @@ class BaseGroup(Group):
             self.slug = slug
         super(BaseGroup, self).save(force_insert=force_insert, force_update=force_update)
 
+    def get_url_kwargs(self):
+        return {'group_slug': self.slug}
 
 	
 class GroupMember(models.Model):

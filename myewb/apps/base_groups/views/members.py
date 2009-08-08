@@ -20,8 +20,7 @@ from django.utils.datastructures import SortedDict
 from base_groups.models import BaseGroup, GroupMember
 from base_groups.forms import GroupMemberForm
 
-def members_index(request, group_slug, group_model=None, form_class=GroupMemberForm,
-        template_name='base_groups/members_index.html', new_template_name='base_groups/new_member.html'):
+def members_index(request, group_slug, group_model=None, form_class=None, template_name=None, new_template_name=None):
     # handle generic call
     if group_model is None:
         group = get_object_or_404(BaseGroup, slug=group_slug)
@@ -76,8 +75,7 @@ def members_index(request, group_slug, group_model=None, form_class=GroupMemberF
             )
 
 @login_required
-def new_member(request, group_slug, group_model=None, form_class=GroupMemberForm,
-        template_name='base_groups/new_member.html', index_template_name='base_groups/members_index.html'):
+def new_member(request, group_slug, group_model=None, form_class=None, template_name=None, index_template_name=None):
     # handle generic call
     if group_model is None:
         group = get_object_or_404(BaseGroup, slug=group_slug)
@@ -98,8 +96,7 @@ def new_member(request, group_slug, group_model=None, form_class=GroupMemberForm
         context_instance=RequestContext(request),
     )
 
-def member_detail(request, group_slug, username, group_model=None, form_class=GroupMemberForm, 
-        template_name='base_groups/member_detail.html', edit_template_name='base_groups/edit_member.html'):
+def member_detail(request, group_slug, username, group_model=None, form_class=None, template_name=None, edit_template_name=None):
     # handle generic call
     if group_model is None:
         group = get_object_or_404(BaseGroup, slug=group_slug)
@@ -148,8 +145,7 @@ def member_detail(request, group_slug, username, group_model=None, form_class=Gr
             )
 
 @login_required
-def edit_member(request, group_slug, username, group_model=None, form_class=GroupMemberForm, 
-        template_name='base_groups/edit_member.html', detail_template_name='base_groups/member_detail.html'):
+def edit_member(request, group_slug, username, group_model=None, form_class=None, template_name=None, detail_template_name=None):
     # handle generic call
     if group_model is None:
         group = get_object_or_404(BaseGroup, slug=group_slug)
