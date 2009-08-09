@@ -1,0 +1,20 @@
+"""myEWB communities URLs
+
+This file is part of myEWB
+Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
+
+Last modified on 2009-08-07
+@author Joshua Gorner
+"""
+
+from django.conf.urls.defaults import *
+
+from communities.models import Community
+
+from groups.bridge import ContentBridge
+from base_groups.helpers import group_url_patterns
+
+bridge = ContentBridge(Community, 'communities')
+
+urlpatterns = group_url_patterns(Community)    
+urlpatterns += bridge.include_urls('topics.urls', r'^(?P<group_slug>[-\w]+)/topics/')

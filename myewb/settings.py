@@ -172,6 +172,7 @@ INSTALLED_APPS = (
     'groups',
     'base_groups',
     'networks',
+    'communities',
     
     'django.contrib.admin',
 

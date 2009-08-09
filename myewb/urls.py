@@ -54,6 +54,7 @@ urlpatterns = patterns('',
     
     (r'^groups/', include('base_groups.urls')),
     (r'^networks/', include('networks.urls')),
+    (r'^communities/', include('communities.urls')),
     
     (r'^feeds/tweets/(.*)/$', 'django.contrib.syndication.views.feed', tweets_feed_dict),
     (r'^feeds/posts/(.*)/$', 'django.contrib.syndication.views.feed', blogs_feed_dict),

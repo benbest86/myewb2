@@ -1,0 +1,45 @@
+{% extends "communities/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+{% load avatar_tags %}
+{% load threadedcommentstags %}
+{% load pagination_tags %}
+{% load extra_tagging_tags %}
+{% load group_tags %}
+{% load topics_tags %}
+
+{% block head_title %}{{ group.name }}{% endblock %}
+
+{% block body %}
+    
+    <div style="width: 550px;">
+        
+		<p><a href="{% url community_detail group.slug %}">{{ group.name }}</a> - <a href="{% url community_members_index group.slug %}">{% trans "Members" %}</a></p>
+        <h1>			
+			{% if member.user.get_profile.name %}
+				{{ member.user.get_profile.name }}
+			{% else %}
+				{{ member.user.username }}
+			{% endif %}
+		</h1>
+        
+        <p>
+            {% if member.is_admin %}{% trans "Title:" %} <tt>{{ member.admin_title }}</tt><br />{% endif %}
+            {% trans "Administrator:" %} {% if member.is_admin %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}<br />
+            {% trans "Joined:" %} {{ member.joined|date }}
+            <br />
+        </p>
+        
+        {% ifequal user member.user %}
+
+			<p><a href="{% url community_edit_member group.slug member.user.username %}">{% trans "Edit details" %}</a></p>
+            
+        {% endifequal %}
+        
+
+        
+       
+    </div>
+
+{% endblock %}

@@ -1,0 +1,190 @@
+{% extends "communities/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+{# % load wiki_tags % #}
+{% load wiki %}
+{% load wikiurl %}
+{% load avatar_tags %}
+{% load threadedcommentstags %}
+{% load pagination_tags %}
+{% load extra_tagging_tags %}
+{% load communities_tags %}
+{% load base_groups_tags %}
+{% load group_tags %}
+{% load topics_tags %}
+
+{% block head_title %}{{ group.name }}{% endblock %}
+
+{% block body %}
+    
+    {% if user.is_authenticated %}
+        <div class="right_panel">
+            <div class="members">
+                <h2>{% trans "Members" %}</h2>
+                <table width="100%">
+                    {% for member in group.members.all %}
+                        {% if forloop.counter0|divisibleby:"3" %}<tr>{% endif %}
+                        <td>
+                            <div class="avatar">{% avatar member.user 40 %}</div>
+                            <div class="details"><a href="{% url profile_detail member.user.username %}" title="{{ member.user.username }}">{{ member.user.username }}</a></div>
+                        </td>
+                        {% if forloop.counter0|add:"1"|divisibleby:"3" %}</tr>{% endif %}
+                    {% endfor %}
+                    {% if group.members.all|length|divisibleby:"3" %}{% else %}</tr>{% endif %}
+                </table>                    
+                <p><a href="{% url community_members_index group.slug %}">{% trans "Detailed list" %}</a></p>
+            </div>
+        </div>
+    {% endif %}
+    
+    <div style="width: 550px;">
+        
+        <h1>{{ group.name }}</h1>
+        
+        <p>
+            {% trans "Slug:" %} <tt>{{ group.slug }}</tt><br />
+            {% trans "Creator:" %} <a href="{% url profile_detail group.creator.username %}">{{ group.creator }}</a><br />
+            {% trans "Created:" %} {{ group.created|date }}
+            <br />
+            {% show_tags_for group %}
+        </p>
+        
+        <p>{{ group.description }}</p>
+
+		{% if group.parent %}
+			<p>{% trans "Parent:" %} <a href="{% url group_detail group.parent.slug %}">{{ group.parent.name }}</a></p>
+		{% endif %}
+		
+		{% if children.count %}
+			<p>{% trans "Child groups:" %}</p>
+			<ul>
+			{% for child in children %}
+				<li><a href="{% url group_detail child.slug %}">{{ child.name }}</a></li>
+			{% endfor %}
+			</ul>
+		{% endif %}
+        
+        {% if is_admin %}
+			<p><a href="{% url edit_community group.slug %}">{% trans "Edit details" %}</a></p>           
+        {% endif %}
+        
+        {% if user.is_authenticated %}
+            <div>
+                {% if is_member %}
+                    {% ifequal user group.creator %}
+                        <p>{% trans "You are the creator of this community so can't leave (yet)." %}</p>
+                    {% else %}
+						<form method="POST" action="{% url community_delete_member group.slug user.username %}">
+                        	<input type="submit" value="{% trans "Leave community" %}" />
+						</form>
+                    {% endifequal %}
+                {% else %}
+					<a href="{% url community_new_member group.slug %}">{% trans "Join community" %}</a>
+                {% endif %}
+
+				{% if user.is_staff or is_admin %}
+					<a href="{% url community_new_member group.slug %}">{% trans "Add another user" %}</a>
+				{% endif %}
+            </div>
+        {% else %}
+            {% url acct_signup as signup_url %}
+            {% url acct_login as login_url %}
+            <p>{% blocktrans %}<a href="{{ signup_url }}">Sign up</a> and <a href="{{ login_url }}">log in </a> to join this community.{% endblocktrans %}</p>
+        {% endif %}
+        
+        
+        {% if user.is_authenticated %}
+            <h2>{% trans "Discussion Topics" %}{% if group.topics.all.count %} ({{ group.topics.all.count }}){% endif %}</h2>
+            
+            {% get_topics_for_group group as topic_queryset %}
+            {% with topic_queryset|slice:":5" as topics %}
+                {% if topics %}
+                    {% for topic in topics|slice:":5" %}
+                        {% show_topic topic %}
+                    {% endfor %}
+                    <p><a href="{% groupurl topic_list group %}">{% trans "more..." %}</a></p>
+                {% else %}
+                    {% groupurl topic_list group as new_topic_url %}
+                    <p>{% blocktrans %}None yet. <a href="{{ new_topic_url }}">Start one...</a>{% endblocktrans %}</p>
+                {% endif %}
+            {% endwith %}
+            
+{% comment %}
+            <h2>{% trans "Wiki Articles" %}{% if total_articles %} ({{ total_articles }}){% endif %}</h2>
+            
+            {% if articles %}
+                <table class="topics">
+                    {% for article in articles %}
+                        {% show_teaser article %}
+                    {% endfor %}
+                </table>
+                <p><a href="{% groupurl wiki_list group %}">{% trans "more..." %}</a></p>
+            {% else %}
+                {% groupurl wiki_list group as wiki_url %}
+                <p>
+                    {% blocktrans %}
+                        None yet. Go to the <a href="{{ wiki_url }}" title="wiki">wiki</a> to start a new article.
+                    {% endblocktrans %}
+                </p>
+            {% endif %}
+            
+            
+            <h2>{% trans "Tweets" %}</h2>
+            
+            {% tweet_listing tweets 1 0 %}
+            
+            <h2>{% trans "Upcoming Events" %}</h2>
+            {% get_calendar group as calendar %}
+            {% if calendar.get_upcoming_events %}
+                <table class="topics">
+                    {% for event in calendar.get_upcoming_events %}
+                        <tr class="odd">
+                            <td>{{ event.title }}</td>
+                            <td>{{ event.start }}-{{ event.end }}</td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            {% else %}
+                {% trans "There are no upcoming events." %}
+            {% endif %}
+            <p>
+                <a href="{{ calendar.get_absolute_url }}">{% trans "calendar..." %}</a>
+            </p>
+            
+            
+            {% if photos %}
+                <h2>{% trans "Community Photo Pool" %}</h2>
+                <div class="thumb-row clearfix">
+                    {% for photo in photos %}
+                    <div class="gallery-photo-thumb">
+                        <a href="/photos/details/{{ photo.photo.id }}/"><img src="{{ photo.photo.get_thumbnail_url }}" alt="{{ photo.photo.title }}"/></a><br />
+                        <img src="{{ MEDIA_URL }}pinax/images/silk/icons/comment.png" border="0" class="noborder" align="absmiddle" /><a href="/photos/details/{{ photo.photo.id }}/">{% get_comment_count for photo as commentcount %} {% blocktrans %}{{ commentcount }} Comments {% endblocktrans %}</a>
+                   </div>
+                   {% endfor %}
+               </div>
+            {% endif %}
+{% endcomment %} 
+            
+        {% endif %}
+    </div>
+
+{% endblock %}
+
+{% block extra_body %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#edit-community').hide();
+            $('#edit-community-toggle').click(function() {
+                $('#edit-community').toggle();
+                $('#edit-community').autoscroll();
+                return false;
+            });
+            if ($('#edit-community .error').length) {
+                $('#edit-community').show();
+                $('#edit-community .error').autoscroll();
+            }
+        });
+    </script>
+    
+{% endblock %}
