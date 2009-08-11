@@ -157,6 +157,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% endblock %}
 
 {% block extra_body %}
+    <script type="text/javascript" src="{{ MEDIA_URL }}jquery.autocomplete.min.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
             $('#edit-profile').hide();
@@ -169,10 +170,33 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
                 $('#edit-profile').show();
                 $('#edit-profile ul.errorlist').autoscroll();
             }
+            $('#id_city').autocomplete('{% url ajax_search_network "R" %}');
         });
     </script>
     
 	{% show_student_records_js other_user is_me %}
 	{% show_work_records_js other_user is_me %}
+
+	{% if messages %}
+		{# looks for messages that are network suggestions only #}
+		<script type="text/javascript">
+            $(function(){
+                $('.network-suggestion').click(function(){
+                        var postData = {};
+                        if ($(this).hasClass('join')){
+                            postData['user'] = {{ user.id }};
+                            postData['is_admin'] = false;
+                            postData['admin_title'] = '';
+                        }
+                        var parentDiv = $(this).parents('div:first');
+                        $.post($(this).attr('href'), postData, function(data){
+                            parentDiv.html(data);
+                            });
+                        return false;
+                    });
+            });
+		</script>
+	{% endif %}
+
     
 {% endblock %}

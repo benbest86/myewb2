@@ -44,7 +44,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 	    <script type="text/javascript" src="{{ MEDIA_URL }}jquery.autocomplete.min.js"></script>
         <script type="text/javascript">
 	        $(document).ready(function() {
-        		$('#id_institution').autocomplete('/networks/ajax/u/');
+        		$('#id_institution').autocomplete('{% url ajax_search_network "U" %}');
         		});
         </script>
 {%endblock %}

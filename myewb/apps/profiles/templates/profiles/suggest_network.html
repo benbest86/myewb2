@@ -1,0 +1,16 @@
+{% comment %}
+This file is part of myEWB
+Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
+{% endcomment %}
+
+{% ifequal action 'join' %}
+	<div id="div-join-{{ network.slug}}">
+		We suggest that you <a href="{% url new_network_member network.slug %}" class="normal join network-suggestion" id="join-{{ network.slug}}"> join the {{ network.name }} regional network</a>
+	</div>
+{% endifequal %}
+	
+{% ifequal action 'leave' %}
+	<div id="div-leave-{{ network.slug}}">
+		Do you want to <a href="{% url delete_network_member network.slug user.username %}" class="normal leave network-suggestion" id="leave-{{ network.slug}}"> leave the {{ network.name }} regional network</a>?
+	</div>
+{% endifequal %}

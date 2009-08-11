@@ -138,6 +138,10 @@ ul#messages li a {
     float: right;
     color: #693;
 }
+ul#messages li a.normal {
+	float: none;
+	color: #1133CC;
+}
 .verified {
     color: green;
 }

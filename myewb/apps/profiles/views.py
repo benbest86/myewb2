@@ -11,7 +11,8 @@ Last modified: 2009-08-02
 
 from django.shortcuts import get_object_or_404
 from pinax.apps.profiles.views import *
-from django.template import RequestContext
+from pinax.apps.profiles.views import profile as pinaxprofile
+from django.template import RequestContext, Context, loader
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
@@ -330,3 +331,38 @@ def delete_work_record(request, username, work_record_id, object=None):
         work_record.delete()
         return HttpResponseRedirect(reverse('work_record_index', kwargs={'username': username}))
 
+# override default "save" function so we can prompt people to join networks
+def profile(request, username, template_name="profiles/profile.html"):
+    other_user = User.objects.get(username=username)
+    if request.user == other_user:
+        if request.method == "POST":
+            if request.POST["action"] == "update":
+                profile_form = ProfileForm(request.POST, instance=other_user.get_profile())
+                if profile_form.is_valid():
+                    
+                    # if changed city, prompt to update networks
+                    if profile_form.cleaned_data['city'] != other_user.get_profile().city:
+                        # join new network
+                        # TODO: use geocoding to find closest network(s)
+                        try:
+                            network = Network.objects.get(name=profile_form.cleaned_data['city'], network_type='R')
+
+                            if not network.user_is_member(other_user):
+                                message = loader.get_template("profiles/suggest_network.html")
+                                c = Context({'network': network, 'action': 'join'})
+                                request.user.message_set.create(message=message.render(c))
+                        except Network.DoesNotExist:
+                            pass
+                            
+                        # leave old network
+                        try:
+                            network = Network.objects.get(name=other_user.get_profile().city, network_type='R')
+                            if network.user_is_member(other_user):
+                                message = loader.get_template("profiles/suggest_network.html")
+                                c = Context({'network': network, 'action': 'leave', 'user': other_user})
+                                request.user.message_set.create(message=message.render(c))
+                        except Network.DoesNotExist:
+                            pass
+
+    # delegate back to parent function
+    return pinaxprofile(request, username, template_name)

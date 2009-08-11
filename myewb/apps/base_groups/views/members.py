@@ -10,12 +10,13 @@ Last modified on 2009-08-02
 
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseNotFound
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.utils.datastructures import SortedDict
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from base_groups.models import BaseGroup, GroupMember
 from base_groups.forms import GroupMemberForm
@@ -53,17 +54,37 @@ def members_index(request, group_slug, group_model=None, form_class=None, templa
                     member.admin_title = ""
                 member.group = group
                 member.save()
-                return HttpResponseRedirect(reverse('%s_member_detail' % group_model._meta.module_name, kwargs={'group_slug': group_slug, 'username': member.user.username}))
+                if request.is_ajax():
+                    response = render_to_response(
+                        "base_groups/ajax-join.html",
+                        {
+                            'group': group,
+                        },
+                        context_instance=RequestContext(request),
+                    )
+                else:
+                    response =  HttpResponseRedirect(reverse('%s_member_detail' % group_model._meta.module_name, kwargs={'group_slug': group_slug, 'username': member.user.username}))
+                return response
             else:
-                return render_to_response(
-                    new_template_name,
-                    {
-                        'group': group,
-                        'form': form,
-                        'is_admin': group.user_is_admin(user),
-                    },
-                    context_instance=RequestContext(request),
-                )
+                if request.is_ajax():
+                    response = render_to_response(
+                        "base_groups/ajax-join.html",
+                        {
+                            'group': None,
+                        },
+                        context_instance=RequestContext(request),
+                    )
+                else:
+                    response = render_to_response(
+                        new_template_name,
+                        {
+                            'group': group,
+                            'form': form,
+                            'is_admin': group.user_is_admin(user),
+                        },
+                        context_instance=RequestContext(request),
+                    )
+            return response
         else:
             return render_to_response(
                 new_template_name,
@@ -182,10 +203,30 @@ def delete_member(request, group_slug, username, group_model=None):
         group = get_object_or_404(BaseGroup, slug=group_slug)
         return HttpResponseRedirect(reverse('%s_delete_member' % group.model.lower(), kwargs={'group_slug': group_slug, 'username': username}))
         
-    group = get_object_or_404(group_model, slug=group_slug)
-    other_user = get_object_or_404(User, username=username)
-    member = get_object_or_404(GroupMember, group=group, user=other_user)
     if request.method == 'POST':
+        group = get_object_or_404(group_model, slug=group_slug)
+        user = get_object_or_404(User, username=username)
+        member = get_object_or_404(GroupMember, group=group, user=user)
         member.delete()
-        return HttpResponseRedirect(reverse('%s_members_index' % group.model.lower(), kwargs={'group_slug': group_slug,}))
-    
+        if request.is_ajax():
+            response = render_to_response(
+                "base_groups/ajax-leave.html",
+                {
+                    'group': group,
+                },
+                context_instance=RequestContext(request),
+            )
+        else:
+            response =  HttpResponseRedirect(reverse('%s_members_index' % group.model.lower(), kwargs={'group_slug': group_slug,}))
+    else:
+        if request.is_ajax():
+            response = render_to_response(
+                "base_groups/ajax-leave.html",
+                {
+                    'group': None,
+                },
+                context_instance=RequestContext(request),
+            )
+        else:
+            response = HttpResponseNotFound();
+    return response
