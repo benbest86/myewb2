@@ -33,6 +33,7 @@
                     {% endfor %}
                     {% if group.members.all|length|divisibleby:"3" %}{% else %}</tr>{% endif %}
                 </table>
+                <p><a href="{% url network_members_index group.slug %}">{% trans "Detailed list" %}</a></p>
             </div>
         </div>
     {% endif %}

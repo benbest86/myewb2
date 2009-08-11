@@ -15,7 +15,7 @@
 	<p><a href="{% url network_detail group.slug %}">{{ group.name }}</a></p>
     <h1>{% trans "Members" %}</h1>
     
-    {% if user.is_authenticated and user.is_superuser %}
+    {% if user.is_authenticated and is_admin %}
         <p><a href="{% url network_new_member group.slug %}">Add</a> a member</p>
     {% else %}
         {% url acct_signup as signup_url %}
@@ -43,8 +43,8 @@
 				{% if member.user.get_profile.name %} {{ member.user.get_profile.name }} {% else %} {{ member.user.username }} {% endif %}
 			</a></dt>
 			<dd>
-				{% if member.admin_title %}{{ member.admin_title }}{% endif %}
-				<a href="{% url network_edit_member group.slug, member.user.username %}">{% trans "Edit details" %}</a>
+				{% if member.is_admin and member.admin_title %}{{ member.admin_title }}{% endif %}
+				{% if is_admin %}<a href="{% url network_edit_member group.slug, member.user.username %}">{% trans "Edit details" %}</a>{% endif %}
 			</dd>
         {% endfor %}
         </dl>

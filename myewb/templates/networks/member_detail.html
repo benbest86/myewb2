@@ -31,11 +31,11 @@
             <br />
         </p>
         
-        {% ifequal user member.user %}
+        {% if is_admin %}
 
 			<p><a href="{% url network_edit_member group.slug member.user.username %}">{% trans "Edit details" %}</a></p>
             
-        {% endifequal %}
+        {% endif %}
         
 
         

@@ -39,7 +39,7 @@ def profiles(request, template_name="profiles/profiles.html"):
 
 def student_records_index(request, username, template_name='profiles/student_records_index.html'):
     if request.method == 'POST':
-        return create_student_record(request, username=username)
+        return create_student_record(request, username)
     other_user = get_object_or_404(User, username=username)
     student_records = StudentRecord.objects.filter(user=other_user)
     return render_to_response(
@@ -111,9 +111,9 @@ def new_student_record(request, username, template_name='profiles/new_student_re
 
 def student_record_detail(request, username, student_record_id, template_name='profiles/student_record_detail.html'):
     if request.method == 'POST':
-        return update_student_record(request, username=username, student_record_id=student_record_id)
+        return update_student_record(request, username, student_record_id)
     other_user = get_object_or_404(User, username=username)
-    student_record = get_object_or_404(StudentRecord, id=student_record_id)
+    student_record = get_object_or_404(StudentRecord, id=student_record_id, user=other_user)
     return render_to_response(
             template_name,
             {
@@ -126,12 +126,12 @@ def student_record_detail(request, username, student_record_id, template_name='p
 
 @owner_required(StudentRecord)
 def update_student_record(request, username, student_record_id, object=None):
+    other_user = User.objects.get(username=username)
     if object:
         student_record = object
     else:
-        student_record = get_object_or_404(StudentRecord, id=student_record_id)
+        student_record = get_object_or_404(StudentRecord, id=student_record_id, user=other_user)
     form = StudentRecordForm(request.POST, instance=student_record)
-    other_user = User.objects.get(username=username)
 
     # if form saves, redirect to profile_detail
     if form.is_valid():
@@ -160,7 +160,7 @@ def edit_student_record(request, username, student_record_id, template_name='pro
     if object:
         student_record = object
     else:
-        student_record = get_object_or_404(StudentRecord, id=student_record_id)
+        student_record = get_object_or_404(StudentRecord, id=student_record_id, user=other_user)
     form = StudentRecordForm(instance=student_record)
     return render_to_response(
             template_name,
@@ -259,9 +259,9 @@ def new_work_record(request, username, template_name='profiles/new_work_record.h
 
 def work_record_detail(request, username, work_record_id, template_name='profiles/work_record_detail.html'):
     if request.method == 'POST':
-        return update_work_record(request, username=username, work_record_id=work_record_id)
+        return update_work_record(request, username, work_record_id)
     other_user = get_object_or_404(User, username=username)
-    work_record = get_object_or_404(WorkRecord, id=work_record_id)
+    work_record = get_object_or_404(WorkRecord, id=work_record_id, user=other_user)
     return render_to_response(
             template_name,
             {
@@ -274,12 +274,12 @@ def work_record_detail(request, username, work_record_id, template_name='profile
 
 @owner_required(WorkRecord)
 def update_work_record(request, username, work_record_id, object=None):
+    other_user = User.objects.get(username=username)
     if object:
         work_record = object
     else:
-        work_record = get_object_or_404(WorkRecord, id=work_record_id)
+        work_record = get_object_or_404(WorkRecord, id=work_record_id, user=other_user)
     form = WorkRecordForm(request.POST, instance=work_record)
-    other_user = User.objects.get(username=username)
 
     # if form saves, redirect to profile_detail
     if form.is_valid():
@@ -303,12 +303,12 @@ def update_work_record(request, username, work_record_id, object=None):
 @owner_required(WorkRecord)
 def edit_work_record(request, username, work_record_id, template_name='profiles/edit_work_record.html', object=None):
     if request.method == 'POST':
-        return update_work_record(request, username=username, work_record_id=work_record_id, object=object)
+        return update_work_record(request, username, work_record_id, object=object)
     other_user = get_object_or_404(User, username=username)
     if object:
         work_record = object
     else:
-        work_record = get_object_or_404(WorkRecord, id=work_record_id)
+        work_record = get_object_or_404(WorkRecord, id=work_record_id, user=other_user)
     form = WorkRecordForm(instance=work_record)
     return render_to_response(
             template_name,

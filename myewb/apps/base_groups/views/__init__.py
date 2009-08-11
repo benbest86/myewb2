@@ -20,6 +20,7 @@ from django.utils.datastructures import SortedDict
 from base_groups.models import BaseGroup
 from base_groups.helpers import group_search_filter, get_counts
 from base_groups.forms import GroupLocationForm
+from base_groups.decorators import group_admin_required
 
 from django.conf import settings
 if "notification" in settings.INSTALLED_APPS:
@@ -161,6 +162,7 @@ def group_detail(request, group_slug, model=None, member_model=None, form_class=
                     context_instance=RequestContext(request)
                 )
 
+@group_admin_required()
 def edit_group(request, group_slug, model=None, member_model=None, form_class=None, 
         template_name=None, detail_template_name=None, options=None):
     if model is None:
@@ -181,6 +183,7 @@ def edit_group(request, group_slug, model=None, member_model=None, form_class=No
             context_instance=RequestContext(request)
         )
 
+@group_admin_required()
 def delete_group(request, group_slug, model=None, member_model=None, form_class=None, 
         detail_template_name=None, options=None):
     if model is None:

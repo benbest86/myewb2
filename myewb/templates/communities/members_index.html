@@ -43,8 +43,8 @@
 				{% if member.user.get_profile.name %} {{ member.user.get_profile.name }} {% else %} {{ member.user.username }} {% endif %}
 			</a></dt>
 			<dd>
-				{% if member.admin_title %}{{ member.admin_title }}{% endif %}
-				<a href="{% url community_edit_member group.slug, member.user.username %}">{% trans "Edit details" %}</a>
+				{% if member.is_admin and member.admin_title %}{{ member.admin_title }}{% endif %}
+				{% if is_admin %}<a href="{% url community_edit_member group.slug, member.user.username %}">{% trans "Edit details" %}</a>{% endif %}
 			</dd>
         {% endfor %}
         </dl>

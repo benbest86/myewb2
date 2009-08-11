@@ -23,12 +23,15 @@ from countries import COUNTRIES
 from datetime import date
 
 class MemberProfileManager(models.Manager):
-    def get_from_view_args(self, **kwargs):
-        if 'username' in kwargs:
-            user = User.objects.get(username=kwargs['username'])
-            return MemberProfile.objects.get(user__id=user.id)
-        else:
-            return None
+    def get_from_view_args(self, *args, **kwargs):
+        username = kwargs.get('username', None) or (len(args) > 0 and args[0])
+        if username:
+            user = User.objects.get(username=username)
+            try:
+                return MemberProfile.objects.get(user__id=user.id)
+            except MemberProfile.DoesNotExist:
+                pass
+        return None
 
 class MemberProfile(Profile):
     """ Extends Pinax's Profile object to provide additional information stored in the previous myEWB application.
@@ -157,10 +160,14 @@ def set_primary_email(sender, instance=None, **kwargs):
 post_save.connect(set_primary_email, sender=EmailAddress)
     
 class StudentRecordManager(models.Manager):
-    def get_from_view_args(self, **kwargs):
-        id = kwargs.get('student_record_id', None) or kwargs.get('record_id', None)
-        if id:
-            return StudentRecord.objects.get(pk=id)
+    def get_from_view_args(self, *args, **kwargs):
+        username = kwargs.get('username') or (len(args) > 0 and args[0])
+        id = kwargs.get('student_record_id', None) or kwargs.get('record_id', None) or (len(args) > 1 and args[1])
+        if id and username:
+            try:
+                return StudentRecord.objects.get(pk=id, user__username=username)
+            except StudentRecord.DoesNotExist:
+                pass
         return None
 
 class StudentRecord(models.Model):
@@ -197,10 +204,14 @@ class StudentRecord(models.Model):
         return (user.id == self.user_id)
 
 class WorkRecordManager(models.Manager):
-    def get_from_view_args(self, **kwargs):
-        id = kwargs.get('work_record_id', None) or kwargs.get('record_id', None)
-        if id:
-            return WorkRecord.objects.get(pk=id)
+    def get_from_view_args(self, *args, **kwargs):
+        username = kwargs.get('username', None) or (len(args) > 0 and args[0])
+        id = kwargs.get('work_record_id', None) or kwargs.get('record_id', None) or (len(args) > 1 and args[1])
+        if id and username:
+            try:
+                return WorkRecord.objects.get(pk=id, user__username=username)
+            except WorkRecord.DoesNotExist:
+                pass
         return None
 
 class WorkRecord(models.Model):

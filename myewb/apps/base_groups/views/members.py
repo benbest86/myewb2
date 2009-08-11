@@ -19,6 +19,7 @@ from django.utils.datastructures import SortedDict
 
 from base_groups.models import BaseGroup, GroupMember
 from base_groups.forms import GroupMemberForm
+from base_groups.decorators import own_member_object_required, group_admin_required
 
 def members_index(request, group_slug, group_model=None, form_class=None, template_name=None, new_template_name=None):
     # handle generic call
@@ -82,6 +83,7 @@ def new_member(request, group_slug, group_model=None, form_class=None, template_
         return HttpResponseRedirect(reverse('%s_new_member' % group.model.lower(), kwargs={'group_slug': group_slug}))    
         
     group = get_object_or_404(group_model, slug=group_slug)
+    user = request.user
     
     if request.method == 'POST':
         return members_index(request, group_slug, group_model, form_class, index_template_name, template_name)
@@ -91,7 +93,7 @@ def new_member(request, group_slug, group_model=None, form_class=None, template_
         {
             'group': group,
             'form': form,
-            'is_admin': group.user_is_admin(request.user),
+            'is_admin': group.user_is_admin(user),
         },
         context_instance=RequestContext(request),
     )
@@ -103,8 +105,10 @@ def member_detail(request, group_slug, username, group_model=None, form_class=No
         return HttpResponseRedirect(reverse('%s_member_detail' % group.model.lower(), kwargs={'group_slug': group_slug, 'username': username}))    
         
     group = get_object_or_404(group_model, slug=group_slug)
-    user = get_object_or_404(User, username=username)
-    member = get_object_or_404(GroupMember, group=group, user=user)
+    other_user = get_object_or_404(User, username=username)
+    member = get_object_or_404(GroupMember, group=group, user=other_user)
+    user = request.user
+    
     # retrieve details
     if request.method == 'GET':
         return render_to_response(
@@ -144,7 +148,7 @@ def member_detail(request, group_slug, username, group_model=None, form_class=No
                 context_instance=RequestContext(request),
             )
 
-@login_required
+@group_admin_required()
 def edit_member(request, group_slug, username, group_model=None, form_class=None, template_name=None, detail_template_name=None):
     # handle generic call
     if group_model is None:
@@ -152,11 +156,13 @@ def edit_member(request, group_slug, username, group_model=None, form_class=None
         return HttpResponseRedirect(reverse('%s_edit_member' % group.model.lower(), kwargs={'group_slug': group_slug, 'username': username}))         
     
     group = get_object_or_404(group_model, slug=group_slug)
-    user = get_object_or_404(User, username=username)
+    other_user = get_object_or_404(User, username=username)
+    user = request.user
+    
     if request.method == 'POST':
         # this results in a non-ideal URL (/../edit) but only way we can save changes
         return member_detail(request, group_slug, username, group_model, form_class, detail_template_name, template_name)
-    member = get_object_or_404(GroupMember, group=group, user=user)
+    member = get_object_or_404(GroupMember, group=group, user=other_user)
     form = form_class(instance=member)
     return render_to_response(
         template_name,
@@ -169,7 +175,7 @@ def edit_member(request, group_slug, username, group_model=None, form_class=None
         context_instance=RequestContext(request),
     )
 
-@login_required
+@own_member_object_required()
 def delete_member(request, group_slug, username, group_model=None):    
     # handle generic call
     if group_model is None:
@@ -177,8 +183,8 @@ def delete_member(request, group_slug, username, group_model=None):
         return HttpResponseRedirect(reverse('%s_delete_member' % group.model.lower(), kwargs={'group_slug': group_slug, 'username': username}))
         
     group = get_object_or_404(group_model, slug=group_slug)
-    user = get_object_or_404(User, username=username)
-    member = get_object_or_404(GroupMember, group=group, user=user)
+    other_user = get_object_or_404(User, username=username)
+    member = get_object_or_404(GroupMember, group=group, user=other_user)
     if request.method == 'POST':
         member.delete()
         return HttpResponseRedirect(reverse('%s_members_index' % group.model.lower(), kwargs={'group_slug': group_slug,}))
