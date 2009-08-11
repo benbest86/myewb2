@@ -332,7 +332,7 @@ def delete_work_record(request, username, work_record_id, object=None):
         return HttpResponseRedirect(reverse('work_record_index', kwargs={'username': username}))
 
 # override default "save" function so we can prompt people to join networks
-def profile(request, username, template_name="profiles/profile.html"):
+def profile(request, username, template_name="profiles/profile.html", extra_context=None):
     other_user = User.objects.get(username=username)
     if request.user == other_user:
         if request.method == "POST":
@@ -364,5 +364,7 @@ def profile(request, username, template_name="profiles/profile.html"):
                         except Network.DoesNotExist:
                             pass
 
-    # delegate back to parent function
-    return pinaxprofile(request, username, template_name)
+    if template_name == None:
+        return pinaxprofile(request, username, extra_context=extra_context)
+    else:
+        return pinaxprofile(request, username, template_name, extra_context)

@@ -87,7 +87,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
                 <p><span id="edit-profile-toggle">{% trans "Edit profile" %}</span></p>
                 
                 <form class="uniForm" id="edit-profile" method="POST" action="" style="display: none;">
-                    <fieldset class="inlineLabels">  
+                    <fieldset class="inlineLabels">
                         {{ profile_form|as_uni_form }}
                         <div class="form_block">
                         <input type="hidden" name="action" value="update" />
@@ -111,6 +111,11 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
                 {# @@@ this should be an inclusion tag #}
                 {% if is_friend %}
                     <p>{% blocktrans %}You are friends with {{ other_user }}.{% endblocktrans %} <a href="{% url messages_compose %}{{ other_user }}/">{% trans "Send a message" %}</a>.</p>
+                    <div>
+                        <form method="POST" action="">
+                            <input type="hidden" name="action" value="remove" /><input type="submit" value="{% trans "remove from friends" %}"/>
+                        </form>
+                    </div>
                 {% else %}
                     {% if previous_invitations_from %}
                         <p>{% blocktrans %}{{ other_user }} has requested friendship.{% endblocktrans %}</p>
@@ -122,6 +127,11 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
                                     <input type="hidden" name="invitation" value="{{ invitation.id }}"/>
                                     <input type="hidden" name="action" value="accept"/>
                                     <input type="submit" value="{% trans 'accept' %}" />
+                                </form>
+                                <form method="post" action="">
+                                    <input type="hidden" name="invitation" value="{{ invitation.id }}"/>
+                                    <input type="hidden" name="action" value="decline"/>
+                                    <input type="submit" value="{% trans 'decline' %}" />
                                 </form>
                             </div>
                         {% endfor %}

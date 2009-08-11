@@ -9,7 +9,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.template.loader import select_template
 from django.utils.translation import ugettext_lazy as _ # @@@ really should be ugettext
 
-from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 
 if "notification" in settings.INSTALLED_APPS:
@@ -54,7 +53,7 @@ def topics(request, group_slug=None, form_class=TopicForm, template_name="topics
         topic_form = form_class()
 
 
-    topics = group.get_related_objects(Topic)
+    topics = group.content_objects(Topic)
 
     return bridge.render(template_name, {
         "group": group,
