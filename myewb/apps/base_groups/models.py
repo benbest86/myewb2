@@ -35,10 +35,10 @@ class BaseGroup(Group):
     private = models.BooleanField(_('private'), default=False)
 	
     def user_is_member(self, user):
-        return user.is_authenticated and (self.members.filter(user=user).count() > 0)
+        return user.is_authenticated() and (self.members.filter(user=user).count() > 0)
             
     def user_is_admin(self, user):
-        return user.is_authenticated and ((self.members.filter(user=user, is_admin=True).count() > 0) or user.is_superuser)
+        return user.is_authenticated() and ((self.members.filter(user=user, is_admin=True).count() > 0) or user.is_superuser)
 
     def get_absolute_url(self):
         return reverse('group_detail', kwargs={'group_slug': self.slug})
