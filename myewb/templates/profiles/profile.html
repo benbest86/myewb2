@@ -180,6 +180,10 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
                 $('#edit-profile').show();
                 $('#edit-profile ul.errorlist').autoscroll();
             }
+            if ($('#edit-profile p.errorField').length){
+                $('#edit-profile').show();
+                $('#edit-profile p.errorField').autoscroll();
+            }
             $('#id_city').autocomplete('{% url ajax_search_network "R" %}');
         });
     </script>
