@@ -24,7 +24,7 @@ from base_groups.decorators import own_member_object_required, group_admin_requi
 
 def members_index(request, group_slug, group_model=None, form_class=None, template_name=None, new_template_name=None):
     # handle generic call
-    if group_model is None:
+    if group_model is None and request.method == 'GET':
         group = get_object_or_404(BaseGroup, slug=group_slug)
         return HttpResponseRedirect(reverse('%s_members_index' % group.model.lower(), kwargs={'group_slug': group_slug}))
         
@@ -99,7 +99,7 @@ def members_index(request, group_slug, group_model=None, form_class=None, templa
 @login_required
 def new_member(request, group_slug, group_model=None, form_class=None, template_name=None, index_template_name=None):
     # handle generic call
-    if group_model is None:
+    if group_model is None and request.method == 'GET':
         group = get_object_or_404(BaseGroup, slug=group_slug)
         return HttpResponseRedirect(reverse('%s_new_member' % group.model.lower(), kwargs={'group_slug': group_slug}))    
         
@@ -121,7 +121,7 @@ def new_member(request, group_slug, group_model=None, form_class=None, template_
 
 def member_detail(request, group_slug, username, group_model=None, form_class=None, template_name=None, edit_template_name=None):
     # handle generic call
-    if group_model is None:
+    if group_model is None and request.method == 'GET':
         group = get_object_or_404(BaseGroup, slug=group_slug)
         return HttpResponseRedirect(reverse('%s_member_detail' % group.model.lower(), kwargs={'group_slug': group_slug, 'username': username}))    
         
@@ -172,7 +172,7 @@ def member_detail(request, group_slug, username, group_model=None, form_class=No
 @group_admin_required()
 def edit_member(request, group_slug, username, group_model=None, form_class=None, template_name=None, detail_template_name=None):
     # handle generic call
-    if group_model is None:
+    if group_model is None and request.method == 'GET':
         group = get_object_or_404(BaseGroup, slug=group_slug)
         return HttpResponseRedirect(reverse('%s_edit_member' % group.model.lower(), kwargs={'group_slug': group_slug, 'username': username}))         
     
@@ -199,7 +199,7 @@ def edit_member(request, group_slug, username, group_model=None, form_class=None
 @own_member_object_required()
 def delete_member(request, group_slug, username, group_model=None):    
     # handle generic call
-    if group_model is None:
+    if group_model is None and request.method == 'GET':
         group = get_object_or_404(BaseGroup, slug=group_slug)
         return HttpResponseRedirect(reverse('%s_delete_member' % group.model.lower(), kwargs={'group_slug': group_slug, 'username': username}))
         
