@@ -33,10 +33,12 @@
     {% autosort members %}
     {% autopaginate members 10 %}
     {% if members %}
+        {% comment %}
         <p>{% trans "Order by:" %}
             {% anchor name Name %}
             {% anchor created Date %}
         </p>
+        {% endcomment %}
         <dl>
         {% for member in members %}
             <dt><a href="{% url community_member_detail group.slug, member.user.username %}">

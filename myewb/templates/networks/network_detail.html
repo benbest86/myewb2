@@ -31,6 +31,13 @@
                     {% endfor %}
                     {% if group.members.all|length|divisibleby:"3" %}{% else %}</tr>{% endif %}
                 </table>
+                <p>
+                    Search members:
+                    <form method="GET" action="{% url network_members_index group.slug %}">
+                        <input type="text" name="search" size="8" value="{{ search_terms }}" />
+                        <input type="submit" value="Search" />
+                    </form>
+                </p>
                 <p><a href="{% url network_members_index group.slug %}">{% trans "Detailed list" %}</a></p>
             </div>
         </div>

@@ -30,7 +30,14 @@
                         {% if forloop.counter0|add:"1"|divisibleby:"3" %}</tr>{% endif %}
                     {% endfor %}
                     {% if group.members.all|length|divisibleby:"3" %}{% else %}</tr>{% endif %}
-                </table>                    
+                </table>
+                <p>
+                    Search members:
+                    <form method="GET" action="{% url community_members_index group.slug %}">
+                        <input type="text" name="search" size="8" value="{{ search_terms }}" />
+                        <input type="submit" value="Search" />
+                    </form>
+                </p>                   
                 <p><a href="{% url community_members_index group.slug %}">{% trans "Detailed list" %}</a></p>
             </div>
         </div>

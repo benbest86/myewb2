@@ -34,12 +34,20 @@ def members_index(request, group_slug, group_model=None, form_class=None, templa
     group = get_object_or_404(group_model, slug=group_slug)
     if request.method == 'GET':
         members = GroupMember.objects.filter(group=group)
+        search_terms = request.GET.get('search', '')
+        if search_terms:
+            members = members.filter(user__profile__name__icontains=search_terms) | \
+                            members.filter(user__username__icontains=search_terms) | \
+                            members.filter(is_admin=True, admin_title__icontains=search_terms) | \
+                            members.filter(user__email__icontains=search_terms)
+                            
         return render_to_response(
             template_name,
             {
                 'group': group,
                 'members': members,
                 'is_admin': group.user_is_admin(user),
+                'search_terms': search_terms
             },
             context_instance=RequestContext(request),
         )
