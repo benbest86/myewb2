@@ -39,15 +39,10 @@
 {% block right_tabs %}
     {% if user.is_authenticated %}
         <ul class="tabs">{% spaceless %}
+            <li id="tab_home"><a href="{% url home %}">{% trans "Home" %}</a></li>
             <li id="tab_profile"><a href="{% url profile_detail user %}">{% trans "Profile" %}</a></li>
-            <li id="tab_photos"><a href="{% url photos %}">{% trans "Photos" %}</a></li>
-            <li id="tab_blogs"><a href="{% url blog_list_all %}">{% trans "Blogs" %}</a></li>
             <li id="tab_networks"><a href="{% url networks_index %}">{% trans "Networks" %}</a></li>
             <li id="tab_communities"><a href="{% url communities_index %}">{% trans "Communities" %}</a></li>
-            <li id="tab_tweets"><a href="{% url tweets_you_follow %}">{% trans "Tweets" %}</a></li>
-            <li id="tab_bookmarks"><a href="{% url all_bookmarks %}">{% trans "Bookmarks" %}</a></li>
-            <li id="tab_swaps"><a href="{% url offer_list_all %}">{% trans "Swaps" %}</a></li>
-            <li id="tab_locations"><a href="{% url loc_yours %}">{% trans "Locations" %}</a></li>
             <li id="tab_inbox"><a href="{% url messages_inbox %}">{% trans "Inbox" %} ({{ combined_inbox_count }})</a></li>
         {% endspaceless %}</ul>
     {% endif %}
