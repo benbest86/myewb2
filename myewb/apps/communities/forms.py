@@ -18,7 +18,7 @@ from communities.models import Community, CommunityMember
 class CommunityForm(BaseGroupForm):
     class Meta:
         model = Community
-        fields = ('name', 'slug', 'description', 'parent')
+        fields = ('name', 'slug', 'description', 'parent', 'visibility')
         
 class CommunityMemberForm(GroupMemberForm):
 

@@ -18,9 +18,9 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils.datastructures import SortedDict
 
 from base_groups.models import BaseGroup
-from base_groups.helpers import group_search_filter, get_counts
+from base_groups.helpers import group_search_filter, get_counts, enforce_visibility
 from base_groups.forms import GroupLocationForm
-from base_groups.decorators import group_admin_required
+from base_groups.decorators import group_admin_required, visibility_required
 
 from django.conf import settings
 if "notification" in settings.INSTALLED_APPS:
@@ -30,13 +30,15 @@ else:
 
 def groups_index(request, model=None, member_model=None, form_class=None, template_name='base_groups/groups_index.html',
         new_template_name=None, options=None):
+    user = request.user
     if model is None:
         if request.method == 'GET':
             groups = BaseGroup.objects.all()
         
             search_terms = request.GET.get('search', '')
-            groups = group_search_filter(groups, search_terms)        
-
+            groups = group_search_filter(groups, search_terms)
+            if not user.is_superuser:
+                groups = enforce_visibility(groups, user)
             groups = get_counts(groups, BaseGroup)
         
             return render_to_response(
@@ -52,8 +54,9 @@ def groups_index(request, model=None, member_model=None, form_class=None, templa
             groups = model.objects.all()
 
             search_terms = request.GET.get('search', '')
-            groups = group_search_filter(groups, search_terms)        
-
+            groups = group_search_filter(groups, search_terms)
+            if not user.is_superuser:
+                groups = enforce_visibility(groups, user)
             groups = get_counts(groups, model)
 
             return render_to_response(
@@ -111,6 +114,7 @@ def new_group(request, model=None, member_model=None, form_class=None, template_
             context_instance=RequestContext(request)
         )
 
+@visibility_required()
 def group_detail(request, group_slug, model=None, member_model=None, form_class=None, 
         template_name=None, edit_template_name=None, options=None):
     if model is None:
@@ -121,7 +125,7 @@ def group_detail(request, group_slug, model=None, member_model=None, form_class=
         is_member = request.user.is_authenticated() and group.user_is_member(request.user)
         is_admin = group.user_is_admin(request.user)
 
-        children = BaseGroup.objects.filter(parent=group)
+        children = group.get_visible_children(request.user)
 
         # retrieve details
         if request.method == 'GET':
@@ -194,7 +198,7 @@ def delete_group(request, group_slug, model=None, member_model=None, form_class=
         is_member = request.user.is_authenticated() and group.user_is_member(request.user)
         is_admin = group.user_is_admin(request.user)
 
-        children = BaseGroup.objects.filter(parent=group)
+        children = group.get_visible_children(request.user)
 
         group_member = member_model.objects.get(group=group, user=request.user)
         if request.method == 'POST':
@@ -216,7 +220,8 @@ def delete_group(request, group_slug, model=None, member_model=None, form_class=
                 )
         else:
             return HttpResponseRedirect(reverse("%s_detail" % group.model.lower(), kwargs={'group_slug': group_slug}))
-                
+
+@group_admin_required()                
 def edit_group_location(request, group_slug, model=None, form_class=GroupLocationForm, template_name=None, options=None):
     if model:
         group = get_object_or_404(model, slug=group_slug)

@@ -20,8 +20,9 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from base_groups.models import BaseGroup, GroupMember
 from base_groups.forms import GroupMemberForm
-from base_groups.decorators import own_member_object_required, group_admin_required
+from base_groups.decorators import own_member_object_required, group_admin_required, visibility_required
 
+@visibility_required()
 def members_index(request, group_slug, group_model=None, form_class=None, template_name=None, new_template_name=None):
     # handle generic call
     if group_model is None and request.method == 'GET':
@@ -96,7 +97,7 @@ def members_index(request, group_slug, group_model=None, form_class=None, templa
                 context_instance=RequestContext(request),
             )
 
-@login_required
+@visibility_required()
 def new_member(request, group_slug, group_model=None, form_class=None, template_name=None, index_template_name=None):
     # handle generic call
     if group_model is None and request.method == 'GET':
@@ -119,6 +120,7 @@ def new_member(request, group_slug, group_model=None, form_class=None, template_
         context_instance=RequestContext(request),
     )
 
+@visibility_required()
 def member_detail(request, group_slug, username, group_model=None, form_class=None, template_name=None, edit_template_name=None):
     # handle generic call
     if group_model is None and request.method == 'GET':

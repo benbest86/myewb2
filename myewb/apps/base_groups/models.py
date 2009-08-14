@@ -29,10 +29,30 @@ class BaseGroup(Group):
     parent = models.ForeignKey('self', related_name="children", verbose_name=_('parent'), null=True, blank=True)
     
     member_users = models.ManyToManyField(User, through="GroupMember", verbose_name=_('members'))
-    # TODO: parent groups
 	
-	# private means only members can see the group
+	# private means members can only join if invited - TODO
     private = models.BooleanField(_('private'), default=False)
+    
+    VISIBILITY_CHOICES = (
+        ('E', _("everyone")),
+        ('P', _("group members and members of immediate parent group only")),
+        ('M', _("group members only"))
+    )
+    visibility = models.CharField(_('visibility'), max_length=1, choices=VISIBILITY_CHOICES, default='E')
+    
+    def is_visible(self, user):
+        visible = False
+        if user.is_superuser or self.visibility == 'E':
+            visible = True
+        else:
+            member_list = self.members.filter(user=user)
+            if member_list.count() > 0:
+                visible = True
+            elif self.visibility == 'P':
+                parent_member_list = self.parent.members.filter(user=user)
+                if parent_member_list.count() > 0:
+                    visible = True
+        return visible
 	
     def user_is_member(self, user):
         return user.is_authenticated() and (self.members.filter(user=user).count() > 0)
@@ -100,6 +120,17 @@ class BaseGroup(Group):
 
     def get_url_kwargs(self):
         return {'group_slug': self.slug}
+        
+    def get_visible_children(self, user):
+        if not user.is_authenticated():
+            return self.children.filter(visibility='E')
+        elif user.is_superuser:
+            return self.children.all()
+        else:
+            children = self.children.filter(visibility='E') | self.children.filter(member_users=user)
+            if self.user_is_member(user):
+                children = children | self.children.filter(visibility='P')
+            return children.distinct()
 
 	
 class GroupMember(models.Model):

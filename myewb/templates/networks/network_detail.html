@@ -58,7 +58,7 @@
 			<p>{% trans "Child groups:" %}</p>
 			<ul>
 			{% for child in children %}
-				<li><a href="{% url group_detail child.slug %}">{{ child.name }}</a></li>
+				<li><a href="{{ child.get_absolute_url }}">{{ child.name }}</a></li>
 			{% endfor %}
 			</ul>
 		{% endif %}
