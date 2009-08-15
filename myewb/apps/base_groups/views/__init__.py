@@ -18,7 +18,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.utils.datastructures import SortedDict
 
 from base_groups.models import BaseGroup
-from base_groups.helpers import group_search_filter, get_counts, enforce_visibility
+from base_groups.helpers import group_search_filter, get_counts, enforce_visibility 
 from base_groups.forms import GroupLocationForm
 from base_groups.decorators import group_admin_required, visibility_required
 
@@ -68,7 +68,7 @@ def groups_index(request, model=None, member_model=None, form_class=None, templa
                 context_instance=RequestContext(request)
             )
         elif request.method == 'POST':
-            form = form_class(request.POST)
+            form = form_class(request.POST, user=request.user)
             
             allow_create = True
             if options and ("check_create" in options):
@@ -105,7 +105,7 @@ def new_group(request, model=None, member_model=None, form_class=None, template_
     else:
         if request.method == 'POST':
             return groups_index(request, model, member_model, form_class, index_template_name, template_name, options)
-        form = form_class()
+        form = form_class(user=request.user)
         return render_to_response(
             template_name,
             {
@@ -141,7 +141,7 @@ def group_detail(request, group_slug, model=None, member_model=None, form_class=
             )
         # update existing resource
         elif request.method == 'POST':
-            form = form_class(request.POST, instance=group)
+            form = form_class(request.POST, instance=group, user=request.user)
             # if form saves, return detail for saved resource
             if form.is_valid():
                 group = form.save()
@@ -177,7 +177,7 @@ def edit_group(request, group_slug, model=None, member_model=None, form_class=No
             # this results in a non-ideal URL (/<model>s/<slug>/edit) but only way we can save changes
             return group_detail(request, group_slug, model, member_model, form_class, detail_template_name, template_name, options)
         group = get_object_or_404(model, slug=group_slug)
-        form = form_class(instance=group)
+        form = form_class(instance=group, user=request.user)
         return render_to_response(
             template_name,
             {

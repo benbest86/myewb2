@@ -10,12 +10,22 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from base_groups.models import BaseGroup, GroupMember, GroupLocation
+from base_groups.helpers import get_valid_parents
 
 class BaseGroupForm(forms.ModelForm):
     
     slug = forms.SlugField(max_length=20,
         help_text = _("a short version of the name consisting only of letters, numbers, underscores and hyphens."),
         error_message = _("This value must contain only letters, numbers, underscores and hyphens."))
+
+    def __init__(self, *args, **kwargs):
+        # get the valid parents for a user if we have a user
+        user = kwargs.pop('user', None)
+        super(BaseGroupForm, self).__init__(*args, **kwargs)
+        if user:
+            group = kwargs.get('instance', None)
+            valid_parents = get_valid_parents(user, group=group)
+            self.fields['parent'].queryset = valid_parents
             
     def clean_slug(self):
         

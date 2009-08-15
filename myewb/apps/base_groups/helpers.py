@@ -2,6 +2,8 @@ from django.conf.urls.defaults import *
 from django.contrib.contenttypes.models import ContentType
 from django.utils.datastructures import SortedDict
 
+from base_groups.models import BaseGroup
+
 TOPIC_COUNT_SQL = """
 SELECT COUNT(*)
 FROM topics_topic
@@ -86,3 +88,14 @@ def enforce_visibility(groups, user):
     visible_groups = groups.filter(visibility='E') | groups.filter(member_users=user) \
         | groups.filter(visibility='P', parent__member_users=user)
     return visible_groups.distinct()
+    
+def get_valid_parents(user, group=None, model=BaseGroup):
+    if user.is_superuser or user.is_staff:
+        vps = model.objects.all()
+    else:
+        vps = model.objects.filter(member_users=user)
+    
+    if group:
+        vps = vps.exclude(slug=group.slug)
+    return vps
+    
