@@ -43,6 +43,7 @@
             <li id="tab_profile"><a href="{% url profile_detail user %}">{% trans "Profile" %}</a></li>
             <li id="tab_networks"><a href="{% url networks_index %}">{% trans "Networks" %}</a></li>
             <li id="tab_communities"><a href="{% url communities_index %}">{% trans "Communities" %}</a></li>
+            <li id="tab_topics"><a href="{% url topic_list %}">{% trans "Posts" %}</a></li>
             <li id="tab_inbox"><a href="{% url messages_inbox %}">{% trans "Inbox" %} ({{ combined_inbox_count }})</a></li>
         {% endspaceless %}</ul>
     {% endif %}

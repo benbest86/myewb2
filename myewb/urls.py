@@ -55,10 +55,12 @@ urlpatterns = patterns('',
     (r'^groups/', include('base_groups.urls')),
     (r'^networks/', include('networks.urls')),
     (r'^communities/', include('communities.urls')),
+    (r'^posts/', include('group_topics.urls')),
     
 #    (r'^feeds/tweets/(.*)/$', 'django.contrib.syndication.views.feed', tweets_feed_dict),
 #    (r'^feeds/posts/(.*)/$', 'django.contrib.syndication.views.feed', blogs_feed_dict),
 #    (r'^feeds/bookmarks/(.*)/?$', 'django.contrib.syndication.views.feed', bookmarks_feed_dict),
+    url(r'^feeds/posts/(?P<group_slug>[-\w]+)/$', 'group_topics.views.feed', name="topic_feed"),
 )
 
 ## @@@ for now, we'll use friends_app to glue this stuff together

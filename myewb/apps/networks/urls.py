@@ -24,4 +24,4 @@ urlpatterns += patterns('networks.views',
     url(r'^(?P<group_slug>[-\w]+)/location/$', 'edit_network_location', name='edit_network_location',),
 )
     
-urlpatterns += bridge.include_urls('topics.urls', r'^(?P<group_slug>[-\w]+)/topics/')
+urlpatterns += bridge.include_urls('group_topics.urls.groups', r'^(?P<group_slug>[-\w]+)/posts/')

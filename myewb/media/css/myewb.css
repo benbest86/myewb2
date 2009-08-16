@@ -48,3 +48,12 @@ ul#messages li a.normal {
     float: none; 
  	color: #1133CC; 
 }
+
+div.topic_group {
+     font-size: 0.8em; 
+     margin-bottom: -1.2em;
+}
+
+div.topic_group a {
+    color: #606060;
+}

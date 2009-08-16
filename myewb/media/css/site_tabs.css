@@ -10,7 +10,8 @@ body.bookmarks #tab_bookmarks a,
 body.locations #tab_locations a,
 body.inbox #tab_inbox a,
 body.networks #tab_networks a,
-body.communities #tab_communities a
+body.communities #tab_communities a,
+body.topics #tab_topics a
 {
     color: #000; /* selected tab text colour */
 }
@@ -24,7 +25,8 @@ body.bookmarks #tab_bookmarks,
 body.locations #tab_locations,
 body.inbox #tab_inbox,
 body.networks #tab_networks,
-body.communities #tab_communities
+body.communities #tab_communities,
+body.topics #tab_topics
 {
     margin: 0; /* to compensate for border */
     padding: 5px 0 5px;

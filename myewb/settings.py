@@ -174,6 +174,7 @@ INSTALLED_APPS = (
 #    'photos',
     'tag_app',
     'topics',
+    'group_topics',
     'groups',
     'base_groups',
     'networks',

@@ -1,0 +1,18 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+{% load group_tags %}
+
+{% block body_class %}topics{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ MEDIA_URL }}networks/css/networks.css" />
+<link rel="stylesheet" href="{{ MEDIA_URL }}pinax/css/topics.css" />
+<script type="text/javascript" src="{{ MEDIA_URL }}pinax/js/topics.js"></script>
+{% endblock %}
+
+{% block subnav %}
+    <ul>
+        <li><a href="{% url topic_list %}">{% trans "All Posts" %}</a></li>
+    </ul>
+{% endblock %}

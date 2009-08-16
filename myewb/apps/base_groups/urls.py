@@ -55,3 +55,5 @@ urlpatterns += patterns('base_groups.views.members',
     # POST - delete member
     url(r'^(?P<group_slug>[-\w]+)/members/(?P<username>[\w\._-]+)/delete/$', 'delete_member', name='delete_member',),
 )
+
+urlpatterns += bridge.include_urls('group_topics.urls.groups', r'^(?P<group_slug>[-\w]+)/posts/')
