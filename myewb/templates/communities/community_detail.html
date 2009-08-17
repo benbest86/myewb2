@@ -21,7 +21,7 @@
             <div class="members">
                 <h2>{% trans "Members" %}</h2>
                 <table width="100%">
-                    {% for member in group.members.all %}
+                    {% for member in group.get_members %}
                         {% if forloop.counter0|divisibleby:"3" %}<tr>{% endif %}
                         <td>
                             <div class="avatar">{% avatar member.user 40 %}</div>
@@ -29,7 +29,7 @@
                         </td>
                         {% if forloop.counter0|add:"1"|divisibleby:"3" %}</tr>{% endif %}
                     {% endfor %}
-                    {% if group.members.all|length|divisibleby:"3" %}{% else %}</tr>{% endif %}
+                    {% if group.get_members|length|divisibleby:"3" %}{% else %}</tr>{% endif %}
                 </table>
                 <p>
                     Search members:
@@ -70,25 +70,42 @@
 			</ul>
 		{% endif %}
         
-        {% if is_admin %}
+        {% if member.is_admin %}
 			<p><a href="{% url edit_community group.slug %}">{% trans "Edit details" %}</a></p>           
         {% endif %}
         
         {% if user.is_authenticated %}
             <div>
-                {% if is_member %}
-                    {% ifequal user group.creator %}
-                        <p>{% trans "You are the creator of this community so can't leave (yet)." %}</p>
-                    {% else %}
+                {% if member %}
+                    {% if member.is_accepted %}
+                        {% ifequal user group.creator %}
+                            <p>{% trans "You are the creator of this community so can't leave (yet)." %}</p>
+                        {% else %}
+    						<form method="POST" action="{% url community_delete_member group.slug user.username %}">
+                            	<input type="submit" value="{% trans "Leave community" %}" />
+    						</form>
+                        {% endifequal %}                        
+                    {% endif %}
+                    
+                    {% if member.is_invited %}
+                        {% trans "You have been invited to join this community. Do you wish to join?" %}
+                        <form method="POST" action="{% url community_accept_invitation group.slug user.username %}">
+                        	<input type="submit" value="{% trans "Join community" %}" />
+            			</form>            			
 						<form method="POST" action="{% url community_delete_member group.slug user.username %}">
-                        	<input type="submit" value="{% trans "Leave community" %}" />
+                        	<input type="submit" value="{% trans "Decline" %}" />
 						</form>
-                    {% endifequal %}
+                    {% endif %}
+                    
+                    {% if member.is_requested %}
+                        {% trans "You have requested membership in this community and your request is pending." %}
+                    {% endif %}
+                    
                 {% else %}
 					<a href="{% url community_new_member group.slug %}">{% trans "Join community" %}</a>
                 {% endif %}
 
-				{% if user.is_staff or is_admin %}
+				{% if user.is_staff or member.is_admin %}
 					<a href="{% url community_new_member group.slug %}">{% trans "Add another user" %}</a>
 				{% endif %}
             </div>

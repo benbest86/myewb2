@@ -45,7 +45,11 @@
 				{% if member.user.get_profile.name %} {{ member.user.get_profile.name }} {% else %} {{ member.user.username }} {% endif %}
 			</a></dt>
 			<dd>
-				{% if member.is_admin and member.admin_title %}{{ member.admin_title }}{% endif %}
+			    {% if member.is_requested %}<strong>Member request pending</strong> &ndash; {% endif %}
+			    {% if member.is_invited %}<strong>Member invitation pending</strong> &ndash; {% endif %}
+				{% if member.is_admin %}
+				    Group admin {% if member.admin_title %}({{ member.admin_title }}){% endif %} &ndash; 
+				{% endif %}
 				{% if is_admin %}<a href="{% url community_edit_member group.slug, member.user.username %}">{% trans "Edit details" %}</a>{% endif %}
 			</dd>
         {% endfor %}

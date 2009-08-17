@@ -23,6 +23,42 @@
 				{{ member.user.username }}
 			{% endif %}
 		</h1>
+		
+		{% ifequal member.user, request.user %}
+		    <p>
+    		{% if member.is_invited %}
+                {% trans "You have been invited to join this community. Do you wish to join?" %}
+                <form method="POST" action="{% url community_accept_invitation group.slug user.username %}">
+                	<input type="submit" value="{% trans "Join community" %}" />
+    			</form>
+    			<form method="POST" action="{% url community_delete_member group.slug user.username %}">
+                	<input type="submit" value="{% trans "Decline" %}" />
+    			</form>
+            {% endif %}
+        
+            {% if member.is_requested %}
+                {% trans "You have requested to join this community. This request must be approved by a group administrator." %}
+            {% endif %}
+            </p>
+        {% endifequal %}
+        
+        {% if is_admin %}
+            <p>
+    		{% if member.is_invited %}
+                {% trans "Member invitation pending" %}
+            {% endif %}
+        
+            {% if member.is_requested %}
+                {% trans "Member request pending" %}                
+                <form method="POST" action="{% url community_accept_request group.slug user.username %}">
+                	<input type="submit" value="{% trans "Accept" %}" />
+    			</form>
+    			<form method="POST" action="{% url community_delete_member group.slug user.username %}">
+                	<input type="submit" value="{% trans "Decline" %}" />
+    			</form>
+            {% endif %}
+            </p>
+        {% endif %}
         
         <p>
             {% if member.is_admin %}{% trans "Title:" %} <tt>{{ member.admin_title }}</tt><br />{% endif %}

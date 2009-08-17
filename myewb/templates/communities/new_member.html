@@ -17,6 +17,11 @@
 	        <form class="uniForm" id="member_form" method="POST" action="">
 	            <fieldset class="inlineLabels">
 	                {{ form|as_uni_form }}
+	                <div class="ctrlHolder">
+	                    <label>Request status:</label>
+    	                <input type="radio" class="radioinput" name="add_type" value="auto" /> Automatically add
+    	                <input type="radio" class="radioinput" name="add_type" value="invite" /> Invite member to join
+    	            </div>
 	                <div class="form_block">
 	                    <input type="hidden" name="action" value="add" />
 	                    <input type="submit" value="{% trans 'add' %}"/>
@@ -24,12 +29,20 @@
 	            </fieldset>
 	        </form>
 		{% else %}
-			<p>{% trans "Please confirm that you wish to join the community." %}</p>
+		    {% if group.private %}
+		        <p>{% trans "This is a private community. Your request must be approved by community administrators." %}</p>
+		    {% else %}
+			    <p>{% trans "Please confirm that you wish to join the community." %}</p>
+			{% endif %}
 			<form class="uniForm" id="member_form" method="POST" action="">
 	            <fieldset class="inlineLabels">
 	                <div class="form_block">
 	                    <input type="hidden" name="user" value="{{ user.id }}" />
-	                    <input type="submit" value="{% trans 'add' %}"/>
+	                    {% if group.private %}
+	                        <input type="submit" value="{% trans 'request' %}"/>
+	                    {% else %}
+	                        <input type="submit" value="{% trans 'add' %}"/>
+	                    {% endif %}
 	                </div>
 	            </fieldset>
 	        </form>

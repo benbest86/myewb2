@@ -30,7 +30,7 @@ class BaseGroup(Group):
     
     member_users = models.ManyToManyField(User, through="GroupMember", verbose_name=_('members'))
 	
-	# private means members can only join if invited - TODO
+	# private means members can only join if invited
     private = models.BooleanField(_('private'), default=False)
     
     VISIBILITY_CHOICES = (
@@ -45,20 +45,24 @@ class BaseGroup(Group):
         if user.is_superuser or self.visibility == 'E':
             visible = True
         else:
-            member_list = self.members.filter(user=user)
+            member_list = self.members.filter(user=user, request_status='A')
             if member_list.count() > 0:
                 visible = True
             elif self.visibility == 'P':
-                parent_member_list = self.parent.members.filter(user=user)
+                parent_member_list = self.parent.members.filter(user=user, request_status='A')
                 if parent_member_list.count() > 0:
                     visible = True
         return visible
 	
     def user_is_member(self, user):
+        return user.is_authenticated() and (self.members.filter(user=user, request_status='A').count() > 0)
+        
+    def user_is_member_or_pending(self, user):
         return user.is_authenticated() and (self.members.filter(user=user).count() > 0)
             
     def user_is_admin(self, user):
-        return user.is_authenticated() and ((self.members.filter(user=user, is_admin=True).count() > 0) or user.is_superuser)
+        return user.is_authenticated() and \
+            ((self.members.filter(user=user, request_status='A', is_admin=True).count() > 0) or user.is_superuser)
 
     def get_absolute_url(self):
         return reverse('group_detail', kwargs={'group_slug': self.slug})
@@ -131,6 +135,9 @@ class BaseGroup(Group):
             if self.user_is_member(user):
                 children = children | self.children.filter(visibility='P')
             return children.distinct()
+            
+    def get_members(self):
+        return self.members.filter(request_status='A')
 
 	
 class GroupMember(models.Model):
@@ -139,11 +146,27 @@ class GroupMember(models.Model):
     is_admin = models.BooleanField(_('admin'), default=False)
     admin_title = models.CharField(_('admin title'), max_length=500, null=True, blank=True)
     joined = models.DateTimeField(_('joined'), default=datetime.datetime.now)
+    
+    REQUEST_STATUS_CHOICES = (
+        ('A', _("accepted")),
+        ('I', _("invited")),
+        ('R', _("requested")),
+    )
+    request_status = models.CharField(_('request status'), max_length=1, choices=REQUEST_STATUS_CHOICES, default='A')
+    
+    def is_accepted(self):
+        return self.request_status == 'A'
+    
+    def is_invited(self):
+        return self.request_status == 'I'
+        
+    def is_requested(self):
+        return self.request_status == 'R'
 
     # away = models.BooleanField(_('away'), default=False)
     # away_message = models.CharField(_('away_message'), max_length=500)
     # away_since = models.DateTimeField(_('away since'), default=datetime.now)
-
+    
 class GroupLocation(models.Model):
     group = models.ForeignKey(BaseGroup, related_name="locations", verbose_name=_('group'))
     place = models.CharField(max_length=100, null=True, blank=True)

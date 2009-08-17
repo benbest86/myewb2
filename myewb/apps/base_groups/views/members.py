@@ -16,6 +16,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.utils.datastructures import SortedDict
+from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from base_groups.models import BaseGroup, GroupMember
@@ -33,7 +34,12 @@ def members_index(request, group_slug, group_model=None, form_class=None, templa
         
     group = get_object_or_404(group_model, slug=group_slug)
     if request.method == 'GET':
-        members = GroupMember.objects.filter(group=group)
+        
+        if group.user_is_admin(user):
+            members = group.members.all()
+        else:
+            members = group.get_members()   # excludes invited / requested members
+        
         search_terms = request.GET.get('search', '')
         if search_terms:
             members = members.filter(user__profile__name__icontains=search_terms) | \
@@ -55,12 +61,30 @@ def members_index(request, group_slug, group_model=None, form_class=None, templa
         form = form_class(request.POST)
         if form.is_valid():
             member = form.save(commit=False)
+            
+            existing_members = GroupMember.objects.filter(group=group, user=member.user)
+            
             # General users can only add themselves as members
-            if user == member.user or user.is_staff or group.user_is_admin(user):   
+            # Users cannot have multiple memberships in the same group
+            if existing_members.count() == 0 and (user == member.user or user.is_staff or group.user_is_admin(user)):
+                if user == member.user:
+                    if group.private and not user.is_staff:     # we ignore group admins since they must already be members
+                        member.request_status = 'R'             # requested by user
+                    else:
+                        member.request_status = 'A'             # if public group, assume automatic acceptance
+                                                                # ditto for any group if site admin
+                else:   
+                    add_type = request.POST["add_type"]
+                    if add_type == "auto":
+                        member.request_status = 'A'             # group / site admin automatically adds user
+                    else:
+                        member.request_status = 'I'             # another user invited by a group / site admin         
+                   
                 if not (user.is_staff or group.user_is_admin(user)):
                     # General users cannot make themselves admins
                     member.is_admin = False
                     member.admin_title = ""
+                
                 member.group = group
                 member.save()
                 if request.is_ajax():
@@ -114,6 +138,11 @@ def new_member(request, group_slug, group_model=None, form_class=None, template_
         
     group = get_object_or_404(group_model, slug=group_slug)
     user = request.user
+    
+    if group.user_is_member_or_pending(user) and not group.user_is_admin(user):
+        request.user.message_set.create(
+            message=_("You are already a member, or pending member, of this %(model)s - see below.") % {"model": group_model._meta.verbose_name,})
+        return HttpResponseRedirect(reverse('%s_member_detail' % group.model.lower(), kwargs={'group_slug': group_slug, 'username': user.username}))
     
     if request.method == 'POST':
         return members_index(request, group_slug, group_model, form_class, index_template_name, template_name)
@@ -240,3 +269,31 @@ def delete_member(request, group_slug, username, group_model=None):
         else:
             response = HttpResponseNotFound();
     return response
+    
+def accept_invitation(request, group_slug, username, group_model=BaseGroup):
+    if request.method == 'POST':
+        group = get_object_or_404(group_model, slug=group_slug)
+        user = get_object_or_404(User, username=username)
+        member = get_object_or_404(GroupMember, group=group, user=user, request_status='I')
+        
+        if request.user.is_authenticated() and user == request.user:
+            member.request_status = 'A'
+            member.save()
+        
+        return HttpResponseRedirect(reverse('%s_member_detail' % group.model.lower(), kwargs={'group_slug': group_slug, 'username': username}))
+    else:
+        return HttpResponseNotFound()
+        
+def accept_request(request, group_slug, username, group_model=BaseGroup):
+    if request.method == 'POST':
+        group = get_object_or_404(group_model, slug=group_slug)
+        user = get_object_or_404(User, username=username)
+        member = get_object_or_404(GroupMember, group=group, user=user, request_status='I')
+        
+        if request.user.is_authenticated() and group.user_is_admin(request.user):
+            member.request_status = 'A'
+            member.save()
+        
+        return HttpResponseRedirect(reverse('%s_member_detail' % group.model.lower(), kwargs={'group_slug': group_slug, 'username': username}))
+    else:
+        return HttpResponseNotFound()

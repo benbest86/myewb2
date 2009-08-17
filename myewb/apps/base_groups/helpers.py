@@ -14,7 +14,9 @@ WHERE
 MEMBER_COUNT_SQL = """
 SELECT COUNT(*)
 FROM base_groups_groupmember
-WHERE base_groups_groupmember.group_id = base_groups_basegroup.id
+WHERE 
+    base_groups_groupmember.group_id = base_groups_basegroup.id AND
+    base_groups_groupmember.request_status = 'A'
 """
 
 def group_url_patterns(model, *args):
@@ -61,6 +63,14 @@ def group_url_patterns(model, *args):
         url(r'^(?P<group_slug>[-\w]+)/members/(?P<username>[\w\._-]+)/edit/$', 'edit_member', name='%s_edit_member' % name,),
         # POST - delete member
         url(r'^(?P<group_slug>[-\w]+)/members/(?P<username>[\w\._-]+)/delete/$', 'delete_member', name='%s_delete_member' % name,),
+    )
+    
+    urlpatterns += patterns('base_groups.views.members',    
+        # POST - accept invitation
+        url(r'^(?P<group_slug>[-\w]+)/members/(?P<username>[\w\._-]+)/accept/$', 'accept_invitation', name='%s_accept_invitation' % name,),
+        
+        # POST - accept request (admins)
+        url(r'^(?P<group_slug>[-\w]+)/members/(?P<username>[\w\._-]+)/acceptrequest/$', 'accept_request', name='%s_accept_request' % name,),
     )
     
     return urlpatterns

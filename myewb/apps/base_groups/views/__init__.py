@@ -122,9 +122,10 @@ def group_detail(request, group_slug, model=None, member_model=None, form_class=
         return HttpResponseRedirect(reverse("%s_detail" % group.model.lower(), kwargs={'group_slug': group_slug}))
     else:
         group = get_object_or_404(model, slug=group_slug)
-        is_member = request.user.is_authenticated() and group.user_is_member(request.user)
-        is_admin = group.user_is_admin(request.user)
-
+        if request.user.is_authenticated() and group.user_is_member_or_pending(request.user):
+            member = member_model.objects.get(user=request.user, group=group)
+        else:
+            member = None
         children = group.get_visible_children(request.user)
 
         # retrieve details
@@ -133,8 +134,7 @@ def group_detail(request, group_slug, model=None, member_model=None, form_class=
                 template_name,
                 {
                     'group': group,                
-                    'is_member': is_member,
-                    'is_admin': is_admin,
+                    'member': member,
                     'children': children,
                 },
                 context_instance=RequestContext(request)
@@ -149,8 +149,7 @@ def group_detail(request, group_slug, model=None, member_model=None, form_class=
                     template_name,
                     {
                         'group': group,                
-                        'is_member': is_member,
-                        'is_admin': is_admin,
+                        'member': member,
                         'children': children,
                     },
                     context_instance=RequestContext(request)
@@ -194,10 +193,11 @@ def delete_group(request, group_slug, model=None, member_model=None, form_class=
         group = get_object_or_404(BaseGroup, slug=group_slug)
         return HttpResponseRedirect(reverse("delete_%s" % group.model.lower(), kwargs={'group_slug': group_slug}))
     else:
-        group = get_object_or_404(model, slug=group_slug)    
-        is_member = request.user.is_authenticated() and group.user_is_member(request.user)
-        is_admin = group.user_is_admin(request.user)
-
+        group = get_object_or_404(model, slug=group_slug)
+        if request.user.is_authenticated() and group.user_is_member_or_pending(request.user):
+            member = member_model.objects.get(user=request.user, group=group)
+        else:
+            member = None
         children = group.get_visible_children(request.user)
 
         group_member = member_model.objects.get(group=group, user=request.user)
@@ -212,8 +212,7 @@ def delete_group(request, group_slug, model=None, member_model=None, form_class=
                     detail_template_name,
                     {
                         'group': group,
-                        'is_member': is_member,
-                        'is_admin': is_admin,
+                        'member': member,
                         'children': children,
                     },
                     context_instance=RequestContext(request)
