@@ -288,7 +288,7 @@ def accept_request(request, group_slug, username, group_model=BaseGroup):
     if request.method == 'POST':
         group = get_object_or_404(group_model, slug=group_slug)
         user = get_object_or_404(User, username=username)
-        member = get_object_or_404(GroupMember, group=group, user=user, request_status='I')
+        member = get_object_or_404(GroupMember, group=group, user=user, request_status='R')
         
         if request.user.is_authenticated() and group.user_is_admin(request.user):
             member.request_status = 'A'

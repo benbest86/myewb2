@@ -91,10 +91,10 @@
                     
                     {% if member.is_invited %}
                         {% trans "You have been invited to join this network. Do you wish to join?" %}
-                        <form method="POST" action="{% url network_accept_invitation group.slug user.username %}">
+                        <form method="POST" action="{% url network_accept_invitation group.slug member.user.username %}">
                         	<input type="submit" value="{% trans "Join network" %}" />
             			</form>            			
-						<form method="POST" action="{% url network_delete_member group.slug user.username %}">
+						<form method="POST" action="{% url network_delete_member group.slug member.user.username %}">
                         	<input type="submit" value="{% trans "Decline" %}" />
 						</form>
                     {% endif %}

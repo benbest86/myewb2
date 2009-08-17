@@ -89,10 +89,10 @@
                     
                     {% if member.is_invited %}
                         {% trans "You have been invited to join this community. Do you wish to join?" %}
-                        <form method="POST" action="{% url community_accept_invitation group.slug user.username %}">
+                        <form method="POST" action="{% url community_accept_invitation group.slug member.user.username %}">
                         	<input type="submit" value="{% trans "Join community" %}" />
             			</form>            			
-						<form method="POST" action="{% url community_delete_member group.slug user.username %}">
+						<form method="POST" action="{% url community_delete_member group.slug member.user.username %}">
                         	<input type="submit" value="{% trans "Decline" %}" />
 						</form>
                     {% endif %}
