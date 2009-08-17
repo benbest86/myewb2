@@ -35,7 +35,7 @@ class BaseGroup(Group):
     
     VISIBILITY_CHOICES = (
         ('E', _("everyone")),
-        ('P', _("group members and members of immediate parent group only")),
+        ('P', _("group members and members of parent network only")),
         ('M', _("group members only"))
     )
     visibility = models.CharField(_('visibility'), max_length=1, choices=VISIBILITY_CHOICES, default='E')

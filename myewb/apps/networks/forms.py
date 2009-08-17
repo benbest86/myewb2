@@ -19,7 +19,7 @@ class NetworkForm(BaseGroupForm):
 
     class Meta:
         model = Network
-        fields = ('name', 'slug', 'network_type', 'description', 'parent', 'private', 'visibility')
+        fields = ('name', 'slug', 'network_type', 'description', 'private')
 
 class NetworkMemberForm(GroupMemberForm):
 

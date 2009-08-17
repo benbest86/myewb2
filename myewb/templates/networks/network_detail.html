@@ -57,10 +57,6 @@
         
         <p>{{ group.description }}</p>
 
-		{% if group.parent %}
-			<p>{% trans "Parent:" %} <a href="{% url group_detail group.parent.slug %}">{{ group.parent.name }}</a></p>
-		{% endif %}
-		
 		{% if children.count %}
 			<p>{% trans "Child groups:" %}</p>
 			<ul>

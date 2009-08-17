@@ -15,7 +15,6 @@
     <h1>{% trans "Create Network" %}</h1>
     
     <p>{% trans "A <b>network</b> is a group of people associated with a common geographical area, or with a common institution, such as a workplace or university." %}</p>
-    <p>{% trans "<b>Visibility</b> refers to the ability for public users to see, or access information related to, a group. You may set a group as either visible to all users; visible to members only; or visible only to existing members and to members of the group's parent group." %}</p>
     {% if user.is_authenticated %}
         <form class="uniForm" id="network_form" method="POST" action="">
             <fieldset class="inlineLabels">

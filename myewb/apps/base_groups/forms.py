@@ -19,13 +19,8 @@ class BaseGroupForm(forms.ModelForm):
         error_message = _("This value must contain only letters, numbers, underscores and hyphens."))
 
     def __init__(self, *args, **kwargs):
-        # get the valid parents for a user if we have a user
-        user = kwargs.pop('user', None)
+        user = kwargs.pop('user', None)     # pop off user arg, in case subclass doesn't use it
         super(BaseGroupForm, self).__init__(*args, **kwargs)
-        if user:
-            group = kwargs.get('instance', None)
-            valid_parents = get_valid_parents(user, group=group)
-            self.fields['parent'].queryset = valid_parents
             
     def clean_slug(self):
         

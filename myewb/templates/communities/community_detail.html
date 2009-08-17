@@ -60,15 +60,6 @@
 		{% if group.parent %}
 			<p>{% trans "Parent:" %} <a href="{% url group_detail group.parent.slug %}">{{ group.parent.name }}</a></p>
 		{% endif %}
-		
-		{% if children.count %}
-			<p>{% trans "Child groups:" %}</p>
-			<ul>
-			{% for child in children %}
-				<li><a href="{{ child.get_absolute_url }}">{{ child.name }}</a></li>
-			{% endfor %}
-			</ul>
-		{% endif %}
         
         {% if member.is_admin %}
 			<p><a href="{% url edit_community group.slug %}">{% trans "Edit details" %}</a></p>           
