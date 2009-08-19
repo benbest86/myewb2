@@ -14,6 +14,11 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 </div>
 
 {% if is_me %}
+	<div class="membership">
+		<a href="{% url profile_pay_membership other_user %}">Pay my membership fee</a>
+		<br/><br/>
+	</div>
+
 	<div class="groups">
         <h2>{% trans "Your Groups" %}</h2>
         {% if other_user.basegroup_set.all %}
@@ -46,6 +51,15 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
         {% endif %}
     </div>
 {% else %}
+	{# TODO: is chapter exec?? #}
+	{% if user.is_staff %}
+		<div class="membership">
+			<a href="{% url profile_pay_membership other_user %}">Make regular member</a><br/>
+			(only click if they have paid their fee in cash)
+			<br/><br/>
+		</div>
+	{% endif %}
+
 	{% if is_friend or user.is_staff %}
 		<div class="groups">
 	        <h2>{% blocktrans %}{{ other_user }}'s Groups{% endblocktrans %}</h2>

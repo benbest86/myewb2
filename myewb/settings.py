@@ -121,6 +121,7 @@ INSTALLED_APPS = (
     # included
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.formtools',
     'django.contrib.sessions',
     'django.contrib.sites',
     'django.contrib.humanize',
@@ -179,6 +180,7 @@ INSTALLED_APPS = (
     'base_groups',
     'networks',
     'communities',
+    'creditcard',
     
     'django.contrib.admin',
 
@@ -249,6 +251,11 @@ WIKI_REQUIRES_LOGIN = True
 # Uncomment this line after signing up for a Yahoo Maps API key at the
 # following URL: https://developer.yahoo.com/wsregapp/
 # YAHOO_MAPS_API_KEY = ''
+
+# Useful stuff for credit card processing.  Note you will *need* to get
+# your own merchant ID, and put it in local_settings.py
+TD_MERCHANT_ID = None
+TD_MERCHANT_URL = 'https://www.beanstream.com/scripts/process_transaction.asp'
 
 # local_settings.py can be used to override environment-specific settings
 # like database and email that differ between development and production.

@@ -9,6 +9,7 @@ Last modified: 2009-08-02
 @author: Joshua Gorner, Francis Kung, Ben Best
 """
 
+import random, sha
 from django.shortcuts import get_object_or_404
 from pinax.apps.profiles.views import *
 from pinax.apps.profiles.views import profile as pinaxprofile
@@ -19,10 +20,12 @@ from django.contrib.auth.models import User
 
 from siteutils.decorators import owner_required
 from profiles.models import MemberProfile, StudentRecord, WorkRecord
-from profiles.forms import StudentRecordForm, WorkRecordForm
+from profiles.forms import StudentRecordForm, WorkRecordForm, MembershipForm
 
 from networks.models import Network
 from base_groups.models import GroupMember
+from creditcard.forms import PaymentForm
+from creditcard.models import Payment, Product
 
 def profiles(request, template_name="profiles/profiles.html"):
     search_terms = request.GET.get('search', '')
@@ -368,3 +371,63 @@ def profile(request, username, template_name="profiles/profile.html", extra_cont
         return pinaxprofile(request, username, extra_context=extra_context)
     else:
         return pinaxprofile(request, username, template_name, extra_context)
+
+def pay_membership(request, username):
+    other_user = User.objects.get(username=username)
+    
+    # Show payment form if you are upgrading yourself
+    if request.user == other_user:
+        form = MembershipForm()
+        form.helper.action = reverse('profile_pay_membership2', kwargs={'username': username})
+    
+        return render_to_response(
+            'creditcard/new_payment.html',
+            {'form': form},
+            context_instance=RequestContext(request)
+            )
+         
+    # Admins / chapter execs (TODO) can upgrade anyone's membership
+    elif request.user.is_superuser:
+        message = loader.get_template("profiles/member_upgraded.html")
+        c = Context({'user': other_user})
+        request.user.message_set.create(message=message.render(c))
+        return HttpResponseRedirect(reverse('profile_detail', kwargs={'username': username }))
+    
+    # should not happen.. duh duh duh!
+    else:
+        return render_to_response('denied.html', context_instance=RequestContext(request))
+    
+    
+def pay_membership2(request, username):
+    other_user = User.objects.get(username=username)
+    
+    # Show payment form if you are upgrading yourself
+    if request.user == other_user:
+        if request.method == 'POST':
+            f = MembershipForm(request.POST)
+            
+            if f.is_valid():
+                # will have to do some sku-building once we have chapters in
+                product = Product.objects.get(sku=f.cleaned_data['membership_type'])
+                
+                form = PaymentForm(initial={'products':product.sku})
+                form.helper.action = reverse('profile_pay_preview', kwargs={'username': username})
+
+                return render_to_response(
+                                          'creditcard/new_payment.html',
+                                          {'form': form},
+                                           context_instance=RequestContext(request)
+                                           )
+                
+        # what kind of error to throw...?
+         
+    # Admins / chapter execs (TODO) can upgrade anyone's membership
+    elif request.user.is_superuser:
+        message = loader.get_template("profiles/member_upgraded.html")
+        c = Context({'user': other_user})
+        request.user.message_set.create(message=message.render(c))
+        return HttpResponseRedirect(reverse('profile_detail', kwargs={'username': username }))
+    
+    # should not happen.. duh duh duh!
+    else:
+        return render_to_response('denied.html', context_instance=RequestContext(request))

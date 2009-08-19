@@ -1,0 +1,20 @@
+[
+    {
+        "pk": 1,
+        "model": "creditcard.product",
+        "fields": {
+			"name": "Student membership",
+            "sku": "studues",
+			"amount": "20.00"
+        }
+    },
+    {
+        "pk": 2,
+        "model": "creditcard.product",
+        "fields": {
+			"name": "Professional membership",
+            "sku": "produes",
+			"amount": "40.00"
+        }
+    }
+]

@@ -1,0 +1,36 @@
+
+{% extends "profiles/base.html" %}
+
+{% comment %}
+This file is part of myEWB
+Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
+{% endcomment %}
+
+{% load i18n %}
+{% load avatar_tags %}
+{% load app_plugins %}
+{% load uni_form_custom %}
+
+{% block head_title %}{% blocktrans %}Make A Payment{% endblocktrans %}{% endblock %}
+
+{% block body %}
+	
+    <div class="left_panel">
+        
+        <h1>Make A Payment</h1>
+        
+		{% if form.non_field_errors %}
+			<div class="uniForm">
+				{% for e in form.non_field_errors %}
+					<div class="errorField"">{{ e }} </div>
+				{% endfor %}
+			</div>
+		{% endif %}
+
+        {% with form.helper as helper %}
+        	{% uni_form form helper %}
+        {% endwith %}
+        
+    </div>
+{% endblock %}
+
