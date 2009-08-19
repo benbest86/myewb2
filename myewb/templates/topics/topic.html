@@ -22,7 +22,7 @@
             </div>
             <div class="bulk">
                 <h1>{{ topic.title }}</h1>
-                <div class="body">{{ topic.body|urlize|linebreaks }}</div>
+                <div class="body">{{ topic.body|safe }}</div>
                 <p>{% show_tags_for topic %}</p>
                 {% ifequal user topic.creator %}
                 <form class="uniForm" method="POST" action="{{ request.path }}delete/">
@@ -43,7 +43,7 @@
         <form class="uniForm" method="post" action="{{ request.path }}">
             <fieldset class="inlineLabels">
                 <div class="form_block">
-                    <textarea id="id_body" name="body">{{ topic.body }}</textarea>
+                    <textarea id="id_body" class="tinymce" name="body">{{ topic.body }}</textarea>
                     <input type="submit" name="edit" value="Edit!" />
                 </div>
             </fieldset>
@@ -51,4 +51,9 @@
     {% else %}
         {% comments topic %}
     {% endif %}
+{% endblock %}
+
+{% block extra_body %}
+	{{ block.super }}
+	{% include "tinymce.html" %}
 {% endblock %}

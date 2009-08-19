@@ -14,6 +14,8 @@ from django.core.urlresolvers import reverse
 
 from topics.models import Topic
 
+from lxml.html.clean import clean_html, autolink_html
+
 class GroupTopic(Topic):
     """
     a discussion topic for a BaseGroup.
@@ -27,6 +29,12 @@ class GroupTopic(Topic):
             return group.content_bridge.reverse("topic_detail", group, kwargs=kwargs)
         else:
             return reverse("topic_detail", kwargs=kwargs)
+        
+    def save(self):
+        # Additional options at http://codespeak.net/lxml/lxmlhtml.html#cleaning-up-html
+        self.body = clean_html(self.body)
+        self.body = autolink_html(self.body)
+        super(GroupTopic, self).save()
     
     class Meta:
         ordering = ('-modified', )

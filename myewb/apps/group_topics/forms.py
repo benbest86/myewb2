@@ -13,6 +13,8 @@ from django import forms
 from group_topics.models import GroupTopic
 
 class GroupTopicForm(forms.ModelForm):
+    
+    body = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
 
     class Meta:
         model = GroupTopic

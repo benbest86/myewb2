@@ -71,7 +71,7 @@ class BaseGroup(Group):
         members_with_emails = self.members.select_related(depth=1).exclude(user__email='')
         return [member.user.email for member in members_with_emails]
 
-    def send_mail_to_members(self, subject, body, html=False, fail_silently=False):
+    def send_mail_to_members(self, subject, body, html=True, fail_silently=False):
         """
         Creates and sends an email to all members of a network using Django's
         EmailMessage.

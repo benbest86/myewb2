@@ -13,7 +13,7 @@
     <div class="bulk">
         {% if not group %}<div class="topic_group"><a href="{% groupurl topic_list topic.group %}">{{topic.group}}</a></div>{% endif %}
         <h2><a href="{{ topic.get_absolute_url }}">{{ topic.title }}</a></h2>
-        <div class="body">{{ topic.body|urlize|linebreaks }}</div>
+        <div class="body">{{ topic.body|safe }}</div>
         {% get_comment_count for topic as comment_count %}
         {% if comment_count %}
             <div class="comment_stats">
