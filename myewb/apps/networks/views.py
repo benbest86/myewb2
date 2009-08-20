@@ -15,13 +15,13 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User
 
-from networks.models import Network, NetworkMember
-from networks.forms import NetworkForm, NetworkMemberForm
+from networks.models import Network
+from networks.forms import NetworkForm
 
 from base_groups.views import *
 from base_groups.views import members
 from base_groups.models import BaseGroup, GroupMember, GroupLocation
-from base_groups.forms import GroupLocationForm
+from base_groups.forms import GroupMemberForm, GroupLocationForm
 from base_groups.helpers import *
 
 INDEX_TEMPLATE = 'networks/networks_index.html'
@@ -41,46 +41,46 @@ DEFAULT_OPTIONS = {"check_create": True}
 
 def networks_index(request, form_class=NetworkForm, template_name=INDEX_TEMPLATE,
         new_template_name=NEW_TEMPLATE):
-    return groups_index(request, Network, NetworkMember, form_class, template_name, new_template_name, DEFAULT_OPTIONS)
+    return groups_index(request, Network, GroupMember, form_class, template_name, new_template_name, DEFAULT_OPTIONS)
 
 @permission_required('networks.add')
 def new_network(request, form_class=NetworkForm, template_name=NEW_TEMPLATE, 
         index_template_name=INDEX_TEMPLATE):
-    return new_group(request, Network, NetworkMember, form_class, template_name, index_template_name, DEFAULT_OPTIONS)
+    return new_group(request, Network, GroupMember, form_class, template_name, index_template_name, DEFAULT_OPTIONS)
 
 def network_detail(request, group_slug, form_class=NetworkForm, template_name=DETAIL_TEMPLATE,
         edit_template_name=EDIT_TEMPLATE):
-    return group_detail(request, group_slug, Network, NetworkMember, form_class, template_name, edit_template_name, DEFAULT_OPTIONS)
+    return group_detail(request, group_slug, Network, GroupMember, form_class, template_name, edit_template_name, DEFAULT_OPTIONS)
 
 @permission_required('networks.change')
 def edit_network(request, group_slug, form_class=NetworkForm, template_name=EDIT_TEMPLATE,
         detail_template_name=DETAIL_TEMPLATE):
-    return edit_group(request, group_slug, Network, NetworkMember, form_class, template_name, detail_template_name, DEFAULT_OPTIONS)
+    return edit_group(request, group_slug, Network, GroupMember, form_class, template_name, detail_template_name, DEFAULT_OPTIONS)
 
 @permission_required('networks.delete')
 def delete_network(request, group_slug, form_class=NetworkForm, detail_template_name=DETAIL_TEMPLATE):
-    return delete_group(request, group_slug, Network, NetworkMember, form_class, detail_template_name, DEFAULT_OPTIONS)
+    return delete_group(request, group_slug, Network, GroupMember, form_class, detail_template_name, DEFAULT_OPTIONS)
             
 @permission_required('networks.change')
 def edit_network_location(request, group_slug, form_class=GroupLocationForm, template_name=LOCATION_TEMPLATE):
     return edit_group_location(request, group_slug, Network, form_class, template_name, DEFAULT_OPTIONS)
     
         
-def members_index(request, group_slug, form_class=NetworkMemberForm, template_name=MEM_INDEX_TEMPLATE, 
+def members_index(request, group_slug, form_class=GroupMemberForm, template_name=MEM_INDEX_TEMPLATE, 
         new_template_name=MEM_NEW_TEMPLATE):
     return members.members_index(request, group_slug, Network, form_class, template_name, new_template_name)
     
 @login_required
-def new_member(request, group_slug, form_class=NetworkMemberForm, template_name=MEM_NEW_TEMPLATE,
+def new_member(request, group_slug, form_class=GroupMemberForm, template_name=MEM_NEW_TEMPLATE,
         index_template_name=MEM_INDEX_TEMPLATE):
     return members.new_member(request, group_slug, Network, form_class, template_name, index_template_name)
     
-def member_detail(request, group_slug, username, form_class=NetworkMemberForm, template_name=MEM_DETAIL_TEMPLATE,
+def member_detail(request, group_slug, username, form_class=GroupMemberForm, template_name=MEM_DETAIL_TEMPLATE,
         edit_template_name=MEM_EDIT_TEMPLATE):
     return members.member_detail(request, group_slug, username, Network, form_class, template_name, edit_template_name)
 
 @login_required
-def edit_member(request, group_slug, username, form_class=NetworkMemberForm, template_name=MEM_EDIT_TEMPLATE,
+def edit_member(request, group_slug, username, form_class=GroupMemberForm, template_name=MEM_EDIT_TEMPLATE,
         detail_template_name=MEM_DETAIL_TEMPLATE):
     return members.edit_member(request, group_slug, username, Network, form_class, template_name, detail_template_name)
 

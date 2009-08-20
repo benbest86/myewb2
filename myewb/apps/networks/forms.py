@@ -12,17 +12,11 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 
 from base_groups.models import BaseGroup
-from base_groups.forms import BaseGroupForm, GroupMemberForm
-from networks.models import Network, NetworkMember
+from base_groups.forms import BaseGroupForm
+from networks.models import Network
         
 class NetworkForm(BaseGroupForm):
 
     class Meta:
         model = Network
         fields = ('name', 'slug', 'network_type', 'description', 'private')
-
-class NetworkMemberForm(GroupMemberForm):
-
-    class Meta:
-        model = NetworkMember
-        fields = ('user', 'is_admin', 'admin_title')

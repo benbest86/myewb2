@@ -20,6 +20,3 @@ class Community(BaseGroup):
         
     class Meta:
         verbose_name_plural = "communities"
-        
-class CommunityMember(GroupMember):
-    parent_model = Community

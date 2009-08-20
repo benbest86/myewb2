@@ -14,7 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from base_groups.models import BaseGroup
 from base_groups.forms import BaseGroupForm, GroupMemberForm
 from base_groups.helpers import get_valid_parents
-from communities.models import Community, CommunityMember
+from communities.models import Community
 from networks.models import Network
 
 class CommunityForm(BaseGroupForm):
@@ -30,9 +30,3 @@ class CommunityForm(BaseGroupForm):
     class Meta:
         model = Community
         fields = ('name', 'slug', 'description', 'parent', 'private', 'visibility')
-        
-class CommunityMemberForm(GroupMemberForm):
-
-    class Meta:
-        model = CommunityMember
-        fields = ('user', 'is_admin', 'admin_title')

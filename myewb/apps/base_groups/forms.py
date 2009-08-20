@@ -44,9 +44,10 @@ class BaseGroupForm(forms.ModelForm):
         abstract = True
 
 class GroupMemberForm(forms.ModelForm):
-    # we may need something else in here at some point...
+    
     class Meta:
-        abstract = True
+        model = GroupMember        
+        fields = ('user', 'is_admin', 'admin_title')
         
 class GroupLocationForm(forms.ModelForm):
     

@@ -167,6 +167,12 @@ class GroupMember(models.Model):
     # away_message = models.CharField(_('away_message'), max_length=500)
     # away_since = models.DateTimeField(_('away since'), default=datetime.now)
     
+class FormerGroupMember(models.Model):
+    group = models.ForeignKey(BaseGroup, related_name="former_members", verbose_name=_('group'))
+    user = models.ForeignKey(User, related_name="former_member_groups", verbose_name=_('user'))
+    joined = models.DateTimeField(_('joined'))
+    left = models.DateTimeField(_('joined'), default=datetime.datetime.now)
+    
 class GroupLocation(models.Model):
     group = models.ForeignKey(BaseGroup, related_name="locations", verbose_name=_('group'))
     place = models.CharField(max_length=100, null=True, blank=True)

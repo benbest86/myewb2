@@ -7,9 +7,13 @@ Last modified on 2009-07-29
 @author Joshua Gorner
 """
 from django.contrib import admin
-from base_groups.models import BaseGroup
+from base_groups.models import BaseGroup, GroupMember
 
 class BaseGroupAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug', 'creator', 'created')
+    
+class GroupMemberAdmin(admin.ModelAdmin):
+    lsit_display = ('group', 'user', 'is_admin', 'admin_title', 'created')
 
 admin.site.register(BaseGroup, BaseGroupAdmin)
+admin.site.register(GroupMember, GroupMemberAdmin)

@@ -19,7 +19,7 @@ from django.utils.datastructures import SortedDict
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
-from base_groups.models import BaseGroup, GroupMember
+from base_groups.models import BaseGroup, GroupMember, FormerGroupMember
 from base_groups.forms import GroupMemberForm
 from base_groups.decorators import own_member_object_required, group_admin_required, visibility_required
 
@@ -246,6 +246,11 @@ def delete_member(request, group_slug, username, group_model=None):
         group = get_object_or_404(group_model, slug=group_slug)
         user = get_object_or_404(User, username=username)
         member = get_object_or_404(GroupMember, group=group, user=user)
+        
+        # for future involvement-history use
+        former_member = FormerGroupMember(group=group, user=user, joined=member.joined)
+        former_member.save()
+        
         member.delete()
         if request.is_ajax():
             response = render_to_response(

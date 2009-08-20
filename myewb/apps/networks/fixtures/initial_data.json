@@ -37,12 +37,5 @@
 			"is_admin": true,
 			"admin_title": "Administrator"
         }
-    },
-	{
-        "pk": 1,
-        "model": "networks.networkmember",
-        "fields": {
-			"groupmember_ptr": 1
-        }
     }
 ]

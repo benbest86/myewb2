@@ -13,8 +13,10 @@ from django.test import TestCase
 from django.test.client import Client
 from django.core import mail
 
-from networks.models import Network, NetworkMember
-from networks.forms import NetworkForm, NetworkMemberForm
+from base_groups.models import GroupMember
+from base_groups.forms import GroupMemberForm
+from networks.models import Network
+from networks.forms import NetworkForm
 
 class TestNetwork(TestCase):
     fixtures = ['test_networks.json']
@@ -28,8 +30,8 @@ class TestNetwork(TestCase):
         self.network_one = Network.objects.get(slug="ewb-utoronto")
         self.network_two = Network.objects.get(slug="ewb-uwaterloo")
         
-        self.member_one = NetworkMember.objects.get(user=self.user_one, group=self.network_one)
-        self.member_two = NetworkMember.objects.get(user=self.user_two, group=self.network_two)
+        self.member_one = GroupMember.objects.get(user=self.user_one, group=self.network_one)
+        self.member_two = GroupMember.objects.get(user=self.user_two, group=self.network_two)
     
     def tearDown(self):
         pass

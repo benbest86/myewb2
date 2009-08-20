@@ -35,9 +35,6 @@ class Network(BaseGroup):
         
     class Meta:
         verbose_name_plural = "networks"
-        
-class NetworkMember(GroupMember):
-    parent_model = Network
     
 def create_network_location(sender, instance=None, **kwargs):
     """Automatically creates a GroupLocation for a new Network."""
