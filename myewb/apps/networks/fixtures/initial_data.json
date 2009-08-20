@@ -23,7 +23,7 @@
         "pk": 1,
         "model": "networks.network",
         "fields": {
-			"base_group": 1,
+			"basegroup_ptr": 1,
             "network_type": "N"
         }
     },

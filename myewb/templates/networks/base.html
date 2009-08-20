@@ -13,12 +13,6 @@
 
 {% block subnav %}
     <ul>
-        {% if group %}
-        <li><a href="{% url network_detail group.slug %}">{{ group.name }} {% trans "Home" %}</a></li>
-        {% endif %}
-        {% if member.is_admin %}
-        <li><a href="{% url network_admin_page group.slug %}">{% trans "Admin Panel" %}</a></li>
-        {% endif %}
         <li><a href="{% url networks_index %}">{% trans "All Networks" %}</a></li>
     </ul>
 {% endblock %}

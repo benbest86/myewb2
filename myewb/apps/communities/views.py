@@ -29,7 +29,6 @@ INDEX_TEMPLATE = 'communities/communities_index.html'
 NEW_TEMPLATE = 'communities/new_community.html'
 EDIT_TEMPLATE = 'communities/edit_community.html'
 DETAIL_TEMPLATE = 'communities/community_detail.html'
-ADMIN_TEMPLATE = 'communities/admin.html'
 
 LOCATION_TEMPLATE = 'communities/edit_community_location.html'
 
@@ -62,10 +61,6 @@ def edit_community(request, group_slug, form_class=CommunityForm, template_name=
 @login_required
 def delete_community(request, group_slug, form_class=CommunityForm, detail_template_name=DETAIL_TEMPLATE):
     return delete_group(request, group_slug, Community, GroupMember, form_class, detail_template_name, DEFAULT_OPTIONS)
-
-# permission here?
-def community_admin_page(request, group_slug, template_name=ADMIN_TEMPLATE):
-    return group_admin_page(request, group_slug, Community, template_name)
     
         
 def members_index(request, group_slug, form_class=GroupMemberForm, template_name=MEM_INDEX_TEMPLATE, 

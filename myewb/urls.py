@@ -57,9 +57,6 @@ urlpatterns = patterns('',
     (r'^communities/', include('communities.urls')),
     (r'^posts/', include('group_topics.urls')),
     (r'^creditcard/', include('creditcard.urls')),
-    # plugin urls, so just include the base and we'll see how it goes...
-    (r'^account/plugins/', include('myewb_plugins.user_pref_urls')),
-    (r'^', include('myewb_plugins.urls')),
     
 #    (r'^feeds/tweets/(.*)/$', 'django.contrib.syndication.views.feed', tweets_feed_dict),
 #    (r'^feeds/posts/(.*)/$', 'django.contrib.syndication.views.feed', blogs_feed_dict),

@@ -23,7 +23,6 @@ setup_environ(settings_mod)
 
 sys.path.insert(0, join(settings.PINAX_ROOT, "apps"))
 sys.path.insert(0, join(settings.PROJECT_ROOT, "apps"))
-sys.path.insert(0, join(settings.PROJECT_ROOT, "plugins"))
 
 if __name__ == "__main__":
     execute_from_command_line()
