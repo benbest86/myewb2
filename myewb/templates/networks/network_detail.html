@@ -11,6 +11,7 @@
 {% load base_groups_tags %}
 {% load group_tags %}
 {% load topics_tags %}
+{% load myewb_plugins %}
 
 {% block head_title %}{{ group.name }}{% endblock %}
 
@@ -185,6 +186,7 @@
                </div>
             {% endif %}
 {% endcomment %} 
+{% plugin_hook "group_plugin_menu" user=user group=group %}
             
         {% endif %}
     </div>

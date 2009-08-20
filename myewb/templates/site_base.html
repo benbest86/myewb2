@@ -5,6 +5,8 @@
 {% load ifsetting_tag %}
 {% load svn_app_version %}
 {% load analytics %}
+{% load app_plugins %}
+{% load myewb_plugins %}
 
 {% block extra_head_base %}
     <link rel="SHORTCUT ICON" href="{{ MEDIA_URL}}favicon.ico" />
@@ -44,6 +46,7 @@
             <li id="tab_networks"><a href="{% url networks_index %}">{% trans "Networks" %}</a></li>
             <li id="tab_communities"><a href="{% url communities_index %}">{% trans "Communities" %}</a></li>
             <li id="tab_topics"><a href="{% url topic_list %}">{% trans "Posts" %}</a></li>
+            {% plugin_hook "menu_tab" user=user %}
             <li id="tab_inbox"><a href="{% url messages_inbox %}">{% trans "Inbox" %} ({{ combined_inbox_count }})</a></li>
         {% endspaceless %}</ul>
     {% endif %}

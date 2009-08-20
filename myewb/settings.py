@@ -130,7 +130,7 @@ INSTALLED_APPS = (
     
     # external
     'notification', # must be first
-#    'django_openid',
+    'django_openid',
     'emailconfirmation',
     'django_extensions',
     'robots',
@@ -180,7 +180,12 @@ INSTALLED_APPS = (
     'base_groups',
     'networks',
     'communities',
+    'myewb_plugins',
     'creditcard',
+
+    # plugins
+    'ideas_app',
+    'pers_dummy',
     
     'django.contrib.admin',
 

@@ -8,9 +8,14 @@ Created on 2009-07-30
 @author Joshua Gorner, Benjamin Best
 """
 from django.core.urlresolvers import reverse
+from django.db import models
+from django.db.models.signals import post_save
+
 from base_groups.models import BaseGroup, GroupMember
+from myewb_plugins.models import PluginApp, GroupPluginAppPreference
 
 class Community(BaseGroup):
+    base_group = models.OneToOneField(BaseGroup, parent_link=True)
     def get_absolute_url(self):
         return reverse('community_detail', kwargs={'group_slug': self.slug})
        
@@ -20,3 +25,10 @@ class Community(BaseGroup):
         
     class Meta:
         verbose_name_plural = "communities"
+        
+# enables group plugin capability on this content type
+def create_preferences_for_community(sender, instance, created, **kwargs):
+    if created:
+        for plugin_app in PluginApp.objects.filter(plugin_type='group', default_visibility=True):
+            GroupPluginAppPreference.objects.create(group=instance.base_group, plugin_app=plugin_app)
+post_save.connect(create_preferences_for_community, sender=Community)

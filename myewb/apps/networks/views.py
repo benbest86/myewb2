@@ -28,6 +28,7 @@ INDEX_TEMPLATE = 'networks/networks_index.html'
 NEW_TEMPLATE = 'networks/new_network.html'
 EDIT_TEMPLATE = 'networks/edit_network.html'
 DETAIL_TEMPLATE = 'networks/network_detail.html'
+ADMIN_TEMPLATE = 'networks/admin.html'
 
 LOCATION_TEMPLATE = 'networks/edit_network_location.html'
 
@@ -60,6 +61,10 @@ def edit_network(request, group_slug, form_class=NetworkForm, template_name=EDIT
 @permission_required('networks.delete')
 def delete_network(request, group_slug, form_class=NetworkForm, detail_template_name=DETAIL_TEMPLATE):
     return delete_group(request, group_slug, Network, GroupMember, form_class, detail_template_name, DEFAULT_OPTIONS)
+
+# IS there  a permission for this? Are these permissions redundant anyways?
+def network_admin_page(request, group_slug, template_name=ADMIN_TEMPLATE):
+    return group_admin_page(request, group_slug, Network, template_name)
             
 @permission_required('networks.change')
 def edit_network_location(request, group_slug, form_class=GroupLocationForm, template_name=LOCATION_TEMPLATE):
@@ -87,7 +92,7 @@ def edit_member(request, group_slug, username, form_class=GroupMemberForm, templ
 @login_required    
 def delete_member(request, group_slug, username):
     return members.delete_member(request, group_slug, username, Network)
-    
+
 def ajax_search(request, network_type):
     search_term = request.GET.get('q', '')
     networks = []

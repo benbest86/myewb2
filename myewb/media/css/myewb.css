@@ -56,4 +56,13 @@ div.topic_group {
 
 div.topic_group a {
     color: #606060;
+
+table.preferences {
+    margin: 0.5em;
+}
+table.preferences td {
+    padding: 1em;
+}
+table.preferences th {
+    padding: 2px;
 }

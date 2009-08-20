@@ -15,9 +15,11 @@ from django.db import models
 from django.db.models.signals import post_save
 
 from base_groups.models import BaseGroup, GroupMember, GroupLocation
+from myewb_plugins.models import PluginApp, GroupPluginAppPreference
 
 class Network(BaseGroup):
     
+    base_group = models.OneToOneField(BaseGroup, parent_link=True)
     TYPE_CHOICES = (
 	    ('N', _('National')),
         ('R', _('Regional')),
@@ -43,3 +45,10 @@ def create_network_location(sender, instance=None, **kwargs):
     location, created = GroupLocation.objects.get_or_create(group=instance)
 
 post_save.connect(create_network_location, sender=Network)
+
+# enables group plugin capability on this content type
+def create_preferences_for_network(sender, instance, created, **kwargs):
+    if created:
+        for plugin_app in PluginApp.objects.filter(plugin_type='group', default_visibility=True):
+            GroupPluginAppPreference.objects.create(group=instance.base_group, plugin_app=plugin_app)
+post_save.connect(create_preferences_for_network, sender=Network)
