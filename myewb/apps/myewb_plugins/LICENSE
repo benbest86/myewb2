@@ -1,0 +1,6 @@
+myewb_plugins is a fork of django-app-plugins found at http://code.google.com/p/django-app-plugins/
+The project is licensed under the MIT license: http://www.opensource.org/licences/mit-license.php
+Further modifications apply under the license for MYEWB 2.0
+
+Forked from the pinax0.7-beta3 release.
+

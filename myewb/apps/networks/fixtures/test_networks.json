@@ -1,0 +1,227 @@
+[
+    {
+		"pk": 1,
+		"model": "auth.user",
+		"fields": {
+			"username": "bob",
+			"first_name": "Bob",
+			"last_name": "Roberts",
+			"is_active": true,
+			"is_superuser": false,
+			"is_staff": false,
+			"last_login": "2009-03-31 19:11:56",
+			"groups": [],
+			"user_permissions": [],
+			"password": "sha1$7bd83$fefdb3f02366048ce73773764b8a7dfa39489195",
+			"email": "bob@roberts.com",
+			"date_joined": "2009-03-31 15:14:06"
+		}
+	},
+	{
+		"pk": 2,
+		"model": "auth.user",
+		"fields": {
+			"username": "joe",
+			"first_name": "Joe",
+			"last_name": "Smith",
+			"is_active": true,
+			"is_superuser": false,
+			"is_staff": false,
+			"last_login": "2009-03-31 19:11:56",
+			"groups": [],
+			"user_permissions": [],
+			"password": "sha1$7bd83$fefdb3f02366048ce73773764b8a7dfa39489195",
+			"email": "joe@smith.com",
+			"date_joined": "2009-03-31 15:14:06"
+		}
+	},	
+	{
+		"pk": 3,
+		"model": "auth.user",
+		"fields": {
+			"username": "ben",
+			"first_name": "Ben",
+			"last_name": "Best",
+			"is_active": true,
+			"is_superuser": false,
+			"is_staff": false,
+			"last_login": "2009-03-31 19:11:56",
+			"groups": [],
+			"user_permissions": [],
+			"password": "sha1$7bd83$fefdb3f02366048ce73773764b8a7dfa39489195",
+			"email": "ben.best@gmail.com",
+			"date_joined": "2009-03-31 15:14:06"
+		}
+	},	
+	{
+		"pk": 4,
+		"model": "auth.user",
+		"fields": {
+			"username": "ben_noemail",
+			"first_name": "Ben",
+			"last_name": "Best",
+			"is_active": true,
+			"is_superuser": false,
+			"is_staff": false,
+			"last_login": "2009-03-31 19:11:56",
+			"groups": [],
+			"user_permissions": [],
+			"password": "sha1$7bd83$fefdb3f02366048ce73773764b8a7dfa39489195",
+			"email": "",
+			"date_joined": "2009-03-31 15:14:06"
+		}
+	},	
+	{
+        "pk": 1,
+        "model": "base_groups.basegroup",
+        "fields": {
+            "slug": "ewb-utoronto",
+			"name": "University of Toronto Chapter",
+			"description": "Toronto, ON",
+			"private": false,
+			"creator": 1,
+			"created": "2009-07-17 12:34:56",
+			"model": "Network"
+        }
+    }, {
+        "pk": 2,
+        "model": "base_groups.basegroup",
+        "fields": {
+            "slug": "ewb-uwaterloo",
+			"name": "University of Waterloo Chapter",
+			"description": "Waterloo, ON",
+			"private": false,
+			"creator": 2,
+			"created": "2009-07-18 12:35:56",
+			"model": "Network"
+        }
+    },
+    {
+        "pk": 3,
+        "model": "base_groups.basegroup",
+        "fields": {
+            "slug": "ewb",
+			"name": "Engineers Without Borders",
+			"description": "The National Network",
+			"private": false,
+			"creator": 1,
+			"created": "2009-07-18 12:35:56",
+			"model": "Network"
+        }
+    },
+	{
+        "pk": 1,
+        "model": "base_groups.grouplocation",
+        "fields": {
+			"group": 1
+        }
+    },
+	{
+        "pk": 2,
+        "model": "base_groups.grouplocation",
+        "fields": {
+			"group": 2
+        }
+    },
+	{
+        "pk": 3,
+        "model": "base_groups.grouplocation",
+        "fields": {
+			"group": 3
+        }
+    },
+	{
+        "pk": 1,
+        "model": "networks.network",
+        "fields": {
+			"basegroup_ptr": 1,
+			"network_type": "U"
+        }
+    }, {
+        "pk": 2,
+        "model": "networks.network",
+        "fields": {
+			"basegroup_ptr": 2,
+			"network_type": "U"
+        }
+    }, {
+        "pk": 3,
+        "model": "networks.network",
+        "fields": {
+			"basegroup_ptr": 3,
+			"network_type": "N"
+        }
+    },
+
+	{
+		"pk": 1,
+		"model": "base_groups.groupmember",
+		"fields": {
+			"group": 1,
+			"user": 1,
+			"is_admin": true,
+			"admin_title": "Random Admin Title",
+			"joined": "2009-07-19 12:34:56"
+		}
+	},
+	{
+		"pk": 2,
+		"model": "base_groups.groupmember",
+		"fields": {
+			"group": 2,
+			"user": 2,
+			"is_admin": false,
+			"joined": "2009-07-19 12:34:57"
+		}
+	},
+	{
+		"pk": 3,
+		"model": "base_groups.groupmember",
+		"fields": {
+			"group": 3,
+			"user": 1,
+			"is_admin": false,
+			"joined": "2009-07-19 12:34:57"
+		}
+	},
+	{
+		"pk": 4,
+		"model": "base_groups.groupmember",
+		"fields": {
+			"group": 3,
+			"user": 2,
+			"is_admin": false,
+			"joined": "2009-07-19 12:34:57"
+		}
+	},
+	{
+		"pk": 5,
+		"model": "base_groups.groupmember",
+		"fields": {
+			"group": 3,
+			"user": 3,
+			"is_admin": false,
+			"joined": "2009-07-19 12:34:57"
+		}
+	},
+	{
+		"pk": 6,
+		"model": "base_groups.groupmember",
+		"fields": {
+			"group": 3,
+			"user": 4,
+			"is_admin": false,
+			"joined": "2009-07-19 12:34:57"
+		}
+	},
+	{
+		"pk": 7,
+		"model": "base_groups.groupmember",
+		"fields": {
+			"group": 2,
+			"user": 3,
+			"is_admin": false,
+			"joined": "2009-07-19 12:34:57"
+		}
+	},
+]

@@ -1,0 +1,46 @@
+{% extends "communities/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+{% load pagination_tags %}
+
+{% block head_title %}{% blocktrans with group.name as group_name %}Topics for Community {{ group_name }}{% endblocktrans %}{% endblock %}
+
+{% block body %}
+    <h1>{% trans "Discussion Topics for Community" %} <a href="{{ group.get_absolute_url }}">{{ group.name }}</a></h1>
+    
+    {% autopaginate topics %}
+    
+    {% for topic in topics %}
+        {% include "topics/topic_item.html" %}
+    {% endfor %}
+    
+    {% paginate %}
+    
+    <h2>{% trans "New Topic" %}</h2>
+
+    {% if is_member %}
+        
+        <form class="uniForm" method="POST" action="">
+            <fieldset class="inlineLabels">
+                {{ topic_form|as_uni_form }}
+                <div class="form_block">
+                    <input type="hidden" name="next" value="{{ request.path }}" />
+                    <input type="submit" value="{% trans "Create New Topic" %}" /></td>
+                </div>
+            </fieldset>
+        </form>
+    {% else %}
+    <p> 
+        {% trans "You must be a member of this community to add new topics. Please " %}
+        <a href="{% url community_new_member group.slug %}">{% trans "join" %}</a>
+        {% trans " if you wish to create topics." %}
+    </p>
+    {% endif %}
+    
+{% endblock %}
+
+{% block extra_body %}
+	{{ block.super }}
+	{% include "tinymce.html" %}
+{% endblock %}

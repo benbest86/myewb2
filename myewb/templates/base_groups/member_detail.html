@@ -1,0 +1,61 @@
+{% extends "base_groups/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+{% load wiki_tags %}
+{% load avatar_tags %}
+{% load threadedcommentstags %}
+{% load pagination_tags %}
+{% load extra_tagging_tags %}
+{% load group_tags %}
+{% load topics_tags %}
+
+{% block head_title %}{{ group.name }}{% endblock %}
+
+{% block body %}
+    
+    {% if user.is_authenticated %}
+        <div class="right_panel">
+            <div class="members">
+                <h2>{% trans "Members" %}</h2>
+                <table width="100%">
+                    {% for member in group.members.all %}
+                        {% if forloop.counter0|divisibleby:"3" %}<tr>{% endif %}
+                        <td>
+                            <div class="avatar">{% avatar member 40 %}</div>
+                            <div class="details"><a href="{% url profile_detail member.username %}" title="{{ member.username }}">{{ member.username }}</a></div>
+                        </td>
+                        {% if forloop.counter0|add:"1"|divisibleby:"3" %}</tr>{% endif %}
+                    {% endfor %}
+                    {% if group.members.all|length|divisibleby:"3" %}{% else %}</tr>{% endif %}
+                </table>
+            </div>
+        </div>
+    {% endif %}
+    
+    <div style="width: 550px;">
+        
+        <h1>{{ member.user.name }}</h1>
+        
+        <p>
+            {% if member.is_admin %}{% trans "Title:" %} <tt>{{ member.admin_title }}</tt><br />{% endif %}
+            {% trans "Administrator:" %} {% if member.is_admin %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}<br />
+            {% trans "Joined:" %} {{ member.created|date }}
+            <br />
+            {% show_tags_for group %}
+        </p>
+        
+        <p>{{ group.description }}</p>
+        
+        {% ifequal user group.creator %}
+
+			<p><a href="{% url edit_group group.slug_name %}">{% trans "Edit details" %}</a></p>
+            
+        {% endifequal %}
+        
+
+        
+       
+    </div>
+
+{% endblock %}

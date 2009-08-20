@@ -1,0 +1,50 @@
+
+{% extends "profiles/base.html" %}
+
+{% comment %}
+This file is part of myEWB
+Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
+{% endcomment %}
+
+{% load i18n %}
+{% load avatar_tags %}
+{% load app_plugins %}
+{% load uni_form %}
+
+{% block head_title %}{% blocktrans %}Add student record{% endblocktrans %}{% endblock %}
+
+{% block body %}
+	{% if user.is_authenticated %}
+	
+    <div class="left_panel">
+        <div id="profile_avatar">
+            <div>{% avatar other_user 80 %}</div>
+        </div>
+        
+        <h1>{% if other_user.get_profile.name %}{{ other_user.get_profile.name }}{% else %}{{ other_user }}{% endif %}</h1>
+
+        <form class="uniForm" id="edit-record" method="POST" action="">
+            <fieldset class="inlineLabels">  
+                {{ form|as_uni_form }}
+                <div class="form_block">
+                <input type="hidden" name="action" value="add" />
+                <input type="submit" value="{% trans "add" %}"/>
+                </div>
+            </fieldset>
+        </form>
+    </div>
+	{% else %} {# not user.is_authenticated #}
+        {% url acct_signup as signup_url %}
+        {% url acct_login as login_url %}
+        <p>{% blocktrans %}This option is not available unless you are logged in. <a href="{{ signup_url }}">Sign up</a> or <a href="{{ login_url }}">log in</a>.{% endblocktrans %}</p>
+	{% endif %}
+{% endblock %}
+
+{% block extra_body %}
+	    <script type="text/javascript" src="{{ MEDIA_URL }}jquery.autocomplete.min.js"></script>
+        <script type="text/javascript">
+	        $(document).ready(function() {
+        		$('#id_institution').autocomplete('{% url ajax_search_network "U" %}');
+        		});
+        </script>
+{%endblock %}

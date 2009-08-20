@@ -1,0 +1,34 @@
+{% extends "communities/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+{% load avatar_tags %}
+{% load threadedcommentstags %}
+{% load pagination_tags %}
+{% load extra_tagging_tags %}
+{% load group_tags %}
+{% load topics_tags %}
+
+{% block head_title %}{{ member.user.username }}{% endblock %}
+
+{% block body %}
+    
+    <div style="width: 550px;">
+        
+        <h1>{{ member.user.username }}</h1>
+        
+            <p>{% trans "Edit details" %}</p>
+            
+            <form class="uniForm" id="edit-member" method="POST" action="">
+                <fieldset class="inlineLabels">
+                    {{ form|as_uni_form }}
+                    <div class="form_block">
+                        <input type="hidden" name="action" value="update" />
+                        <input type="submit" value="{% trans "updated" %}"/>
+                    </div>
+                </fieldset>
+            </form>
+
+	</div>
+
+{% endblock %}

@@ -1,0 +1,18 @@
+{% comment %}
+This file is part of myEWB
+Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
+{% endcomment %}
+
+{% load i18n %}
+{% load extra_tagging_tags %}
+{% load profile_tags %}
+
+<form class="uniForm" id="search-profile" method="GET" action="{% url profiles_index %}">
+	<fieldset class="inlineLabels">  
+		<div class="form_block">
+			<input type="text" name="search" value="{{ search_terms }}" />
+			<input type="submit" value="{% trans "search" %}"/>
+		</div>
+	</fieldset>
+</form>
+

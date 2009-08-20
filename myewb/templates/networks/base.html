@@ -1,0 +1,24 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+{% load group_tags %}
+
+{% block body_class %}networks{% endblock %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ MEDIA_URL }}networks/css/networks.css" />
+<link rel="stylesheet" href="{{ MEDIA_URL }}pinax/css/topics.css" />
+<script type="text/javascript" src="{{ MEDIA_URL }}pinax/js/topics.js"></script>
+{% endblock %}
+
+{% block subnav %}
+    <ul>
+        {% if group %}
+        <li><a href="{% url network_detail group.slug %}">{{ group.name }} {% trans "Home" %}</a></li>
+        {% endif %}
+        {% if member.is_admin %}
+        <li><a href="{% url network_admin_page group.slug %}">{% trans "Admin Panel" %}</a></li>
+        {% endif %}
+        <li><a href="{% url networks_index %}">{% trans "All Networks" %}</a></li>
+    </ul>
+{% endblock %}

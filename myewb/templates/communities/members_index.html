@@ -1,0 +1,60 @@
+{% extends "communities/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+{% load humanize %}
+{% load pagination_tags %}
+{% load order_by %}
+{% load extra_tagging_tags %}
+{% load sorting_tags %}
+{% load base_groups_tags %}
+
+{% block head_title %}{% blocktrans %}Members of{% endblocktrans %} {{group.name}}{% endblock %}
+
+{% block body %}
+	<p><a href="{% url community_detail group.slug %}">{{ group.name }}</a></p>
+    <h1>{% trans "Members" %}</h1>
+    
+    {% if user.is_authenticated and user.is_superuser %}
+        <p><a href="{% url community_new_member group.slug %}">Add</a> a member</p>
+    {% else %}
+        {% url acct_signup as signup_url %}
+        {% url acct_login as login_url %}
+        <p>{% blocktrans %}<a href="{{ signup_url }}">Sign up</a> and <a href="{{ login_url }}">log in </a> to become a member.{% endblocktrans %}</p>
+    {% endif %}
+    
+    <form method="GET" action="">
+        <input type="text" name="search" value="{{ search_terms }}" />
+        <input type="submit" value="Search" />
+        {% if search_terms %}
+            <a href="{% clear_search_url request %}">Clear Search Terms</a>
+        {% endif %}
+    </form>
+    {% autosort members %}
+    {% autopaginate members 10 %}
+    {% if members %}
+        {% comment %}
+        <p>{% trans "Order by:" %}
+            {% anchor name Name %}
+            {% anchor created Date %}
+        </p>
+        {% endcomment %}
+        <dl>
+        {% for member in members %}
+            <dt><a href="{% url community_member_detail group.slug, member.user.username %}">
+				{% if member.user.get_profile.name %} {{ member.user.get_profile.name }} {% else %} {{ member.user.username }} {% endif %}
+			</a></dt>
+			<dd>
+			    {% if member.is_requested %}<strong>Member request pending</strong> &ndash; {% endif %}
+			    {% if member.is_invited %}<strong>Member invitation pending</strong> &ndash; {% endif %}
+				{% if member.is_admin %}
+				    Group admin {% if member.admin_title %}({{ member.admin_title }}){% endif %} &ndash; 
+				{% endif %}
+				{% if is_admin %}<a href="{% url community_edit_member group.slug, member.user.username %}">{% trans "Edit details" %}</a>{% endif %}
+			</dd>
+        {% endfor %}
+        </dl>
+        {% paginate %}
+    {% endif %}
+    
+{% endblock %}

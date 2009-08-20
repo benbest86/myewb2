@@ -1,0 +1,37 @@
+{% comment %}
+This file is part of myEWB
+Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
+{% endcomment %}
+
+{% load i18n %}
+{% load extra_tagging_tags %}
+{% load profile_tags %}
+
+{% for record in records %}
+
+	{% if record.employer %}
+		{# TODO: use proper CSS classes instead of hardcoding here #}
+		<div class="work_record" style="padding-bottom: 10px;">
+			<a href="{% url network_detail record.network.slug %}">{{ record.employer }}</a>
+			
+			{% if is_me %}
+				(<a href="{% url edit_work_record user.username record.id %}"><small>edit</small></a>)
+			{% endif %}
+			(<a href="#" id="work_record_more_{{ record.id }}"><small>more</small></a><a href="#" id="work_record_less_{{ record.id }}" style="display: none;"><small>less</small></a>)
+
+			<br/>
+			
+			({% if record.start_date %}{% trans "from" %} <em>{{ record.start_date }}</em>{% endif %}
+			{% if record.end_date %}{% trans "until" %} <em>{{ record.end_date }}</em>{% endif %})
+	
+			<div id="work_record_{{ record.id }}" style="display: none; margin-left: 15px; border: 1px solid; background: #d0d0d0; padding: 3px;">
+				{% if record.sector %}<p><b>{% trans "Sector" %}</b>: {{ record.sector }}</p>{% endif %}
+				{% if record.position %}<p><b>{% trans "Position" %}</b>: {{ record.position }}</p>{% endif %}
+				{% if record.company_size %}<p><b>{% trans "Company size" %}</b>: {{ record.get_company_size_display }}</p>{% endif %}
+				{% if record.income_level %}<p><b>{% trans "Income level" %}</b>: {{ record.get_income_level_display }}</p>{% endif %}
+			</div>
+	
+		</div>
+	{% endif %}
+
+{% endfor %}

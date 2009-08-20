@@ -1,0 +1,8 @@
+
+<form name="{{ plugin_app.app_name }}-form" action="" method="POST">
+    <p>
+    {{ plugin_app.app_name }} <input type="checkbox" name="{{ group.slug }}" value="{{ enabled }}" />
+    <input name="redirect" type="hidden" value="{{ request.path }}" />
+    <input type="submit" value="Save" />
+    </p>
+</form>

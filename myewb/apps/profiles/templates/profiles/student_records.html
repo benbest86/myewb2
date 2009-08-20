@@ -1,0 +1,35 @@
+{% comment %}
+This file is part of myEWB
+Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
+{% endcomment %}
+
+{% load i18n %}
+{% load extra_tagging_tags %}
+{% load profile_tags %}
+
+{% for record in records %}
+
+	{% if record.institution %}
+		{# TODO: use proper CSS classes instead of hardcoding here #}
+		<div class="student_record" style="padding-bottom: 10px;">
+			<a href="{% url network_detail record.network.slug %}">{{ record.institution }}</a>
+			{% if is_me %}
+				(<a href="{% url edit_student_record user.username record.id %}"><small>edit</small></a>)
+			{% endif %}
+			(<a href="#" id="student_record_more_{{ record.id }}"><small>more</small></a><a href="#" id="student_record_less_{{ record.id }}" style="display: none;"><small>less</small></a>)
+			
+			<br/>
+			
+			({% if record.start_date %}{% trans "from" %} <em>{{ record.start_date }}</em>{% endif %}
+			{% if record.graduation_date %}{% trans "until" %} <em>{{ record.graduation_date }}</em>{% endif %})
+			
+			<div id="student_record_{{ record.id }}" style="display: none; margin-left: 15px; border: 1px solid; background: #d0d0d0; padding: 3px;">
+				{% if record.level %}<p><b>{% trans "Level of education" %}</b>: {{ record.get_level_display }}</p>{% endif %}
+				{% if record.field %}<p><b>{% trans "Field" %}</b>: {{ record.field }}</p>{% endif %}
+				{% if record.student_number %}<p><b>{% trans "Student number" %}</b>: {{ record.student_number }}</p>{% endif %}
+			</div>
+	
+		</div>
+	{% endif %}
+
+{% endfor %}

@@ -1,0 +1,27 @@
+{% comment %}
+This file is part of myEWB
+Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
+{% endcomment %}
+
+{% load i18n %}
+{% load extra_tagging_tags %}
+{% load profile_tags %}
+
+{% for record in records %}
+	{#  TODO: this can so definitely be optimized... #}
+
+	<script type="text/javascript">
+		$(document).ready(function() {
+			function student_record_toggle() {
+				$('#student_record_{{ record.id }}').slideToggle();
+				$('#student_record_more_{{ record.id }}').toggle();
+				$('#student_record_less_{{ record.id }}').toggle();
+				return false;
+			}
+			
+			$('#student_record_more_{{ record.id }}').click(student_record_toggle);			
+			$('#student_record_less_{{ record.id }}').click(student_record_toggle);			
+		});
+	</script>
+
+{% endfor %}

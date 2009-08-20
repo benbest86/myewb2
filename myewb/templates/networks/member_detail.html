@@ -1,0 +1,82 @@
+{% extends "networks/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+{% load avatar_tags %}
+{% load threadedcommentstags %}
+{% load pagination_tags %}
+{% load extra_tagging_tags %}
+{% load group_tags %}
+{% load topics_tags %}
+
+{% block head_title %}{{ group.name }}{% endblock %}
+
+{% block body %}
+    
+    <div style="width: 550px;">
+        
+		<p><a href="{% url network_detail group.slug %}">{{ group.name }}</a> - <a href="{% url network_members_index group.slug %}">{% trans "Members" %}</a></p>
+        <h1>			
+			{% if member.user.get_profile.name %}
+				{{ member.user.get_profile.name }}
+			{% else %}
+				{{ member.user.username }}
+			{% endif %}
+		</h1>
+		
+		
+		{% ifequal member.user, request.user %}
+		    <p>
+    		{% if member.is_invited %}
+                {% trans "You have been invited to join this network. Do you wish to join?" %}
+                <form method="POST" action="{% url network_accept_invitation group.slug member.user.username %}">
+                	<input type="submit" value="{% trans "Join network" %}" />
+    			</form>
+    			<form method="POST" action="{% url network_delete_member group.slug member.user.username %}">
+                	<input type="submit" value="{% trans "Decline" %}" />
+    			</form>
+            {% endif %}
+        
+            {% if member.is_requested %}
+                {% trans "You have requested to join this network. This request must be approved by a network administrator." %}
+            {% endif %}
+            </p>
+        {% endifequal %}
+        
+        {% if is_admin %}
+            <p>
+    		{% if member.is_invited %}
+                {% trans "Member invitation pending" %}
+            {% endif %}
+        
+            {% if member.is_requested %}
+                {% trans "Member request pending" %}                
+                <form method="POST" action="{% url network_accept_request group.slug member.user.username %}">
+                	<input type="submit" value="{% trans "Accept" %}" />
+    			</form>
+    			<form method="POST" action="{% url network_delete_member group.slug member.user.username %}">
+                	<input type="submit" value="{% trans "Decline" %}" />
+    			</form>
+            {% endif %}
+            </p>
+        {% endif %}
+        
+        <p>
+            {% if member.is_admin %}{% trans "Title:" %} <tt>{{ member.admin_title }}</tt><br />{% endif %}
+            {% trans "Administrator:" %} {% if member.is_admin %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}<br />
+            {% trans "Joined:" %} {{ member.joined|date }}
+            <br />
+        </p>
+        
+        {% if is_admin %}
+
+			<p><a href="{% url network_edit_member group.slug member.user.username %}">{% trans "Edit details" %}</a></p>
+            
+        {% endif %}
+        
+
+        
+       
+    </div>
+
+{% endblock %}
