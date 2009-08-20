@@ -85,7 +85,7 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.transaction.TransactionMiddleware',
 )
 
-ROOT_URLCONF = 'myewb.urls'
+ROOT_URLCONF = 'urls'
 
 TEMPLATE_DIRS = (
     os.path.join(PROJECT_ROOT, "templates"),
@@ -108,7 +108,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "account.context_processors.account",
     "messages.context_processors.inbox",
     "friends_app.context_processors.invitations",
-#    "myewb.context_processors.combined_inbox_count",
+    "context_processors.combined_inbox_count",
 )
 
 COMBINED_INBOX_COUNT_SOURCES = (
