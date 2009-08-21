@@ -54,6 +54,7 @@ urlpatterns = patterns('',
     
     (r'^groups/', include('base_groups.urls')),
     (r'^networks/', include('networks.urls')),
+    (r'^chapters/', include('networks.urls.chapters')),
     (r'^communities/', include('communities.urls')),
     (r'^posts/', include('group_topics.urls')),
     (r'^creditcard/', include('creditcard.urls')),

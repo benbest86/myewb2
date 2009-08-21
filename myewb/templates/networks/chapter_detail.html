@@ -1,0 +1,83 @@
+{% extends "networks/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+{% load wiki_tags %}
+{% load avatar_tags %}
+{% load threadedcommentstags %}
+{% load pagination_tags %}
+{% load extra_tagging_tags %}
+{% load networks_tags %}
+{% load base_groups_tags %}
+{% load group_tags %}
+{% load topics_tags %}
+
+{% block head_title %}{{ chapter.chapter_name }}{% endblock %}
+
+{% block body %}
+
+<div id="chapterHead">
+    <div id="chapterHeadLeft">
+        {# TODO: Put chapter logo here (then remove header?) #}
+        <h1>{{ chapter.chapter_name }}</h1>
+    </div>
+    <div id="chapterHeadRight">
+        <p>
+        <strong>{% trans "Mailing address" %}</strong><br/>
+        {{ chapter.street_address }}<br/>
+        {% if chapter.street_address_two %}{{ chapter.street_address_two }}<br/>{% endif %}
+        {{ chapter.city }}, {{ chapter.province }}<br/>
+        {{ chapter.postal_code }}<br/>
+        </p>
+        <p>
+        <strong>{% trans "Phone:" %}</strong>&nbsp;{{ chapter.phone }}
+        </p>
+        <p>
+        <strong>{% trans "Email:" %}</strong>&nbsp;
+            <a href="mailto:{{ chapter.network.slug }}@ewb.ca">{{ chapter.network.slug }}@ewb.ca</a>
+        </p>
+        <p>
+        <strong>{% trans "Website:" %}</strong>&nbsp;<a href="http://{{ chapter.network.slug }}.ewb.ca/">http://{{ chapter.network.slug }}.ewb.ca/</a>
+        </p>
+    </div>
+</div>
+
+<div id="chapterActions">
+    <div id="chapterActionsLeft">
+        {% if user.is_anonymous %}
+            <p>Subscribe to our mailing list:</p>
+            {# TODO: Subscribe-to-mailing-list form #}
+        {% else %}
+            {% if member %}
+                <form method="POST" action="{% url network_delete_member chapter.network.slug user.username %}">
+                	<input type="submit" value="{% trans "Leave network" %}" />
+				</form>
+                {% if member.is_admin %}
+                    <div>Member management</div>
+                    <div>Email forwards</div>
+                    <div>Monitoring and evaluation</div>
+                {% endif %}
+            {% else %}
+                <a href="{% url network_new_member chapter.network.slug %}">{% trans "Join network" %}</a>
+            {% endif %}
+        {% endif %}
+    </div>
+    <div id="chapterActionsRight">
+        <div><a href="http://photos.ewb.ca/{{ chapter.network.slug }}/">Photos</a></div>
+        <div>Events (iCal)</div>{# TODO: Link to events and iCal feed, and add-event link if exec #}
+        <div><a href="{% groupurl topic_list chapter.network %}">Topics</a> (<a href="{% url topic_feed chapter.network.slug %}">RSS</a>)</div>
+    </div>
+</div>
+
+<div id="chapterExec">
+    <h3>{% trans "Executives" %}</h3>
+    {% get_admins chapter.network as admins %}
+    {% for admin in admins %}
+        <div class="{% cycle "singleExecLeft" "singleExecRight" %}">
+            {% avatar admin.user 60 %}
+            <div class="execName"><a href="{% url profile_detail admin.user.username %}">{{ admin.user.get_profile.name }}</a></div>
+            <div class="execTitle">{{ admin.admin_title }} {% if member and member.is_admin %}<a href="{% url network_edit_member chapter.network.slug admin.user.username %}">(edit)</a>{% endif %}</div>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

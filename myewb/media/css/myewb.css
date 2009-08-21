@@ -57,3 +57,44 @@ div.topic_group {
 div.topic_group a {
     color: #606060;
 }
+
+/* Chapter info */
+
+div#chapterHead, div#chapterActions, div#chapterExec {
+    overflow: auto;
+    width: 100%;
+    margin: 10px auto;
+}
+
+div#chapterHeadLeft {    
+    float: left;
+    width: 50%;
+}
+
+div#chapterHeadRight {    
+    margin-left: 50%;
+    width: 50%;
+}
+
+div#chapterActionsLeft {
+    float: left;
+    width: 50%;
+}
+
+div#chapterActionsRight {    
+    margin-left: 50%;
+    width: 50%;
+}
+
+div.singleExecLeft, div.singleExecRight {
+    width: 50%;
+    height: 70px;
+    font-size: 1.2em;
+}
+div.singleExecLeft { float: left; }
+div.singleExecRight { float: right; }
+
+div.singleExecLeft img, div.singleExecRight img {
+    float:left;
+    margin-right: 12px;
+}

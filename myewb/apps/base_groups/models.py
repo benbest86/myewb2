@@ -145,6 +145,7 @@ class GroupMember(models.Model):
     user = models.ForeignKey(User, related_name="member_groups", verbose_name=_('user'))
     is_admin = models.BooleanField(_('admin'), default=False)
     admin_title = models.CharField(_('admin title'), max_length=500, null=True, blank=True)
+    admin_order = models.IntegerField(_('admin order (smallest numbers come first)'), default=999)
     joined = models.DateTimeField(_('joined'), default=datetime.datetime.now)
     
     REQUEST_STATUS_CHOICES = (
@@ -162,6 +163,9 @@ class GroupMember(models.Model):
         
     def is_requested(self):
         return self.request_status == 'R'
+        
+    class Meta:
+        ordering = ('is_admin', 'admin_order')
 
     # away = models.BooleanField(_('away'), default=False)
     # away_message = models.CharField(_('away_message'), max_length=500)
