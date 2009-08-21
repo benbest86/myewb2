@@ -95,6 +95,9 @@ def get_counts(groups, model):
     return groups
     
 def enforce_visibility(groups, user):
+    if user.is_anonymous():
+        return groups.filter(visibility='E')
+    
     visible_groups = groups.filter(visibility='E') | groups.filter(member_users=user) \
         | groups.filter(visibility='P', parent__member_users=user)
     return visible_groups.distinct()

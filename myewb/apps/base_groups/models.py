@@ -42,9 +42,12 @@ class BaseGroup(Group):
     
     def is_visible(self, user):
         visible = False
-        if user.is_superuser or self.visibility == 'E':
+        if self.visibility == 'E':
             visible = True
-        else:
+        elif user.is_authenticated():
+            if user.is_superuser:
+                return true
+            
             member_list = self.members.filter(user=user, request_status='A')
             if member_list.count() > 0:
                 visible = True

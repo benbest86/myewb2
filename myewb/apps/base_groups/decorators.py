@@ -68,11 +68,7 @@ class visibility_required(object):
             user = request.user
             group_slug = kwargs.get('group_slug', None) or (len(args) > 0 and args[0])
             
-            if not user.is_authenticated():
-                # deny access - would set this to redirect
-                # to a custom template eventually
-                return render_to_response('denied.html', context_instance=RequestContext(request))
-            elif user.is_superuser: # or is_staff
+            if user.is_superuser: # or is_staff
                 return f(request, *args, **kwargs)
             group = get_object_or_404(BaseGroup, slug=group_slug)
             if group.is_visible(user):
