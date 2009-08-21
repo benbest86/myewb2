@@ -1,0 +1,42 @@
+{% extends 'account/base.html' %}
+
+{% load i18n %}
+{% load myewb_plugins %}
+
+{% block head_title %}{% trans "Plugins" %}{% endblock %}
+
+{% block body %}
+
+<h1>{% trans "Plugins" %}</h1>
+    <table class="preferences">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Enabled</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for app in plugin_apps %}
+            <tr>
+                <td>{% if app.app.friendly_name %}{{ app.app.friendly_name }}{% else %}{{ app.app.app_name }}{% endif %}</td>
+                <td>{{ app.app.description }}</td>
+                <td>
+                    <form action="{% url user_plugin_pref_detail app.app.id %}" method="POST">
+                        <input type="checkbox" name="{{ app.app.app_name }}" {% if app.enabled %} checked="checked"{% endif %} />
+                        <input type="submit" value="{% trans "Save" %}"/>
+                    </form>
+                </td>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}
+{% comment %}      
+      {% block extra_body %}
+      {% load jquery_validation %}
+      {% include_validation %}
+  <script type="text/javascript">
+       <!-- nothing here -->
+      </script>
+      {% endblock %}</p>
+{% endcomment %}
