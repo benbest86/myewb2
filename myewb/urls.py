@@ -59,6 +59,8 @@ urlpatterns = patterns('',
     (r'^posts/', include('group_topics.urls')),
     (r'^creditcard/', include('creditcard.urls')),
     
+    url(r'^unsubscribe/$', 'networks.views.unsubscribe', name='network_unsubscribe',),
+    
 #    (r'^feeds/tweets/(.*)/$', 'django.contrib.syndication.views.feed', tweets_feed_dict),
 #    (r'^feeds/posts/(.*)/$', 'django.contrib.syndication.views.feed', blogs_feed_dict),
 #    (r'^feeds/bookmarks/(.*)/?$', 'django.contrib.syndication.views.feed', bookmarks_feed_dict),

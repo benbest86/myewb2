@@ -13,10 +13,12 @@ from django.test import TestCase
 from django.test.client import Client
 from django.core import mail
 
+from emailconfirmation.models import EmailAddress
 from base_groups.models import GroupMember
 from base_groups.forms import GroupMemberForm
 from networks.models import Network
 from networks.forms import NetworkForm
+from siteutils.helpers import get_email_user
 
 class TestNetwork(TestCase):
     fixtures = ['test_networks.json']
@@ -127,7 +129,7 @@ class TestNetworkTopicMail(TestCase):
         self.client.logout()
 
     def test_new_topic_with_email(self):
-        response = self.client.post('/networks/ewb/topics/', {'title': 'first post', 'body':'Lets make a new topic.', 'send_as_email': True, 'tags':'first, post'})
+        response = self.client.post('/networks/ewb/posts/', {'title': 'first post', 'body':'Lets make a new topic.', 'send_as_email': True, 'tags':'first, post'})
         self.assertEquals(response.status_code, 200)
         self.assertEquals(1, len(mail.outbox))
         self.assertEquals(len(self.ewb.get_member_emails()), len(mail.outbox[0].bcc))
@@ -135,4 +137,118 @@ class TestNetworkTopicMail(TestCase):
     def test_new_topic_without_email(self):
         response = self.client.post('/networks/ewb/topics/', {'title': 'second post', 'body':'But no email this time', 'send_as_email': False, 'tags':'second, post'})
         self.assertEquals(0, len(mail.outbox))
+
+class TestBulkMembers(TestCase):
+    """
+    Tests for functionality associated with bulk email users.
+    """
+    fixtures = ['test_networks.json']
+
+    def setUp(self):
+        self.joe = User.objects.get(username='joe')
+        self.superman = User.objects.get(username='superman')
+        self.ewb = Network.objects.get(slug='ewb')
+        self.utoronto = Network.objects.get(slug='ewb-utoronto')
+        self.uwaterloo = Network.objects.get(slug='ewb-uwaterloo')
+
+    def tearDown(self):
+        self.ewb.members.all().delete()
+        try:
+            self.client.logout()
+        except:
+            pass
+        for user in User.objects.all():
+            if not user.has_usable_password():
+                user.delete()
+
+    def test_create_bulk_user(self):
+        self.assertTrue(self.client.login(username='superman', password='passw0rd'))
+        self.client.post('/networks/ewb/bulk/', {'emails':'test@server.com'})
+        bulk_users = self.ewb.members.filter(request_status='B')
+        # we should have one bulk user at this point
+        self.assertEquals(bulk_users.count(), 1)
+        bulk_user = bulk_users[0]
+        # bulk user should have our input address
+        self.assertEquals(bulk_user.user.email, 'test@server.com')
+        # bulk user should not show up in a list of members
+        self.assertFalse(bulk_user in self.ewb.get_members())
+
+        self.ewb.send_mail_to_members('Test', 'Mail')
+        msg = mail.outbox[0]
+        # bulk user should get an email
+        self.assertTrue('test@server.com' in msg.bcc)
+
+    def test_create_bulk_users(self):
+        email_list = '''one@one.com
+        two@two.com
+        three@three.com
+        four@four.com
+        '''
+        self.client.login(username='superman', password='passw0rd')
+        self.client.post('/networks/ewb/bulk/', {'emails':email_list})
+        self.assertEquals(self.ewb.members.filter(request_status='B').count(), 4)
+        for email in email_list.split():
+            self.assertTrue(get_email_user(email).member_groups.get(group__slug='ewb'))
+
+    def test_invalid_bulk_emails(self):
+        invalid_email_list = '''@one.com
+        two@two
+        three@t?hree.com
+        four@four.c
+        '''
+        self.client.login(username='superman', password='passw0rd')
+        response = self.client.post('/networks/ewb/bulk/', {'emails':invalid_email_list})
+        for email in invalid_email_list:
+            self.assertTrue(response.content.find('%s is not a valid email.' % email))
+
+
+
+    def test_new_member_without_verification(self):
+        """
+        New members shouldn't inherit membership until they confirm
+        their email address.
+        """
+        self.assertTrue(self.client.login(username='superman', password='passw0rd'))
+        self.client.post('/networks/ewb/bulk/', {'emails':'test3@server.com'})
+
+        self.client.logout()
+        new_user_info = {
+                'username': 'jeff',
+                'password1': 'test',
+                'password2': 'test',
+                'email': 'test3@server.com',
+                }
+        self.client.post('/account/signup/', new_user_info)
+        self.assertEquals(self.ewb.members.filter(request_status='B').count(), 1)
+        bulk_user = self.ewb.members.get(request_status='B').user
+        self.assertEquals(self.ewb.members.get(request_status='B').user.email, 'test3@server.com')
+        self.assertNotEqual(bulk_user, User.objects.get(username='jeff'))
+            
+
+    def test_verify_email_for_bulk_user(self):
+        self.assertTrue(self.client.login(username='superman', password='passw0rd'))
+        self.client.post('/networks/ewb/bulk/', {'emails':'test2@server.com'})
+        bulk_user = get_email_user('test2@server.com')
+        self.joe.emailaddress_set.add(EmailAddress(email='test2@server.com'))
+        email_address = self.joe.emailaddress_set.get(email='test2@server.com')
+        email_address.verified = True
+        email_address.save()
+        joe_member = self.ewb.members.get(user=self.joe)
+        # joe should be accepted
+        self.assertEquals(joe_member.request_status, 'A')
+        # old dummy user should be gone
+        self.assertRaises(User.DoesNotExist, User.objects.get, id=bulk_user.id)
+        self.assertEquals(self.ewb.members.filter(request_status='B').count(), 0)
+        
+    def test_verify_unsubscribe(self):
+        email = '''one@one.com'''
+        self.client.login(username='superman', password='passw0rd')
+        self.client.post('/networks/ewb/bulk/', {'emails':email})
+        self.assertEquals(self.ewb.members.filter(user__email=email).count(), 1)
+        self.client.logout()
+        
+        self.client.post('/unsubscribe/', {'email':email})
+        
+        self.assertRaises(GroupMember.DoesNotExist, self.ewb.members.get, user__email=email)
+
 

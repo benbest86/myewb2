@@ -12,6 +12,9 @@
 
 {% block subnav %}
     <ul>
+        {% if group %}
+        <li><a href="{% url community_detail group.slug %}">{{ group.name }} {% trans "Home" %}</a></li>
+        {% endif %}
         <li><a href="{% url communities_index %}">{% trans "All Communities" %}</a></li>
     </ul>
 {% endblock %}

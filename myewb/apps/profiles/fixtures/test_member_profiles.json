@@ -166,6 +166,7 @@
 		"model": "profiles.studentrecord",
 		"fields": {
 			"user": 1,
+            "network": 1,
 			"institution": "University of Toronto",
 			"student_number": "123456789",
 			"level": "UG",
@@ -179,6 +180,7 @@
 		"model": "profiles.studentrecord",
 		"fields": {
 			"user": 2,
+            "network": 1,
 			"institution": "University of Toronto",
 			"student_number": "234567890",
 			"level": "UG",
@@ -192,6 +194,7 @@
 		"model": "profiles.studentrecord",
 		"fields": {
 			"user": 3,
+            "network": 1,
 			"institution": "University of Toronto",
 			"student_number": "345678901",
 			"level": "UG",
@@ -204,6 +207,7 @@
 		"model": "profiles.studentrecord",
 		"fields": {
 			"user": 4,
+            "network": 1,
 			"institution": "University of Toronto",
 			"student_number": "456789012",
 			"level": "UG",
@@ -215,6 +219,7 @@
 		"model": "profiles.workrecord",
 		"fields": {
 			"user": 1,
+            "network": 1,
 			"employer": "Engineers Without Borders Canada",
 			"sector": "Non-profit",
 			"position": "Assistant Deputy Substitute Director of Technology",
@@ -231,5 +236,33 @@
 			"from_user": 3,
 			"added": "2009-07-22"
 		}
-	}
+	},
+	{
+        "pk": 1,
+        "model": "base_groups.basegroup",
+        "fields": {
+            "slug": "ewb-utoronto",
+			"name": "University of Toronto Chapter",
+			"description": "Toronto, ON",
+			"private": false,
+			"creator": 1,
+			"created": "2009-07-17 12:34:56",
+			"model": "Network"
+        }
+    },
+	{
+        "pk": 1,
+        "model": "base_groups.grouplocation",
+        "fields": {
+			"group": 1
+        }
+    },
+	{
+        "pk": 1,
+        "model": "networks.network",
+        "fields": {
+			"basegroup_ptr": 1,
+			"network_type": "U"
+        }
+    }
 ]

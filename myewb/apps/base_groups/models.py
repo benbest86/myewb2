@@ -15,8 +15,12 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import  User
 from django.utils.translation import ugettext_lazy as _
 from django.db import models, connection
+from django.db.models.signals import post_save
 from django.core.mail import EmailMessage
 
+from emailconfirmation.models import EmailAddress
+
+from siteutils.helpers import get_email_user
 from groups.base import Group
 
 class BaseGroup(Group):
@@ -71,7 +75,8 @@ class BaseGroup(Group):
         return reverse('group_detail', kwargs={'group_slug': self.slug})
 
     def get_member_emails(self):
-        members_with_emails = self.members.select_related(depth=1).exclude(user__email='')
+        members_with_emails = self.get_members().select_related(depth=1).exclude(user__email='') | \
+                self.members.filter(request_status='B').select_related(depth=1)
         return [member.user.email for member in members_with_emails]
 
     def send_mail_to_members(self, subject, body, html=True, fail_silently=False):
@@ -155,6 +160,7 @@ class GroupMember(models.Model):
         ('A', _("accepted")),
         ('I', _("invited")),
         ('R', _("requested")),
+        ('B', _("bulk member")),
     )
     request_status = models.CharField(_('request status'), max_length=1, choices=REQUEST_STATUS_CHOICES, default='A')
     
@@ -169,6 +175,9 @@ class GroupMember(models.Model):
         
     class Meta:
         ordering = ('is_admin', 'admin_order')
+
+    def is_bulk(self):
+        return self.request_status == 'B'
 
     # away = models.BooleanField(_('away'), default=False)
     # away_message = models.CharField(_('away_message'), max_length=500)
@@ -185,3 +194,22 @@ class GroupLocation(models.Model):
     place = models.CharField(max_length=100, null=True, blank=True)
     latitude = models.FloatField(null=True, blank=True)
     longitude = models.FloatField(null=True, blank=True)
+
+def clean_up_bulk_users(sender, instance, created, **kwargs):
+    if instance.verified:
+        # XXX Warning! This only works because get_email_user returns
+        # the user with their email set to the argument before it returns
+        # users with EmailAddress's with the argument
+        email_user = get_email_user(instance.email)
+        user = instance.user
+        # a 
+        if not email_user == user:
+            for membership in email_user.member_groups.all():
+                if membership.request_status == 'B' and not user.member_groups.filter(group=membership.group):
+                    membership.user = instance.user
+                    membership.request_status = 'A'
+                    membership.save()
+            # delete old bulk user - should delete GroupMember objects as well
+            email_user.delete()
+
+post_save.connect(clean_up_bulk_users, sender=EmailAddress)

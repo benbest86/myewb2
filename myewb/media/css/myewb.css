@@ -58,6 +58,14 @@ div.topic_group a {
     color: #606060;
 }
 
+table#membersList {
+    width: 100%;
+}
+
+table#membersList td {
+    padding: 3px;
+}
+
 /* Chapter info */
 
 div#chapterHead, div#chapterActions, div#chapterExec {

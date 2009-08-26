@@ -9,12 +9,18 @@ Last modified: 2009-07-21
 @author: Joshua Gorner
 """
 
+import re
+
 from django.contrib.auth.models import User
+from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
+from django.contrib.sites.models import Site
+from django.conf import settings
 
 from emailconfirmation.models import EmailAddress
+from mailer import engine 
 
 from profiles.forms import ProfileForm, StudentRecordForm
 from profiles.models import MemberProfile, StudentRecord
@@ -174,17 +180,47 @@ class TestEmailVerification(TestCase):
 
     def setUp(self):
         self.joe = User.objects.get(username='joe')
+        self.joe.set_password(u'password')
+        self.joe.save()
+        self.bob = User.objects.get(username='bob')
+        self.bob.set_password(u'password')
+        self.bob.save()
+        current_site = Site.objects.get_current()
+        current_site.domain = 'testserver'
+        current_site.save()
 
     def tearDown(self):
-        pass
+        try:
+            self.client.logout()
+        except:
+            pass
 
     def test_verify_email(self):
         email_address = EmailAddress.objects.create(user=self.joe, email='joe@joe.com')
+
         # address added but not verified, User email should still be blank
         self.assertEquals(self.joe.email, '')
+        # one email should have been sent to joe about registering
         email_address.verified = True
         email_address.save()
         self.assertEquals(email_address.primary, True)
+
+    def test_verify_by_client(self):
+        logged_in = self.client.login(username='bob', password='password')
+        self.assertTrue(logged_in)
+        create_email = self.client.post('/account/email/', {'email':'bob@joe.com', 'action':'add'})
+        # email_confirmation usees the mailer app if its installed, so 
+        # make sure queue is cleared
+        if 'mailer' in settings.INSTALLED_APPS:
+            engine.send_all()
+        self.assertEquals(1, len(mail.outbox))
+        confirmation_link = re.search(r'http\S*/', mail.outbox[0].body).group(0)
+        self.client.get(confirmation_link[len('http://testserver'):])
+        # email should be set
+        self.bob = User.objects.get(username='bob')
+        self.assertEquals(self.bob.email, 'bob@joe.com')
+
+
     
     def test_add_second_email(self):
         email_address = EmailAddress.objects.create(user=self.joe, email='joe@joe.com', verified=True)

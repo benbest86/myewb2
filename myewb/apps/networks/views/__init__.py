@@ -8,21 +8,26 @@ Last modified on 2009-08-06
 @author Joshua Gorner, Benjamin Best
 """
 
+import string
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext as _
+from emailconfirmation.models import EmailAddress
 
 from networks.models import Network
-from networks.forms import NetworkForm
+from networks.forms import NetworkForm, NetworkBulkImportForm, NetworkUnsubscribeForm
+from siteutils.helpers import get_email_user
 
 from base_groups.views import *
 from base_groups.views import members
 from base_groups.models import BaseGroup, GroupMember, GroupLocation
 from base_groups.forms import GroupMemberForm, GroupLocationForm
 from base_groups.helpers import *
+from base_groups.decorators import group_admin_required
 
 INDEX_TEMPLATE = 'networks/networks_index.html'
 NEW_TEMPLATE = 'networks/new_network.html'
@@ -103,3 +108,57 @@ def ajax_search(request, network_type):
         "networks": networks        
     }, context_instance=RequestContext(request))
     
+@group_admin_required()
+def bulk_import(request, group_slug, form_class=NetworkBulkImportForm, template_name='networks/bulk_import.html'):
+    group = get_object_or_404(Network, slug=group_slug)
+    if request.method == 'POST':
+        form = form_class(request.POST)
+        if form.is_valid():
+            raw_emails = form.cleaned_data['emails']
+            emails = raw_emails.split()   # splits by whitespace characters
+            
+            for email in emails:
+                email_user = get_email_user(email)
+                if email_user is None:
+                    username = User.objects.make_random_password()     # not a password per se, just a random string
+                    while User.objects.filter(username=username).count() > 0:   # ensure uniqueness
+                        username = User.objects.make_random_password()
+                    email_user = User.objects.create_user(username, email)      # sets "unusable" password
+                    email_user.save()
+                
+                existing_members = GroupMember.objects.filter(group=group, user=email_user)
+                if existing_members.count() == 0:              
+                    # set the request_status according to the existence of the user.
+                    # users with a password are real and get 'A', users without are
+                    # bulk users and get 'B'
+                    request_status = email_user.has_usable_password() and 'A' or 'B'
+                    nm = GroupMember(group=group, user=email_user, request_status=request_status)
+                    nm.save()
+            # redirect to network home page on success
+            return HttpResponseRedirect(reverse('network_detail', kwargs={'group_slug': group.slug}))
+    else:
+        form = form_class()
+    return render_to_response(template_name, {
+        "group": group,
+        "form": form,
+    }, context_instance=RequestContext(request))
+
+def unsubscribe(request, form_class=NetworkUnsubscribeForm, template_name='networks/unsubscribe.html'):
+    if request.method == 'POST':
+        form = form_class(request.POST)
+        message = None
+        if form.is_valid():
+            email = form.cleaned_data['email']            
+            email_user = get_email_user(email)
+            
+            if email_user and not email_user.has_usable_password():
+                email_user.delete()
+                message = _("The email address has been successfully removed from our mailing lists.")
+            else:
+                message = _("The email address you entered is not listed in our records as a mailing list recipient. Please ensure you entered the address correctly, or enter another email address.")
+    
+    form = form_class()
+    return render_to_response(template_name, {
+        "form": form,
+        "message": message,
+    }, context_instance=RequestContext(request))
