@@ -213,7 +213,7 @@ def sync_app_plugins(delete_removed=False, verbosity=2):
             options = lib.get_widget_call(widget_label).options
             # XXX fix this up a bit nicer
             default = construct_template_path(lib.app_name, widget_label.split('.')[1],
-                                              options.get('ext', '.html'))
+                                              options.get('ext', '.html'), sub_dir='widgets')
             # raise an error if it does not exist...
             template = options.get('template', default)
             loader.find_template_source(template)
@@ -228,7 +228,6 @@ def sync_app_plugins(delete_removed=False, verbosity=2):
 
     ## section 5 - unregistered plugins
     plugin_instances = dict((p.label, p) for p in Plugin.objects.all())
-    widget_instances = dict((w.label, w) for w in Widget.objects.all())
     for pp in PluginPoint.objects.exclude(status=REMOVED):
         ext = pp.get_options().get('ext', '.html')
         name = pp.label
@@ -240,7 +239,7 @@ def sync_app_plugins(delete_removed=False, verbosity=2):
                 loader.find_template_source(template)
             except TemplateDoesNotExist:
                 bFound = False
-            p = plugin_instances.get(label, None) or widget_instances.get(label, None)
+            p = plugin_instances.get(label, None)
             if p is None:
                 if bFound:
                     if verbosity > 1:

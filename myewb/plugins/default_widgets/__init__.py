@@ -1,12 +1,11 @@
 import myewb_plugins
-# from default_widgets.helpers.ewbbc import get_latest_ewbbc_uri
+from default_widgets.helpers.ewbbc import get_latest_ewbbc_url
 
 register = myewb_plugins.Library()
 
 def ewbbc(point):
-    # media_uri = get_latest_ewbbc_uri()
-    # return {'media_uri', media_uri}
-    return {}
+    ewbbc_url = get_latest_ewbbc_url()
+    return {'ewbbc_url': ewbbc_url}
 
 register.widget('dashboard')(ewbbc)
 

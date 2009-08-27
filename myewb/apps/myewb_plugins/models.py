@@ -31,10 +31,11 @@ LABEL_RE = re.compile('^[a-zA-Z_][a-zA-Z_0-9.]*$')
 def is_valid_label(name):
     return bool(LABEL_RE.match(name))
 
-def construct_template_path(app, name, ext='.html'):
+def construct_template_path(app, name, ext='.html', sub_dir='plugins'):
     if not is_valid_label(name): raise RuntimeError, u"invalid label: " + name
     if not is_valid_label(app): raise RuntimeError, u"invalid label: " + app
-    return '/'.join([app.split('.')[-1], 'plugins', name.replace('.','/')])+ext
+    return '/'.join([app.split('.')[-1], sub_dir, name.replace('.','/')])+ext
+
 
 class PluginApp(models.Model):
     """

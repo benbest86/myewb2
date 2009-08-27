@@ -1,5 +1,5 @@
 #body {
-    width: 980px;
+    width: 1260px;
 }
 #tabhead .login {
     color: #FC9; /* login bar text colour */
@@ -79,18 +79,18 @@ div.dashboard {
 div.dashboard-left {
     float: left;
     padding: 10px;
-    width: 127px;
+    width: 200px;
 }
 
 div.dashboard-right {
     float: right;
     padding: 10px;
-    width: 127px;
+    width: 200px;
 }
 
 div.dashboard-center {
-    margin-left: 147px;
-    margin-right: 147px;
+    margin-left: 220px;
+    margin-right: 220px;
     padding: 10px;
 }
 
