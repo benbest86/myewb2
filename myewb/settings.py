@@ -186,6 +186,7 @@ INSTALLED_APPS = (
     # plugins
     'ideas_app',
     'pers_dummy',
+    'default_widgets',
     
     'django.contrib.admin',
 

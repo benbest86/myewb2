@@ -144,6 +144,13 @@ class PluginPoint(models.Model):
         plugins = [up.plugin for up in upref]
         return plugins
 
+    def get_widget_prefs(self, user=None, location=None):
+        """get all the widget preferences in order"""
+        if self.status or user is None or location is None: return []
+        wprefs = user.userwidgetpreference_set.filter(widget__status=ENABLED, widget__point=self, location=location)
+        return wprefs
+
+
 
     def get_options(self):
         if not self.registered: return {}
@@ -166,7 +173,7 @@ class PluginPoint(models.Model):
             return call(*base, **args)
         return call(*base)
 
-class Plugin(models.Model):
+class PluginBase(models.Model):
     point = models.ForeignKey(PluginPoint)
     plugin_app = models.ForeignKey(PluginApp, blank=True, null=True)
     label = models.CharField(max_length=255, unique=True,
@@ -186,6 +193,7 @@ class Plugin(models.Model):
     class Meta:
         order_with_respect_to = 'point'
         ordering = ('point', 'index', 'id')
+        abstract = True
 
     def __unicode__(self):
         return u'plugin:' + self.label
@@ -210,12 +218,44 @@ class Plugin(models.Model):
         if not self.registered: return {}
         lib = get_library(self.app)
         call = lib.get_plugin_call(self.name)
+
         options = call.options
         base = [self,]
         if options.get('takes_context', False):
             base.append(context)
         if options.get('takes_user', False):
             base.append(user)
+        if options.get('takes_args', False):
+            return call(*base, **args)
+        return call(*base)
+
+class Plugin(PluginBase):
+    pass
+
+class Widget(PluginBase):
+
+    @property
+    def app(self):
+        #if not self.registered: return ''
+        return self.label.split('.')[0]
+
+    @property
+    def name(self):
+        return self.label.split('.', 1)[1]
+
+    def call(self, context, user, content_object, **args):
+        if not self.registered: return {}
+        lib = get_library(self.app)
+        call = lib.get_widget_call(self.name)
+
+        options = call.options
+        base = [self,]
+        if options.get('takes_context', False):
+            base.append(context)
+        if options.get('takes_user', False):
+            base.append(user)
+        if options.get('takes_content_object', False):
+            base.append(content_object)
         if options.get('takes_args', False):
             return call(*base, **args)
         return call(*base)
@@ -236,6 +276,23 @@ class MyEWBUserPluginPreference(models.Model):
 
     def __unicode__(self):
         return u':'.join(['pluginpref', self.user.username, self.plugin.label])
+
+class UserWidgetPreference(models.Model):
+    user    = models.ForeignKey(User)
+    widget  = models.ForeignKey(Widget)
+    content_type = models.ForeignKey(ContentType)
+    object_id = models.PositiveIntegerField()
+    content_object = generic.GenericForeignKey('content_type', 'object_id')
+    location = models.CharField(max_length=250)
+    index   = models.IntegerField(default=0)
+
+    class Meta:
+        unique_together = ['user', 'widget', 'location']
+        order_with_respect_to = 'widget'
+        ordering = ('widget', 'user', 'index', 'id')
+
+    def __unicode__(self):
+        return u':'.join(['pluginpref', self.user.username, self.widget.label])
 
 class UserPluginAppPreference(models.Model):
     """

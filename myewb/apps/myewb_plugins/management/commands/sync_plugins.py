@@ -65,6 +65,7 @@ def sync_app_plugins(delete_removed=False, verbosity=2):
         3.4. if the plugin was marked REMOVED
         3.4.1. mark it enabled
         3.4.2. if its point is REMOVED and it is not marked reg, enable it
+        Repeat 3 for widgets TODO something more efficient than code duplication
         4. for each registered plugin for which there is no registration
         4.1. mark it removed
         5. for each non-REMOVED point, get all unregistered plugins via load:
@@ -75,7 +76,7 @@ def sync_app_plugins(delete_removed=False, verbosity=2):
         7. if asked to delete the removed, do so.
     """
     from myewb_plugins.library import libraries
-    from myewb_plugins.models import Plugin, PluginPoint, PluginApp, REMOVED, ENABLED
+    from myewb_plugins.models import Plugin, PluginPoint, PluginApp, Widget, REMOVED, ENABLED
     from myewb_plugins.models import construct_template_path
 
     instances = dict((p.label, p) for p in PluginPoint.objects.all())
@@ -102,7 +103,7 @@ def sync_app_plugins(delete_removed=False, verbosity=2):
 
     ## section 2 - removed plugin points
     for pp in instances.itervalues():
-        if pp.status != REMOVED and not pp.plugin_set.exclude(status=REMOVED).count():
+        if pp.status != REMOVED and not pp.plugin_set.exclude(status=REMOVED).count() and not pp.widget_set.exclude(status=REMOVED).count():
             pp.status = REMOVED
             pp.save()
             for p in pp.plugin_set.all():
@@ -165,8 +166,69 @@ def sync_app_plugins(delete_removed=False, verbosity=2):
             p.status = REMOVED
             p.save()
 
+    instances = dict((p.label, p) for p in Widget.objects.all())
+    ## section 3.1 - registered widgets XXX clean this up when there's time! Too much duplication maybe?
+    for app_label, lib in libraries.iteritems():
+        for label in lib.widgets:
+            p = instances.pop(label, None)
+            # don't forget to remove the dot!!!
+            widget_label = label[len(lib.app_name):].strip('.')
+            # remove the widget name as well
+            point_label = widget_label.split('.')[0]
+            # XXX maybe should just be label.split('.')[1]?
+            if p is None:
+                p = Widget()
+                p.label = label
+                if verbosity > 1:
+                    print "Creating registered Plugin:", label
+                try:
+                    # XXX not sure if this will work in post_syncdb call - 
+                    # Will the PluginApp objects be created first?
+                    # SOLVED with claim_plugins signal
+                    plugin_app = PluginApp.objects.get(app_name=lib.app_name)
+                    p.plugin_app = plugin_app
+                except PluginApp.DoesNotExist:
+                    pass
+                try:
+                    point = PluginPoint.objects.get(label=point_label)
+                    p.point = point
+                    if point.status == REMOVED:
+                        # point was removed at some point...
+                        point.status = ENABLED
+                        if point.registered:
+                            point.registered = False
+                        point.save()
+                except PluginPoint.DoesNotExist:
+                    if verbosity > 1:
+                        print "Creating unregistered PluginPoint:", point_label
+                    point = PluginPoint(label=point_label)
+                    point.save()
+                    p.point = point
+            p.registered = True
+            if p.status == REMOVED:
+                # re-enable a previously removed plugin
+                if verbosity > 1:
+                    print "Updating registered Plugin:", p.label
+                p.status = ENABLED
+            options = lib.get_widget_call(widget_label).options
+            # XXX fix this up a bit nicer
+            default = construct_template_path(lib.app_name, widget_label.split('.')[1],
+                                              options.get('ext', '.html'))
+            # raise an error if it does not exist...
+            template = options.get('template', default)
+            loader.find_template_source(template)
+            p.template = template
+            p.save()
+
+    ## section 4.1 - initial marking of unregistered known plugins
+    for p in instances.itervalues():
+        if p.status != REMOVED:
+            p.status = REMOVED
+            p.save()
+
     ## section 5 - unregistered plugins
-    instances = dict((p.label, p) for p in Plugin.objects.all())
+    plugin_instances = dict((p.label, p) for p in Plugin.objects.all())
+    widget_instances = dict((w.label, w) for w in Widget.objects.all())
     for pp in PluginPoint.objects.exclude(status=REMOVED):
         ext = pp.get_options().get('ext', '.html')
         name = pp.label
@@ -178,7 +240,7 @@ def sync_app_plugins(delete_removed=False, verbosity=2):
                 loader.find_template_source(template)
             except TemplateDoesNotExist:
                 bFound = False
-            p = instances.get(label, None)
+            p = plugin_instances.get(label, None) or widget_instances.get(label, None)
             if p is None:
                 if bFound:
                     if verbosity > 1:
@@ -200,7 +262,7 @@ def sync_app_plugins(delete_removed=False, verbosity=2):
 
     ## section 6 - removed unregistered plugin points
     for pp in PluginPoint.objects.filter(registered=False).exclude(status=REMOVED):
-        if not pp.plugin_set.exclude(status=REMOVED).count():
+        if not pp.plugin_set.exclude(status=REMOVED).count() and not pp.widget_set.exclude(status=REMOVED).count():
             if verbosity > 1:
                 print "Removing unregistered PluginPoint:", pp.label
             pp.status = REMOVED

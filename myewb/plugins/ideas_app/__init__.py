@@ -34,8 +34,8 @@ def group_preferences(point, context, user, *args, **kwargs):
             }
 register.plugin_point(takes_context=True, takes_user=True)(group_preferences)
 
-def dashboard(point, context, user, owner, *args, **kwargs):
+def last_five_ideas(point, context, user, content_object, **kwargs):
     return {
-            'group': owner
+            'group': content_object,
             }
-register.widget(takes_context=True, takes_user=True, takes_owner=True)(dashboard)
+register.widget('dashboard', takes_context=True, takes_user=True, takes_content_object=True)(last_five_ideas)

@@ -70,12 +70,12 @@ class Library(object):
         return _register(self, self.plugin_calls, point_app, options,
                          False, call)
 
-    def widget(self, call=None, **options):
+    def widget(self, widget_hook, call=None, **options):
         if not callable(call) and call is not None:
             point_app = call
             call = None
         else:
-            point_app = ''
+            point_app = widget_hook
         return _register(self, self.widget_calls, point_app, options,
                          False, call)
 

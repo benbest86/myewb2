@@ -1,3 +1,6 @@
+#body {
+    width: 980px;
+}
 #tabhead .login {
     color: #FC9; /* login bar text colour */
 }
@@ -56,6 +59,7 @@ div.topic_group {
 
 div.topic_group a {
     color: #606060;
+}
 
 table.preferences {
     margin: 0.5em;
@@ -66,3 +70,27 @@ table.preferences td {
 table.preferences th {
     padding: 2px;
 }
+
+div.dashboard {
+    overflow: auto;
+    width: 100%;
+}
+
+div.dashboard-left {
+    float: left;
+    padding: 10px;
+    width: 127px;
+}
+
+div.dashboard-right {
+    float: right;
+    padding: 10px;
+    width: 127px;
+}
+
+div.dashboard-center {
+    margin-left: 147px;
+    margin-right: 147px;
+    padding: 10px;
+}
+

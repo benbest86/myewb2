@@ -1,0 +1,4 @@
+{% load myewb_plugins %}
+{% for pref in widget_prefs %}
+{% widget pref.widget.app widget_plugin_point pref.content_object widget=pref.widget user=widget_user args=widget_args ext=widget_ext %}
+{% endfor %}

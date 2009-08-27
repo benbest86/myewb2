@@ -1,5 +1,5 @@
 from django.contrib import admin
-from myewb_plugins.models import PluginPoint, Plugin, MyEWBUserPluginPreference, PluginApp, GroupPluginPreference, GroupPluginAppPreference, UserPluginAppPreference
+from myewb_plugins.models import PluginPoint, Plugin, MyEWBUserPluginPreference, PluginApp, GroupPluginPreference, GroupPluginAppPreference, UserPluginAppPreference, UserWidgetPreference, Widget
 from myewb_plugins.forms import AdminPluginPointForm, AdminPluginForm
 
 class PluginPointAdmin(admin.ModelAdmin):
@@ -17,9 +17,11 @@ class MyEWBUserPluginPreferenceAdmin(admin.ModelAdmin):
 
 admin.site.register(PluginPoint, PluginPointAdmin)
 admin.site.register(Plugin, PluginAdmin)
+admin.site.register(Widget)
 # admin.site.register(MyEWBUserPluginPreference, MyEWBUserPluginPreferenceAdmin)
 admin.site.register(PluginApp)
-# admin.site.register(GroupPluginPreference)
+admin.site.register(GroupPluginPreference)
 admin.site.register(GroupPluginAppPreference)
 admin.site.register(UserPluginAppPreference)
+admin.site.register(UserWidgetPreference)
 

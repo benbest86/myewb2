@@ -3,7 +3,7 @@ from commands.sync_plugins import sync_app_plugins
 from myewb_plugins import models as sender_app
 
 def do_sync(*args, **kwdargs):
-    sync_app_plugins(verbosity=kwdargs.get("verbosity", 1))
+    sync_app_plugins(verbosity=kwdargs.get("verbosity", 2))
 
 signals.post_syncdb.connect(do_sync, sender=sender_app)
 
