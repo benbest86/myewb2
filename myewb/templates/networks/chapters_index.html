@@ -1,0 +1,51 @@
+{% extends "networks/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+{% load humanize %}
+{% load pagination_tags %}
+{% load order_by %}
+{% load extra_tagging_tags %}
+{% load networks_tags %}
+{% load base_groups_tags %}
+{% load sorting_tags %}
+
+{% block head_title %}{% blocktrans %}Chapters{% endblocktrans %}{% endblock %}
+
+{% block body %}
+    <h1>{% trans "Chapters" %}</h1>
+    
+    {% comment %}
+    <form method="GET" action="">
+        <input type="text" name="search" value="{{ search_terms }}" />
+        <input type="submit" value="Search" />
+        {% if search_terms %}
+            <a href="{% clear_search_url request %}">Clear Search Terms</a>
+        {% endif %}
+    </form>
+    {% endcomment %}
+    
+    {# {% autosort chapters %} #}
+    {# {% autopaginate groups 10 %} #}
+    
+    {% if chapters %}
+        {% comment %}
+        <p>{% trans "Order by:" %}
+            {% anchor topic_count Topics %}
+            {% anchor member_count Members %}
+            {% anchor name Name %}
+            {% anchor created Date %}
+        </p>
+        {% endcomment %}
+        <dl>
+        {% for chapter in chapters %}
+            <div class="chapterEntry">
+                <div><strong><a href="{% url chapter_detail chapter.network.slug %}">{{ chapter.chapter_name }}</a></strong></div>
+                <div>{{ chapter.city }}, {{ chapter.province }}</div>
+            </div>
+        {% endfor %}
+        </dl>
+        {# {% paginate %} #}
+    {% endif %}
+    
+{% endblock %}

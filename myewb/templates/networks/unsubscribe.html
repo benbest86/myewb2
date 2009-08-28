@@ -1,0 +1,31 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+
+{% block head_title %}{% trans "Unsubscribe" %}{% endblock %}
+
+{% block body %}
+    <h1>{% trans "Unsubscribe from EWB Mailing Lists" %}</h1>
+    {% if message %}
+        <p><strong>{{ message }}</strong></p>
+    {% endif %}
+    <p>
+        {% trans "If you wish to unsubscribe from all Engineers Without Borders Canada mailing lists, please enter your address below." %}
+    </p>
+    <p>
+        {% trans "If you have used several email addresses, you may need to enter each one in order to remove yourself from these lists." %}
+    </p>
+    <p>
+        {% trans "If you have ever signed up for a myEWB account - that is, if you have ever created a password to use with this site - using any of these addresses, you will have to sign in to that account in order to remove any group memberships." %}
+    </p>
+    <form class="uniForm" id="unsubscribe_form" method="POST" action="">
+        <fieldset class="inlineLabels">
+            {{ form|as_uni_form }}
+            <div class="form_block">
+                <input type="hidden" name="action" value="unsubscribe" />
+                <input type="submit" value="{% trans 'unsubscribe' %}"/>
+            </div>
+        </fieldset>
+    </form>
+{% endblock %}

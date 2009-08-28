@@ -106,6 +106,7 @@
 
 				{% if user.is_staff or member.is_admin %}
 					<a href="{% url network_new_member group.slug %}">{% trans "Add another user" %}</a>
+					<a href="{% url network_bulk_import group.slug %}">{% trans "Email bulk import" %}</a>
 				{% endif %}
             </div>
         {% else %}
@@ -114,6 +115,13 @@
             <p>{% blocktrans %}<a href="{{ signup_url }}">Sign up</a> and <a href="{{ login_url }}">log in </a> to join this network.{% endblocktrans %}</p>
         {% endif %}
         
+        {% if group.is_chapter %}
+            <p>{% trans "Associated EWB chapter:" %} <a href="{% url chapter_detail group.slug %}">{{ group.chapter_info.chapter_name }}</a></p>
+        {% else %}
+            {% if user.is_staff or user.is_superuser %}
+                <p><a href="{% url new_chapter %}">{% trans "Create associated chapter" %}</a></p>
+            {% endif %}
+        {% endif %}        
         
         {% if user.is_authenticated %}
             <h2>{% trans "Discussion Topics" %}{% if group.topics.all.count %} ({{ group.topics.all.count }}){% endif %}</h2>

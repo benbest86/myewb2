@@ -9,6 +9,7 @@ Last modified on 2009-07-29
 """
 
 from django import template
+from base_groups.models import GroupMember
 
 register = template.Library()
 
@@ -32,3 +33,31 @@ def persist_getvars(request):
     if len(getvars.keys()) > 0:
         return "?%s" % getvars.urlencode()
     return ''
+    
+class AdminsNode(template.Node):
+    def __init__(self, group_name, context_name):
+        self.group = template.Variable(group_name)
+        self.context_name = context_name
+
+    def render(self, context):
+        try:
+            group = self.group.resolve(context)
+        except template.VariableDoesNotExist:
+            return u''
+            
+        admins = GroupMember.objects.filter(group=group, is_admin=True)
+        context[self.context_name] = admins
+        return u''
+
+def do_get_admins(parser, token):
+    """
+    Provides the template tag {% get_admins GROUP as VARIABLE %}
+    """
+    try:
+        _tagname, group_name, _as, context_name = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError(u'%(tagname)r tag syntax is as follows: '
+            '{%% %(tagname)r GROUP as VARIABLE %%}' % {'tagname': _tagname})
+    return AdminsNode(group_name, context_name)
+
+register.tag('get_admins', do_get_admins)

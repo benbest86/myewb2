@@ -54,12 +54,15 @@ urlpatterns = patterns('',
     
     (r'^groups/', include('base_groups.urls')),
     (r'^networks/', include('networks.urls')),
+    (r'^chapters/', include('networks.urls.chapters')),
     (r'^communities/', include('communities.urls')),
     (r'^posts/', include('group_topics.urls')),
     (r'^creditcard/', include('creditcard.urls')),
     # plugin urls, so just include the base and we'll see how it goes...
     (r'^account/plugins/', include('myewb_plugins.user_pref_urls')),
     (r'^', include('myewb_plugins.urls')),
+    
+    url(r'^unsubscribe/$', 'networks.views.unsubscribe', name='network_unsubscribe',),
     
 #    (r'^feeds/tweets/(.*)/$', 'django.contrib.syndication.views.feed', tweets_feed_dict),
 #    (r'^feeds/posts/(.*)/$', 'django.contrib.syndication.views.feed', blogs_feed_dict),

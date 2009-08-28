@@ -31,29 +31,41 @@
         {% endif %}
     </form>
     {% autosort members %}
-    {% autopaginate members 10 %}
+    {% autopaginate members 20 %}
     {% if members %}
-        {% comment %}
-        <p>{% trans "Order by:" %}
-            {% anchor name Name %}
-            {% anchor created Date %}
-        </p>
-        {% endcomment %}
-        <dl>
-        {% for member in members %}
-            <dt><a href="{% url community_member_detail group.slug, member.user.username %}">
-				{% if member.user.get_profile.name %} {{ member.user.get_profile.name }} {% else %} {{ member.user.username }} {% endif %}
-			</a></dt>
-			<dd>
-			    {% if member.is_requested %}<strong>Member request pending</strong> &ndash; {% endif %}
-			    {% if member.is_invited %}<strong>Member invitation pending</strong> &ndash; {% endif %}
-				{% if member.is_admin %}
-				    Group admin {% if member.admin_title %}({{ member.admin_title }}){% endif %} &ndash; 
-				{% endif %}
-				{% if is_admin %}<a href="{% url community_edit_member group.slug, member.user.username %}">{% trans "Edit details" %}</a>{% endif %}
-			</dd>
-        {% endfor %}
-        </dl>
+        <table id="membersList">
+            <tr>
+                <th>{% trans "Username" %}</th>
+                <th>{% trans "Name" %}</th>
+                <th>{% trans "Admin?" %}</th>
+                <th>{% trans "Admin title" %}</th>
+                {% if is_admin %}
+                    <th>{% trans "Primary Email" %}</th>
+                    <th>{% trans "Request status" %}</th>
+                    <th>{% trans "Edit" %}</th>
+                {% endif %}
+            </tr>
+         {% for member in members %}
+            <tr>
+                <td>
+                    <a href="{% url network_member_detail group.slug, member.user.username %}">{{ member.user.username }}</a>
+                </td>
+                <td>{{ member.user.get_profile.name }}</td>
+                <td>{% if member.is_admin %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td>
+                <td>{% if member.is_admin %}{{ member.admin_title}}{% endif %}</td>
+                {% if is_admin %}
+                    <td>{{ member.user.email }}</td>
+                    <td>
+                        {% if member.is_accepted %}{% trans "Registered member" %}{% endif %}
+                        {% if member.is_bulk %}{% trans "Mailing list recipient only" %}{% endif %}
+                        {% if member.is_requested %}{% trans "Member request pending" %}{% endif %}
+    			        {% if member.is_invited %}{% trans "Member invitation pending" %}{% endif %}
+                    </td>
+                    <td><a href="{% url network_edit_member group.slug, member.user.username %}">{% trans "Edit" %}</a></td>
+                {% endif %}
+    		</tr>
+         {% endfor %}
+        </table>
         {% paginate %}
     {% endif %}
     
