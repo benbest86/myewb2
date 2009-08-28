@@ -65,7 +65,7 @@ def delete_community(request, group_slug, form_class=CommunityForm, detail_templ
 
 # permission here?
 def community_admin_page(request, group_slug, template_name=ADMIN_TEMPLATE):
-    return group_admin_page(request, group_slug, Community, template_name)
+    return group_admin_page(request, group_slug, Community, GroupMember, template_name)
     
         
 def members_index(request, group_slug, form_class=GroupMemberForm, template_name=MEM_INDEX_TEMPLATE, 

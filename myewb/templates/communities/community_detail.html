@@ -20,6 +20,9 @@
     
     {% if user.is_authenticated %}
         <div class="right_panel">
+            <div class="right-widgets">
+                {% group_widget_hook group "dashboard" "right" user=user %} 
+            </div>
             <div class="members">
                 <h2>{% trans "Members" %}</h2>
                 <table width="100%">

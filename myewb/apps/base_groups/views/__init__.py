@@ -221,16 +221,20 @@ def delete_group(request, group_slug, model=None, member_model=None, form_class=
             return HttpResponseRedirect(reverse("%s_detail" % group.model.lower(), kwargs={'group_slug': group_slug}))
 
 @group_admin_required()
-def group_admin_page(request, group_slug, model=None, template_name=None, options=None):
+def group_admin_page(request, group_slug, model=None, member_model=None, template_name=None, options=None):
     if model is None:
         group = get_object_or_404(BaseGroup, slug=group_slug)
         return HttpResponseRedirect(reverse("%s_admin_page" % group.model.lower(), kwargs={'group_slug': group_slug}))
     group = get_object_or_404(model, slug=group_slug)
+    if request.user.is_authenticated() and group.user_is_member_or_pending(request.user):
+        member = member_model.objects.get(user=request.user, group=group)
+    else:
+        member = None
     return render_to_response(
             template_name,
             {
                 'group': group,
-                'is_admin': True,
+                'member': member,
             },
             context_instance=RequestContext(request))
 

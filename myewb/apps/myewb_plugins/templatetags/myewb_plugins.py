@@ -238,7 +238,7 @@ def widget(context, app, name, content_object, widget=None, user=None, args=None
     return nc
 
 @inclusion_kwdtag(register, "myewb_plugins/plugin_point.html", takes_context=True)
-def plugin_hook(context, name, point=None, user=None, ext='.html', **args):
+def plugin_hook(context, name, point=None, user=None, ext='.html', args=None, **extra_args):
     validate_name(name)
     if point is None:
         try:
@@ -247,6 +247,8 @@ def plugin_hook(context, name, point=None, user=None, ext='.html', **args):
             point = models.PluginPoint.objects.select_related().get(label=name)
         except models.PluginPoint.DoesNotExist:
             pass
+    if args is None: args = extra_args
+    else: args.update(extra_args)
     nc = context
     plugins = None
     if point is None:
@@ -277,10 +279,12 @@ def plugin_hook(context, name, point=None, user=None, ext='.html', **args):
     return nc
 
 @inclusion_kwdtag(register, "myewb_plugins/widget_hook.html", takes_context=True)
-def widget_hook(context, name, location, point=None, user=None, ext='.html', **args):
+def widget_hook(context, name, location, point=None, user=None, ext='.html', args=None, **extra_args):
     validate_name(name)
     if point is None:
         point = models.PluginPoint.objects.select_related().get(label=name)
+    if args is None: args = extra_args
+    else: args.update(extra_args)
     nc = context
     widgets = None
     nc.update(point.call(nc, user, **args))
@@ -296,4 +300,19 @@ def widget_hook(context, name, location, point=None, user=None, ext='.html', **a
     nc['widget_args'] = args
     nc['widget_user'] = user
     nc['widget_prefs'] = widget_prefs
+    return nc
+
+@inclusion_kwdtag(register, "myewb_plugins/group_widget_hook.html", takes_context=True)
+def group_widget_hook(context, group, name, location, point=None, user=None, ext='.html', args=None, **extra_args):
+    if args is None: args = extra_args
+    else: args.update(extra_args)
+    location = '%s-%s' % (group.slug, location)
+    nc = context
+    nc.push()
+    nc['widget_name'] = name
+    nc['widget_location'] = location
+    nc['widget_plugin_point'] = point
+    nc['widget_user'] = user
+    nc['widget_ext'] = ext
+    nc['widget_args'] = args
     return nc
