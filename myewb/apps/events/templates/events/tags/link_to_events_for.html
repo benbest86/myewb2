@@ -1,0 +1,25 @@
+{% spaceless %}
+
+{% if app_label %}
+	{% if link_only %}
+		{% url events_for_instance app_label=app_label model_name=model_name id=model_instance.id %}
+	{% else %}
+		<a href="{% url events_for_instance app_label=app_label model_name=model_name id=model_instance.id %}"
+			{% if css_id %}id="{{css_id}}"{% endif %}
+			class="add_point_link">See Events for {{model_instance}}</a>
+		<img style="display:none;" class='loading' src='{{MEDIA_URL}}events/img/ajax-loader.gif'></img>
+	{% endif %}
+	
+{% else %}
+	{% if link_only %}
+		{% url events_all %}
+	{% else %}
+		<a href="{% url events_all %}"
+			{% if css_id %}id="{{css_id}}"{% endif %}
+			class="add_point_link">See all events</a>
+		<img style="display:none;" class='loading' src='{{MEDIA_URL}}events/img/ajax-loader.gif'></img>
+	{% endif %}
+	
+{% endif %} 
+
+{% endspaceless %}

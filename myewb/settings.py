@@ -183,6 +183,7 @@ INSTALLED_APPS = (
     'creditcard',
     
     'django.contrib.admin',
+    'events',
 
 )
 

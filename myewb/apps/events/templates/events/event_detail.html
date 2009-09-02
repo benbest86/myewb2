@@ -1,0 +1,27 @@
+{% extends 'events/base.html' %}
+{% load events_tags %}
+
+{% block body %}
+
+<div type="text" id="datepicker"></div>
+
+<div id="event-details">
+
+<h2>{{object.title}}</h2>
+
+<p>Start: {{object.start|date:"D, M j \a\t P"}}<br/>
+End: {{object.end|date:"D, M j \a\t\ P"}}</p>
+
+<p>Location: {{object.location}}</p>
+
+<p>{{object.description}}</p>
+
+<p>Created by: {{object.creator.name}}<br/>
+Visible to {{object.content_object}}</p>
+
+</div>
+
+<a href="{% link_to_events_for object.content_object 'css_class' 1 %}">&lt;&lt; Back to {{object.content_object}} events</a>
+
+{% endblock %}
+

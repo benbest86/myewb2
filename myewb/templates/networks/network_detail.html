@@ -11,6 +11,7 @@
 {% load base_groups_tags %}
 {% load group_tags %}
 {% load topics_tags %}
+{% load events_tags %} 
 
 {% block head_title %}{{ group.name }}{% endblock %}
 
@@ -136,6 +137,11 @@
                 <p>{% trans "None yet." %} {% if user.is_authenticated %}<a href="{{ new_topic_url }}">{% trans "Start one..." %}</a>{% endif %}</p>
             {% endif %}
         {% endwith %}
+        
+        <h2>{% trans "Upcoming Events" %}</h2>
+        {% events_upcoming user group %}
+        <a href="{% link_to_events_for group 'css_class' 1 %}">See all events for {{group}}</a><br/>
+        <a href="{% event_link_add_to group 'css_id' 1 %}">Add event</a>
         
 {% comment %}
         <h2>{% trans "Wiki Articles" %}{% if total_articles %} ({{ total_articles }}){% endif %}</h2>

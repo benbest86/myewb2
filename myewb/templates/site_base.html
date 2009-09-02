@@ -46,6 +46,7 @@
         {% endif %}
         <li id="tab_networks"><a href="{% url networks_index %}">{% trans "Networks" %}</a></li>
         <li id="tab_communities"><a href="{% url communities_index %}">{% trans "Communities" %}</a></li>
+        <li id="tab_events"><a href="{% url events_all %}">{% trans "Events" %}</a></li>
         <li id="tab_topics"><a href="{% url topic_list %}">{% trans "Posts" %}</a></li>
         {% if user.is_authenticated %}
             <li id="tab_inbox"><a href="{% url messages_inbox %}">{% trans "Inbox" %} ({{ combined_inbox_count }})</a></li>
