@@ -54,8 +54,9 @@
 				</form>
                 {% if member.is_admin %}
                     <div>Member management</div>
-                    <div>Email forwards</div>
                     <div>Monitoring and evaluation</div>
+
+					<p><a href="{% url email_forwards_index chapter.network.slug %}">{% trans "See email forwards" %}</a></p>
                 {% endif %}
             {% else %}
                 <a href="{% url network_new_member chapter.network.slug %}">{% trans "Join network" %}</a>

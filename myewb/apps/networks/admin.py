@@ -8,9 +8,13 @@ Last modified on 2009-07-29
 """
 
 from django.contrib import admin
-from networks.models import Network
+from networks.models import Network, EmailForward
 
 class NetworkAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug', 'creator', 'created')
+    
+class EmailForwardAdmin(admin.ModelAdmin):
+    list_display = ('network', 'user', 'address')
 
 admin.site.register(Network, NetworkAdmin)
+admin.site.register(EmailForward, EmailForwardAdmin)

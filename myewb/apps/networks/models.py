@@ -15,6 +15,7 @@ from django.db import models
 from django.db.models.signals import post_save
 
 from base_groups.models import BaseGroup, GroupMember, GroupLocation
+from networks import emailforwards
 
 class Network(BaseGroup):
     
@@ -63,3 +64,17 @@ def create_network_location(sender, instance=None, **kwargs):
     location, created = GroupLocation.objects.get_or_create(group=instance)
 
 post_save.connect(create_network_location, sender=Network)
+
+class EmailForward(models.Model):
+    network = models.ForeignKey(Network, related_name="email_forwards", verbose_name=_('network'))
+    user = models.ForeignKey(User, related_name="email_forwards", verbose_name=_('user'))
+    address = models.EmailField(unique=True)
+
+    def save(self, force_insert=False, force_update=False):
+        emailforwards.addAddress(self.user, self.address)
+        super(EmailForward, self).save(force_insert, force_update)
+
+    def delete(self):
+        emailforwards.removeAddress(self.user, self.address)
+        super(EmailForward, self).delete()
+        
