@@ -134,7 +134,13 @@
                 <p><a href="{% groupurl topic_list group %}">{% trans "more..." %}</a></p>
             {% else %}
                 {% groupurl topic_list group as new_topic_url %}
-                <p>{% trans "None yet." %} {% if user.is_authenticated %}<a href="{{ new_topic_url }}">{% trans "Start one..." %}</a>{% endif %}</p>
+                <p>{% trans "None yet." %}
+                {% if user.is_authenticated %}
+                    {% if member %}<a href="{{ new_topic_url }}">{% trans "Start one..." %}</a>
+                    {% else %}<a href="{% url  network_new_member group.slug %}">{% trans "Join to start one..." %}</a>
+                    {% endif %}
+                {% endif %}
+                </p>
             {% endif %}
         {% endwith %}
         
