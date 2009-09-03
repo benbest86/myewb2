@@ -9,6 +9,7 @@ Created on: 2009-08-13
 """
 
 from django.db import models
+from django.db.models.signals import post_save
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 
@@ -35,6 +36,7 @@ class GroupTopic(Topic):
         self.body = clean_html(self.body)
         self.body = autolink_html(self.body)
         super(GroupTopic, self).save()
+        post_save.send(sender=Topic, instance=Topic.objects.get(id=self.id))
     
     class Meta:
         ordering = ('-modified', )
