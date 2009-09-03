@@ -78,3 +78,15 @@ class EmailForward(models.Model):
         emailforwards.removeAddress(self.user, self.address)
         super(EmailForward, self).delete()
         
+
+def add_users_to_default_networks(sender, instance=None, created=False, **kwargs):
+    if created:
+        try:
+            ewb = Network.objects.get(slug='ewb')
+            membership = GroupMember.objects.get_or_create(
+                    user=instance,
+                    group=ewb,
+                    )
+        except Network.DoesNotExist:
+            pass
+post_save.connect(add_users_to_default_networks, sender=User)
