@@ -169,6 +169,7 @@ INSTALLED_APPS = (
     'profiles',
     'staticfiles',
     'account',
+    'account_extra',
 #    'misc',
     'signup_codes',
 #    'tribes',
@@ -189,6 +190,7 @@ INSTALLED_APPS = (
     'default_widgets',
     
     'django.contrib.admin',
+    'events',
 
 )
 
@@ -262,6 +264,12 @@ WIKI_REQUIRES_LOGIN = True
 # your own merchant ID, and put it in local_settings.py
 TD_MERCHANT_ID = None
 TD_MERCHANT_URL = 'https://www.beanstream.com/scripts/process_transaction.asp'
+
+# and if you want LDAP email-forwards support, define the info here.
+# LDAP will fail silently otherwise.
+LDAP_HOST = 'ldap://127.0.0.1'
+LDAP_BIND_DN = 'cn=myewb,ou=accra,ou=services,dc=ewb,dc=ca'
+LDAP_BIND_PW = ''
 
 # local_settings.py can be used to override environment-specific settings
 # like database and email that differ between development and production.

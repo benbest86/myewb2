@@ -1,0 +1,65 @@
+{% extends 'events/base.html' %}
+{% load uni_form %}
+
+{% block extra_head %}
+ <link type="text/css" href="{{MEDIA_URL}}css/jquery-ui.css" rel="stylesheet" />
+ <link type="text/css" href="{{MEDIA_URL}}css/ui.timepickr.css" rel="stylesheet" />
+{% endblock %}
+
+
+{% block body %}
+    <form class="uniForm" id="create-event" method="POST" enctype="multipart/form-data" 
+            action="{% url events_add app_label=app_label model_name=model_name id=obj.id %}">
+        <fieldset class="inlineLabels">
+
+	    {{form|as_uni_form}} 
+
+           <div class="form_block">
+                <input type="hidden" name="action" value="upload" />
+                <input type="submit" value="Submit" />
+            </div>
+        </fieldset>
+    </form>
+{% endblock %}
+
+{% block extra_body %}
+{#{{form.media}}#}
+  <script type="text/javascript" src="{{MEDIA_URL}}js/jquery-ui.js"></script> 
+  <script type="text/javascript" src="{{MEDIA_URL}}js/ui.datepicker.js"></script>
+  <script type="text/javascript" src="{{MEDIA_URL}}js/jquery.utils.js"></script>
+  <script type="text/javascript" src="{{MEDIA_URL}}js/jquery.strings.js"></script>
+  <script type="text/javascript" src="{{MEDIA_URL}}js/ui.dropslide.js"></script>
+  <script type="text/javascript" src="{{MEDIA_URL}}js/ui.timepickr.js"></script>
+
+  <style>
+    div.ui-datepicker {z-index:10000000;}
+    
+    {# hack to fix positioning... is there a better way? #}
+    input.ui-timepickr { margin-left: 47%; position: relative; left: 3px;}
+  </style>
+  
+  <script type="text/javascript">
+  $(document).ready(function(){
+  
+  	{# set up javascript widgets... #}
+    var datepicker = $("input#id_start_0, input#id_end_0").datepicker({});
+
+    var timepicker = $('input#id_start_1, input#id_end_1').timepickr({
+        handle: '#trigger-test',
+        convention: 24
+    });
+    
+    {# update the end time/date if the start is changed #}
+    $('input#id_start_0').change(function() {
+    	if ($('input#id_end_0').val() < $('input#id_start_0').val())
+    		$('input#id_end_0').val($('input#id_start_0').val());
+    });
+    $('input#id_start_1').change(function() {
+    	if ($('input#id_end_1').val() < $('input#id_start_1').val())
+    		$('input#id_end_1').val($('input#id_start_1').val());
+    });
+    
+  });
+  </script>
+
+{% endblock %}

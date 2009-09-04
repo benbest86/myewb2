@@ -18,6 +18,7 @@ from django.utils.translation import ugettext_lazy as _
 from emailconfirmation.models import EmailAddress
 
 from pinax.apps.profiles.models import Profile, create_profile
+from networks import emailforwards
 from networks.models import Network
 from countries import COUNTRIES
 from datetime import date
@@ -150,12 +151,17 @@ post_save.connect(create_member_profile, sender=User)
 def set_primary_email(sender, instance=None, **kwargs):
     """
     Automatically sets a verified email to primary if no verified address exists yet.
+    Also updates LDAP for email forwards if the primary emai
     """
-    if instance is not None and instance.verified and instance.primary == False:
+    if instance is not None and instance.verified:
         user = instance.user
-        # if we only have one email it is this one
-        if user.emailaddress_set.count() == 1:
-            instance.set_as_primary()
+        if instance.primary == False:
+            # if we only have one email it is this one
+            if user.emailaddress_set.count() == 1:
+                instance.set_as_primary()
+                emailforwards.updateUser(user, instance.email)
+        else:
+            emailforwards.updateUser(user, instance.email)
 
 post_save.connect(set_primary_email, sender=EmailAddress)
     

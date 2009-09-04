@@ -1,0 +1,47 @@
+{% extends "networks/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+{% load humanize %}
+{% load pagination_tags %}
+{% load order_by %}
+{% load extra_tagging_tags %}
+{% load sorting_tags %}
+{% load base_groups_tags %}
+
+{% block head_title %}{% blocktrans %}Members of{% endblocktrans %} {{network.name}}{% endblock %}
+
+{% block body %}
+	<p><a href="{% url network_detail network.slug %}">{{ network.name }}</a></p>
+    <h1>{% trans "Email forwards" %}</h1>
+    
+    {% autosort forwards %}
+    {% autopaginate forwards 10 %}
+    {% if forwards %}
+        {% comment %}
+        <p>{% trans "Order by:" %}
+            {% anchor name Name %}
+            {% anchor created Date %}
+        </p>
+        {% endcomment %}
+        <dl>
+        {% for fwd in forwards %}
+            <dt>{{ fwd.user}}</dt>
+			<dd>
+				{{ fwd.address }}<br/>
+				<form action="{% url email_forwards_delete network.slug fwd.id %}" method="post">
+					<input type="hidden" name="user" value="{{ fwd.user.pk }}"/>
+					<input type="submit" value="Delete"/>
+				</form>
+			</dd>
+        {% endfor %}
+        </dl>
+        {% paginate %}
+    {% endif %}
+
+	<h3>Add a new forward</h3>    
+	<form method="POST" action="">
+		{{ form|as_uni_form }}
+        <input type="submit" value="Add" />
+    </form>
+{% endblock %}

@@ -1,0 +1,14 @@
+{% load i18n %}
+
+{% if events %}
+    <table class="topics">
+		{% for event in events %}
+			<tr class="odd">
+				<td>{{ event.title }}</td>
+				<td>{{ event.start|date:"D, M j \a\t P" }}</td>
+			</tr>
+		{% endfor %}
+	</table>
+{% else %}
+	{% trans "There are no upcoming events." %}
+{% endif %}

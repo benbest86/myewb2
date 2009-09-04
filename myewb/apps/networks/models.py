@@ -16,6 +16,7 @@ from django.db.models.signals import post_save
 
 from base_groups.models import BaseGroup, GroupMember, GroupLocation
 from myewb_plugins.models import PluginApp, GroupPluginAppPreference
+from networks import emailforwards
 
 class Network(BaseGroup):
     
@@ -35,11 +36,8 @@ class Network(BaseGroup):
         self.model = "Network"
         return super(Network, self).save(force_insert, force_update)
         
-    def is_chapter(self):    
-        if self.chapter_info is None:
-            return False
-        else:
-            return True
+    def is_chapter(self):
+        return hasattr(self, "chapter_info")
         
     class Meta:
         verbose_name_plural = "networks"
@@ -72,3 +70,29 @@ def create_preferences_for_network(sender, instance, created, **kwargs):
         for plugin_app in PluginApp.objects.filter(plugin_type='group', default_visibility=True):
             GroupPluginAppPreference.objects.create(group=instance.base_group, plugin_app=plugin_app)
 post_save.connect(create_preferences_for_network, sender=Network)
+
+class EmailForward(models.Model):
+    network = models.ForeignKey(Network, related_name="email_forwards", verbose_name=_('network'))
+    user = models.ForeignKey(User, related_name="email_forwards", verbose_name=_('user'))
+    address = models.EmailField(unique=True)
+
+    def save(self, force_insert=False, force_update=False):
+        emailforwards.addAddress(self.user, self.address)
+        super(EmailForward, self).save(force_insert, force_update)
+
+    def delete(self):
+        emailforwards.removeAddress(self.user, self.address)
+        super(EmailForward, self).delete()
+        
+
+def add_users_to_default_networks(sender, instance=None, created=False, **kwargs):
+    if created:
+        try:
+            ewb = Network.objects.get(slug='ewb')
+            membership = GroupMember.objects.get_or_create(
+                    user=instance,
+                    group=ewb,
+                    )
+        except Network.DoesNotExist:
+            pass
+post_save.connect(add_users_to_default_networks, sender=User)

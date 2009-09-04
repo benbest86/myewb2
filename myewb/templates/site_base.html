@@ -39,17 +39,22 @@
 {% block logo_link_image %}<a href="{% url home %}"><img src="{{ MEDIA_URL }}pinax/images/logo.png" alt="Pinax"/></a>{% endblock %}
 
 {% block right_tabs %}
-    {% if user.is_authenticated %}
-        <ul class="tabs">{% spaceless %}
-            <li id="tab_home"><a href="{% url home %}">{% trans "Home" %}</a></li>
+    <ul class="tabs">{% spaceless %}
+        <li id="tab_home"><a href="{% url home %}">{% trans "Home" %}</a></li>
+        {% if user.is_authenticated %}
             <li id="tab_profile"><a href="{% url profile_detail user %}">{% trans "Profile" %}</a></li>
-            <li id="tab_networks"><a href="{% url networks_index %}">{% trans "Networks" %}</a></li>
-            <li id="tab_communities"><a href="{% url communities_index %}">{% trans "Communities" %}</a></li>
-            <li id="tab_topics"><a href="{% url topic_list %}">{% trans "Posts" %}</a></li>
+        {% else %}
+            <li id="tab_profile"><a href="{% url profile_list %}">{% trans "Profiles" %}</a></li>
+        {% endif %}
+        <li id="tab_networks"><a href="{% url networks_index %}">{% trans "Networks" %}</a></li>
+        <li id="tab_communities"><a href="{% url communities_index %}">{% trans "Communities" %}</a></li>
+        <li id="tab_events"><a href="{% url events_all %}">{% trans "Events" %}</a></li>
+        <li id="tab_topics"><a href="{% url topic_list %}">{% trans "Posts" %}</a></li>
+        {% if user.is_authenticated %}
             {% plugin_hook "menu_tab" user=user %}
             <li id="tab_inbox"><a href="{% url messages_inbox %}">{% trans "Inbox" %} ({{ combined_inbox_count }})</a></li>
-        {% endspaceless %}</ul>
-    {% endif %}
+        {% endif %}
+    {% endspaceless %}</ul>
 {% endblock %}
 
 {% block footer %}

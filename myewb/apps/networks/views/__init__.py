@@ -33,6 +33,7 @@ INDEX_TEMPLATE = 'networks/networks_index.html'
 NEW_TEMPLATE = 'networks/new_network.html'
 EDIT_TEMPLATE = 'networks/edit_network.html'
 DETAIL_TEMPLATE = 'networks/network_detail.html'
+CHAPTER_TEMPLATE = 'networks/chapter_detail.html'
 
 LOCATION_TEMPLATE = 'networks/edit_network_location.html'
 
@@ -55,6 +56,9 @@ def new_network(request, form_class=NetworkForm, template_name=NEW_TEMPLATE,
 
 def network_detail(request, group_slug, form_class=NetworkForm, template_name=DETAIL_TEMPLATE,
         edit_template_name=EDIT_TEMPLATE):
+    network = get_object_or_404(Network, slug=group_slug)
+    if network.is_chapter():
+        template_name = CHAPTER_TEMPLATE
     return group_detail(request, group_slug, Network, GroupMember, form_class, template_name, edit_template_name, DEFAULT_OPTIONS)
 
 @permission_required('networks.change')

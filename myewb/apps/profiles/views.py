@@ -78,7 +78,7 @@ def create_student_record(request, username, object=None):
 
         existing_members=GroupMember.objects.filter(group=network, user=other_user)
         if existing_members.count() == 0:
-            network_member = GroupMember(group=network, user=other_user, is_admin=False)
+            network_member = GroupMember(group=network, user=other_user, is_admin=False, request_status='A')
             network.members.add(network_member)
             network_member.save()
 
@@ -226,7 +226,7 @@ def create_work_record(request, username, object=None):
 
         existing_members=GroupMember.objects.filter(group=network, user=other_user)
         if existing_members.count() == 0:
-            network_member = GroupMember(group=network, user=other_user, is_admin=False)
+            network_member = GroupMember(group=network, user=other_user, is_admin=False, request_status='A')
             network.members.add(network_member)
             network_member.save()
 

@@ -1,0 +1,78 @@
+[
+    {
+    	"pk": 1,
+    	"model": "auth.user",
+    	"fields": {
+    		"username": "bob",
+    		"first_name": "Bob",
+    		"last_name": "Roberts",
+    		"is_active": true,
+    		"is_superuser": false,
+    		"is_staff": false,
+    		"last_login": "2009-03-31 19:11:56",
+    		"groups": [],
+    		"user_permissions": [],
+    		"password": "sha1$7bd83$fefdb3f02366048ce73773764b8a7dfa39489195",
+    		"email": "bob@roberts.com",
+    		"date_joined": "2009-03-31 15:14:06"
+    	}
+    },
+	{
+		"pk": 2,
+		"model": "auth.user",
+		"fields": {
+			"username": "joe",
+			"first_name": "Joe",
+			"last_name": "Smith",
+			"is_active": true,
+			"is_superuser": false,
+			"is_staff": false,
+			"last_login": "2009-03-31 19:11:56",
+			"groups": [],
+			"user_permissions": [],
+			"password": "sha1$7bd83$fefdb3f02366048ce73773764b8a7dfa39489195",
+			"email": "joe@smith.com",
+			"date_joined": "2009-03-31 15:14:06"
+		}
+	},
+    {
+        "pk": 1,
+        "model": "emailconfirmation.EmailAddress",
+        "fields": {
+            "user": 1,
+            "email": "bob@roberts.com",
+            "verified": true,
+            "primary": true
+        }
+    },
+    {
+        "pk": 2,
+        "model": "emailconfirmation.EmailAddress",
+        "fields": {
+            "user": 1,
+            "email": "bob.roberts@gmail.com",
+            "verified": true,
+            "primary": false
+        }
+    },
+    {
+        "pk": 3,
+        "model": "emailconfirmation.EmailAddress",
+        "fields": {
+            "user": 2,
+            "email": "joe@smith.com",
+            "verified": false,
+            "primary": true
+        }
+    },
+    {
+        "pk": 4,
+        "model": "emailconfirmation.EmailAddress",
+        "fields": {
+            "user": 2,
+            "email": "joe.smith@gmail.com",
+            "verified": false,
+            "primary": false
+        }
+    }
+]
