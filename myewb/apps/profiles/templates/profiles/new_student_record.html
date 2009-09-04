@@ -13,6 +13,11 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 
 {% block head_title %}{% blocktrans %}Add student record{% endblocktrans %}{% endblock %}
 
+{% block extra_head %}
+ <link type="text/css" href="{{MEDIA_URL}}css/jquery-ui.css" rel="stylesheet" />
+ <link type="text/css" href="{{MEDIA_URL}}css/ui.timepickr.css" rel="stylesheet" />
+{% endblock %}
+
 {% block body %}
 	{% if user.is_authenticated %}
 	
@@ -41,10 +46,25 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% endblock %}
 
 {% block extra_body %}
-	    <script type="text/javascript" src="{{ MEDIA_URL }}jquery.autocomplete.min.js"></script>
+	    <script type="text/javascript" src="{{MEDIA_URL}}jquery.autocomplete.min.js"></script>
+		<script type="text/javascript" src="{{MEDIA_URL}}js/jquery-ui.js"></script> 
+		<script type="text/javascript" src="{{MEDIA_URL}}js/ui.datepicker.js"></script>
+
+		<style>
+			div.ui-datepicker {z-index:10000000;}
+		</style>
+  
         <script type="text/javascript">
 	        $(document).ready(function() {
         		$('#id_institution').autocomplete('{% url ajax_search_network "U" %}');
-        		});
+				var datepicker = $("input#id_start_date").datepicker({dateFormat: 'yy-mm-dd',
+																	changeMonth: true,
+																	changeYear: true,
+																	yearRange: '-50:+5'});
+				var datepicker2 = $("input#id_graduation_date").datepicker({dateFormat: 'yy-mm-dd',
+																	changeMonth: true,
+																	changeYear: true,
+																	yearRange: '-50:+5'});
+			});
         </script>
 {%endblock %}
