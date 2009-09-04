@@ -29,7 +29,7 @@ urlpatterns = patterns('',
     url(r'^$', direct_to_template, {"template": "homepage.html"}, name="home"),
     
     (r'^about/', include('about.urls')),
-    (r'^account/', include('account.urls')),
+    (r'^account/', include('account_extra.urls')),
     (r'^openid/(.*)', PinaxConsumer()),
     (r'^bbauth/', include('bbauth.urls')),
     (r'^authsub/', include('authsub.urls')),

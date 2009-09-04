@@ -213,7 +213,7 @@ class TestBulkMembers(TestCase):
 
         self.client.logout()
         new_user_info = {
-                'username': 'jeff',
+                # 'username': 'jeff',
                 'password1': 'test',
                 'password2': 'test',
                 'email': 'test3@server.com',
@@ -222,7 +222,7 @@ class TestBulkMembers(TestCase):
         self.assertEquals(self.ewb.members.filter(request_status='B').count(), 1)
         bulk_user = self.ewb.members.get(request_status='B').user
         self.assertEquals(self.ewb.members.get(request_status='B').user.email, 'test3@server.com')
-        self.assertNotEqual(bulk_user, User.objects.get(username='jeff'))
+        self.assertEquals(User.objects.filter(email='test3@server.com').count(), 2)
             
 
     def test_verify_email_for_bulk_user(self):
