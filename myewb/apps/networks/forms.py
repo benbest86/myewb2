@@ -46,7 +46,7 @@ class ChapterInfoForm(forms.ModelForm):
     province = caforms.CAProvinceField(widget=caforms.CAProvinceSelect())
     postal_code = caforms.CAPostalCodeField()
     phone = caforms.CAPhoneNumberField()
-    fax = caforms.CAPhoneNumberField()
+    fax = caforms.CAPhoneNumberField(required=False)
     
     class Meta:
         model = ChapterInfo

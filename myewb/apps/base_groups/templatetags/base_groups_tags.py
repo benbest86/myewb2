@@ -61,3 +61,7 @@ def do_get_admins(parser, token):
     return AdminsNode(group_name, context_name)
 
 register.tag('get_admins', do_get_admins)
+
+@register.inclusion_tag("base_groups/group_content.html", takes_context=True)
+def show_group_content(context, group):
+    return {'group': group, 'user': context['user']}

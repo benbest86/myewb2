@@ -34,11 +34,8 @@ class Network(BaseGroup):
         self.model = "Network"
         return super(Network, self).save(force_insert, force_update)
         
-    def is_chapter(self):    
-        if self.chapter_info is None:
-            return False
-        else:
-            return True
+    def is_chapter(self):
+        return hasattr(self, "chapter_info")
         
     class Meta:
         verbose_name_plural = "networks"

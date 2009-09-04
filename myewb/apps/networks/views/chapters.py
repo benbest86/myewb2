@@ -9,6 +9,7 @@ from base_groups.decorators import group_admin_required
 from networks.models import Network, ChapterInfo, EmailForward
 from networks.forms import ChapterInfoForm, EmailForwardForm
 from networks import emailforwards
+from networks.views import network_detail
 
 def chapters_index(request):
     if request.method == 'GET':
@@ -35,10 +36,16 @@ def chapters_index(request):
                 )
 
 @permission_required('networks.add')
-def new_chapter(request):
+def new_chapter(request):    
     if request.method == 'POST':
         return chapters_index(request)
-    form = ChapterInfoForm()
+    
+    initial = {}
+    if request.method == 'GET' and "network" in request.GET:
+        network = get_object_or_404(Network, slug=request.GET["network"])
+        initial = {"network": network.id}
+    
+    form = ChapterInfoForm(initial=initial)
     return render_to_response(
             'networks/new_chapter.html',
             {
@@ -47,47 +54,8 @@ def new_chapter(request):
             context_instance=RequestContext(request)
         )
 
-def chapter_detail(request, group_slug):
-    user = request.user
-    network = get_object_or_404(Network, slug=group_slug)
-    chapter = get_object_or_404(ChapterInfo, network=network)
-    member = None
-    if user.is_authenticated() and GroupMember.objects.filter(group=network, user=user).count() > 0:
-        member = GroupMember.objects.get(group=network, user=user)
-    # retrieve details
-    if request.method == 'GET':
-        return render_to_response(
-                'networks/chapter_detail.html',
-                {
-                    'chapter': chapter,
-                    'member': member,
-                },
-                context_instance=RequestContext(request)
-            )
-        # update existing resource
-    elif request.method == 'POST':
-        form = ChapterInfoForm(request.POST, instance=chapter)
-        # if form saves, return detail for saved resource
-        if form.is_valid():
-            chapter = form.save()
-            return render_to_response(
-                    'networks/chapter_detail.html',
-                    {
-                        'chapter': chapter,
-                        'member': member,
-                    },
-                    context_instance=RequestContext(request)
-                )
-            # if save fails, go back to edit_resource page
-        else:
-            return render_to_response(
-                    'networks/edit_chapter.html',
-                    {
-                        'form': form,
-                        'chapter': chapter,
-                    },
-                    context_instance=RequestContext(request)
-                )
+def chapter_detail(request, group_slug, template_name="networks/chapter_detail.html"):
+    return HttpResponseRedirect(reverse('network_detail', kwargs={'group_slug': group_slug}))
 
 @group_admin_required()
 def edit_chapter(request, group_slug):
