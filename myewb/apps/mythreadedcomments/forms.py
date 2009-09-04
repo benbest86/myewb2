@@ -1,6 +1,5 @@
 from threadedcomments.forms import ThreadedCommentForm
 from threadedcomments.models import ThreadedComment
-from mythreadedcomments.models import MyThreadedComment
 from lxml.html.clean import clean_html, autolink_html
 
 class MyThreadedCommentForm(ThreadedCommentForm):
