@@ -76,7 +76,7 @@ class BaseGroup(Group):
         return reverse('group_detail', kwargs={'group_slug': self.slug})
 
     def get_member_emails(self):
-        members_with_emails = self.get_members().select_related(depth=1).exclude(user__email='') | \
+        members_with_emails = self.get_accepted_members().select_related(depth=1).exclude(user__email='') | \
                 self.members.filter(request_status='B').select_related(depth=1)
         return [member.user.email for member in members_with_emails]
 
@@ -150,7 +150,7 @@ class BaseGroup(Group):
                 children = children | self.children.filter(visibility='P')
             return children.distinct()
             
-    def get_members(self):
+    def get_accepted_members(self):
         return self.members.filter(request_status='A')
 
 	

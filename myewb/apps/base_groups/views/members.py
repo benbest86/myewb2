@@ -38,7 +38,7 @@ def members_index(request, group_slug, group_model=None, form_class=None, templa
         if group.user_is_admin(user):
             members = group.members.all()
         else:
-            members = group.get_members()   # excludes invited / requested members
+            members = group.get_accepted_members()   # excludes invited / requested members
         
         search_terms = request.GET.get('search', '')
         if search_terms:
