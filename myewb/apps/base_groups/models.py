@@ -10,6 +10,7 @@ Last modified on 2009-07-29
 
 import datetime
 import re
+import unicodedata
 
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import  User
@@ -108,6 +109,11 @@ class BaseGroup(Group):
         if not self.id:
             slug = self.slug
             slug = slug.replace(' ', '-')
+            
+            # translates accents into their regular-character equivalent
+            # (http://snippets.dzone.com/posts/show/5499)
+            slug = unicodedata.normalize('NFKD', unicode(slug)).encode('ASCII', 'ignore')
+            
             # FIXME: anything else we need to escape??
             #(?P<group_slug>[-\w]+) yes, lots of things. This is the
             # regex definition of a slug so if we don't match on this we 
