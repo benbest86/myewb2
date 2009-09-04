@@ -10,6 +10,7 @@ Last modified on 2009-07-29
 
 import datetime
 import re
+import unicodedata
 
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import  User
@@ -75,7 +76,7 @@ class BaseGroup(Group):
         return reverse('group_detail', kwargs={'group_slug': self.slug})
 
     def get_member_emails(self):
-        members_with_emails = self.get_members().select_related(depth=1).exclude(user__email='') | \
+        members_with_emails = self.get_accepted_members().select_related(depth=1).exclude(user__email='') | \
                 self.members.filter(request_status='B').select_related(depth=1)
         return [member.user.email for member in members_with_emails]
 
@@ -108,6 +109,11 @@ class BaseGroup(Group):
         if not self.id:
             slug = self.slug
             slug = slug.replace(' ', '-')
+            
+            # translates accents into their regular-character equivalent
+            # (http://snippets.dzone.com/posts/show/5499)
+            slug = unicodedata.normalize('NFKD', unicode(slug)).encode('ASCII', 'ignore')
+            
             # FIXME: anything else we need to escape??
             #(?P<group_slug>[-\w]+) yes, lots of things. This is the
             # regex definition of a slug so if we don't match on this we 
@@ -144,7 +150,7 @@ class BaseGroup(Group):
                 children = children | self.children.filter(visibility='P')
             return children.distinct()
             
-    def get_members(self):
+    def get_accepted_members(self):
         return self.members.filter(request_status='A')
 
 	

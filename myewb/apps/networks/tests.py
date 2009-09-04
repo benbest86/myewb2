@@ -170,8 +170,8 @@ class TestBulkMembers(TestCase):
         bulk_user = bulk_users[0]
         # bulk user should have our input address
         self.assertEquals(bulk_user.user.email, 'test@server.com')
-        # bulk user should not show up in a list of members
-        self.assertFalse(bulk_user in self.ewb.get_members())
+        # bulk user should not show up in a list of accepted members
+        self.assertFalse(bulk_user in self.ewb.get_accepted_members())
 
         self.ewb.send_mail_to_members('Test', 'Mail')
         msg = mail.outbox[0]

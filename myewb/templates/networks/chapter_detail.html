@@ -21,7 +21,7 @@
         <div class="members">
             <h2>{% trans "Members" %}</h2>
             <table width="100%">
-                {% for member in group.get_members %}
+                {% for member in group.get_accepted_members %}
                     {% if forloop.counter0|divisibleby:"3" %}<tr>{% endif %}
                     <td>
                         <div class="avatar">{% avatar member.user 40 %}</div>
@@ -29,7 +29,7 @@
                     </td>
                     {% if forloop.counter0|add:"1"|divisibleby:"3" %}</tr>{% endif %}
                 {% endfor %}
-                {% if group.get_members|length|divisibleby:"3" %}{% else %}</tr>{% endif %}
+                {% if group.get_accepted_members|length|divisibleby:"3" %}{% else %}</tr>{% endif %}
             </table>
             <p>
                 Search members:
