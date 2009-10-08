@@ -1,0 +1,13 @@
+Index pinax/apps/profiles/views.py
+==================================================================
+--- pinax/apps/profiles/views.py
++++ pinax/apps/profiles/views.py
+@@ -86,7 +86,7 @@
+                     'to_user': username,
+                     'message': ugettext("Let's be friends!"),
+                 })
+-                invitation_id = request.POST["invitation"]
++                invitation_id = request.POST.get("invitation")
+                 if request.POST["action"] == "accept": # @@@ perhaps the form should just post to friends and be redirected here
+                     try:
+                         invitation = FriendshipInvitation.objects.get(id=invitation_id)

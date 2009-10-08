@@ -30,16 +30,19 @@ $ tar xzvf pinax-0.7beta3.tar.gz
 $ cd pinax-0.7beta3
 $ python scripts/pinax-boot.py $WORKON_HOME/pinax-env
 
-# switch your virtual environment
+# switch your virtual environment. Changing a line
 $ workon pinax-env
 
 # install additional python packages
-$ easy_install lxml
 $ easy_install pycountry
 
 # cd to the directory you are in now.
 # something like:
 $ cd myewb2/trunk/myewb
+
+# apply any relevant patches to the pinax
+# base. See patches/README for current
+# list
 
 # make manage.py executable if you like
 # If you don't do this step you will have to run
