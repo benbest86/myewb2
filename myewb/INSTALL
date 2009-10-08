@@ -1,9 +1,11 @@
 Installation instructions:
 
 On Ubuntu:
-
+# These instructions were last confirmed on a fresh Ubuntu Intrepid Ibex
+# 2009-10-08 by BBEST
+#
 # install necessary ubuntu packages
-$ sudo aptitude install build-essential python-dev libxml2 libxml2-dev libxslt1.1 libxslt1-dev python-virtualenv
+$ sudo aptitude install build-essential python-dev libxml2 libxml2-dev libxslt1.1 libxslt1-dev python-virtualenv python-ldap
 
 # set up virtualenvwrapper. check for newer version ov virtualenvwrapper if need be
 # these commands set up virtuatenvwrapper to manage your virtual environments
