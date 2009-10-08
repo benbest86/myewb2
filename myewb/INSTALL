@@ -1,0 +1,55 @@
+Installation instructions:
+
+On Ubuntu:
+
+# install necessary ubuntu packages
+$ sudo aptitude install build-essential python-dev libxml2 libxml2-dev libxslt1.1 libxslt1-dev python-virtualenv
+
+# set up virtualenvwrapper. check for newer version ov virtualenvwrapper if need be
+# these commands set up virtuatenvwrapper to manage your virtual environments
+# in a single location. See http://www.doughellmann.com/projects/virtualenvwrapper/
+# and http://www.doughellmann.com/docs/virtualenvwrapper/
+
+$ wget http://www.doughellmann.com/downloads/virtualenvwrapper-1.20.tar.gz
+$ tar xzvf virtualenvwrapper-1.20.tar.gz
+$ cd virtualenvwrapper-1.20.tar.gz
+$ sudo python setup.py install
+$ echo export WORKON_HOME=$HOME/.virtualenvs >> ~/.bashrc
+
+# NOTE: check the location of virtualenvwrapper_bashrc on your system.
+# This is correct for Interpid at the least. You may also check /usr/local/bin
+
+$ echo source /usr/bin/virtualenvwrapper_bashrc >> ~/.bashrc
+$ source ~/.bashrc
+
+# set up pinax
+$ wget http://downloads.pinaxproject.com/pinax-0.7beta3.tar.gz
+$ tar xzvf pinax-0.7beta3.tar.gz
+$ cd pinax-0.7beta3
+$ python scripts/pinax-boot.py $WORKON_HOME/pinax-env
+
+# switch your virtual environment
+$ workon pinax-env
+
+# install additional python packages
+$ easy_install lxml
+$ easy_install pycountry
+
+# cd to the directory you are in now.
+# something like:
+$ cd myewb2/trunk/myewb
+
+# make manage.py executable if you like
+# If you don't do this step you will have to run
+# python manage.py instead of ./manage.py for the
+# rest of these instructions
+$ chmod u+x manage.py
+
+# sync the database and enter a root user if you'd like
+$ ./manage.py syncdb
+# run the local dev server
+$ ./manage.py runserver
+
+And you should be good to go! Navigate to http://localhost:8000/ for the home
+page.
+
