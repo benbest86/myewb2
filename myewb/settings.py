@@ -185,6 +185,7 @@ INSTALLED_APPS = (
     
     'django.contrib.admin',
     'events',
+    'siteutils',
 
 )
 
@@ -205,8 +206,8 @@ AUTH_PROFILE_MODULE = 'profiles.MemberProfile'
 NOTIFICATION_LANGUAGE_MODULE = 'account.Account'
 
 ACCOUNT_OPEN_SIGNUP = True
-ACCOUNT_REQUIRED_EMAIL = False
-ACCOUNT_EMAIL_VERIFICATION = False
+ACCOUNT_REQUIRED_EMAIL = True
+ACCOUNT_EMAIL_VERIFICATION = True
 
 EMAIL_CONFIRMATION_DAYS = 2
 EMAIL_DEBUG = DEBUG

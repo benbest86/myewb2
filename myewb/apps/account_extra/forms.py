@@ -4,6 +4,7 @@ from django.utils.translation import ugettext_lazy as _, ugettext
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
+from django.db.models.signals import post_save
 
 from emailconfirmation.models import EmailAddress
 
@@ -27,15 +28,26 @@ class EmailLoginForm(forms.Form):
         if User.objects.filter(username=login_name).count() > 0:
             username = login_name
         else:        
-            possible_users = [address.user for address in EmailAddress.objects.filter(email=login_name)] # verification not required
+            try:
+                email = EmailAddress.objects.get(email=login_name, verified=True)
+            except EmailAddress.DoesNotExist:
+                if EmailAddress.objects.filter(email=login_name):
+                    raise forms.ValidationError(_("Your email address must be confirmed in order to log in."))
+                else:
+                    raise forms.ValidationError(_("The login credentials you specified are not correct."))        
+            except EmailAddress.MultipleObjectsReturned:
+                raise forms.ValidationError(_("An error has occurred and there are two registered users for this address. Please contact network admin to resolve the problem."))        
+
+            # possible_users = [address.user for address in EmailAddress.objects.filter(email=login_name)] # verification not required
         
             # TODO: What happens if there are more than one user with a given address? (shouldn't be!)        
-            if len(possible_users) > 0:
-                possible_user = possible_users[0]
-            else:
-                raise forms.ValidationError(_("The login credentials you specified are not correct."))        
+            # if len(possible_users) > 0:
+            #     possible_user = possible_users[0]
+            # else:
+            #     raise forms.ValidationError(_("The login credentials you specified are not correct."))        
+            username = email.user.username
         
-            username = possible_user.username
+            # username = possible_user.username
             
         user = authenticate(username=username, password=self.cleaned_data["password"])
         if user:
@@ -74,20 +86,22 @@ class EmailSignupForm(forms.Form):
     confirmation_key = forms.CharField(max_length=40, required=False, widget=forms.HiddenInput())
     
     def clean_email(self):
-        try:
-            user = User.objects.get(email__iexact=self.cleaned_data["email"])
-        except User.DoesNotExist:
-            return self.cleaned_data["email"]
+        other_emails = EmailAddress.objects.filter(email__iexact=self.cleaned_data['email'])
+        verified_emails = other_emails.filter(verified=True)
+        if verified_emails.count() > 0:
+            raise forms.ValidationError(_("This email address has already been used. Please use another."))
+        if other_emails.count() > 0:
+            raise forms.ValidationError(_("This email is already awaiting confirmation. Click here TODO to send another confirmation email."))
         
-        memberships = user.member_groups.all()
-        for membership in memberships:
-            if membership.is_bulk():
-                return self.cleaned_data["email"]       # we'll temporarily allow the duplicate
-        
-        # else...        
-        raise forms.ValidationError(_("This email address has already been used. Please use another."))
+        return self.cleaned_data['email']
 
     def clean(self):
+        # XXX shouldn't this be more like the below???
+        # password1 = self.cleaned_data.get('password1', None)
+        # password2 = self.cleaned_data.get('password2', None)
+        # if password1 is None or password2 is None or password1 != password2:
+        #     raise forms.ValidationError(_("You must type the same password each time."))
+
         if "password1" in self.cleaned_data and "password2" in self.cleaned_data:
             if self.cleaned_data["password1"] != self.cleaned_data["password2"]:
                 raise forms.ValidationError(_("You must type the same password each time."))
@@ -122,15 +136,15 @@ class EmailSignupForm(forms.Form):
                 # already verified so can just create
                 EmailAddress(user=new_user, email=email, verified=True, primary=True).save()
             else:
-                new_user = User.objects.create_user(username, email, password)      # supply email - change from Pinax
+                new_user = User.objects.create_user(username, "", password)      
                 join_invitation.accept(new_user) # should go before creation of EmailAddress below
                 if email:
                     new_user.message_set.create(message=ugettext(u"Confirmation email sent to %(email)s") % {'email': email})
                     EmailAddress.objects.add_email(new_user, email)
         else:
-            new_user = User.objects.create_user(username, email, password)      # supply email - change from Pinax
+            new_user = User.objects.create_user(username, "", password)      
             if email:
-                new_user.message_set.create(message=ugettext(u"Confirmation email sent to %(email)s") % {'email': email})
+                # new_user.message_set.create(message=ugettext(u"Confirmation email sent to %(email)s") % {'email': email})
                 EmailAddress.objects.add_email(new_user, email)
 
         if settings.ACCOUNT_EMAIL_VERIFICATION:
@@ -138,3 +152,4 @@ class EmailSignupForm(forms.Form):
             new_user.save()
 
         return username, password # required for authenticate()
+

@@ -12,13 +12,16 @@ class TestAccountExtra(TestCase):
         pass
         
     def test_signup(self):
-        """ensure that user can signup using email address""" 
+        """ensure that user can signup using email address, but is not immediately logged in""" 
+        prev_count = User.objects.all().count()
         c = Client()
         response = c.post("/account/signup/", {'email': 'testuser@ewb.ca', 'password1': 'passw0rd', 'password2': 'passw0rd'})
+        new_count = User.objects.all().count()
+        self.assertEqual(new_count, prev_count + 1)
         
-        u = User.objects.get(email="testuser@ewb.ca")
-        self.assertTrue(u.message_set.filter(user=u, message__icontains="Confirmation email sent to testuser@ewb.ca").count() > 0)
-        self.assertTrue(u.message_set.filter(user=u, message__icontains="Successfully logged in").count() > 0)
+        self.assertContains(response, "Verify your e-mail address")
+        u = User.objects.latest('date_joined')
+        self.assertFalse(u.message_set.filter(user=u, message__icontains="Successfully logged in").count() > 0)
         
     def test_username_fail(self):
         """ensure that user cannot set own username"""
@@ -56,18 +59,18 @@ class TestAccountExtra(TestCase):
         self.assertTrue(u.message_set.filter(user=u, message__icontains="Successfully logged in").count() > 0)
         
     def test_unverified_primary_email_login(self):
-        """verify that we support login using non-verified, primary email address"""
+        """verify that we do not support login using non-verified, primary email address"""
         c = Client()
         response = c.post("/account/login/", {'login_name': 'joe@smith.com', 'password': 'passw0rd'})
         u = User.objects.get(username="joe")
-        self.assertTrue(u.message_set.filter(user=u, message__icontains="Successfully logged in").count() > 0)
+        self.assertFalse(u.message_set.filter(user=u, message__icontains="Successfully logged in").count() > 0)
         
     def test_unverified_secondary_email_login(self):
-        """verify that we support login using non-verified, non-primary email address"""
+        """verify that we do not support login using non-verified, non-primary email address"""
         c = Client()
         response = c.post("/account/login/", {'login_name': 'joe.smith@gmail.com', 'password': 'passw0rd'})
         u = User.objects.get(username="joe")
-        self.assertTrue(u.message_set.filter(user=u, message__icontains="Successfully logged in").count() > 0)
+        self.assertFalse(u.message_set.filter(user=u, message__icontains="Successfully logged in").count() > 0)
         
     def test_unused_email_failure(self):
         """verify that we do not login a user not in the system"""

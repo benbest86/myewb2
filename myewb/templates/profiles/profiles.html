@@ -19,7 +19,7 @@
         <div class="profile clearfix">
             {# @@@ factor out style into css file #}
             <div style="float: left;">{% avatar user 40 %}</div>
-            <div style="padding: 5px; margin-left: 50px;"><a href="{% url profile_detail user.username %}">{{ user.first_name }} {{ user.last_name }} ({{ user.username }})</a></div>
+            <div style="padding: 5px; margin-left: 50px;"><a href="{% url profile_detail user.username %}">{{ user.first_name }} {{ user.last_name }}</a></div>
         </div>
     {% endfor %}
     
