@@ -33,6 +33,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
             {% if other_user.get_profile.about %}<p><b>{% trans "About" %}</b>: {{ other_user.get_profile.about }}</p>{% endif %}
 
 			{% if is_me or is_friend or user.is_staff %}
+				{% if regular %}<p>(regular member, expiring on {{ other_user.get_profile.membership_expiry }})</p>{% endif %}
 				{% if other_user.get_profile.street_address %}<p><b>{% trans "Street address" %}</b>:</p> <p>{{ other_user.get_profile.street_address }}</p>{% endif %}
 				{% if other_user.get_profile.street_address_two %}<p>{{ other_user.get_profile.street_address_two }}</p>{% endif %}
 				{% if other_user.get_profile.location %}<p>{{ other_user.get_profile.location }}</p>{% endif %}

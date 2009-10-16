@@ -7,6 +7,7 @@ Created on 2009-06-22
 Last modified on 2009-07-31
 @author Joshua Gorner, Francis Kung, Ben Best
 """
+from datetime import date
 from django import forms
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
@@ -46,9 +47,8 @@ MEMBERSHIP_TYPES = (('studues', _("Student ($20)")),
 class MembershipForm(forms.Form):
 	membership_type = forms.ChoiceField(choices=MEMBERSHIP_TYPES,
 										widget=forms.RadioSelect)
-	
-	#TODO
-	#chapter = forms.ForeignKey blah blah
+	chapters = [('none', _('(none)'))]
+	chapter = forms.ChoiceField(choices=chapters)
 	
 	helper = FormHelper()
 	layout = Layout('membership_type')
@@ -56,6 +56,14 @@ class MembershipForm(forms.Form):
 	submit = Submit('submit', 'Continue')
 	helper.add_input(submit)
 	helper.action = ''
+	
+	def __init__(self, *args, **kwargs):
+		chapterlist = kwargs.pop('chapters', None)
+		for chapter in chapterlist:
+			print chapter
+			self.base_fields['chapter'].choices.append((chapter.slug, chapter.chapter_info.chapter_name))
+		
+		super(MembershipForm, self).__init__(*args, **kwargs)
     
 class MembershipFormPreview(PaymentFormPreview):
     username = None
@@ -65,14 +73,16 @@ class MembershipFormPreview(PaymentFormPreview):
         
     # this gets called after transaction has been attempted
     def done(self, request, cleaned_data):
-        response = super(MembershipFormPreview, self).done(request, cleaned_data)
-        
-        if response == None:
-            message = loader.get_template("profiles/member_upgraded.html")
-            c = Context({'user': self.username})
-            request.user.message_set.create(message=message.render(c))
-
-            return HttpResponseRedirect(reverse('profile_detail', kwargs={'username': self.username }))
+    	response = super(MembershipFormPreview, self).done(request, cleaned_data)
+    	
+    	if response == None:
+    		request.user.get_profile().pay_membership()
+        	
+        	message = loader.get_template("profiles/member_upgraded.html")
+        	c = Context({'user': self.username})
+        	request.user.message_set.create(message=message.render(c))
+        	
+        	return HttpResponseRedirect(reverse('profile_detail', kwargs={'username': self.username }))
         else:
         	f = self.form(request.POST)
         	f.trnError = response

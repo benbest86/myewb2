@@ -10,6 +10,7 @@ Last modified: 2009-08-02
 """
 
 import random, sha
+from datetime import date, timedelta
 from django.shortcuts import get_object_or_404
 from pinax.apps.profiles.views import *
 from pinax.apps.profiles.views import profile as pinaxprofile
@@ -366,6 +367,16 @@ def profile(request, username, template_name="profiles/profile.html", extra_cont
                                 request.user.message_set.create(message=message.render(c))
                         except Network.DoesNotExist:
                             pass
+    
+    if extra_context == None:
+        extra_context = {}
+        
+    profile = other_user.get_profile()
+    if profile.membership_expiry != None and profile.membership_expiry > date.today():
+        extra_context['regular'] = True
+    if profile.membership_expiry == None or \
+        profile.membership_expiry < date.today() + timedelta(30):
+        extra_context['renew'] = True  
 
     if template_name == None:
         return pinaxprofile(request, username, extra_context=extra_context)
@@ -377,7 +388,9 @@ def pay_membership(request, username):
     
     # Show payment form if you are upgrading yourself
     if request.user == other_user:
-        form = MembershipForm()
+        chapters = Network.objects.filter(chapter_info__isnull=False,
+                                          member_users=request.user)
+        form = MembershipForm(chapters=chapters)
         form.helper.action = reverse('profile_pay_membership2', kwargs={'username': username})
     
         return render_to_response(
@@ -388,6 +401,7 @@ def pay_membership(request, username):
          
     # Admins / chapter execs (TODO) can upgrade anyone's membership
     elif request.user.is_superuser:
+        other_user.get_profile().pay_membership()
         message = loader.get_template("profiles/member_upgraded.html")
         c = Context({'user': other_user})
         request.user.message_set.create(message=message.render(c))
@@ -404,11 +418,31 @@ def pay_membership2(request, username):
     # Show payment form if you are upgrading yourself
     if request.user == other_user:
         if request.method == 'POST':
-            f = MembershipForm(request.POST)
+            chapters = Network.objects.filter(chapter_info__isnull=False,
+                                              member_users=request.user)
+            f = MembershipForm(request.POST, chapters=chapters)
             
             if f.is_valid():
                 # will have to do some sku-building once we have chapters in
-                product = Product.objects.get(sku=f.cleaned_data['membership_type'])
+                if f.cleaned_data['chapter'] == "none":
+                    product = Product.objects.get(sku=f.cleaned_data['membership_type'])
+                    created = False
+                else:
+                    product, created = Product.objects.get_or_create(sku="%s-%s" % (f.cleaned_data['membership_type'],
+                                                                                    f.cleaned_data['chapter']))
+                if created:
+                    # TODO: un-hardcode?  Fix so we don't need to do this dynamically?
+                    if f.cleaned_data['membership_type'] == 'studues':
+                        product.amount = "20.00"
+                        product.name = "Student membership (%s)" % f.cleaned_data['chapter']
+                        product.save()
+                    elif f.cleaned_data['membership_type'] == 'produes':
+                        product.amount = "40.00"
+                        product.name = "Professional membership (%s)" % f.cleaned_data['chapter']
+                        product.save()
+                    else:
+                        # uhh....!!!
+                        pass
                 
                 form = PaymentForm(initial={'products':product.sku})
                 form.helper.action = reverse('profile_pay_preview', kwargs={'username': username})
@@ -423,6 +457,7 @@ def pay_membership2(request, username):
          
     # Admins / chapter execs (TODO) can upgrade anyone's membership
     elif request.user.is_superuser:
+        other_user.get_profile().pay_membership()
         message = loader.get_template("profiles/member_upgraded.html")
         c = Context({'user': other_user})
         request.user.message_set.create(message=message.render(c))

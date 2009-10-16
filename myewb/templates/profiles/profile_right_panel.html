@@ -14,10 +14,12 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 </div>
 
 {% if is_me %}
-	<div class="membership">
-		<a href="{% url profile_pay_membership other_user %}">Pay my membership fee</a>
-		<br/><br/>
-	</div>
+	{% if renew %}
+		<div class="membership">
+			<a href="{% url profile_pay_membership other_user %}">Pay my membership fee</a>
+			<br/><br/>
+		</div>
+	{% endif %}
 
 	<div class="groups">
         <h2>{% trans "Your Groups" %}</h2>
@@ -52,7 +54,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
     </div>
 {% else %}
 	{# TODO: is chapter exec?? #}
-	{% if user.is_staff %}
+	{% if user.is_staff and renew %}
 		<div class="membership">
 			<a href="{% url profile_pay_membership other_user %}">Make regular member</a><br/>
 			(only click if they have paid their fee in cash)

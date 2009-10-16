@@ -138,6 +138,17 @@ class MemberProfile(Profile):
         @returns: True if user is the profile owner, False otherwise
         """
         return (user.id == self.user.id)
+    
+    # add a year of membership: either starting today if last membership
+    # is already expired, or a year after the current membership expires
+    def pay_membership(self):
+        if self.membership_expiry == None or self.membership_expiry < date.today():
+            self.membership_expiry = date.today()
+            
+        self.membership_expiry = date(self.membership_expiry.year + 1,
+                                      self.membership_expiry.month,
+                                      self.membership_expiry.day)
+        self.save()
 
 def create_member_profile(sender, instance=None, **kwargs):
     """Automatically creates a MemberProfile for a new User."""
