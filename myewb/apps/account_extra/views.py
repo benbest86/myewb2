@@ -3,6 +3,7 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
+from django.contrib.auth.views import logout as pinaxlogout
 from django.template import RequestContext
 from django.utils.translation import ugettext, ugettext_lazy as _
 
@@ -11,6 +12,8 @@ from account.utils import get_default_redirect
 from account_extra.forms import EmailLoginForm, EmailSignupForm
 from account.views import login as pinaxlogin
 from account.views import signup as pinaxsignup
+
+from siteutils import online_middleware
 
 def login(request, form_class=EmailLoginForm, 
         template_name="account/login.html", success_url=None,
@@ -48,3 +51,7 @@ def signup(request, form_class=EmailSignupForm,
     return render_to_response(template_name, {
         "form": form,
     }, context_instance=RequestContext(request))
+    
+def logout(request):
+    online_middleware.remove_user(request)
+    return pinaxlogout(request, template_name="account/logout.html")

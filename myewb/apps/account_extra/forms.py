@@ -1,5 +1,6 @@
 from django import forms
 from django.conf import settings
+from django.core.cache import cache
 from django.utils.translation import ugettext_lazy as _, ugettext
 
 from django.contrib.auth import authenticate, login
@@ -7,6 +8,7 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 
 from emailconfirmation.models import EmailAddress
+from siteutils import online_middleware
 
 class EmailLoginForm(forms.Form):
     # login_name may be either the username or an associated email address
@@ -61,6 +63,7 @@ class EmailLoginForm(forms.Form):
 
     def login(self, request):
         if self.is_valid():
+            online_middleware.remove_user(request)
             login(request, self.user)
             if self.user.first_name and self.user.last_name:
                 login_message=ugettext(u"Successfully logged in. Welcome, %(first_name)s %(last_name)s.") % {

@@ -83,6 +83,7 @@ MIDDLEWARE_CLASSES = (
     'djangodblog.middleware.DBLogMiddleware',
     'pinax.middleware.security.HideSensistiveFieldsMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
+    'siteutils.online_middleware.OnlineUsers',
 )
 
 ROOT_URLCONF = 'urls'
@@ -109,6 +110,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "messages.context_processors.inbox",
     "friends_app.context_processors.invitations",
     "context_processors.combined_inbox_count",
+    "siteutils.online_middleware.context",
 )
 
 COMBINED_INBOX_COUNT_SOURCES = (
