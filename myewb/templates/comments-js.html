@@ -1,0 +1,20 @@
+<script type="text/javascript">    
+    var nextAttachPrefix = 0;
+    $(function() {
+		$('#attachFiles').click(function(e) {
+		    var $tgt = $(e.target);
+		    if ($tgt.is('.getAttachForm')) {
+		        var parentDiv = $tgt.parents('div:first');
+		        var grandParentDiv = parentDiv.parents('div:first');
+    		    var postData = {'prefix': nextAttachPrefix};
+                $.post($tgt.attr('href'), postData, function(data){
+                    parentDiv.remove();
+                    grandParentDiv.append(data);
+                    });
+                nextAttachPrefix++;
+                $('#attachCount').val(nextAttachPrefix);
+                return false;                    
+		    }
+        });
+    });
+</script>

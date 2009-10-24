@@ -4,9 +4,10 @@
 {% load uni_form %}
 {% load extra_tagging_tags %}
 {% load pagination_tags %}
-{% load comments_tag %}
+{% load attachablecomments_tags %}
 {% load avatar_tags %}
 {% load group_tags %}
+{% load attachments_tags %}
 
 {% block head_title %}{% trans "Post" %} : {{ topic.title }}{% endblock %}
 
@@ -23,6 +24,21 @@
             <div class="bulk">
                 <h1>{{ topic.title }}</h1>
                 <div class="body">{{ topic.body|safe }}</div>
+                
+                {% get_attachments_for topic as "attachments" %}
+                {% if attachments.count %}
+                    <div class="attachments">
+                        <div class="attachmentsTitle">Attachments</div>
+                        <ul>
+                        {% for att in attachments %}
+                            <li class="attachmentItem">
+                                <a href="{{ MEDIA_URL }}{{ att.attachment_file.name }}">{{ att.filename }}</a>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            
                 <p>{% show_tags_for topic %}</p>
                 {% ifequal user topic.creator %}
                 <form class="uniForm" method="POST" action="{{ request.path }}delete/">
@@ -49,11 +65,12 @@
             </fieldset>
         </form>
     {% else %}
-        {% comments topic %}
+        {% attachablecomments topic %}
     {% endif %}
 {% endblock %}
 
 {% block extra_body %}
 	{{ block.super }}
 	{% include "tinymce.html" %}
+    {% include "comments-js.html" %}
 {% endblock %}

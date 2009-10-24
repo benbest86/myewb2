@@ -3,6 +3,7 @@
 {% load i18n %}
 {% load uni_form %}
 {% load pagination_tags %}
+{% load group_tags %}
 
 {% block head_title %}{% spaceless %}
 {% if group %}
@@ -40,12 +41,21 @@
     {% if group and is_member %}
         <h2>{% trans "New Topic" %}</h2>
         
-        <form class="uniForm" method="POST" action="">
+        <form class="uniForm" method="POST" enctype="multipart/form-data" action="">
             <fieldset class="inlineLabels">
                 {{ topic_form|as_uni_form }}
+                <div id="attachFiles">
+                    {% for af in attach_forms %}
+                        {{ af|as_uni_form }}
+                    {% endfor %}
+                    <div id="attachLink">
+                        <a class="getAttachForm" href="{% url topic_get_attachment_form %}">{% trans "Attach a file to this post" %}</a>
+                    </div>
+                </div>
                 <div class="form_block">
+                    <input type="hidden" id="attachCount" name="attach_count" value="{{ attach_count }}">
                     <input type="hidden" name="next" value="{{ request.path }}" />
-                    <input type="submit" value="{% trans "Create New Post" %}" /></td>
+                    <input type="submit" id="submitPost" value="{% trans "Create New Post" %}" /></td>
                 </div>
             </fieldset>
         </form>
@@ -56,4 +66,5 @@
 {% block extra_body %}
 	{{ block.super }}
 	{% include "tinymce.html" %}
+    {% include "comments-js.html" %}
 {% endblock %}

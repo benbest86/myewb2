@@ -1,0 +1,8 @@
+{% load i18n %}
+{% load group_tags %}
+{% load uni_form %}
+
+{{ attach_form|as_uni_form }}
+<div id="attachLink">
+    <a class="getAttachForm" href="{% url ac_get_attachment_form %}">{% trans "Attach a file to this comment" %}</a>
+</div>

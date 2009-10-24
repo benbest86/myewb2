@@ -12,6 +12,7 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns('',
     url(r'^$', 'group_topics.views.topics', name="topic_list"),
+    url(r'^attach/$', 'group_topics.views.get_attachment_form', name="topic_get_attachment_form"),
     url(r'^(?P<topic_id>\d+)/edit/$', 'group_topics.views.topic', kwargs={"edit": True}, name="topic_edit"),
     url(r'^(?P<topic_id>\d+)/delete/$', 'group_topics.views.topic_delete', name="topic_delete"),
     url(r'^(?P<topic_id>\d+)/$', 'group_topics.views.topic', name="topic_detail"),

@@ -1,0 +1,25 @@
+{% extends "topics/base.html" %}
+
+{% load threadedcommentstags %}
+{% load attachablecomments_tags %}
+{% load i18n %}
+{% load uni_form %}
+{% load pagination_tags %}
+{% load avatar_tags %}
+{% load attachments_tags %}
+
+{% block head_title %}{% trans "Comment Preview" %}{% endblock %}
+
+{% block body %}
+    <h1>{% trans "Comment Preview" %}</h1>
+    <p>Are you sure that you would like to delete this comment?</p>
+    {% if comment %}
+        <div id="comment_preview">{% auto_transform_markup comment %}</div>
+    {% endif %}
+    <ul>
+    <form method="POST" action=".">
+        <li><input type="submit" value="Yes" /></li>
+    </form>
+    <li><a href="{{ next }}">No</a></li>
+    </ul>
+{% endblock %}

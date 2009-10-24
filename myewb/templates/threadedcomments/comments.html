@@ -1,8 +1,10 @@
 {% load threadedcommentstags %}
+{% load attachablecomments_tags %}
 {% load i18n %}
 {% load uni_form %}
 {% load pagination_tags %}
 {% load avatar_tags %}
+{% load attachments_tags %}
 
 {% get_threaded_comment_tree for object as responses %}
 {% autopaginate responses %}
@@ -12,11 +14,24 @@
         <li class="{% cycle even,odd %} thread-{{ response.depth }} clearfix">
             <div class="meta">
                 <div class="avatar">{% avatar response.user 40 %}</div>
-               <div class="details"><a href="{% url profile_detail response.user.username %}">{{ response.user     }}</a></div>
+                <div class="details"><a href="{% url profile_detail response.user.username %}">{{ response.user     }}</a></div>
                 {{ response.date_submitted|date }}
             </div>
             <div class="bulk">
                 <div class="body">{{ response.comment|safe }}</div>
+                {% get_attachments_for response as "attachments" %}
+                {% if attachments.count %}
+                    <div class="attachments">
+                        <div class="attachmentsTitle">Attachments</div>
+                        <ul>
+                        {% for att in attachments %}
+                            <li class="attachmentItem">
+                                <a href="{% get_media_url %}{{ att.attachment_file.name }}">{{ att.filename }}</a>
+                            </li>
+                        {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
                 {% ifequal user response.user %}
                 <form method="POST" action="{% url tc_comment_delete response.id %}">
                     <input type="submit" value="{% trans "Delete Post" %}" />
@@ -37,12 +52,21 @@
 {% paginate %}
 
 {% if user.is_authenticated %}
-    <form class="uniForm" method="POST" action="{% get_comment_url object %}">
+    <form class="uniForm" method="POST" enctype="multipart/form-data" action="{% get_comment_url object %}">
         <fieldset class="inlineLabels">
             <div class="ctrlHolder">
                 <textarea id="id_comment" class="tinymce" rows="10" cols="40" name="comment"></textarea>
+                <div id="attachFiles">                    
+                    {% for af in attach_forms %}
+                        {{ af|as_uni_form }}
+                    {% endfor %}
+                    <div id="attachLink">
+                        <a class="getAttachForm" href="{% url ac_get_attachment_form %}">{% trans "Attach a file to this post" %}</a>
+                    </div>
+                </div>
             </div>
-            <div class="form_block">
+            <div class="form_block">                
+                <input type="hidden" id="attachCount" name="attach_count" value="0">
                 <input type="hidden" name="next" value="{{ request.path }}" />
                 <input type="submit" value="{% trans "Post Response" %}" />
             </div>

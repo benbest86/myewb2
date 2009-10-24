@@ -66,6 +66,25 @@ table#membersList td {
     padding: 3px;
 }
 
+div.attachments {
+    background-color: #FFCC99;
+    width: 60%;
+}
+
+div.attachmentsTitle {
+    background-color: #FF6600;
+    color: white;
+    padding-left: 0.5em;
+}
+
+li.attachmentItem {
+    
+}
+
+div#attachFiles {
+    clear: left;
+}
+
 /* Chapter info */
 
 div#chapterHead, div#chapterActions, div#chapterExec {
