@@ -5,7 +5,7 @@ On Ubuntu:
 # 2009-10-08 by BBEST
 #
 # install necessary ubuntu packages
-$ sudo aptitude install build-essential python-dev libxml2 libxml2-dev libxslt1.1 libxslt1-dev python-virtualenv python-ldap
+$ sudo aptitude install build-essential python-dev libxml2 libxml2-dev libxslt1.1 libxslt1-dev python-virtualenv python-ldap python-imaging
 
 # set up virtualenvwrapper. check for newer version ov virtualenvwrapper if need be
 # these commands set up virtuatenvwrapper to manage your virtual environments
@@ -30,7 +30,7 @@ $ tar xzvf pinax-0.7beta3.tar.gz
 $ cd pinax-0.7beta3
 $ python scripts/pinax-boot.py $WORKON_HOME/pinax-env
 
-# switch your virtual environment. Changing a line
+# switch your virtual environment.
 $ workon pinax-env
 
 # install additional python packages
@@ -58,3 +58,51 @@ $ ./manage.py runserver
 And you should be good to go! Navigate to http://localhost:8000/ for the home
 page.
 
+On Windows:
+# These instructions were last confirmed on Windows XP
+# # 2009-10-24 by BBEST and JBLIGHT
+#
+
+1. install python from http://python.org
+
+2. install python setuptools from http://pypi.python.org/pypi/setuptools
+
+3. Add the following to your PATH system environment variable
+    (found in Control Panel->System->Advanced->Environment Variables)
+    ;C:\Python26;C:\Python26\Scripts
+    (Substitute 26 for your version)
+    Don't forget the first semi-colon!
+
+4. Install python-ldap from http://svn.kmrc.de/download/distribution/contrib/
+    Most current version at time of writing is http://svn.kmrc.de/download/distribution/contrib/python_ldap-2.3.9-py2.6-win32.egg
+    See http://mrtopf.de/blog/python_zope/a-small-introduction-to-python-eggs/ for installing python eggs.
+
+5. Install the python imaging library from http://www.pythonware.com/products/pil/
+
+6. Install the win32api package from http://sourceforge.net/projects/pywin32/
+
+7. Install the pycountry module by running easy_install pycountry in a command prompt
+
+8. Install the virtualenv module by running easy_install virtualenv in a command prompt
+
+9. Download Pinax 0.7beta3 from http://downloads.pinaxproject.com/pinax-0.7beta3.tar.gz
+
+10. Untar/gzip pinax. In a command prompt, cd to the pinax-0.7beta3 directory you just created 
+
+11. run 
+    >python scripts/pinax-boot.py C:\pinax
+    Change the C:\pinax argument to wherever you wish to install your pinax virtual environment
+
+12. cd to C:\pinax and run 
+    > Scripts/activate.bat
+
+13. cd to the myewb folder in the code trunk. Run 
+    > python manage.py syncdb
+    enter a root user if you wish.
+
+14. run > python manage.py runserver
+
+15. navigate to http://localhost:8000/ in your browser (or http://127.0.0.1:8000/ in IE)
+
+NOTES: Please see the patches/ folder in this directory for any patches to the Pinax or Django
+code that need to be applied
