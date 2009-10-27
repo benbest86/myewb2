@@ -26,7 +26,7 @@
                         <ul>
                         {% for att in attachments %}
                             <li class="attachmentItem">
-                                <a href="{% get_media_url %}{{ att.attachment_file.name }}">{{ att.filename }}</a>
+                                <a href="{% get_STATIC_URL %}{{ att.attachment_file.name }}">{{ att.filename }}</a>
                             </li>
                         {% endfor %}
                         </ul>

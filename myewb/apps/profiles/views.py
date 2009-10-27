@@ -466,3 +466,4 @@ def pay_membership2(request, username):
     # should not happen.. duh duh duh!
     else:
         return render_to_response('denied.html', context_instance=RequestContext(request))
+

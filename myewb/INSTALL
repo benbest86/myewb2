@@ -106,3 +106,51 @@ On Windows:
 
 NOTES: Please see the patches/ folder in this directory for any patches to the Pinax or Django
 code that need to be applied
+
+Mac OS X 10.6
+----------------------------------------------------------------------
+----------------------------------------------------------------------
+
+Install Django
+----------------------------------------------------------------------
+tar zxf Django-1.1.1.tar.gz 
+cd Django-1.1.1
+sudo python setup.py install
+
+Install Pinax
+----------------------------------------------------------------------
+wget http://downloads.pinaxproject.com/Pinax-0.7.1-bundle.tar.gz
+tar zxf Pinax-0.7.1-bundle.tar.gz 
+cd Pinax-0.7.1-bundle
+python scripts/pinax-boot.py ~pinax-env
+source ~/pinax-env/bin/activate
+
+* symlink django to system django
+
+Install MyEWB
+----------------------------------------------------------------------
+svn co https://office.ewb.ca/svn/myewb2
+cd myewb2/trunk/myewb/
+chmod u+x manage.py 
+
+Install pycountry
+----------------------------------------------------------------------
+easy_install pycountry
+
+Install LDAP
+----------------------------------------------------------------------
+http://pypi.python.org/pypi/python-ldap/
+tar zxf python-ldap-2.3.9.tar.gz 
+cd python-ldap-2.3.9
+sudo python setup.py install
+
+Install app_plugins
+----------------------------------------------------------------------
+wget http://django-app-plugins.googlecode.com/files/django_app_plugins-0.1.1-py2.5.
+
+
+Install imaging
+----------------------------------------------------------------------
+tar zxf Imaging-1.1.6.tar.gz 
+cd Imaging-1.1.6
+sudo python setup.py install

@@ -13,8 +13,8 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% block head_title %}{% blocktrans %}Edit student record{% endblocktrans %}{% endblock %}
 
 {% block extra_head %}
- <link type="text/css" href="{{MEDIA_URL}}css/jquery-ui.css" rel="stylesheet" />
- <link type="text/css" href="{{MEDIA_URL}}css/ui.timepickr.css" rel="stylesheet" />
+ <link type="text/css" href="{{STATIC_URL}}css/jquery-ui.css" rel="stylesheet" />
+ <link type="text/css" href="{{STATIC_URL}}css/ui.timepickr.css" rel="stylesheet" />
 {% endblock %}
 
 {% block body %}
@@ -45,9 +45,9 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% endblock %}
 
 {% block extra_body %}
-	    <script type="text/javascript" src="{{MEDIA_URL}}jquery.autocomplete.min.js"></script>
-		<script type="text/javascript" src="{{MEDIA_URL}}js/jquery-ui.js"></script> 
-		<script type="text/javascript" src="{{MEDIA_URL}}js/ui.datepicker.js"></script>
+	    <script type="text/javascript" src="{{STATIC_URL}}jquery.autocomplete.min.js"></script>
+		<script type="text/javascript" src="{{STATIC_URL}}js/jquery-ui.js"></script> 
+		<script type="text/javascript" src="{{STATIC_URL}}js/ui.datepicker.js"></script>
 
 		<style>
 			div.ui-datepicker {z-index:10000000;}

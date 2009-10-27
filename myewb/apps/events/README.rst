@@ -57,12 +57,12 @@ Where you would like the link to add an event to a model instance::
 
 To make this link an jQuery dialog widget, in extra_body::
 
-    <script type="text/javascript" src="{{MEDIA_URL}}events/js/jquery-ui.js"></script>
-    <script type="text/javascript" src="{{MEDIA_URL}}events/js/ui.datepicker.js"></script>
-    <script type="text/javascript" src="{{MEDIA_URL}}events/js/jquery.utils.js"></script>
-    <script type="text/javascript" src="{{MEDIA_URL}}events/js/jquery.strings.js"></script>
-    <script type="text/javascript" src="{{MEDIA_URL}}events/js/ui.dropslide.js"></script>
-    <script type="text/javascript" src="{{MEDIA_URL}}events/js/ui.timepickr.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}events/js/jquery-ui.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}events/js/ui.datepicker.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}events/js/jquery.utils.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}events/js/jquery.strings.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}events/js/ui.dropslide.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}events/js/ui.timepickr.js"></script>
 
     <style>
         div.ui-datepicker {z-index:10000000;}

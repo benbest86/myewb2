@@ -73,11 +73,11 @@ class MemberProfile(Profile):
     current_login = models.DateTimeField(_('current login'), null=True, blank=True)
     login_count = models.IntegerField(_('login count'), null=True, blank=True)
     
-    show_emails = models.BooleanField(_('show emails'), null=True, blank=True)
-    show_replies = models.BooleanField(_('show replies'), null=True, blank=True)
-    sort_by_last_reply = models.BooleanField(_('sort by last reply'), null=True, blank=True)
+    show_emails = models.BooleanField(_('show emails'), null=False, blank=True)
+    show_replies = models.BooleanField(_('show replies'), null=False, blank=True)
+    sort_by_last_reply = models.BooleanField(_('sort by last reply'), null=False, blank=True)
     address_updated = models.DateField(_('address updated'), null=True, blank=True)
-    replies_as_emails = models.BooleanField(_('replies as emails'), null=True, blank=True)
+    replies_as_emails = models.BooleanField(_('replies as emails'), null=False, blank=True)
 
     objects = MemberProfileManager()
     

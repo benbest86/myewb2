@@ -27,6 +27,9 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     url(r'^$', direct_to_template, {"template": "homepage.html"}, name="home"),
+
+#    (r'^volunteering/', include('volunteering.urls')),
+
     
     (r'^about/', include('about.urls')),
     (r'^account/', include('account_extra.urls')),
@@ -40,7 +43,7 @@ urlpatterns = patterns('',
     (r'^notices/', include('notification.urls')),
     (r'^messages/', include('messages.urls')),
     (r'^announcements/', include('announcements.urls')),
-#    (r'^tweets/', include('microblogging.urls')),
+    (r'^tweets/', include('microblogging.urls')),
     (r'^comments/', include('mythreadedcomments.urls')),
     (r'^robots.txt$', include('robots.urls')),
     (r'^i18n/', include('django.conf.urls.i18n')),
@@ -110,5 +113,5 @@ urlpatterns = patterns('',
 
 if settings.SERVE_MEDIA:
     urlpatterns += patterns('', 
-        (r'^site_media/(?P<path>.*)$', 'staticfiles.views.serve')
+        (r'^site_media/', include('staticfiles.urls'))
     )

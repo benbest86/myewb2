@@ -18,5 +18,5 @@ register.inclusion_tag('threadedcomments/comments.html', takes_context=True)(att
 
 # for some reason it doesn't load properly...
 @register.simple_tag
-def get_media_url():
-    return settings.MEDIA_URL
+def get_STATIC_URL():
+    return settings.STATIC_URL

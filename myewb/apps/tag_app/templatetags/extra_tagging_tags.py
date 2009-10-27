@@ -7,7 +7,7 @@ register = Library()
 def show_tags_for(obj):
     return {
         "obj": obj,
-        "MEDIA_URL": settings.MEDIA_URL,
+        "STATIC_URL": settings.STATIC_URL,
     }
 
 @register.inclusion_tag("tag_app/tag_count_list.html")

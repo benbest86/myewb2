@@ -2259,7 +2259,7 @@ msgstr ""
 
 #: templates/site_base.html:8 templates/account/logout.html:5
 msgid "Logout"
-msgstr ""
+msgstr "Sign out"
 
 #: templates/site_base.html:10 templates/account/login.html:6
 msgid "Login"

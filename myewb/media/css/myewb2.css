@@ -1,0 +1,190 @@
+body {
+    background: #C1C1C3;
+    font-family: verdana;
+    min-width: 59.3em;
+}
+
+a {
+	color: #002BA2;
+}
+
+div.clear {
+    clear: both;
+}
+
+div.login {
+    background: #CECECE;
+    border: 1px solid black;
+    -webkit-border-radius: 0.5em;
+    -moz-border-radius: 0.5em;
+    font-size: 0.7em;
+    width: 33em;
+    padding: 1em;
+    float: right;
+    text-align: center;
+}
+
+div.login a {
+    color: black;
+}
+
+div.login a.username {
+    text-decoration: none;
+}
+
+div.login a.signout {
+    padding-left: 2em;
+}
+
+div#body {
+    background: white;
+    margin: 0 2%;
+    border: 1px solid #001595;
+    -webkit-border-radius: 0.5em;
+    -moz-border-radius: 0.5em;
+    font-size: 0.7em;
+}
+
+div#content {
+    padding: 1em;
+}
+
+ul.subnav {
+    margin: 0;
+    -webkit-border-top-right-radius: 0.3em;
+    -webkit-border-top-left-radius: 0.3em;
+    -moz-border-radius-topright: 0.3em;
+    -moz-border-radius-topleft: 0.3em;
+    padding: 0.3em 1em;
+    font-size: 1.5em;
+}
+
+ul.subnav.blue   { background: #B4C4FF; }
+ul.subnav.green  { background: #AEDAAA; }
+ul.subnav.yellow { background: #FBF0AA; }
+ul.subnav.orange { background: #FDC588; }
+ul.subnav.red    { background: #E9BDBD; }
+ul.subnav.purple { background: #CFB1E0; }
+
+ul.subnav.blue,   ul.subnav.blue   a { color: #001595; }
+ul.subnav.green,  ul.subnav.green  a { color: #179B00; }
+ul.subnav.yellow, ul.subnav.yellow a { color: #EDC600; }
+ul.subnav.orange, ul.subnav.orange a { color: #FB6400; }
+ul.subnav.red,    ul.subnav.red    a { color: #A5090D; }
+ul.subnav.purple, ul.subnav.purple a { color: #7500C6; }
+
+ul.subnav li {
+    font-size: 0.8em;
+}
+
+ul.subnav li.current {
+    font-weight: bold;
+}
+
+ul.subnav li a {
+    text-decoration: none;
+}
+
+ul.subnav li a:hover {
+    text-decoration: underline;
+}
+
+div#tabhead {
+    background: #E8E8E8;
+    border: 1px solid black;
+    margin: 1.5% 3% 0 3%;
+    -webkit-border-top-right-radius: 0.5em;
+    -webkit-border-top-left-radius: 0.5em;
+    -moz-border-radius-topright: 0.5em;
+    -moz-border-radius-topleft: 0.5em;
+    padding: 1em;
+    padding-bottom: 0;
+    border-bottom: 0;
+}
+
+ul.tabs {
+    padding: 0;
+    margin-left: auto;
+    margin-right: auto;
+    width: 100%;
+    text-align: center;
+    margin-bottom: 0;
+}
+
+ul.tabs li {
+    list-style: none;
+    display: inline-block;
+    text-align: center;
+    padding: 0.2em 1em;
+    margin: 0 0.5em;
+    width: 8em;
+    -webkit-border-top-right-radius: 0.5em;
+    -webkit-border-top-left-radius: 0.5em;
+    -moz-border-radius-topright: 0.5em;
+    -moz-border-radius-topleft: 0.5em;
+    font-weight: bold;
+    font-size: 0.8em;
+    height: 1.2em;
+    border-bottom: 0;
+}
+
+ul.tabs li.current {
+    padding-top: 0.4em;
+    padding-bottom: 0.2em;
+}
+
+/* negate the hover effect -- don't grow the height */
+ul.tabs li.current:hover {
+    padding-top: 0.4em;
+}
+
+/* increase padding by 0.1em */
+ul.tabs li:hover {
+    padding-top: 0.3em;
+}
+
+ul.tabs li a { 
+    color: white;
+    text-decoration: none;
+}
+
+ul.legal {
+    background: #E8E8E8;
+    padding: 0.5em 0;
+    text-align: center;
+    border: 1px solid black;
+    border-top: 0;
+    -webkit-border-bottom-right-radius: 0.5em;
+    -webkit-border-bottom-left-radius: 0.5em;
+    -moz-border-radius-bottomright: 0.5em;
+    -moz-border-radius-bottomleft: 0.5em;
+    width: 90%;
+    margin: auto;
+}
+
+ul.subnav li,
+ul.legal li {
+    list-style: none;
+    display: inline;
+}
+
+ul.legal li {
+    font-size: 0.6em;
+}
+
+ul.subnav li + li:before,
+ul.legal li + li:before {
+    content: " | ";
+}
+
+ul.legal form {
+    display: inline;
+}
+
+ul.tabs .blue   { background: #0028F1; border: 1px solid #001595; border-bottom: 0; }
+ul.tabs .green  { background: #179B00; border: 1px solid #0A4800; border-bottom: 0; }
+ul.tabs .yellow { background: #EDC600; border: 1px solid #634E00; border-bottom: 0; }
+ul.tabs .orange { background: #FB6400; border: 1px solid #823300; border-bottom: 0; }
+ul.tabs .red    { background: #A5090D; border: 1px solid #600608; border-bottom: 0; }
+ul.tabs .purple { background: #7500C6; border: 1px solid #3F0074; border-bottom: 0; }
+

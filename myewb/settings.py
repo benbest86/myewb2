@@ -2,6 +2,7 @@
 # Django settings for complete pinax project.
 
 import os.path
+import posixpath
 import pinax
 
 PINAX_ROOT = os.path.realpath(os.path.dirname(pinax.__file__))
@@ -54,7 +55,21 @@ MEDIA_ROOT = os.path.join(PROJECT_ROOT, "site_media")
 
 # URL that handles the media served from MEDIA_ROOT.
 # Example: "http://media.lawrence.com"
-MEDIA_URL = '/site_media/'
+STATIC_URL = '/site_media/'
+
+# Absolute path to the directory that holds static files like app media.
+# Example: "/home/media/media.lawrence.com/apps/"
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'site_media', 'static')
+
+# URL that handles the static files like app media.
+# Example: "http://media.lawrence.com"
+STATIC_URL = '/site_media/static/'
+
+# Additional directories which hold static files
+STATICFILES_DIRS = (
+    ('myewb', os.path.join(PROJECT_ROOT, 'media')),
+    ('pinax', os.path.join(PINAX_ROOT, 'media', PINAX_THEME)),
+)
 
 # URL prefix for admin media -- CSS, JavaScript and images. Make sure to use a
 # trailing slash.
@@ -100,8 +115,10 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.core.context_processors.media",
     "django.core.context_processors.request",
 
-    "pinax.core.context_processors.contact_email",
-    "pinax.core.context_processors.site_name",
+# no longer needed with pinax 0.7.1
+    # "pinax.core.context_processors.contact_email",
+    # "pinax.core.context_processors.site_name",
+    "pinax.core.context_processors.pinax_settings",
 
     "notification.context_processors.notification",
     "announcements.context_processors.site_wide_announcements",
@@ -111,6 +128,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "friends_app.context_processors.invitations",
     "context_processors.combined_inbox_count",
     "siteutils.online_middleware.context",
+
+    "myewb.context_processors.combined_inbox_count",
 )
 
 COMBINED_INBOX_COUNT_SOURCES = (
@@ -155,8 +174,8 @@ INSTALLED_APPS = (
     'voting',
     'voting_extras',
     'tagging',
-#    'bookmarks',
-#    'blog',
+    'bookmarks',
+    'blog',
     'ajax_validation',
     'photologue',
     'avatar',
@@ -175,8 +194,8 @@ INSTALLED_APPS = (
     'account_extra',
 #    'misc',
     'signup_codes',
-#    'tribes',
-#    'photos',
+    'tribes',
+    'photos',
     'tag_app',    
     'attachments',
     'topics',
