@@ -12,7 +12,7 @@
 {% endblock %}
 
 {% block subnav %}
-    <ul>
+    <ul class="subnav">
         {% if group %}
         <li><a href="{% url network_detail group.slug %}">{{ group.name }} {% trans "Home" %}</a></li>
         {% endif %}

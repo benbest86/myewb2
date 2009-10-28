@@ -92,7 +92,11 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
                 <a href="{% url tweet_following other_user %}">{% trans "Following" %}</a>: {{ other_user.followed.count|default:"0" }}
             </p>
             {% endcomment %}
-            
+
+            {% if is_me %}
+                <p><a href="{% url profile_edit %}" rel="facebox">Edit profile</a></p>
+
+            {% comment %}            
             {% if is_me %}
                 <div class="form-toggle">
                 <p><span id="edit-profile-toggle">{% trans "Edit profile" %}</span></p>
@@ -107,6 +111,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
                     </fieldset>
                 </form>
                 </div>
+            {% endcomment %}
             {% else %}
                 {# @@@ this could be done with ajax, or at the very least turned into an inclusion tag #}
                 {% comment %}
@@ -168,7 +173,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
                 {% endif %} {# is_friend #}
                 
             {% endif %} {# is me #}
-            
+
             {% plugin_point "pinax.apps.profiles.profile" user=other_user owner=other_user viewer=user %}
             
         {% else %} {# not user.is_authenticated #}

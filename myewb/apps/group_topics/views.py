@@ -13,6 +13,8 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.syndication import feeds
 
+from groups import bridge
+
 from base_groups.models import BaseGroup
 from group_topics.models import GroupTopic
 from group_topics.forms import GroupTopicForm
@@ -22,7 +24,45 @@ from attachments.forms import AttachmentForm
 from attachments.models import Attachment
 
 from topics.views import *
-from topics.views import topics as pinaxtopics
+from topics.views import topics as pinaxtopics, topic as pinaxtopic
+
+# FIXME: this method is copied wholesale from pinax.apps.topics.views except for one line =(
+
+def topic(request, topic_id, group_slug=None, edit=False, template_name="topics/topic.html", bridge=None):
+
+    if bridge:
+        try:
+            group = bridge.get_group(group_slug)
+        except ObjectDoesNotExist:
+            raise Http404
+    else:
+        group = None
+
+    if group:
+        topics = group.content_objects(Topic)
+    else:
+        # this is the only different line.  which is needed to keep things sane.
+        topics = Topic.objects.all()
+        #topics = Topic.objects.filter(object_id=None)
+
+    topic = get_object_or_404(topics, id=topic_id)
+
+    if (request.method == "POST" and edit == True and (request.user == topic.creator or request.user == topic.group.creator)):
+        topic.body = request.POST["body"]
+        topic.save()
+        return HttpResponseRedirect(topic.get_absolute_url(group))
+
+    if group:
+        group_base = bridge.group_base_template()
+    else:
+        group_base = None
+
+    return render_to_response(template_name, {
+        "topic": topic,
+        "edit": edit,
+        "group": group,
+        "group_base": group_base,
+    }, context_instance=RequestContext(request))
 
 def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_class=AttachmentForm, template_name="topics/topics.html", bridge=None):
     

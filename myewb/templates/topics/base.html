@@ -11,8 +11,13 @@
 <script type="text/javascript" src="{{ STATIC_URL }}pinax/js/topics.js"></script>
 {% endblock %}
 
+{% comment %}
 {% block subnav %}
-    <ul>
+    <ul class="subnav">
         <li><a href="{% url topic_list %}">{% trans "All Posts" %}</a></li>
     </ul>
+{% endblock %}
+{% endcomment %}
+{% block subnav %}
+    {{ block.super }}
 {% endblock %}

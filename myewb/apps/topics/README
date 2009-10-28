@@ -1,6 +1,0 @@
-This folder contains an updated version of Topics from the current (as of 2009/08/14) trunk of Pinax. It contains a 
-few fixes missing from the current release that allow us to implement Topics properly. It will eventually be removed once
-a newer stable version of Pinax is released.
-
-Please DO NOT MODIFY the contents of this directory, except for further trunk updates if warranted. Please use GroupTopics for any
-further discussion-topic-related development.

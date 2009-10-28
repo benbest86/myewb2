@@ -7,7 +7,7 @@
 
 {% block subnav %}
     {% if user.is_authenticated %}
-        <ul>
+        <ul class="subnav">
             <li><a href="{% url events_for_user username=request.user.username%} ">{% trans "Your events" %}</a></li>
             <li><a href="{% events_add_url request.user %} ">{% trans "Add an Event" %}</a></li>
         </ul>

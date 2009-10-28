@@ -25,9 +25,9 @@ $ echo source /usr/bin/virtualenvwrapper_bashrc >> ~/.bashrc
 $ source ~/.bashrc
 
 # set up pinax
-$ wget http://downloads.pinaxproject.com/pinax-0.7beta3.tar.gz
-$ tar xzvf pinax-0.7beta3.tar.gz
-$ cd pinax-0.7beta3
+$ wget http://downloads.pinaxproject.com/Pinax-0.7.1-bundle.tar.gz
+$ tar zxvf Pinax-0.7.1-bundle.tar.gz
+$ cd Pinax-0.7.1-bundle
 $ python scripts/pinax-boot.py $WORKON_HOME/pinax-env
 
 # switch your virtual environment.
@@ -35,6 +35,7 @@ $ workon pinax-env
 
 # install additional python packages
 $ easy_install pycountry
+$ easy_install django-app-plugins
 
 # cd to the directory you are in now.
 # something like:
@@ -83,26 +84,28 @@ On Windows:
 
 7. Install the pycountry module by running easy_install pycountry in a command prompt
 
-8. Install the virtualenv module by running easy_install virtualenv in a command prompt
+8. Install django-app-plugins by running easy_install django-app-plugins in a command prompt
 
-9. Download Pinax 0.7beta3 from http://downloads.pinaxproject.com/pinax-0.7beta3.tar.gz
+9. Install the virtualenv module by running easy_install virtualenv in a command prompt
 
-10. Untar/gzip pinax. In a command prompt, cd to the pinax-0.7beta3 directory you just created 
+10. Download Pinax 0.7.1 from http://downloads.pinaxproject.com/Pinax-0.7.1-bundle.tar.gz
 
-11. run 
+11. Untar/gzip pinax. In a command prompt, cd to the Pinax-0.7.1-bundle directory you just created 
+
+12. run 
     >python scripts/pinax-boot.py C:\pinax
     Change the C:\pinax argument to wherever you wish to install your pinax virtual environment
 
-12. cd to C:\pinax and run 
+13. cd to C:\pinax and run 
     > Scripts/activate.bat
 
-13. cd to the myewb folder in the code trunk. Run 
+14. cd to the myewb folder in the code trunk. Run 
     > python manage.py syncdb
     enter a root user if you wish.
 
-14. run > python manage.py runserver
+15. run > python manage.py runserver
 
-15. navigate to http://localhost:8000/ in your browser (or http://127.0.0.1:8000/ in IE)
+16. navigate to http://localhost:8000/ in your browser (or http://127.0.0.1:8000/ in IE)
 
 NOTES: Please see the patches/ folder in this directory for any patches to the Pinax or Django
 code that need to be applied

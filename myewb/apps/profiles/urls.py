@@ -14,6 +14,8 @@ from profiles.forms import MembershipForm, MembershipFormPreview
 urlpatterns = patterns('profiles.views',
     url(r'^$', 'profiles', name='profiles_index'),    
     url(r'^$', 'profiles', name='profile_list'),    
+    url(r'^edit/$', 'profile_edit', name='profile_edit'),
+
     url(r'^(?P<username>[\w\._-]+)/$', 'profile', name='profile_detail'),
     url(r'^(?P<username>[\w\._-]+)/membership/$', 'pay_membership', name='profile_pay_membership'),
     url(r'^(?P<username>[\w\._-]+)/membership2/$', 'pay_membership2', name='profile_pay_membership2'),
@@ -32,10 +34,6 @@ urlpatterns = patterns('profiles.views',
     url(r'^(?P<username>[\w\._-]+)/work/$', 'work_records_index', name='work_records_index'),
     url(r'^(?P<username>[\w\._-]+)/work/new/$', 'new_work_record', name='new_work_record'),
     url(r'^(?P<username>[\w\._-]+)/work/(?P<work_record_id>\d+)/edit/$', 'edit_work_record', name='edit_work_record'),
-)
-
-urlpatterns = urlpatterns + patterns('',
-  url(r'^edit/$', 'profiles.views.profile_edit', name='profile_edit'),
 )
 
 urlpatterns = urlpatterns + patterns('pinax.apps.autocomplete_app.views',

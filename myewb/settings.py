@@ -129,7 +129,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "context_processors.combined_inbox_count",
     "siteutils.online_middleware.context",
 
-    "myewb.context_processors.combined_inbox_count",
+#    "myewb-clean.context_processors.combined_inbox_count",
 )
 
 COMBINED_INBOX_COUNT_SOURCES = (
