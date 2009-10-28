@@ -23,6 +23,7 @@ from emailconfirmation.models import EmailAddress
 
 from siteutils.helpers import get_email_user
 from groups.base import Group
+from wiki.models import Article
 
 class BaseGroup(Group):
     """Base group (from which networks, communities, projects, etc. derive).
@@ -45,13 +46,15 @@ class BaseGroup(Group):
     )
     visibility = models.CharField(_('visibility'), max_length=1, choices=VISIBILITY_CHOICES, default='E')
     
+    whiteboard = models.ForeignKey(Article, related_name="group", verbose_name=_('whiteboard'), null=True)
+    
     def is_visible(self, user):
         visible = False
         if self.visibility == 'E':
             visible = True
         elif user.is_authenticated():
             if user.is_superuser:
-                return true
+                return True
             
             member_list = self.members.filter(user=user, request_status='A')
             if member_list.count() > 0:
@@ -184,6 +187,9 @@ class GroupMember(models.Model):
 
     def is_bulk(self):
         return self.request_status == 'B'
+    
+    def __unicode__(self):
+        return "%s - %s (%s)" % (self.user, self.group, self.request_status)
 
     # away = models.BooleanField(_('away'), default=False)
     # away_message = models.CharField(_('away_message'), max_length=500)

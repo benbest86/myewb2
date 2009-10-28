@@ -1,0 +1,31 @@
+{% extends "base_groups/base.html" %}
+{% load i18n %}
+{% load uni_form %}
+
+{% block head_title %}
+    {% trans "Edit whiteboard" %}
+{% endblock %}
+
+{% block body %}
+	<h1>{% trans "Edit whiteboard" %}</h1>
+
+	<form class="uniForm" id="edit-member" method="POST" action="">
+		<fieldset class="inlineLabels">
+			{{ form|as_uni_form }}
+			<div class="form_block">
+				<input type="submit" value="{% trans "save" %}"/>
+			</div>
+		</fieldset>
+	</form>
+
+	<br/><br/>
+	<p>
+		Back to <a href="{{ group.get_absolute_url }}">{{ group.name }}</a>
+	</p>
+
+{% endblock %}
+
+{% block extra_body %}
+	{{ block.super }}
+	{% include "tinymce.html" %}
+{% endblock %}

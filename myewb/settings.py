@@ -208,6 +208,7 @@ INSTALLED_APPS = (
     
     'django.contrib.admin',
     'events',
+    'whiteboard',
     'siteutils',
 
 )

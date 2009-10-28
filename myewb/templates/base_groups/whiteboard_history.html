@@ -1,0 +1,61 @@
+{% extends "base_groups/base.html" %}
+{% load group_tags %}
+{% load i18n %}
+{% load uni_form %}
+
+{% block head_title %}
+    {% trans "Whiteboard history" %}
+{% endblock %}
+
+{% block body %}
+	<h1>{% trans "Whiteboard history" %}</h1>
+
+	<form action="{% groupurl wiki_revert_to_revision group title=article.title %}" method="post">
+	  <table style="width: 100%">
+	    <tr class="tbheader">
+          <th>{% trans "At" %}</th>
+          <th>{% trans "User" %}</th>
+          <th>{% trans "Comment" %}</th>
+          <th>{% trans "Revert" %}</th>
+	    </tr>
+	    {% for change in changes %}
+	    <tr style="background-color: {% cycle '#ffffff' '#e5e5e5' %};">
+	        <td><a href="{% groupurl wiki_changeset group title=article.title revision=change.revision %}">
+	                {{ change.modified|date:"M d, Y" }}</a>
+	        </td>
+	        <td>
+	        {% if change.is_anonymous_change %}
+	            {{ change.editor_ip }}
+	        {% else %}
+	            <a href="{% url profile_detail change.editor.username %}">{{ change.editor }}</a>
+	        {% endif %}
+	        </td>
+	        <td>
+	          {% if change.comment %}<i>'{{ change.comment}}'</i> {% endif %}
+	        </td>
+	        <td>
+	            {% if forloop.first %}
+	                {% trans "Current revision" %}
+	            {% else %}
+	                 <input id="id_revision" name="revision"
+	                        {% ifequal forloop.counter 2 %}checked{% endifequal %}
+	                        type="radio" value="{{ change.revision }}">
+	            {% endif %}
+	        </td>
+	    </tr>
+	    {% endfor %}
+	  </table>
+
+	  {% ifnotequal changes.count 1 %}
+	       <input type="submit" value="{% trans "Revert" %}">
+	  {% endifnotequal %}
+
+	</form>
+
+
+	<br/><br/>
+	<p>
+		Back to <a href="{{ group.get_absolute_url }}">{{ group.name }}</a>
+	</p>
+
+{% endblock %}

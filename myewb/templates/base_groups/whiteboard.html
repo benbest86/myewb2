@@ -1,0 +1,15 @@
+{% load i18n %}
+{% load group_tags %}
+
+<div style="border: solid 1px; padding: 15px;">
+{# we ignore the markup field, and assume it's html, since we've hacked it up... #}
+{{ group.whiteboard.content|safe }}
+
+{% if member %}
+	<br/><br/>
+	<a href="{% groupurl wiki_edit group title=group.whiteboard.title %}">{% trans "Edit this article" %}</a>
+	|
+	<a href="{% groupurl wiki_article_history group title=group.whiteboard.title %}">{% trans "Editing history" %}</a>
+{% endif %}
+
+</div>

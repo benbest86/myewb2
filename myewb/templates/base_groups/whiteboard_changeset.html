@@ -1,0 +1,19 @@
+{% extends "base_groups/base.html" %}
+{% load group_tags %}
+{% load i18n %}
+
+{% block head_title %}
+    {% trans "Whiteboard changes" %}
+{% endblock %}
+
+{% block body %}
+    <h1>  {{ article_title }} </h1>
+    {{ changeset.display_diff|safe }}
+
+
+	<br/><br/>
+	<p>
+		Back to <a href="{{ group.get_absolute_url }}">{{ group.name }}</a>
+	</p>
+
+{% endblock %}

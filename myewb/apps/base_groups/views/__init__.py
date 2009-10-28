@@ -27,6 +27,8 @@ if "notification" in settings.INSTALLED_APPS:
     from notification import models as notification
 else:
     notification = None
+    
+from wiki.models import Article
 
 def groups_index(request, model=None, member_model=None, form_class=None, template_name='base_groups/groups_index.html',
         new_template_name=None, options=None):
@@ -130,6 +132,14 @@ def group_detail(request, group_slug, model=None, member_model=None, form_class=
 
         # retrieve details
         if request.method == 'GET':
+            # retrieve whiteboard (create if needed)
+            if group.whiteboard == None:
+                wb = Article(title=group_slug, content="")
+                group.associate(wb, commit=False)
+                wb.save()
+                group.whiteboard = wb
+                group.save()
+            
             return render_to_response(
                 template_name,
                 {
