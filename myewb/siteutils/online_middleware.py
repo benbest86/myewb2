@@ -51,11 +51,9 @@ def add_online_user(request):
     if request.user.is_authenticated():
         users[request.session.session_key] = request.user
         cache.set(get_cache_key_for_session(request.session.session_key), request.user, USER_PAGE_VIEW_TIME)
-        print "%s - %s" % (request.session.session_key, request.user)
     else:
         users[request.session.session_key] = True
         cache.set(get_cache_key_for_session(request.session.session_key), True, USER_PAGE_VIEW_TIME)
-        print "%s - guest" % request.session.session_key
     cache.set(CACHE_ONLINE_USERS_KEY, users, USER_PAGE_VIEW_TIME)
 
 class OnlineUsers(object):
@@ -80,7 +78,6 @@ def context(request):
             'online_anon': anon}
 
 def remove_user(request):
-    print "removing %s" % request.session.session_key
     users = cache.get(CACHE_ONLINE_USERS_KEY, {})
     del(users[request.session.session_key])
     cache.set(CACHE_ONLINE_USERS_KEY, users, USER_PAGE_VIEW_TIME)
