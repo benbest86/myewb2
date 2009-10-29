@@ -64,6 +64,7 @@
 	<li><a href="{% url terms %}">Terms of Use</a></li>
 	<li><a href="{% url privacy %}">Privacy Policy</a></li>
     <li>&copy; 2005&ndash;09 <a href="http://www.ewb.ca/">{% trans "Engineers Without Borders (Canada) Organisation" %}</a></li>
+        <li>version {% svn_app_version "networks" %}</li>
 	{% if user.is_staff %}<li><a href="/admin/">{% trans "Admin" %}</a></li>{% endif %}
 	{% block locale_switcher %}
 		<li>
