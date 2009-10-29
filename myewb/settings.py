@@ -170,7 +170,6 @@ INSTALLED_APPS = (
     'wiki',
 #    'swaps',
     'timezones',
-    'app_plugins',
     'voting',
     'voting_extras',
     'tagging',

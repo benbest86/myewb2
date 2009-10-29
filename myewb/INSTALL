@@ -35,7 +35,6 @@ $ workon pinax-env
 
 # install additional python packages
 $ easy_install pycountry
-$ easy_install django-app-plugins
 
 # cd to the directory you are in now.
 # something like:
@@ -84,28 +83,26 @@ On Windows:
 
 7. Install the pycountry module by running easy_install pycountry in a command prompt
 
-8. Install django-app-plugins by running easy_install django-app-plugins in a command prompt
+8. Install the virtualenv module by running easy_install virtualenv in a command prompt
 
-9. Install the virtualenv module by running easy_install virtualenv in a command prompt
+9. Download Pinax 0.7.1 from http://downloads.pinaxproject.com/Pinax-0.7.1-bundle.tar.gz
 
-10. Download Pinax 0.7.1 from http://downloads.pinaxproject.com/Pinax-0.7.1-bundle.tar.gz
+10. Untar/gzip pinax. In a command prompt, cd to the Pinax-0.7.1-bundle directory you just created 
 
-11. Untar/gzip pinax. In a command prompt, cd to the Pinax-0.7.1-bundle directory you just created 
-
-12. run 
+11. run 
     >python scripts/pinax-boot.py C:\pinax
     Change the C:\pinax argument to wherever you wish to install your pinax virtual environment
 
-13. cd to C:\pinax and run 
+12. cd to C:\pinax and run 
     > Scripts/activate.bat
 
-14. cd to the myewb folder in the code trunk. Run 
+13. cd to the myewb folder in the code trunk. Run 
     > python manage.py syncdb
     enter a root user if you wish.
 
-15. run > python manage.py runserver
+14. run > python manage.py runserver
 
-16. navigate to http://localhost:8000/ in your browser (or http://127.0.0.1:8000/ in IE)
+15. navigate to http://localhost:8000/ in your browser (or http://127.0.0.1:8000/ in IE)
 
 NOTES: Please see the patches/ folder in this directory for any patches to the Pinax or Django
 code that need to be applied
@@ -146,10 +143,6 @@ http://pypi.python.org/pypi/python-ldap/
 tar zxf python-ldap-2.3.9.tar.gz 
 cd python-ldap-2.3.9
 sudo python setup.py install
-
-Install app_plugins
-----------------------------------------------------------------------
-wget http://django-app-plugins.googlecode.com/files/django_app_plugins-0.1.1-py2.5.
 
 
 Install imaging
