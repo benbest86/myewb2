@@ -1,4 +1,5 @@
 from django.conf import settings
+from template_utils.context_processors import settings_processor
 from django.core.exceptions import ImproperlyConfigured
 from django.contrib.auth.models import User
 
@@ -53,3 +54,7 @@ def footer(request):
         'latest_bookmarks': Bookmark.objects.all().order_by('-added')[:5],
         'latest_blogs': Post.objects.filter(status=2).order_by('-publish')[:5],
     }
+
+myewb_settings = settings_processor(
+    'DEBUG'
+)

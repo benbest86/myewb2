@@ -27,6 +27,10 @@
             {% block extra_head %}{% endblock %}
         {% endblock %}
     </head>
+
+{% if DEBUG %}
+<h1 class="debug">This is a debug version of MyEWB</h1>
+{% endif %}
     
     <body class="{% block body_class %}{% endblock %}">
         {% if site_wide_announcements %}

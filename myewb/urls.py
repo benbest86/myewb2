@@ -29,7 +29,7 @@ urlpatterns = patterns('',
 #    url(r'^$', direct_to_template, {"template": "homepage.html"}, name="home"),
     url(r'^$', 'group_topics.views.topics', name="home"),
 
-#    (r'^volunteering/', include('volunteering.urls')),
+    (r'^volunteering/', include('volunteering.urls')),
 
     
     (r'^about/', include('about.urls')),

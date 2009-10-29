@@ -4,6 +4,19 @@ body {
     min-width: 59.3em;
 }
 
+h1.debug {
+    color: white;
+    background: red;
+    padding: 0.3em;
+    font-size: 1em;
+    text-align: center;
+    margin: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    left: 0;
+}
+
 a {
 	color: #002BA2;
 }
