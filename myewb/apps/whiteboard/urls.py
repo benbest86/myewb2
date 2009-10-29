@@ -8,7 +8,7 @@ from whiteboard import views
 try:
     WIKI_URL_RE = settings.WIKI_URL_RE
 except AttributeError:
-    WIKI_URL_RE = r'\w+'
+    WIKI_URL_RE = r'[-\w]+'
 
 urlpatterns = patterns('',
     url(r'^edit/(?P<title>'+ WIKI_URL_RE +r')/$', views.edit_article,
