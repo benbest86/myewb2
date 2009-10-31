@@ -25,7 +25,7 @@ MANAGERS = ADMINS
 
 DATABASE_ENGINE = 'sqlite3'    # 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'ado_mssql'.
 DATABASE_NAME = './sqlite.db'       # Or path to database file if using sqlite3.
-DATABASE_USER = ''             # Not used with sqlite3.
+DATABASE_USER = 'root'             # Not used with sqlite3.
 DATABASE_PASSWORD = ''         # Not used with sqlite3.
 DATABASE_HOST = ''             # Set to empty string for localhost. Not used with sqlite3.
 DATABASE_PORT = ''             # Set to empty string for default. Not used with sqlite3.
@@ -52,10 +52,6 @@ USE_I18N = True
 # Example: "/home/media/media.lawrence.com/"
 
 MEDIA_ROOT = os.path.join(PROJECT_ROOT, "site_media")
-
-# URL that handles the media served from MEDIA_ROOT.
-# Example: "http://media.lawrence.com"
-STATIC_URL = '/site_media/'
 
 # Absolute path to the directory that holds static files like app media.
 # Example: "/home/media/media.lawrence.com/apps/"
@@ -209,7 +205,9 @@ INSTALLED_APPS = (
     'events',
     'whiteboard',
     'siteutils',
-
+    
+    # MyEWB apps
+    'volunteering',
 )
 
 ABSOLUTE_URL_OVERRIDES = {

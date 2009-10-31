@@ -1,13 +1,24 @@
 {% extends "site_base.html" %}
 
+{% block extra_head %}
+<link href="/media/css/base.css" rel="stylesheet" type="text/css" media="screen" /> 
+<link href="/media/css/forms.css" rel="stylesheet" type="text/css" media="screen" /> 
+<script type="text/javascript" src="/admin/jsi18n/"></script>
+<script type="text/javascript" src="{{STATIC_URL}}js/core.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}js/admin/RelatedObjectLookups.js"></script> 
+{{ form.media }} 
+
+{% endblock %}
+
 {% block subnav %}
 <ul class="subnav purple">
 <!-- user/guest -->
 <li class="current">Volunteering with EWB</li>
 <!-- admins -->
-<li><a href="#">Placement List</a></li>
-<li><a href="#">Session List</a></li>
-<li><a href="#">OV Info</a></li>
-<li><a href="#">Assignment</a></li>
+<li><a href="{% url placement_index %}">Placement List</a></li>
+<li><a href="{% url session_index %}">Session List</a></li>
+
+<li><a href="{% url ov_info %}">OV Info</a></li>
+<li><a href="{% url ov_assignment %}">Assignment</a></li>
 </ul>
 {% endblock %}

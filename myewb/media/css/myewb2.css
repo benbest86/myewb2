@@ -2,6 +2,15 @@ body {
     background: #C1C1C3;
     font-family: verdana;
     min-width: 59.3em;
+    font-size: 1em;
+}
+
+div#footer {
+    padding: 0;
+}
+
+ul.errorlist {
+    display: inline-block;
 }
 
 h1.debug {

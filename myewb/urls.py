@@ -49,6 +49,8 @@ urlpatterns = patterns('',
     (r'^robots.txt$', include('robots.urls')),
     (r'^i18n/', include('django.conf.urls.i18n')),
 #    (r'^bookmarks/', include('bookmarks.urls')),
+
+    (r'^admin/jsi18n/$', 'django.views.i18n.javascript_catalog'),
     (r'^admin/(.*)', admin.site.root),
 #    (r'^photos/', include('photos.urls')),
     (r'^avatar/', include('avatar.urls')),

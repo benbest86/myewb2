@@ -8,15 +8,12 @@
 
 {% block extra_head_base %}
     <link rel="SHORTCUT ICON" href="{{ STATIC_URL}}favicon.ico" />
-<!--
     <link rel="stylesheet" href="{{ STATIC_URL }}css/site_tabs.css" />
--->
-<link rel="stylesheet" href="{{ STATIC_URL }}pinax/css/topics.css" />
+	<link rel="stylesheet" href="{{ STATIC_URL }}pinax/css/topics.css" />
 	<link rel="stylesheet" href="{{ STATIC_URL }}css/social_project.css" />
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/myewb2.css" />
-    <link rel="stylesheet" href="{{ STATIC_URL }}css/myewb2_base.css" />
     <script type="text/javascript" src="{{ STATIC_URL }}pinax/js/topics.js"></script>
     {% block extra_head %}{% endblock %}
+    <link rel="stylesheet" href="{{ STATIC_URL }}css/myewb2.css" />
 {% endblock %}
 
 {% block login %}

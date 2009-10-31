@@ -1,7 +1,9 @@
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.models import User
 
 class Application(models.Model):
-    en_writing = models.PositiveSmallIntegerField()
+    en_writing = models.PositiveSmallIntegerField(_("English writing (1-10)"))
     en_reading = models.PositiveSmallIntegerField()
     en_speaking = models.PositiveSmallIntegerField()
 
@@ -14,11 +16,11 @@ class Application(models.Model):
     references = models.TextField()
     gpa = models.PositiveIntegerField()
     
-    user = models.ForeignKey("User")
+    user = models.ForeignKey(User)
     session = models.ForeignKey("Session")
 
 class Session(models.Model):
-  name = models.CharField()
+  name = models.CharField(max_length=200)
   en_instructions = models.TextField()
   fr_instructions = models.TextField()
   close_email = models.TextField()
@@ -31,39 +33,47 @@ class Session(models.Model):
   
 class Question(models.Model):
   question = models.TextField()
-  question_order = models.SmallPositiveIntegerField()
+  question_order = models.PositiveSmallIntegerField()
   session = models.ForeignKey("Session")
 
 class Answer(models.Model):
-  answer = models.CharField()
+  answer = models.TextField()
   application = models.ForeignKey("Application")
   question = models.ForeignKey("Question")
 
 class Placement(models.Model):
-  name = models.CharField()
+  name = models.CharField(max_length=200)
   description = models.TextField()
   longterm = models.BooleanField()
-  active = models.BooleanField()
-  deleted = models.BooleanField()
-  start_date = models.DateField()
-  end_date = models.DateField()
+  active = models.BooleanField(default=True)
+  deleted = models.BooleanField(default=False)
+  start_date = models.DateField(null=True)
+  end_date = models.DateField(null=True)
   country = models.CharField(max_length=2)
   town = models.CharField(max_length=100)
 
-  accounting = models.ForeignKey("Accounting")
-  user = models.ForeignKey("User")
+  user = models.ForeignKey(User)
+  
+  def __unicode__(self):
+    return self.name
+    
+  @models.permalink
+  def get_absolute_url(self):
+    return ("volunteering.views.placement_detail", [str(self.id)])
+    
 
-class EvaluaionCriterion(models.Model):
-  criteria = models.TextField(blank=True)
-  column_header = models.CharField(blank=True, max_length=100)
+class EvaluationCriterion(models.Model):
+  criteria = models.TextField()
+  column_header = models.CharField(max_length=100)
   session = models.ForeignKey("Session")
 
 class EvaluationResponse(models.Model):
   response = models.PositiveIntegerField()
   evaluation = models.ForeignKey("Evaluation")
-  evaluation_criteria = models.ForeignKey("EvaluationCriteria")
+  evaluation_criterion = models.ForeignKey("EvaluationCriterion")
 
 class Evaluation(models.Model):
-  notes = models.TextField(blank=True)
-  rejection_sent = models.BooleanField(default=True)
+  notes = models.TextField()
+  rejection_sent = models.BooleanField()
   application = models.ForeignKey("Application")
+

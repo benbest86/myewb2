@@ -1,0 +1,12 @@
+{% extends "volunteering/base.html" %}
+
+{% block body %}
+	<a href="{% url placement_new %}">new placement</a>
+
+	<ul>
+	{% for placement in placements %}
+		<li><a href="{{ placement.get_absolute_url }}">{{ placement.name }}</a></li>
+	{% endfor %}
+	</ul>
+{% endblock %}
+
