@@ -124,8 +124,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "friends_app.context_processors.invitations",
     "context_processors.combined_inbox_count",
     "siteutils.online_middleware.context",
-
-    "context_processors.myewb_settings",
 )
 
 COMBINED_INBOX_COUNT_SOURCES = (

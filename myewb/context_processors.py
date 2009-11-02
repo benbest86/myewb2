@@ -55,6 +55,3 @@ def footer(request):
         'latest_blogs': Post.objects.filter(status=2).order_by('-publish')[:5],
     }
 
-myewb_settings = settings_processor(
-    'DEBUG'
-)
