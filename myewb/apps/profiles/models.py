@@ -150,11 +150,6 @@ class MemberProfile(Profile):
             self.name = self.last_name
         else:
             self.name = None
-                
-        self.location = self.city
-        if self.province:
-            self.location += ", "
-            self.location += self.province
             
         return models.Model.save(self, force_insert, force_update)
             
