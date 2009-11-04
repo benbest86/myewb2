@@ -14,7 +14,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save, pre_save
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.localflavor import CASocialInsuranceNumberField
+from django.contrib.localflavor.ca.forms import CASocialInsuranceNumberField
 
 from emailconfirmation.models import EmailAddress
 
@@ -23,6 +23,53 @@ from networks import emailforwards
 from networks.models import Network
 from datetime import date
 from siteutils.countries import CountryField
+
+class OnlineService(models.Model):
+  user = models.ForeignKey(User, verbose_name=_('user'))
+  username = models.CharField(blank=True, max_length=100)
+  
+  IM_SERVICES = (
+      ('AIM', _('AOL Instant Messenger')),
+      ('Google Talk', _('Google Talk')),
+      ('ICQ', _('ICQ')),
+      ('MSN', _('Windows Live')),
+      ('Skype', _('Skype')),
+      ('Twitter', _('Twitter')),
+      ('Yahoo', _('Yahoo!')),
+  )
+  service = models.CharField(_('online services'), max_length=50, choices=IM_SERVICES, null=True, blank=True)
+
+class WebPage(models.Model):
+  user = models.ForeignKey(User, verbose_name=_('user'))
+  label = models.CharField(blank=True, max_length=100)
+  url = models.URLField(blank=True, verify_exists=True)
+  
+class Address(models.Model):
+  user = models.ForeignKey(User, verbose_name=_('user'))
+  street = models.CharField(_('street address'), max_length=200, null=True, blank=True)
+  city = models.CharField(_('city'), max_length=100, null=True, blank=True)
+  province = models.CharField(_('province / state (abbreviation)'), max_length=10, null=True, blank=True)
+  postal_code = models.CharField(_('postal / zip code'), max_length=10, null=True, blank=True)
+  country = CountryField(_('country'), null=True, blank=True)
+
+class PhoneNumber(models.Model):
+  PHONE_LABELS = (
+      ('Mobile', _('Mobile')),
+      ('Home', _('Home')),
+      ('Work', _('Work')),
+      ('School', _('School')),
+      ('Work Fax', _('Work Fax')),
+      ('Home Fax', _('Home Fax')),
+      ('Cottage', _('Cottage')),
+      ('Parents', _('Parents')),
+      ('Placement', _('Placement')),
+  )
+
+  user = models.ForeignKey(User, verbose_name=_('user'))
+  
+  # want a combo box for this -- choices/custom
+  label = models.CharField(_('number type'), max_length=50, choices=PHONE_LABELS, null=True, blank=True)
+  number = models.CharField(_('phone number'), max_length=40, null=True, blank=True)
 
 class MemberProfileManager(models.Manager):
     def get_from_view_args(self, *args, **kwargs):
@@ -59,7 +106,7 @@ class MemberProfile(Profile):
     current_login = models.DateTimeField(_('current login'), null=True, blank=True)
     login_count = models.IntegerField(_('login count'), null=True, blank=True)
     
-    social_insurance = CASocialInsuranceNumberField(blank=True)
+    social_insurance = CASocialInsuranceNumberField()
     health_card = models.CharField(blank=True, max_length=100)
     
     show_emails = models.BooleanField(_('show emails'), null=False, blank=True)
@@ -265,49 +312,3 @@ class WorkRecord(models.Model):
         return (user.id == self.user_id)
 
 
-class OnlineAccount(models.Model):
-  user = models.ForeignKey(User, verbose_name=_('user'))
-  username = models.CharField(blank=True, max_length=100)
-  
-  IM_SERVICES = (
-      ('AIM', _('AOL Instant Messenger')),
-      ('Google Talk', _('Google Talk')),
-      ('ICQ', _('ICQ')),
-      ('MSN', _('Windows Live')),
-      ('Skype', _('Skype')),
-      ('Twitter', _('Twitter')),
-      ('Yahoo', _('Yahoo!')),
-  )
-  service = models.CharField(_('online services'), max_length=50, choices=IM_SERVICES, null=True, blank=True)
-
-class WebPage(models.Model):
-  user = models.ForeignKey(User, verbose_name=_('user'))
-  label = models.CharField(blank=True, max_length=100)
-  url = models.URLField(blank=True, verify_exists=True)
-  
-class Address(models.Model):
-  user = models.ForeignKey(User, verbose_name=_('user'))
-  street = models.CharField(_('street address'), max_length=200, null=True, blank=True)
-  city = models.CharField(_('city'), max_length=100, null=True, blank=True)
-  province = models.CharField(_('province / state (abbreviation)'), max_length=10, null=True, blank=True)
-  postal_code = models.CharField(_('postal / zip code'), max_length=10, null=True, blank=True)
-  country = CountryField(_('country'), null=True, blank=True)
-
-class PhoneNumber(models.Model):
-  PHONE_LABELS = (
-      ('Mobile', _('Mobile')),
-      ('Home', _('Home')),
-      ('Work', _('Work')),
-      ('School', _('School')),
-      ('Work Fax', _('Work Fax')),
-      ('Home Fax', _('Home Fax')),
-      ('Cottage', _('Cottage')),
-      ('Parents', _('Parents')),
-      ('Placement', _('Placement')),
-  )
-
-  user = models.ForeignKey(User, verbose_name=_('user'))
-  
-  # want a combo box for this -- choices/custom
-  label = models.CharField(_('number type'), max_length=50, choices=PHONE_LABELS, null=True, blank=True)
-  number = models.CharField(_('phone number'), max_length=40, null=True, blank=True)

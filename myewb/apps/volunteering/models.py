@@ -2,6 +2,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
 from siteutils.countries import CountryField
+from datetime import datetime
 
 from profiles.models import Address, PhoneNumber
 
@@ -124,8 +125,8 @@ class InsuranceInstance(models.Model):
   insurance_company = models.ForeignKey(ServiceProvider)
   policy_number = models.CharField(blank=True, max_length=100)
   certificate_number = models.CharField(blank=True, max_length=100)
-  start_date = models.DateField(default=datetime.datetime.today)
-  end_date = models.DateField(default=datetime.datetime.today)
+  start_date = models.DateField(default=datetime.today)
+  end_date = models.DateField(default=datetime.today)
   price = models.DecimalField(max_digits=10, decimal_places=2)
 
 class TravelSegment(models.Model):
@@ -166,8 +167,8 @@ class Passport(models.Model):
   country = CountryField()
   passport_number = models.CharField(blank=True, max_length=100)
   name_on_passport = models.CharField(_('name on passport'), blank=True, max_length=200)
-  issued_date = models.DateField(default=datetime.datetime.today)
-  expiry_date = models.DateField(default=datetime.datetime.today)
+  issued_date = models.DateField(default=datetime.today)
+  expiry_date = models.DateField(default=datetime.today)
   issued_city = models.CharField(blank=True, max_length=100)
 
 class Stipend(models.Model):

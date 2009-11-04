@@ -113,7 +113,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 # no longer needed with pinax 0.7.1
     # "pinax.core.context_processors.contact_email",
-    # "pinax.core.context_processors.site_name",
     "pinax.core.context_processors.pinax_settings",
 
     "notification.context_processors.notification",
