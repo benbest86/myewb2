@@ -2263,7 +2263,7 @@ msgstr "Sign out"
 
 #: templates/site_base.html:10 templates/account/login.html:6
 msgid "Login"
-msgstr ""
+msgstr "Sign in"
 
 #: templates/site_base.html:10 templates/bookmarks/bookmarks.html:27
 #: templates/bookmarks/bookmarks.html:29 templates/bookmarks/bookmarks.html:35

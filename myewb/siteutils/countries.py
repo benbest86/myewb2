@@ -1,24 +1,9 @@
-"""myEWB profiles - available countries list
-Used in connection with the profile 'country' selection (mostly to keep the code clean).
+from django.utils.translation import ugettext as _
+from django.db import models
 
-This file is part of myEWB
-Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
-
-Created on 2009-07-01
-Last modified on 2009-07-01
-@author Joshua Gorner
-"""
-
-from django.utils.translation import ugettext_lazy as _
-
-# derived from http://code.djangoproject.com/attachment/ticket/5446/country_and_language_fields_trunk.3.patch
-# Countries list - ISO 3166-1
-# http://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
-
+# http://xml.coverpages.org/country3166.html
 COUNTRIES = (
-    ('CA', _('Canada')),
-	('US', _('United States of America')),
-	('AD', _('Andorra')),
+    ('AD', _('Andorra')),
     ('AE', _('United Arab Emirates')),
     ('AF', _('Afghanistan')),
     ('AG', _('Antigua & Barbuda')),
@@ -53,6 +38,7 @@ COUNTRIES = (
     ('BW', _('Botswana')),
     ('BY', _('Belarus')),
     ('BZ', _('Belize')),
+    ('CA', _('Canada')),
     ('CC', _('Cocos (Keeling) Islands')),
     ('CF', _('Central African Republic')),
     ('CG', _('Congo')),
@@ -236,6 +222,7 @@ COUNTRIES = (
     ('UA', _('Ukraine')),
     ('UG', _('Uganda')),
     ('UM', _('United States Minor Outlying Islands')),
+    ('US', _('United States of America')),
     ('UY', _('Uruguay')),
     ('UZ', _('Uzbekistan')),
     ('VA', _('Vatican City State (Holy See)')),
@@ -254,5 +241,32 @@ COUNTRIES = (
     ('ZM', _('Zambia')),
     ('ZR', _('Zaire')),
     ('ZW', _('Zimbabwe')),
-    ('ZZ', _('Unknown or unspecified country')),
 )
+
+EWB_PLACEMENTS = (
+  ('BF', _('Burkina Faso')),
+  ('GH', _('Ghana')),
+  ('MW', _('Malawi')),
+  ('ZM', _('Zambia')),
+)
+
+EWB_MEMBERS = (
+  ('CA', _('Canada')),
+  ('US', _('United States of America')),
+) + COUNTRIES
+
+class CountryField(models.CharField):
+    def __init__(self, *args, **kwargs):
+        kwargs.setdefault('max_length', 2)
+        ewb = kwargs.pop('ewb', 'members')
+        if ewb == 'members':
+          kwargs.setdefault('choices', EWB_MEMBERS)
+        elif ewb == 'placements':
+          kwargs.setdefault('choices', EWB_PLACEMENTS)
+        else:
+          kwargs.setdefault('choices', COUNTRIES)
+
+        super(CountryField, self).__init__(*args, **kwargs)
+
+    def get_internal_type(self):
+        return "CharField"

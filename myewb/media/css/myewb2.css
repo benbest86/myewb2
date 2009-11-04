@@ -95,6 +95,13 @@ ul.subnav.orange, ul.subnav.orange a { color: #FB6400; }
 ul.subnav.red,    ul.subnav.red    a { color: #A5090D; }
 ul.subnav.purple, ul.subnav.purple a { color: #7500C6; }
 
+ul.tabs .blue   { background: #0028F1; border: 1px solid #001595; border-bottom: 0; }
+ul.tabs .green  { background: #179B00; border: 1px solid #0A4800; border-bottom: 0; }
+ul.tabs .yellow { background: #EDC600; border: 1px solid #634E00; border-bottom: 0; }
+ul.tabs .orange { background: #FB6400; border: 1px solid #823300; border-bottom: 0; }
+ul.tabs .red    { background: #A5090D; border: 1px solid #600608; border-bottom: 0; }
+ul.tabs .purple { background: #7500C6; border: 1px solid #3F0074; border-bottom: 0; }
+
 ul.subnav li {
     font-size: 0.8em;
 }
@@ -203,10 +210,21 @@ ul.legal form {
     display: inline;
 }
 
-ul.tabs .blue   { background: #0028F1; border: 1px solid #001595; border-bottom: 0; }
-ul.tabs .green  { background: #179B00; border: 1px solid #0A4800; border-bottom: 0; }
-ul.tabs .yellow { background: #EDC600; border: 1px solid #634E00; border-bottom: 0; }
-ul.tabs .orange { background: #FB6400; border: 1px solid #823300; border-bottom: 0; }
-ul.tabs .red    { background: #A5090D; border: 1px solid #600608; border-bottom: 0; }
-ul.tabs .purple { background: #7500C6; border: 1px solid #3F0074; border-bottom: 0; }
+form.login {
+    width: 35em;
+}
 
+form.login .inlineLabels {
+    width: 35em;
+}
+
+form.login .inlineLabels label {
+    width: 10em;
+    text-align: right;
+    font-weight: bold;
+    margin-top: 0.6em;
+}
+
+form.login label[for="id_remember"] {
+    visibility: hidden;
+}

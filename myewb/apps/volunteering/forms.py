@@ -13,6 +13,9 @@ class ApplicationForm(forms.ModelForm):
     model = Application
 
 class SessionForm(forms.ModelForm):
+  open_date = forms.DateField(widget=widgets.AdminDateWidget)
+  close_date = forms.DateField(widget=widgets.AdminDateWidget)
+  due_date = forms.DateField(widget=widgets.AdminDateWidget)
   class Meta:
     model = Session
 

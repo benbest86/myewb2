@@ -1,0 +1,27 @@
+{% extends "volunteering/base.html" %}
+
+{% block body %}
+	<a href="{% url session_new %}">new session</a>
+
+	{% if current_page.has_previous %}
+	<a href="/sessions/page/{{current_page.previous_page_number}}">«</a>
+		{% if current_page.has_next %}|{% endif %}
+	{% endif %}
+
+	{% if current_page.has_next %}
+	<a href="/sessions/page/{{current_page.next_page_number}}">»</a>
+	{% endif %}
+
+	{% if sessions %}
+	<ul>
+	{% for session in sessions %}
+		<li>
+			<a href="{% url session_edit session.id %}">{{ session.name }}</a>
+		</li>
+	{% endfor %}
+	</ul>
+	{% else %}
+	<p>No sessions found.</p>
+	{% endif %}
+{% endblock %}
+

@@ -14,14 +14,15 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save, pre_save
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.localflavor import CASocialInsuranceNumberField
 
 from emailconfirmation.models import EmailAddress
 
 from pinax.apps.profiles.models import Profile, create_profile
 from networks import emailforwards
 from networks.models import Network
-from countries import COUNTRIES
 from datetime import date
+from siteutils.countries import CountryField
 
 class MemberProfileManager(models.Manager):
     def get_from_view_args(self, *args, **kwargs):
@@ -41,25 +42,10 @@ class MemberProfile(Profile):
     """
     
     # This will be copied to the respective fields in the User object
-    first_name = models.CharField(_('first name(s)'), max_length=30, blank=True)
-    preferred_first_name = models.CharField(_('preferred first name (if different)'), max_length=30, blank=True)
-    last_name = models.CharField(_('last name'), max_length=30, blank=True)
-    
-    country = models.CharField(_('country'), max_length=2, choices=COUNTRIES, null=True, blank=True)
-    
-    street_address = models.CharField(_('street address'), max_length=50, null=True, blank=True)
-    street_address_two = models.CharField(_('street address line 2'), max_length=50, null=True, blank=True)
-    city = models.CharField(_('city'), max_length=40, null=True, blank=True)
-    province = models.CharField(_('province / state (abbreviation)'), max_length=10, null=True, blank=True)
-    postal_code = models.CharField(_('postal / zip code'), max_length=16, null=True, blank=True)
-    
-    # PhoneNumberField is not suitable since we need to allow non-North American numbers
-    home_phone_number = models.CharField(_('home phone number'), max_length=40, null=True, blank=True)
-    mobile_phone_number = models.CharField(_('mobile phone number'), max_length=40, null=True, blank=True)
-    work_phone_number = models.CharField(_('work phone number'), max_length=40, null=True, blank=True)
-    alt_phone_number = models.CharField(_('alternate phone number'), max_length=40, null=True, blank=True)
-    fax_number = models.CharField(_('fax number'), max_length=40, null=True, blank=True)
-    
+    first_name = models.CharField(_('first name(s)'), max_length=100, blank=True)
+    preferred_first_name = models.CharField(_('preferred first name (if different)'), max_length=100, blank=True)
+    last_name = models.CharField(_('last name'), max_length=100, blank=True)
+        
     GENDER_CHOICES = (
         ('M', _('Male')),
         ('F', _('Female')),
@@ -73,11 +59,19 @@ class MemberProfile(Profile):
     current_login = models.DateTimeField(_('current login'), null=True, blank=True)
     login_count = models.IntegerField(_('login count'), null=True, blank=True)
     
+    social_insurance = CASocialInsuranceNumberField(blank=True)
+    health_card = models.CharField(blank=True, max_length=100)
+    
     show_emails = models.BooleanField(_('show emails'), null=False, blank=True)
     show_replies = models.BooleanField(_('show replies'), null=False, blank=True)
     sort_by_last_reply = models.BooleanField(_('sort by last reply'), null=False, blank=True)
     address_updated = models.DateField(_('address updated'), null=True, blank=True)
     replies_as_emails = models.BooleanField(_('replies as emails'), null=False, blank=True)
+    
+    addresses = models.ManyToManyField(Address)
+    phone_numbers = models.ManyToManyField(PhoneNumber)
+    web_pages = models.ManyToManyField(WebPage)
+    online_services = models.ManyToManyField(OnlineService)
 
     objects = MemberProfileManager()
     
@@ -269,3 +263,51 @@ class WorkRecord(models.Model):
         @returns: True if user is the profile owner, False otherwise
         """
         return (user.id == self.user_id)
+
+
+class OnlineAccount(models.Model):
+  user = models.ForeignKey(User, verbose_name=_('user'))
+  username = models.CharField(blank=True, max_length=100)
+  
+  IM_SERVICES = (
+      ('AIM', _('AOL Instant Messenger')),
+      ('Google Talk', _('Google Talk')),
+      ('ICQ', _('ICQ')),
+      ('MSN', _('Windows Live')),
+      ('Skype', _('Skype')),
+      ('Twitter', _('Twitter')),
+      ('Yahoo', _('Yahoo!')),
+  )
+  service = models.CharField(_('online services'), max_length=50, choices=IM_SERVICES, null=True, blank=True)
+
+class WebPage(models.Model):
+  user = models.ForeignKey(User, verbose_name=_('user'))
+  label = models.CharField(blank=True, max_length=100)
+  url = models.URLField(blank=True, verify_exists=True)
+  
+class Address(models.Model):
+  user = models.ForeignKey(User, verbose_name=_('user'))
+  street = models.CharField(_('street address'), max_length=200, null=True, blank=True)
+  city = models.CharField(_('city'), max_length=100, null=True, blank=True)
+  province = models.CharField(_('province / state (abbreviation)'), max_length=10, null=True, blank=True)
+  postal_code = models.CharField(_('postal / zip code'), max_length=10, null=True, blank=True)
+  country = CountryField(_('country'), null=True, blank=True)
+
+class PhoneNumber(models.Model):
+  PHONE_LABELS = (
+      ('Mobile', _('Mobile')),
+      ('Home', _('Home')),
+      ('Work', _('Work')),
+      ('School', _('School')),
+      ('Work Fax', _('Work Fax')),
+      ('Home Fax', _('Home Fax')),
+      ('Cottage', _('Cottage')),
+      ('Parents', _('Parents')),
+      ('Placement', _('Placement')),
+  )
+
+  user = models.ForeignKey(User, verbose_name=_('user'))
+  
+  # want a combo box for this -- choices/custom
+  label = models.CharField(_('number type'), max_length=50, choices=PHONE_LABELS, null=True, blank=True)
+  number = models.CharField(_('phone number'), max_length=40, null=True, blank=True)

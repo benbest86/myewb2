@@ -7,26 +7,30 @@
 {% block head_title %}{% trans "Login" %}{% endblock %}
 
 {% block body %}
-    <h1>{% trans "Log In" %}</h1>
+    <h1>{% trans "Log In" %} to MyEWB</h1>
     
     {% if user.is_authenticated %}
         <p><span class="warning">{% trans "Note" %}</span>: {% blocktrans %}you are already logged in as {{ user }}.{% endblocktrans %}</p>
-    {% else %}
-        {% ifsetting ACCOUNT_OPEN_SIGNUP %}
-        {% url acct_signup as signup_url %}
-        <p>{% blocktrans %}Don't have an account? <a href="{{ signup_url }}">Sign up</a>!{% endblocktrans %}</p>
-        {% endifsetting %}
     {% endif %}
     
-    <form class="login uniForm" method="POST" action="">
+    <form class="login uniForm" method="post" action="">
         <fieldset class="inlineLabels">
+            {{ form.as_p }}
+
+			<p><label for="id_login"></label>
+				<input type="submit" name="login" id="id_login" value="{% trans "Login" %}" />
+
+		        {% ifsetting ACCOUNT_OPEN_SIGNUP %}
+		        {% url acct_signup as signup_url %}
+		        <input type="button" opclick="window.location='{{ signup_url }}'" value="{% trans "Create account" %}" />
+		        {% endifsetting %}
+
+				<a href="{% url acct_passwd_reset %}">{% trans "Forgot password?" %}</a>
+			</p>
+
             <div class="form_block">
-                <a href="{% url acct_passwd_reset %}">{% trans "Forgot password?" %}</a>
+                
             </div>            
-            {{ form|as_uni_form }}
-            <div class="form_block">
-                <input type="submit" value="{% trans "Log in &raquo;" %}" />
-            </div>
         </fieldset>
     </form>
     
@@ -57,7 +61,6 @@
         </form>
     {% endif %}
     {% endcomment %}
-    <p>{% blocktrans %}If you have any trouble logging in to your account, contact us at <a href="mailto:{{ CONTACT_EMAIL }}">{{ CONTACT_EMAIL }}</a>.{% endblocktrans %}</p>
 {% endblock %}
 
 {% block extra_body %}

@@ -14,7 +14,7 @@ class EmailLoginForm(forms.Form):
     # login_name may be either the username or an associated email address
     login_name = forms.CharField(label = _("Email"), max_length=75, required=True, widget=forms.TextInput())
     password = forms.CharField(label=_("Password"), widget=forms.PasswordInput(render_value=False))
-    remember = forms.BooleanField(label=_("Remember Me"), help_text=_("If checked you will stay logged in for 3 weeks"), required=False)
+    remember = forms.BooleanField(label=_("Remember Me"), help_text=_("Remember me for 3 weeks"), required=False)
     
     user = None
 

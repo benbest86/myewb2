@@ -1,0 +1,27 @@
+{% extends "volunteering/base.html" %}
+
+{% block body %}
+	<a href="{% url placement_new %}">new placement</a>
+
+	{% if current_page.has_previous %}
+	<a href="/placements/page/{{current_page.previous_page_number}}">«</a>
+		{% if current_page.has_next %}|{% endif %}
+	{% endif %}
+
+	{% if current_page.has_next %}
+	<a href="/placements/page/{{current_page.next_page_number}}">»</a>
+	{% endif %}
+
+	{% if placements %}
+	<ul>
+	{% for placement in placements %}
+		<li>
+			<a href="{% url placement_edit placement.id %}">{{ placement.name }}</a>
+		</li>
+	{% endfor %}
+	</ul>
+	{% else %}
+	<p>No placements found.</p>
+	{% endif %}
+{% endblock %}
+
