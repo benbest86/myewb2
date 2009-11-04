@@ -73,4 +73,16 @@
 	{{ block.super }}
 	{% include "tinymce.html" %}
     {% include "comments-js.html" %}
+	
+	{% if not edit %}
+	<link rel="stylesheet" href="{{ STATIC_URL }}css/autocomplete.css" />
+    <script type="text/javascript" src="{{STATIC_URL}}jquery.autocomplete.min.js"></script>
+	<script type="text/javascript">
+    $("#id_tags").autocomplete('{% url tagging_utils_autocomplete "group_topics" "grouptopic" %}', {
+                max: 10,
+                multiple: true,
+                multipleSeparator: ", ",
+            });
+    </script>	
+	{% endif %}	
 {% endblock %}

@@ -41,6 +41,7 @@
                 <a href="javascript:toggle_comment_form({{ response.id }})">{% trans "Reply to This Post" %}</a>
                 <form class="hidden" method="POST" action="{% get_comment_url object response %}" id="comment_form_{{ response.id }}">
                     <table><tr><td><textarea id="id_comment_{{response.id}}" class="tinymce" rows="10" cols="40" name="comment"></textarea></td></tr>
+                    <tr><td>Tags: <input id="id_tags" type="text" class="textinput" name="tags" maxlength="255" /></td></tr></table>
                     <tr><td><input type="submit" value="{% trans "Post Response" %}" /></td></tr></table>
                     <input type="hidden" name="next" value="{{ request.path }}" />
                 </form>
@@ -52,6 +53,9 @@
 {% paginate %}
 
 {% if user.is_authenticated %}
+	{# FIXME: is there any way to use a proper django form, instead of hardcoding? #}
+	{# FIXME: this is also loaded for EVERY comment, which gets really slow if there #}
+	{#        are a lot of comments (esp with the tinymce editor #}
     <form class="uniForm" method="POST" enctype="multipart/form-data" action="{% get_comment_url object %}">
         <fieldset class="inlineLabels">
             <div class="ctrlHolder">
@@ -65,7 +69,8 @@
                     </div>
                 </div>
             </div>
-            <div class="form_block">                
+             Tags: <input id="id_tags" type="text" class="textinput" name="tags" maxlength="255" />
+            <div class="form_block">
                 <input type="hidden" id="attachCount" name="attach_count" value="0">
                 <input type="hidden" name="next" value="{{ request.path }}" />
                 <input type="submit" value="{% trans "Post Response" %}" />

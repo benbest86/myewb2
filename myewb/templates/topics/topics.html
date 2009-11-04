@@ -4,6 +4,7 @@
 {% load uni_form %}
 {% load pagination_tags %}
 {% load group_tags %}
+{% load tagging_tags %}
 
 {% block head_title %}{% spaceless %}
 {% if group %}
@@ -42,7 +43,7 @@
         {% endif %}
     </p>
     
-    {% autopaginate topics %}
+    {% autopaginate topics 10 %}
     
     {% for topic in topics %}
         {% include "topics/topic_item.html" %}
@@ -72,6 +73,19 @@
             </fieldset>
         </form>
     {% endif %}
+
+    {% if not group %}
+		<br/><br/>
+		<h2>Tag Cloud</h2>    
+	    (this probably isn't the best place for the tag cloud, but we'll leave
+	    it here for now as a feature demo.)<br/>
+	    
+    	{% tag_cloud_for_model group_topics.GroupTopic as topic_cloud with steps=6 %}
+    	
+    	{% for tag in topic_cloud %}
+			<a href="{% url tag_results tag %}"><font size={{tag.font_size}}>{{tag}}</font></a><br/>
+		{% endfor %}
+    {% endif %}
     
 {% endblock %}
 
@@ -79,4 +93,14 @@
 	{{ block.super }}
 	{% include "tinymce.html" %}
     {% include "comments-js.html" %}
+	
+	<link rel="stylesheet" href="{{ STATIC_URL }}css/autocomplete.css" />
+    <script type="text/javascript" src="{{STATIC_URL}}jquery.autocomplete.min.js"></script>
+	<script type="text/javascript">
+    $("#id_tags").autocomplete('{% url tagging_utils_autocomplete "group_topics" "grouptopic" %}', {
+                max: 10,
+                multiple: true,
+                multipleSeparator: ", ",
+            });
+    </script>	
 {% endblock %}

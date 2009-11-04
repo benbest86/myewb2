@@ -17,11 +17,12 @@
 
 <h2>{% trans "Discussion Topics" %}{% if group.topics.all.count %} ({{ group.topics.all.count }}){% endif %}</h2>
 
-{% get_topics_for_group group as topic_queryset %}
+{% get_grouptopics_for_group group as topic_queryset %}
 {% with topic_queryset|slice:":5" as topics %}
     {% if topics %}
         {% for topic in topics|slice:":5" %}
             {% show_topic topic %}
+            <br/>
         {% endfor %}
         <p><a href="{% groupurl topic_list group %}">{% trans "more..." %}</a></p>
     {% else %}
