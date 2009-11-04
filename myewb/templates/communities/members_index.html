@@ -48,7 +48,7 @@
          {% for member in members %}
             <tr>
                 <td>
-                    <a href="{% url network_member_detail group.slug, member.user.username %}">{{ member.user.username }}</a>
+                    <a href="{% url community_member_detail group.slug, member.user.username %}">{{ member.user.username }}</a>
                 </td>
                 <td>{{ member.user.get_profile.name }}</td>
                 <td>{% if member.is_admin %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td>
@@ -61,7 +61,7 @@
                         {% if member.is_requested %}{% trans "Member request pending" %}{% endif %}
     			        {% if member.is_invited %}{% trans "Member invitation pending" %}{% endif %}
                     </td>
-                    <td><a href="{% url network_edit_member group.slug, member.user.username %}">{% trans "Edit" %}</a></td>
+                    <td><a href="{% url community_edit_member group.slug, member.user.username %}">{% trans "Edit" %}</a></td>
                 {% endif %}
     		</tr>
          {% endfor %}
