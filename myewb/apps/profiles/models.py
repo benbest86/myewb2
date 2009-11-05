@@ -9,23 +9,38 @@ Last modified: 2009-07-31
 @author: Joshua Gorner, Francis Kung, Ben Best
 """
 
+
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save, pre_save
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.localflavor.ca.forms import CASocialInsuranceNumberField
+from django.contrib.contenttypes import generic
 
 from emailconfirmation.models import EmailAddress
 
 from pinax.apps.profiles.models import Profile, create_profile
+
 from networks import emailforwards
 from networks.models import Network
-from datetime import date
+from datetime import date, datetime
 from siteutils.countries import CountryField
+from siteutils.models import Address, PhoneNumber
+
+class Passport(models.Model):
+  profile = models.ForeignKey(Profile, related_name="passports", blank=True)
+
+  country = CountryField()
+  passport_number = models.CharField(blank=True, max_length=100)
+  name_on_passport = models.CharField(_('name on passport'), blank=True, max_length=200)
+  issued_date = models.DateField(default=datetime.today)
+  expiry_date = models.DateField(default=datetime.today)
+  issued_city = models.CharField(blank=True, max_length=100)
 
 class OnlineService(models.Model):
-  user = models.ForeignKey(User, verbose_name=_('user'))
+  profile = models.ForeignKey(Profile, related_name="online_services", blank=True)
+
   username = models.CharField(blank=True, max_length=100)
   
   IM_SERVICES = (
@@ -40,36 +55,11 @@ class OnlineService(models.Model):
   service = models.CharField(_('online services'), max_length=50, choices=IM_SERVICES, null=True, blank=True)
 
 class WebPage(models.Model):
-  user = models.ForeignKey(User, verbose_name=_('user'))
+  profile = models.ForeignKey(Profile, related_name="web_pages", blank=True)
   label = models.CharField(blank=True, max_length=100)
   url = models.URLField(blank=True, verify_exists=True)
   
-class Address(models.Model):
-  user = models.ForeignKey(User, verbose_name=_('user'))
-  street = models.CharField(_('street address'), max_length=200, null=True, blank=True)
-  city = models.CharField(_('city'), max_length=100, null=True, blank=True)
-  province = models.CharField(_('province / state (abbreviation)'), max_length=10, null=True, blank=True)
-  postal_code = models.CharField(_('postal / zip code'), max_length=10, null=True, blank=True)
-  country = CountryField(_('country'), null=True, blank=True)
 
-class PhoneNumber(models.Model):
-  PHONE_LABELS = (
-      ('Mobile', _('Mobile')),
-      ('Home', _('Home')),
-      ('Work', _('Work')),
-      ('School', _('School')),
-      ('Work Fax', _('Work Fax')),
-      ('Home Fax', _('Home Fax')),
-      ('Cottage', _('Cottage')),
-      ('Parents', _('Parents')),
-      ('Placement', _('Placement')),
-  )
-
-  user = models.ForeignKey(User, verbose_name=_('user'))
-  
-  # want a combo box for this -- choices/custom
-  label = models.CharField(_('number type'), max_length=50, choices=PHONE_LABELS, null=True, blank=True)
-  number = models.CharField(_('phone number'), max_length=40, null=True, blank=True)
 
 class MemberProfileManager(models.Manager):
     def get_from_view_args(self, *args, **kwargs):
@@ -114,12 +104,10 @@ class MemberProfile(Profile):
     sort_by_last_reply = models.BooleanField(_('sort by last reply'), null=False, blank=True)
     address_updated = models.DateField(_('address updated'), null=True, blank=True)
     replies_as_emails = models.BooleanField(_('replies as emails'), null=False, blank=True)
-    
-    addresses = models.ManyToManyField(Address)
-    phone_numbers = models.ManyToManyField(PhoneNumber)
-    web_pages = models.ManyToManyField(WebPage)
-    online_services = models.ManyToManyField(OnlineService)
 
+    addresses = generic.GenericRelation(Address)
+    phone_numbers = generic.GenericRelation(PhoneNumber)
+    
     objects = MemberProfileManager()
     
     def in_canada(self):
@@ -150,8 +138,26 @@ class MemberProfile(Profile):
             self.name = self.last_name
         else:
             self.name = None
-            
+        
         return models.Model.save(self, force_insert, force_update)
+
+    def location(self):
+      addresses = self.addresses.all()
+      if (len(addresses) > 0):
+        home_addresses = addresses.filter(label='home')
+        if (len(home_addresses) > 0):
+          addresses = home_addresses
+          
+        current_address = addresses[0]
+        
+        location = current_address.city
+        if current_address.province:
+            location += ", %s" % (current_address.province)
+      
+      else:
+        location = ""
+      
+      return location
             
     def student(self):
         """Determine whether the instant user is a student based on the user's student records"""

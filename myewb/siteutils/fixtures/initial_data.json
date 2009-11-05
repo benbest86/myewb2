@@ -1,0 +1,122 @@
+[
+  {
+    "pk": 1, 
+    "model": "siteutils.serviceprovider", 
+    "fields": {
+      "first_name": "", 
+      "last_name": "", 
+      "type": "partner_organization", 
+      "company_name": "Concern Universal"
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "siteutils.serviceprovider", 
+    "fields": {
+      "first_name": "", 
+      "last_name": "", 
+      "type": "partner_organization", 
+      "company_name": "DCD - Central Gonja"
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "siteutils.serviceprovider", 
+    "fields": {
+      "first_name": "", 
+      "last_name": "", 
+      "type": "partner_organization", 
+      "company_name": "DCD - Saboba"
+    }
+  }, 
+  {
+    "pk": 4, 
+    "model": "siteutils.serviceprovider", 
+    "fields": {
+      "first_name": "", 
+      "last_name": "", 
+      "type": "partner_organization", 
+      "company_name": "FNGN"
+    }
+  }, 
+  {
+    "pk": 5, 
+    "model": "siteutils.serviceprovider", 
+    "fields": {
+      "first_name": "", 
+      "last_name": "", 
+      "type": "partner_organization", 
+      "company_name": "Forest Fruits"
+    }
+  }, 
+  {
+    "pk": 6, 
+    "model": "siteutils.serviceprovider", 
+    "fields": {
+      "first_name": "", 
+      "last_name": "", 
+      "type": "partner_organization", 
+      "company_name": "MoFA - NR"
+    }
+  }, 
+  {
+    "pk": 7, 
+    "model": "siteutils.serviceprovider", 
+    "fields": {
+      "first_name": "", 
+      "last_name": "", 
+      "type": "partner_organization", 
+      "company_name": "MoFA - UE"
+    }
+  }, 
+  {
+    "pk": 8, 
+    "model": "siteutils.serviceprovider", 
+    "fields": {
+      "first_name": "", 
+      "last_name": "", 
+      "type": "partner_organization", 
+      "company_name": "MoFA - UER"
+    }
+  }, 
+  {
+    "pk": 9, 
+    "model": "siteutils.serviceprovider", 
+    "fields": {
+      "first_name": "", 
+      "last_name": "", 
+      "type": "partner_organization", 
+      "company_name": "Mzuzu Coffee"
+    }
+  }, 
+  {
+    "pk": 10, 
+    "model": "siteutils.serviceprovider", 
+    "fields": {
+      "first_name": "", 
+      "last_name": "", 
+      "type": "partner_organization", 
+      "company_name": "PROFIT"
+    }
+  }, 
+  {
+    "pk": 11, 
+    "model": "siteutils.serviceprovider", 
+    "fields": {
+      "first_name": "", 
+      "last_name": "", 
+      "type": "partner_organization", 
+      "company_name": "UGCPA"
+    }
+  }, 
+  {
+    "pk": 12, 
+    "model": "siteutils.serviceprovider", 
+    "fields": {
+      "first_name": "", 
+      "last_name": "", 
+      "type": "partner_organization", 
+      "company_name": "WaterAid"
+    }
+  }
+]

@@ -1,0 +1,51 @@
+[
+  {
+    "pk": 1, 
+    "model": "volunteering.sector", 
+    "fields": {
+      "name": "AEPHA"
+    }
+  }, 
+  {
+    "pk": 2, 
+    "model": "volunteering.sector", 
+    "fields": {
+      "name": "AVC"
+    }
+  }, 
+  {
+    "pk": 3, 
+    "model": "volunteering.sector", 
+    "fields": {
+      "name": "ERA"
+    }
+  }, 
+  {
+    "pk": 4, 
+    "model": "volunteering.sector", 
+    "fields": {
+      "name": "G&RI"
+    }
+  }, 
+  {
+    "pk": 5, 
+    "model": "volunteering.sector", 
+    "fields": {
+      "name": "MoFA"
+    }
+  }, 
+  {
+    "pk": 6, 
+    "model": "volunteering.sector", 
+    "fields": {
+      "name": "Sector Team"
+    }
+  }, 
+  {
+    "pk": 7, 
+    "model": "volunteering.sector", 
+    "fields": {
+      "name": "Wat/San"
+    }
+  } 
+]
