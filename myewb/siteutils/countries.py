@@ -255,6 +255,12 @@ EWB_MEMBERS = (
   ('US', _('United States of America')),
 ) + COUNTRIES
 
+COUNTRY_MAP = {}
+REVERSE_COUNTRY_MAP = {}
+for code, name in COUNTRIES:
+  COUNTRY_MAP[code] = name
+  REVERSE_COUNTRY_MAP[name] = code
+
 class CountryField(models.CharField):
     def __init__(self, *args, **kwargs):
         kwargs.setdefault('max_length', 2)

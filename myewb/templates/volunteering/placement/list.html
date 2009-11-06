@@ -13,13 +13,39 @@
 	{% endif %}
 
 	{% if placements %}
+	
 	<ul>
-	{% for placement in placements %}
-		<li>
-			<a href="{% url placement_edit placement.id %}">{{ placement.name }}</a>
-		</li>
-	{% endfor %}
+	<li><a href="all">All placements</a></li>
+	<li><a href="active">Active placements</a></li>
+	<li><a href="past">Past placements</a></li>
 	</ul>
+	
+	<table>
+	<tr>
+	  <th>Country</th>
+	  <th>Volunteer</th>
+	  <th>Location</th>
+	  <th>Arrival</th>
+	  <th>Departure</th>
+	</tr>
+	{% for placement in placements %}
+		<tr>
+		  <td>{{ placement.country_name }}</td>
+			<td><a href="{% url placement_edit placement.id %}">{{ placement.profile.name }}</a></td>
+		  <td>{{ placement.town }}</td>
+		  <td>
+		    {% if placement.start_date %}
+		      {{ placement.start_date }}
+		    {% endif %}
+		  </td>
+		  <td>
+		    {% if placement.end_date %}
+		      {{ placement.end_date }}
+		    {% endif %}
+		  </td>
+		</tr>
+	{% endfor %}
+	</table>
 	{% else %}
 	<p>No placements found.</p>
 	{% endif %}

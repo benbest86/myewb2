@@ -1,20 +1,28 @@
+from pinax.apps.profiles.models import Profile
 from django.shortcuts import render_to_response, get_object_or_404
 from django.core.paginator import Paginator, EmptyPage
 from volunteering.models import Placement
 from volunteering.forms import PlacementForm
 from django.template import RequestContext
+from django.db.models import Q
+import datetime
 
-def list(request, page=1):
+
+def list(request, page=1, type=None):
+
+  if type == "past":
+    placements = Placement.objects.all().filter(end_date__lt=datetime.date.today())
+  elif type == "active":
+    placements = Placement.objects.all().filter(Q(start_date__isnull=False) & Q(start_date__lte=datetime.date.today()) & (Q(end_date__gte=datetime.date.today()) | Q(end_date__isnull=True)))
+  else:
+    placements = Placement.objects.select_related().all()
+    
   page = int(page)
-  placements = Placement.objects.all()
   paginator = Paginator(placements, 10)
   try:
     current_page = paginator.page(page)
   except EmptyPage:
     current_page = paginator.page(1)
-    
-  has_previous = current_page.has_previous()
-  has_next = current_page.has_next()
   
   return render_to_response("volunteering/placement/list.html",
     {"placements": placements,

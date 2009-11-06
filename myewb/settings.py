@@ -99,6 +99,8 @@ MIDDLEWARE_CLASSES = (
     'pinax.middleware.security.HideSensistiveFieldsMiddleware',
     'django.middleware.transaction.TransactionMiddleware',
     'siteutils.online_middleware.OnlineUsers',
+    # 'djangologging.middleware.LoggingMiddleware',
+    'siteutils.helpers.SQLLogToConsoleMiddleware',
 )
 
 ROOT_URLCONF = 'urls'
@@ -211,6 +213,7 @@ INSTALLED_APPS = (
     # MyEWB apps
     'volunteering',
     'siteutils',
+
 )
 
 ABSOLUTE_URL_OVERRIDES = {
@@ -296,3 +299,8 @@ try:
     from local_settings import *
 except ImportError:
     pass
+
+# debug login
+LOGGING_OUTPUT_ENABLED = True
+LOGGING_LOG_SQL = True
+LOGGING_OUTPUT_ENABLED = False

@@ -228,3 +228,12 @@ form.login .inlineLabels label {
 form.login label[for="id_remember"] {
     visibility: hidden;
 }
+
+th {
+    background: black;
+    color: white;
+}
+
+tr:nth-child(odd) {
+    background: #eee;
+}

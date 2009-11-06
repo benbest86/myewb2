@@ -1,9 +1,21 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth.models import User
-from siteutils.countries import CountryField
+from pinax.apps.profiles.models import Profile
+from siteutils.countries import CountryField, COUNTRY_MAP
 from siteutils.models import ServiceProvider
 from datetime import datetime
+
+class Session(models.Model):
+  name = models.CharField(max_length=200)
+  en_instructions = models.TextField()
+  fr_instructions = models.TextField()
+  close_email = models.TextField()
+  rejection_email = models.TextField()
+  completed_application = models.TextField()
+  open_date = models.DateField()
+  close_date = models.DateField()
+  due_date = models.DateField()
+  email_sent = models.BooleanField()
 
 class Application(models.Model):
   en_writing = models.PositiveSmallIntegerField(_("English writing (1-10)"))
@@ -20,21 +32,9 @@ class Application(models.Model):
   references = models.TextField()
   gpa = models.PositiveIntegerField()
   
-  user = models.ForeignKey(User)
-  session = models.ForeignKey("Session")
+  profile = models.ForeignKey(Profile)
+  session = models.ForeignKey(Session)
 
-class Session(models.Model):
-  name = models.CharField(max_length=200)
-  en_instructions = models.TextField()
-  fr_instructions = models.TextField()
-  close_email = models.TextField()
-  rejection_email = models.TextField()
-  completed_application = models.TextField()
-  open_date = models.DateField()
-  close_date = models.DateField()
-  due_date = models.DateField()
-  email_sent = models.BooleanField()
-  
 class Question(models.Model):
   question = models.TextField()
   question_order = models.PositiveSmallIntegerField()
@@ -53,7 +53,6 @@ class Sector(models.Model):
 
 
 class Placement(models.Model):
-  name = models.CharField(max_length=200)
   description = models.TextField()
   longterm = models.BooleanField()
   deleted = models.BooleanField(default=False)
@@ -63,22 +62,28 @@ class Placement(models.Model):
   town = models.CharField(max_length=100)
   flight_request_made = models.BooleanField(default=True)
 
-  sector = models.ForeignKey(Sector)
-  coach = models.ForeignKey(User, related_name=_('coach'))
-  user = models.ForeignKey(User, null=True, related_name=_('user'))
+  sector = models.ForeignKey(Sector, null=True)
+  coach = models.ForeignKey(Profile, related_name='coach', null=True)
+  profile = models.ForeignKey(Profile, related_name='placement')
+  
+  def country_name(self):
+    if self.country and COUNTRY_MAP.has_key(self.country):
+      return COUNTRY_MAP[self.country]
+
+    return None
   
   def __unicode__(self):
-    return self.name
+    return "%s: %s in %s, %s (%s--%s)" % (self.user.get_profile().name, self.sector, self.town, self.country, self.start_date, self.end_date)
     
   @models.permalink
   def get_absolute_url(self):
     return ("volunteering.views.placement_detail", [str(self.id)]) 
 
 class Stipend(models.Model):
-  user = models.ForeignKey(User, verbose_name=_('user'))
+  profile = models.ForeignKey(Profile, verbose_name=_('profile'), related_name="stipend")
   placement = models.ForeignKey(Placement)
 
-  responsible_person = models.ForeignKey(User, related_name=_('responsible_person'))
+  responsible_person = models.ForeignKey(Profile, related_name='responsible_person')
   daily_rate = models.DecimalField(max_digits=10, decimal_places=2)
   adjustment = models.DecimalField(max_digits=10, decimal_places=2)
   repatriation_amount = models.DecimalField(max_digits=10, decimal_places=2)
@@ -128,7 +133,7 @@ class Evaluation(models.Model):
 
 
 class InsuranceInstance(models.Model):
-  user = models.ForeignKey(User, verbose_name=_('user'))
+  profile = models.ForeignKey(Profile, related_name='insurance_instance')
   placement = models.ForeignKey(Placement)
 
   insurance_company = models.ForeignKey(ServiceProvider)
@@ -154,7 +159,7 @@ class TravelSegment(models.Model):
       ('end-placement', _('End Placement')),
   )
 
-  user = models.ForeignKey(User, verbose_name=_('user'))
+  profile = models.ForeignKey(Profile, related_name='travel_segment')
   placement = models.ForeignKey(Placement)
 
   start_date_time = models.DateTimeField(blank=True)
