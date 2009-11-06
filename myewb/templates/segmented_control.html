@@ -1,0 +1,9 @@
+<ul class="segmented">
+{% for page_info in page_list %}
+    {% ifequal page_info.url current_page %}
+        <li class="current">{{ page_info.label }}</li>
+    {% else %}
+        <li><a href="{{ base_url }}{{ page_info.url }}">{{ page_info.label }}</a></li>
+    {% endifequal %}
+{% endfor %}
+</ul>

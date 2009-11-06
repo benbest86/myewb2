@@ -24,7 +24,8 @@
 	{% endif %}
 	</ul>
 
-	{{ segmented_control|safe }}
+  {% load segmented_control %}
+  {% segmented_control base_url type page_list %}
 	
 	<div class="clear"></div>
 	
