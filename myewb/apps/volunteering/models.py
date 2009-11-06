@@ -73,7 +73,7 @@ class Placement(models.Model):
     return None
   
   def __unicode__(self):
-    return "%s: %s in %s, %s (%s--%s)" % (self.user.get_profile().name, self.sector, self.town, self.country, self.start_date, self.end_date)
+    return "%s: %s in %s, %s (%s--%s)" % (self.profile.name, self.sector, self.town, self.country, self.start_date, self.end_date)
     
   @models.permalink
   def get_absolute_url(self):

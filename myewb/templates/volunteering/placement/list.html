@@ -1,24 +1,32 @@
 {% extends "volunteering/base.html" %}
 
 {% block body %}
-	<a href="{% url placement_new %}">new placement</a>
 
-	{% if current_page.has_previous %}
-	<a href="/placements/page/{{current_page.previous_page_number}}">«</a>
-		{% if current_page.has_next %}|{% endif %}
-	{% endif %}
 
-	{% if current_page.has_next %}
-	<a href="/placements/page/{{current_page.next_page_number}}">»</a>
-	{% endif %}
 
 	{% if placements %}
 	
-	<ul>
-	<li><a href="all">All placements</a></li>
-	<li><a href="active">Active placements</a></li>
-	<li><a href="past">Past placements</a></li>
+	<ul class="segmented">
+	<li><a href="{% url placement_new %}">new placement</a></li>
+  </ul>
+  
+	<ul class="segmented">
+	{% if placements.has_previous %}
+	<li><a href="{% url placement_list type %}page/{{placements.previous_page_number}}">«</a></li>
+	{% else %}
+	<li>«</li>
+	{% endif %}
+	<li>{{ placements.number }}</li>
+	{% if placements.has_next %}
+	<li><a href="{% url placement_list type %}page/{{placements.next_page_number}}">»</a></li>
+	{% else %}
+	<li>»</li>
+	{% endif %}
 	</ul>
+
+	{{ segmented_control|safe }}
+	
+	<div class="clear"></div>
 	
 	<table>
 	<tr>
@@ -28,19 +36,19 @@
 	  <th>Arrival</th>
 	  <th>Departure</th>
 	</tr>
-	{% for placement in placements %}
+	{% for placement in placements.object_list %}
 		<tr>
 		  <td>{{ placement.country_name }}</td>
-			<td><a href="{% url placement_edit placement.id %}">{{ placement.profile.name }}</a></td>
-		  <td>{{ placement.town }}</td>
-		  <td>
+			<td><a href="{% url profile_detail placement.profile %}">{{ placement.profile.name }}</a></td>
+		  <td><a href="{% url placement_edit placement.id %}">{{ placement.town }}</a></td>
+		  <td class='right'>
 		    {% if placement.start_date %}
-		      {{ placement.start_date }}
+		      {{ placement.start_date|date:"d M Y" }}
 		    {% endif %}
 		  </td>
-		  <td>
+		  <td class='right'>
 		    {% if placement.end_date %}
-		      {{ placement.end_date }}
+		      {{ placement.end_date|date:"d M Y" }}
 		    {% endif %}
 		  </td>
 		</tr>

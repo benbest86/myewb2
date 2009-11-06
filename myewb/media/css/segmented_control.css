@@ -1,0 +1,52 @@
+ul.segmented {
+  margin: 1em;
+  height: 2.7em;
+  float: left;
+  padding-left: 0;
+}
+
+ul.segmented li {
+  display: inline;
+  background: #eee;
+  padding: 0.5em;
+  margin: 0;
+  border: 0.1em solid #ccc;
+  border-left: none;
+  float: left;
+}
+
+ul.segmented li a:visited {
+  color: rgb(0, 136, 204);
+}
+
+ul.segmented li.current a,
+ul.segmented li.current a:visited {
+  color: #000;
+}
+
+ul.segmented li.label {
+  font-weight: bold;
+  background-color: inherit;
+  border: inherit;
+}
+
+ul.segmented li:first-child {
+  border-left: 1px solid #ccc;
+  -webkit-border-top-left-radius: 0.8em;
+  -webkit-border-bottom-left-radius: 0.8em;
+
+  -moz-border-radius-topleft: 0.8em;
+  -moz-border-radius-bottomleft: 0.8em;
+}
+
+ul.segmented li.current {
+  font-weight: bold;
+  background: #aaa;
+}
+
+ul.segmented li:last-child {
+  -webkit-border-top-right-radius: 0.8em;
+  -webkit-border-bottom-right-radius: 0.8em;
+  -moz-border-radius-topright: 0.8em;
+  -moz-border-radius-bottomright: 0.8em;
+}

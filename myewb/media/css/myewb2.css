@@ -234,6 +234,10 @@ th {
     color: white;
 }
 
+td.right {
+    text-align: right;
+}
+
 tr:nth-child(odd) {
     background: #eee;
 }

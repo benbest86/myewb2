@@ -78,7 +78,7 @@ class Address(models.Model):
   # FIXME -- have a smarter fallback name for the 
   def __unicode__(self):
     if self.content_type == "member profile":
-      owner = self.content_object.name or self.content_object.user.username
+      owner = self.content_object.name
     elif self.content_type == "service provider":
       owner = self.content_object
     else:

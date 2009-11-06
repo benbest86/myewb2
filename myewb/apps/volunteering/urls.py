@@ -16,7 +16,8 @@ urlpatterns += patterns('volunteering.views.placement',
   url(r'^placements/(?P<id>\d+)/edit$', "edit", name="placement_edit"),
   url(r'^placements/(?P<id>\d+)/update$', "update"),
   url(r'^placements/(?P<id>\d+)/delete$', "delete", name="placement_delete"),
-  url(r'^placements/(?P<type>\w+)?$', "list", name="placement_list"),
+  url(r'^placements/(?P<type>\w+)/$', "list", name="placement_list"),
+  url(r'^placements/(?P<type>\w+)/page/(?P<page>\d+)$', "list", name="placement_list"),
 )
 
 urlpatterns += patterns('volunteering.views.session',
