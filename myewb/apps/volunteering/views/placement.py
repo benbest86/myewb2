@@ -36,17 +36,16 @@ def list(request, page=1, type="all"):
   end = page * ITEMS_PER_PAGE
   
   if type == "past":
-    placement_list = Placement.objects.select_related().all().filter(end_date__lt=datetime.date.today())
+    placement_list = Placement.objects.select_related().filter(end_date__lt=datetime.date.today())
   elif type == "active":
-    placement_list = Placement.objects.select_related().all().filter(Q(start_date__isnull=False) & Q(start_date__lte=datetime.date.today()) & (Q(end_date__gte=datetime.date.today()) | Q(end_date__isnull=True)))
+    placement_list = Placement.objects.select_related().filter(Q(start_date__isnull=False) & Q(start_date__lte=datetime.date.today()) & (Q(end_date__gte=datetime.date.today()) | Q(end_date__isnull=True)))
   else:
-    placement_list = Placement.objects.select_related().all()
+    placement_list = Placement.objects.select_related()
   
   base_url = reverse('placement_list')
   page_list = [{"label":"All placements", "url":"all"},
                 {"label":"Active placements", "url":"active"},
                 {"label":"Past placements", "url":"past"}]
-  
   
   paginator = Paginator(placement_list, ITEMS_PER_PAGE)
   try:

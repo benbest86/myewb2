@@ -57,7 +57,7 @@ class PhoneNumber(models.Model):
   number = models.CharField(_('phone number'), max_length=40, null=True, blank=True)
 
   def __unicode__(self):
-    return "%s: %s" % (label, number)
+    return "%s: %s" % (self.label, self.number)
 
 
 class Address(models.Model):

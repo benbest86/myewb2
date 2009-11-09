@@ -17,6 +17,7 @@ from django.contrib.auth.models import User
 from pinax.apps.profiles.models import Profile
 from volunteering.models import Placement
 from volunteering.models import Sector
+from volunteering.models import Stipend
 
 from siteutils.countries import COUNTRIES, REVERSE_COUNTRY_MAP
 import time
@@ -31,8 +32,20 @@ def cleardata():
   for p in Placement.objects.all():
     p.delete()
 
+  for p in Stipend.objects.all():
+    p.delete()
+
 def loaddata():
+  cleardata()
+  
+  data = open("/Users/paul/ov-stipends.txt").read().split("\n")[2:-1]
+  stipends = {}
+  for s in data:
+    line = s.split("\t")
+    stipends[line[0]+line[1]] = line
+
   data = open("/Users/paul/ov-sheet.txt").read().split("\n")[:-1]
+
 
   for d in data:
       # (country, last, first, town, start, end, phone, partner, sector_team, return_flight, blog_url, chapter_name)
@@ -43,6 +56,11 @@ def loaddata():
       town = line[3]
       start = line[4]
       end = line[5]
+      
+      if (len(line) > 6):
+        phone_number = line[6]
+      else:
+        phone_number = None
     
       if (len(line) > 7):
         partner = line[7]
@@ -65,7 +83,7 @@ def loaddata():
         end_date = None
     
       if len(sector_team):
-        sector = Sector.objects.get(name=sector_team)
+        sector = Sector.objects.get(abbreviation=sector_team)
       else:
         sector = None
 
@@ -84,5 +102,39 @@ def loaddata():
         p.first_name=first
         p.save()
     
+        if phone_number:
+          p.phone_numbers.create(label=town, number=phone_number)
 
-        Placement.objects.create(profile=p, start_date=start_date, end_date=end_date, country=country, town=town, sector=sector)
+        placement = Placement.objects.create(profile=p, start_date=start_date, end_date=end_date, country=country, town=town, sector=sector)
+        
+        ov_name = last+first
+        if stipends.has_key(ov_name):
+          stipend_data = stipends[ov_name]
+          
+          if (len(stipend_data) > 5 and len(stipend_data[5])):
+            daily_rate = stipend_data[5]
+          else:
+            daily_rate = None
+            
+          if (len(stipend_data) > 7 and len(stipend_data[7])):
+            repatriation_amount = stipend_data[7]
+          else:
+            repatriation_amount = None
+            
+          if (len(stipend_data) > 8 and len(stipend_data[8])):
+            adjustment = stipend_data[8]
+          else:
+            adjustment = None
+
+          if (len(stipend_data) > 11):
+            notes = stipend_data[11]
+          else:
+            notes = None
+
+          if (len(stipend_data) > 12):
+            repatriation_notes = stipend_data[12]
+          else:
+            repatriation_notes = None
+
+          if daily_rate:
+            stipend = placement.stipend.create(profile=p, daily_rate=daily_rate, adjustment=adjustment, repatriation_amount=repatriation_amount, notes=notes, repatriation_notes=repatriation_notes)

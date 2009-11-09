@@ -1,4 +1,5 @@
 {% extends "volunteering/base.html" %}
+{% load truncate %}
 
 {% block body %}
 
@@ -36,6 +37,14 @@
 	  <th>Location</th>
 	  <th>Arrival</th>
 	  <th>Departure</th>
+	  <th>Phone number</th>
+	  <th>Daily Rate</th>
+	  <th>Days in Quarter</th>
+	  <th>Repatriation</th>
+	  <th>Adjustments</th>
+	  <th>Payment</th>
+	  <th>Notes</th>
+	  <th>Repatriation Notes</th>
 	</tr>
 	{% for placement in placements.object_list %}
 		<tr>
@@ -51,6 +60,33 @@
 		    {% if placement.end_date %}
 		      {{ placement.end_date|date:"d M Y" }}
 		    {% endif %}
+		  </td>
+		  <td>
+		    {% for pn in placement.local_phone_numbers %}
+		    {{ pn.number }}
+		    {% if not forloop.last %}<br/>{% endif %}
+		    {% endfor %}
+		  </td>
+		  <td>
+			{{ placement.stipend.get.daily_rate }}
+		  </td>
+		  <td>
+			90
+		  </td>
+		  <td>
+			{{ placement.stipend.get.repatriation }}
+		  </td>
+		  <td>
+			{{ placement.stipend.get.adjustment }}
+		  </td>
+		  <td>
+			{{ placement.stipend.get.payment }}
+		  </td>
+		  <td>
+			{{ placement.stipend.get.notes|truncate_tail:30 }}
+		  </td>
+		  <td>
+			{{ placement.stipend.get.repatriation_notes|truncate_tail:30 }}
 		  </td>
 		</tr>
 	{% endfor %}

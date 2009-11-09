@@ -72,7 +72,11 @@ from django.conf import settings
 class SQLLogToConsoleMiddleware:
     def process_response(self, request, response): 
         if settings.DEBUG and connection.queries:
-            time = sum([float(q['time']) for q in connection.queries])        
-            t = Template("{% load sql_keyword_filters %}{{count}} quer{{count|pluralize:\"y,ies\"}} in {{time}} seconds:\n\n{% for sql in sqllog %}[{{forloop.counter}}] {{sql.time}}s: {{sql.sql|safe|colorsql}}{% if not forloop.last %}\n\n{% endif %}{% endfor %}")
-            print t.render(Context({'sqllog':connection.queries,'count':len(connection.queries),'time':time}))                
+            time = sum([float(q['time']) for q in connection.queries])
+            clean_queries = []
+            for q in connection.queries:
+              if q['sql'].find("django_session") == -1:
+                clean_queries.append(q)
+            t = Template("{% load sql_keyword_filters %}{% if count %}{{count}} quer{{count|pluralize:\"y,ies\"}} in {{time}} seconds:\n\n{% for sql in sqllog %}[{{forloop.counter}}] {{sql.time}}s: {{sql.sql|safe|colorsql}}{% if not forloop.last %}\n\n{% endif %}{% endfor %}{% endif %}")
+            print t.render(Context({'sqllog':clean_queries,'count':len(clean_queries),'time':time}))                
         return response

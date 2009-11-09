@@ -3,6 +3,7 @@ ul.segmented {
   height: 2.7em;
   float: left;
   padding-left: 0;
+  margin-left: 0;
 }
 
 ul.segmented li {

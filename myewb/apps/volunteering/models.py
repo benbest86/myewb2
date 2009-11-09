@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from pinax.apps.profiles.models import Profile
+from profiles.models import MemberProfile
 from siteutils.countries import CountryField, COUNTRY_MAP
 from siteutils.models import ServiceProvider
 from datetime import datetime
@@ -32,7 +33,7 @@ class Application(models.Model):
   references = models.TextField()
   gpa = models.PositiveIntegerField()
   
-  profile = models.ForeignKey(Profile)
+  profile = models.ForeignKey(MemberProfile)
   session = models.ForeignKey(Session)
 
 class Question(models.Model):
@@ -47,6 +48,7 @@ class Answer(models.Model):
 
 class Sector(models.Model):
   name = models.CharField(blank=True, max_length=100)
+  abbreviation = models.CharField(blank=True, max_length=30)
 
   def __unicode__(self):
     return self.name
@@ -63,15 +65,21 @@ class Placement(models.Model):
   flight_request_made = models.BooleanField(default=True)
 
   sector = models.ForeignKey(Sector, null=True)
-  coach = models.ForeignKey(Profile, related_name='coach', null=True)
-  profile = models.ForeignKey(Profile, related_name='placement')
+  coach = models.ForeignKey(MemberProfile, related_name='coach', null=True)
+  profile = models.ForeignKey(MemberProfile, related_name='placement')
   
   def country_name(self):
     if self.country and COUNTRY_MAP.has_key(self.country):
       return COUNTRY_MAP[self.country]
 
     return None
-  
+
+  def local_phone_numbers(self):
+    if self.town:
+      return self.profile.phone_numbers.filter(label=self.town)
+    else:
+      return None
+      
   def __unicode__(self):
     return "%s: %s in %s, %s (%s--%s)" % (self.profile.name, self.sector, self.town, self.country, self.start_date, self.end_date)
     
@@ -80,17 +88,23 @@ class Placement(models.Model):
     return ("volunteering.views.placement_detail", [str(self.id)]) 
 
 class Stipend(models.Model):
-  profile = models.ForeignKey(Profile, verbose_name=_('profile'), related_name="stipend")
-  placement = models.ForeignKey(Placement)
+  profile = models.ForeignKey(MemberProfile, verbose_name=_('profile'), related_name="stipend")
+  placement = models.ForeignKey(Placement, related_name="stipend")
 
-  responsible_person = models.ForeignKey(Profile, related_name='responsible_person')
-  daily_rate = models.DecimalField(max_digits=10, decimal_places=2)
-  adjustment = models.DecimalField(max_digits=10, decimal_places=2)
-  repatriation_amount = models.DecimalField(max_digits=10, decimal_places=2)
+  responsible_person = models.ForeignKey(MemberProfile, related_name='responsible_person', null=True)
+  daily_rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
+  adjustment = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+  repatriation_amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
   
-  notes = models.TextField(blank=True)
-  repatriation_notes = models.TextField(blank=True)
+  notes = models.TextField(blank=True, null=True)
+  repatriation_notes = models.TextField(blank=True, null=True)
   
+  def __unicode__(self):
+    return "%s: %s, %s: %s" % (self.profile.name, self.placement.town, self.placement.country, self. daily_rate)
+  
+  def payment(self):
+    print "payment: %s" % (self.daily_rate)
+    return (float(self.daily_rate) * 90 + float(self.adjustment))
 
 class EvaluationCriterion(models.Model):
   criteria = models.TextField()
@@ -133,7 +147,7 @@ class Evaluation(models.Model):
 
 
 class InsuranceInstance(models.Model):
-  profile = models.ForeignKey(Profile, related_name='insurance_instance')
+  profile = models.ForeignKey(MemberProfile, related_name='insurance_instance')
   placement = models.ForeignKey(Placement)
 
   insurance_company = models.ForeignKey(ServiceProvider)
@@ -159,7 +173,7 @@ class TravelSegment(models.Model):
       ('end-placement', _('End Placement')),
   )
 
-  profile = models.ForeignKey(Profile, related_name='travel_segment')
+  profile = models.ForeignKey(MemberProfile, related_name='travel_segment')
   placement = models.ForeignKey(Placement)
 
   start_date_time = models.DateTimeField(blank=True)
