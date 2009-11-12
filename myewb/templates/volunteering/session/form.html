@@ -1,5 +1,14 @@
 {% extends "volunteering/base.html" %}
 
+{% block head_title %}
+Volunteering » Sessions »
+{% if session %}
+	Edit » {{ session.name }}
+{% else %}
+	Create
+{% endif %}
+{% endblock %}
+
 {% block body %}
 <h2>Create a new session</h2>
 <form action="{{ action }}" method="post">

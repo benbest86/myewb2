@@ -6,8 +6,5 @@ from django.template import RequestContext
 def ov_info(request):
   pass
 
-def ov_assignment(request):
-  pass
-  
 def volunteering_index(request):
   pass

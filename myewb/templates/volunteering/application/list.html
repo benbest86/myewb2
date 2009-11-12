@@ -1,0 +1,35 @@
+{% extends "volunteering/base.html" %}
+{% load sorting_tags pagination_tags %}
+{% load truncate helpers %}
+{% autosort application_list %}
+
+{% block head_title %}
+Volunteering » Applications
+{% endblock %}
+
+{% block body %}
+
+	{% new_button "application" %}
+
+	{% if application_list %}
+		<div class="clear"></div>
+		<table>
+		    <tr>
+		       <th>{% anchor profile.name Name %}</th>
+		       <th>{% anchor session.name Session %}</th>
+		       <th>{% anchor gpa GPA %}</th>
+		    </tr>
+		{% for application in application_list %}
+		<tr>
+			<td><a href="{% url application_detail application.id %}">{{ application.profile.name }}</a></td>
+			<td>{{ application.session.name }}</td>
+			<td>{{ application.gpa|floatformat:2 }}</td>
+		</tr>
+		{% endfor %}
+		</table>
+	{% else %}
+		<p>No applications found.</p>
+	{% endif %}
+
+{% endblock %}
+

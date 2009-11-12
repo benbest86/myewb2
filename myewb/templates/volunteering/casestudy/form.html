@@ -1,0 +1,25 @@
+{% extends "volunteering/base.html" %}
+
+{% block head_title %}
+Volunteering » Case Studies »
+{% if casestudy %}
+	Edit » {{ casestudy.name }}
+{% else %}
+	Create
+{% endif %}
+{% endblock %}
+
+{% block body %}
+{% if object %}
+<h2>Edit a case study</h2>
+{% else %}
+<h2>Create a case study</h2>
+{% endif %}
+
+<form action="{{ action }}" method="post">
+	<table>
+	{{ form.as_p }}
+	</table>
+	<input type="submit" name="casestudy" value="Save Case Study" id="casestudy">
+</form>
+{% endblock %}

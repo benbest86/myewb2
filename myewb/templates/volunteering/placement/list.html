@@ -1,98 +1,71 @@
 {% extends "volunteering/base.html" %}
-{% load truncate %}
+{% load sorting_tags pagination_tags %}
+{% load truncate helpers %}
+{% load segmented_control %}
+
+{% block head_title %}
+Volunteering » Placements
+{% endblock %}
 
 {% block body %}
 
+	{% new_button "placement" %}
 
-
-	{% if placements %}
-	
-	<ul class="segmented">
-	<li><a href="{% url placement_new %}">new placement</a></li>
-  </ul>
-  
-	<ul class="segmented">
-	{% if placements.has_previous %}
-	<li><a href="{% url placement_list type %}page/{{placements.previous_page_number}}">«</a></li>
-	{% else %}
-	<li>«</li>
-	{% endif %}
-	<li>{{ placements.number }}</li>
-	{% if placements.has_next %}
-	<li><a href="{% url placement_list type %}page/{{placements.next_page_number}}">»</a></li>
-	{% else %}
-	<li>»</li>
-	{% endif %}
-	</ul>
-
-  {% load segmented_control %}
-  {% segmented_control base_url type page_list %}
-	
-	<div class="clear"></div>
-	
-	<table>
-	<tr>
-	  <th>Country</th>
-	  <th>Volunteer</th>
-	  <th>Location</th>
-	  <th>Arrival</th>
-	  <th>Departure</th>
-	  <th>Phone number</th>
-	  <th>Daily Rate</th>
-	  <th>Days in Quarter</th>
-	  <th>Repatriation</th>
-	  <th>Adjustments</th>
-	  <th>Payment</th>
-	  <th>Notes</th>
-	  <th>Repatriation Notes</th>
-	</tr>
-	{% for placement in placements.object_list %}
+  {% if placement_list %}	
+	  {% segmented_control base_url type page_list %}
+	  {% autopaginate placement_list 10 %}
+	  {% paginate %}
+		<div class="clear"></div>
+		<table>
 		<tr>
-		  <td>{{ placement.country_name }}</td>
-			<td><a href="{% url profile_detail placement.profile %}">{{ placement.profile.name }}</a></td>
-		  <td><a href="{% url placement_edit placement.id %}">{{ placement.town }}</a></td>
-		  <td class='right'>
-		    {% if placement.start_date %}
-		      {{ placement.start_date|date:"d M Y" }}
-		    {% endif %}
-		  </td>
-		  <td class='right'>
-		    {% if placement.end_date %}
-		      {{ placement.end_date|date:"d M Y" }}
-		    {% endif %}
-		  </td>
-		  <td>
-		    {% for pn in placement.local_phone_numbers %}
-		    {{ pn.number }}
-		    {% if not forloop.last %}<br/>{% endif %}
-		    {% endfor %}
-		  </td>
-		  <td>
-			{{ placement.stipend.get.daily_rate }}
-		  </td>
-		  <td>
-			90
-		  </td>
-		  <td>
-			{{ placement.stipend.get.repatriation }}
-		  </td>
-		  <td>
-			{{ placement.stipend.get.adjustment }}
-		  </td>
-		  <td>
-			{{ placement.stipend.get.payment }}
-		  </td>
-		  <td>
-			{{ placement.stipend.get.notes|truncate_tail:30 }}
-		  </td>
-		  <td>
-			{{ placement.stipend.get.repatriation_notes|truncate_tail:30 }}
-		  </td>
+	    <th>{% anchor country_name "Country" %}</th>
+
+	    <th>{% anchor profile.name "Volunteer" %}</th>
+	    <th>{% anchor rown "Location" %}</th>
+	    <th>{% anchor start_date "Arrival" %}</th>
+	    <th>{% anchor end_date "Departure" %}</th>
+	    <th>Phone number</th>
+	    <th>{% anchor stipend.get.daily_rate "Daily Rate" %}</th>
+	    <th>Days in Quarter</th>
+	    <th>{% anchor stipend.get.repatriation "Repatriation" %}</th>
+	    <th>{% anchor stipend.get.adjustment "Adjustments" %}</th>
+	    <th>{% anchor stipend.get.payment "Payment" %}</th>
+	    <th>Notes</th>
+	    <th>Repatriation Notes</th>
 		</tr>
-	{% endfor %}
+		{% for placement in placement_list %}
+			<tr>
+			  <td>{{ placement.country_name }}</td>
+				<td><a href="{% url profile_detail placement.profile.user.username %}">{{ placement.profile.name }}</a></td>
+			  <td><a href="{% url placement_detail placement.id %}">{{ placement.town }}</a></td>
+			  <td class='right'>
+			    {% if placement.start_date %}
+			      {{ placement.start_date|date:"d M Y" }}
+			    {% endif %}
+			  </td>
+			  <td class='right'>
+			    {% if placement.end_date %}
+			      {{ placement.end_date|date:"d M Y" }}
+			    {% endif %}
+			  </td>
+			  <td>
+			    {% for pn in placement.local_phone_numbers %}
+			    {{ pn.number }}
+			    {% if not forloop.last %}<br/>{% endif %}
+			    {% endfor %}
+			  </td>
+			  <td>{{ placement.stipend.get.daily_rate|floatformat:2 }}</td>
+			  <td>90</td>
+			  <td>{{ placement.stipend.get.repatriation|floatformat:2 }}</td>
+			  <td>{{ placement.stipend.get.adjustment|floatformat:2 }}</td>
+			  <td>{{ placement.stipend.get.payment|floatformat:2 }}</td>
+			  <td>{{ placement.stipend.get.notes|truncate_tail:30 }}</td>
+			  <td>{{ placement.stipend.get.repatriation_notes|truncate_tail:30 }}</td>
+			</tr>
+		{% endfor %}
 	</table>
 	{% else %}
-	<p>No placements found.</p>
+		<p>No placements found.</p>
 	{% endif %}
 {% endblock %}
 

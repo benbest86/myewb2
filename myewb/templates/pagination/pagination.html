@@ -1,0 +1,26 @@
+{% if is_paginated %}
+{% load i18n %}
+<ul class="pagination segmented">
+    {% if page_obj.has_previous %}
+        <li><a href="?page={{ page_obj.previous_page_number }}{{ getvars }}" class="prev">&laquo;</a></li>
+    {% else %}
+        <li class="disabled prev">&laquo;</li>
+    {% endif %}
+    {% for page in pages %}
+        {% if page %}
+            {% ifequal page page_obj.number %}
+                <li class="current page">{{ page }}</li>
+            {% else %}
+                <li><a href="?page={{ page }}{{ getvars }}" class="page">{{ page }}</a></li>
+            {% endifequal %}
+        {% else %}
+            ...
+        {% endif %}
+    {% endfor %}
+    {% if page_obj.has_next %}
+        <li><a href="?page={{ page_obj.next_page_number }}{{ getvars }}" class="next">&raquo;</a></li>
+    {% else %}
+        <li class="disabled next">&raquo;</li>
+    {% endif %}
+</ul>
+{% endif %}

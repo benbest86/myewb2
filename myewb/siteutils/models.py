@@ -37,9 +37,6 @@ class PhoneNumber(models.Model):
   object_id = models.PositiveIntegerField()
   content_object = generic.GenericForeignKey()
 
-  profiles = generic.GenericRelation(Profile)
-  service_providers = generic.GenericRelation(ServiceProvider)
-
   PHONE_LABELS = (
       ('Mobile', _('Mobile')),
       ('Home', _('Home')),
@@ -64,9 +61,6 @@ class Address(models.Model):
   content_type = models.ForeignKey(ContentType)
   object_id = models.PositiveIntegerField()
   content_object = generic.GenericForeignKey()
-
-  profiles = generic.GenericRelation(Profile)
-  service_providers = generic.GenericRelation(ServiceProvider)
   
   label = models.CharField(blank=True, max_length=100)
   street = models.CharField(_('street address'), max_length=200, null=True, blank=True)

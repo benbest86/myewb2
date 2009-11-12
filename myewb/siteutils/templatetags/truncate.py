@@ -1,5 +1,13 @@
 # -*- coding: utf-8 -*-
 
+# truncate.py
+# Copyright © 2009 Paul Schreiber 
+# paulschreiber at gmail dot com
+# http://paulschreiber.com/
+# Released under a Creative Commons Attribution-Share Alike 3.0 United States License
+# http://creativecommons.org/licenses/by-sa/3.0/us/
+#
+
 from django import template
 from django.template.defaultfilters import stringfilter
 
@@ -7,6 +15,9 @@ register = template.Library()
 
 @register.filter(name='truncate_head')
 def truncate_head(value, character_count, ellipsis=True):
+  if value == None:
+    return ""
+  
   try:
     length = int(character_count)
   except ValueError: # Invalid literal for int().
@@ -37,6 +48,9 @@ def truncate_head(value, character_count, ellipsis=True):
   
 @register.filter(name='truncate_tail')
 def truncate_tail(value, character_count, ellipsis=True):
+  if value == None:
+    return ""
+
   try:
     length = int(character_count)
   except ValueError: # Invalid literal for int().
@@ -63,6 +77,9 @@ def truncate_tail(value, character_count, ellipsis=True):
 
 @register.filter(name='truncate_middle')
 def truncate_middle(value, character_count):
+  if value == None:
+    return ""
+
   try:
     length = int(character_count)
   except ValueError: # Invalid literal for int().
@@ -89,6 +106,9 @@ def truncatechars(value, character_count, truncate_type='tail'):
     
     if truncate_type not in ["head", "tail", "middle"]:
       raise ValueError
+
+    if value == None:
+      return ""
     
     try:
       length = int(character_count)

@@ -8,16 +8,19 @@ from datetime import datetime
 
 class Session(models.Model):
   name = models.CharField(max_length=200)
-  en_instructions = models.TextField()
-  fr_instructions = models.TextField()
-  close_email = models.TextField()
-  rejection_email = models.TextField()
-  completed_application = models.TextField()
-  open_date = models.DateField()
-  close_date = models.DateField()
-  due_date = models.DateField()
-  email_sent = models.BooleanField()
-
+  en_instructions = models.TextField(null=True)
+  fr_instructions = models.TextField(null=True)
+  close_email = models.TextField(null=True)
+  rejection_email = models.TextField(null=True)
+  completed_application = models.TextField(null=True)
+  open_date = models.DateField(null=True)
+  close_date = models.DateField(null=True)
+  due_date = models.DateField(null=True)
+  email_sent = models.NullBooleanField(null=True)
+  
+  def __unicode__(self):
+    return self.name
+  
 class Application(models.Model):
   en_writing = models.PositiveSmallIntegerField(_("English writing (1-10)"))
   en_reading = models.PositiveSmallIntegerField()
@@ -35,6 +38,9 @@ class Application(models.Model):
   
   profile = models.ForeignKey(MemberProfile)
   session = models.ForeignKey(Session)
+  
+  def __unicode__(self):
+    return "%s: %s" % (self.profile.name, self.session.name)
 
 class Question(models.Model):
   question = models.TextField()
@@ -82,7 +88,11 @@ class Placement(models.Model):
       
   def __unicode__(self):
     return "%s: %s in %s, %s (%s--%s)" % (self.profile.name, self.sector, self.town, self.country, self.start_date, self.end_date)
-    
+  
+  def description(self):
+    return "%s in %s, %s (%s--%s)" % (self.sector, self.town, self.country, self.start_date, self.end_date)
+  
+  
   @models.permalink
   def get_absolute_url(self):
     return ("volunteering.views.placement_detail", [str(self.id)]) 
@@ -103,7 +113,6 @@ class Stipend(models.Model):
     return "%s: %s, %s: %s" % (self.profile.name, self.placement.town, self.placement.country, self. daily_rate)
   
   def payment(self):
-    print "payment: %s" % (self.daily_rate)
     return (float(self.daily_rate) * 90 + float(self.adjustment))
 
 class EvaluationCriterion(models.Model):
@@ -147,7 +156,6 @@ class Evaluation(models.Model):
 
 
 class InsuranceInstance(models.Model):
-  profile = models.ForeignKey(MemberProfile, related_name='insurance_instance')
   placement = models.ForeignKey(Placement)
 
   insurance_company = models.ForeignKey(ServiceProvider)
@@ -186,10 +194,20 @@ class TravelSegment(models.Model):
   booking_code = models.CharField(blank=True, max_length=100)
   notes = models.TextField(blank=True)
   
-  payment_method = models.CharField(_('type'), max_length=100, choices=PAYMENT_CHOICES, null=True, blank=True)
-  purpose = models.CharField(_('type'), max_length=100, choices=PURPOSE_CHOICES, null=True, blank=True)
+  payment_method = models.CharField(_('payment method'), max_length=100, choices=PAYMENT_CHOICES, null=True, blank=True)
+  purpose = models.CharField(_('purpose'), max_length=100, choices=PURPOSE_CHOICES, null=True, blank=True)
+  
+  def __unicode__(self):
+    return "%s (%s)" % (self.profile.name, self.booking_code)
 
 class CaseStudy(models.Model):
-  name = models.CharField(blank=True, max_length=100)
+  name = models.CharField(blank=True, max_length=100, verbose_name='Case Study')
   html = models.TextField(blank=True)
   
+  def __unicode__(self):
+    return self.name
+
+  class Meta:
+    verbose_name_plural = "Case Studies"
+    ordering = ["name"]
+

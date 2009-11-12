@@ -1,0 +1,35 @@
+{% extends "volunteering/base.html" %}
+{% load sorting_tags pagination_tags %}
+{% load truncate helpers %}
+{% autosort sector_list %}
+
+{% block head_title %}
+Volunteering » Sectors
+{% endblock %}
+
+{% block body %}
+
+	{% new_button "sector" %}
+
+	{% if sector_list %}
+		{% autopaginate sector_list 10 %}
+		{% paginate %}
+		<div class="clear"></div>
+		<table>
+		    <tr>
+		       <th>{% anchor abbreviation Abbreviation %}</th>
+		       <th>{% anchor name Name %}</th>
+		    </tr>
+		{% for sector in sector_list %}
+		<tr>
+			<td>{{ sector.abbreviation }}</td>
+			<td><a href="{% url sector_detail sector.id %}">{{ sector.name }}</a></td>
+		</tr>
+		{% endfor %}
+	</table>
+	{% else %}
+		<p>No sectors found.</p>
+	{% endif %}
+
+{% endblock %}
+

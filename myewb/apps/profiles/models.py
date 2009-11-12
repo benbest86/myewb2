@@ -111,6 +111,12 @@ class MemberProfile(Profile):
 
     objects = MemberProfileManager()
     
+    def __unicode__(self):
+      if self.name:
+        return self.name
+      else:
+        return ""
+        
     def in_canada(self):
         return self.country == "CA"
     
