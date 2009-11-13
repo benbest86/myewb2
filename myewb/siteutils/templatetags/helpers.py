@@ -43,5 +43,4 @@ class SelectBox(template.Node):
     else:
       raise ValueError
 
-    s = Select()
-    return s.render_options(choice_list, selected_item)
+    return Select().render_options(choice_list, [selected_item])

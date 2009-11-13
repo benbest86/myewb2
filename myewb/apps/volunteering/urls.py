@@ -5,6 +5,7 @@ from django.views.generic.simple import direct_to_template
 from django.views.generic import list_detail, create_update
 from volunteering.models import *
 from volunteering.forms import *
+from siteutils.countries import EWB_PLACEMENTS
 
 urlpatterns = patterns('volunteering.views',
     url(r'^$', direct_to_template, {"template": "volunteering/volunteering.html"}, name="volunteering_index"),
@@ -25,10 +26,17 @@ def placements_by_type(request, placement_type):
   else:
     placement_list = Placement.objects.select_related()
   
+  sector_list = [['', '------']] + [[sector.id, sector.abbreviation] for sector in Sector.objects.all()]
+  country_list = (('', '------'),) + EWB_PLACEMENTS
+  
   selected_sector = request.GET.get("sector", None)
+  selected_country = request.GET.get("country", None)
   
   if selected_sector:
     placement_list = placement_list.filter(sector=selected_sector)
+
+  if selected_country:
+    placement_list = placement_list.filter(country=selected_country)
 
   response = list_detail.object_list(request,
           queryset=placement_list,
@@ -36,8 +44,10 @@ def placements_by_type(request, placement_type):
           template_object_name="placement",
           extra_context= { "base_url": reverse("placements"),
                              "type": placement_type,
+                             "selected_country": selected_country,
+                             "country_list": country_list,
                              "selected_sector": selected_sector,
-                             "sector_list": [[sector.id, sector.abbreviation] for sector in Sector.objects.all()],
+                             "sector_list": sector_list,
                              "page_list": [{"label":"All placements", "url":"all"},
                                             {"label":"Active placements", "url":"active"},
                                             {"label":"Past placements", "url":"past"}],
