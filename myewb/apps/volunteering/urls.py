@@ -24,6 +24,11 @@ def placements_by_type(request, placement_type):
     placement_list = Placement.objects.select_related().filter(Q(start_date__isnull=False) & Q(start_date__lte=datetime.date.today()) & (Q(end_date__gte=datetime.date.today()) | Q(end_date__isnull=True)))
   else:
     placement_list = Placement.objects.select_related()
+  
+  selected_sector = request.GET.get("sector", None)
+  
+  if selected_sector:
+    placement_list = placement_list.filter(sector=selected_sector)
 
   response = list_detail.object_list(request,
           queryset=placement_list,
@@ -31,7 +36,7 @@ def placements_by_type(request, placement_type):
           template_object_name="placement",
           extra_context= { "base_url": reverse("placements"),
                              "type": placement_type,
-                             "selected_sector": request.GET.get("sector", None),
+                             "selected_sector": selected_sector,
                              "sector_list": [[sector.id, sector.abbreviation] for sector in Sector.objects.all()],
                              "page_list": [{"label":"All placements", "url":"all"},
                                             {"label":"Active placements", "url":"active"},
