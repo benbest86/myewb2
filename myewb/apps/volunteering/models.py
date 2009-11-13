@@ -104,15 +104,21 @@ class Stipend(models.Model):
   responsible_person = models.ForeignKey(MemberProfile, related_name='responsible_person', null=True)
   daily_rate = models.DecimalField(max_digits=10, decimal_places=2, blank=True)
   adjustment = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
-  repatriation_amount = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+  repatriation_paid_quarter = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+  repatriation_accrued_quarter = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+  repatriation_paid_total = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+  repatriation_accrued_total = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
   
   notes = models.TextField(blank=True, null=True)
   repatriation_notes = models.TextField(blank=True, null=True)
   
   def __unicode__(self):
     return "%s: %s, %s: %s" % (self.profile.name, self.placement.town, self.placement.country, self. daily_rate)
-  
+
   def payment(self):
+    return (float(self.daily_rate) * 90)
+
+  def adjusted_payment(self):
     return (float(self.daily_rate) * 90 + float(self.adjustment))
 
 class EvaluationCriterion(models.Model):

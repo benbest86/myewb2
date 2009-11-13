@@ -29,11 +29,14 @@ def placements_by_type(request, placement_type):
           queryset=placement_list,
           template_name="volunteering/placement/list.html",
           template_object_name="placement",
-          extra_context= { "base_url": "x",
+          extra_context= { "base_url": reverse("placements"),
                              "type": placement_type,
+                             "selected_sector": request.GET.get("sector", None),
+                             "sector_list": [[sector.id, sector.abbreviation] for sector in Sector.objects.all()],
                              "page_list": [{"label":"All placements", "url":"all"},
                                             {"label":"Active placements", "url":"active"},
-                                            {"label":"Past placements", "url":"past"}]},
+                                            {"label":"Past placements", "url":"past"}],
+                                          },
           )
   
   return response

@@ -15,6 +15,13 @@ Volunteering » Placements
 	  {% segmented_control base_url type page_list %}
 	  {% autopaginate placement_list 10 %}
 	  {% paginate %}
+
+		<form method="get">
+		<select name="sector" onchange="this.form.submit();">
+		{% select_box sector_list selected_sector %}
+		</select>
+		</form>
+	
 		<div class="clear"></div>
 		<table>
 		<tr>
@@ -27,7 +34,11 @@ Volunteering » Placements
 	    <th>Phone number</th>
 	    <th>{% anchor stipend.get.daily_rate "Daily Rate" %}</th>
 	    <th>Days in Quarter</th>
-	    <th>{% anchor stipend.get.repatriation "Repatriation" %}</th>
+			<th>Stipend</th>
+	    <th>{% anchor stipend.get.repatriation "Repatriation Paid (Quarter)" %}</th>
+	    <th>{% anchor stipend.get.repatriation "Repatriation Accrued (Quarter)" %}</th>
+	    <th>{% anchor stipend.get.repatriation "Repatriation Paid (Total)" %}</th>
+	    <th>{% anchor stipend.get.repatriation "Repatriation Paid (Total)" %}</th>
 	    <th>{% anchor stipend.get.adjustment "Adjustments" %}</th>
 	    <th>{% anchor stipend.get.payment "Payment" %}</th>
 	    <th>Notes</th>
@@ -54,11 +65,16 @@ Volunteering » Placements
 			    {% if not forloop.last %}<br/>{% endif %}
 			    {% endfor %}
 			  </td>
-			  <td>{{ placement.stipend.get.daily_rate|floatformat:2 }}</td>
+			  <td>
+					{% if placement.stipend.get %}
+					<a href="{% url stipend_detail placement.stipend.get.id %}">{{ placement.stipend.get.daily_rate|floatformat:2 }}</a>
+					{% endif %}
+				</td>
 			  <td>90</td>
-			  <td>{{ placement.stipend.get.repatriation|floatformat:2 }}</td>
+				<td>{{ placement.stipend.get.payment|floatformat:2 }}</td>
+			  <td>{{ placement.stipend.get.repatriation_paid_quarter|floatformat:2 }}</td>
 			  <td>{{ placement.stipend.get.adjustment|floatformat:2 }}</td>
-			  <td>{{ placement.stipend.get.payment|floatformat:2 }}</td>
+			  <td>{{ placement.stipend.get.adjusted_payment|floatformat:2 }}</td>
 			  <td>{{ placement.stipend.get.notes|truncate_tail:30 }}</td>
 			  <td>{{ placement.stipend.get.repatriation_notes|truncate_tail:30 }}</td>
 			</tr>
