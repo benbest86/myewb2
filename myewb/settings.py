@@ -51,11 +51,11 @@ USE_I18N = True
 # Absolute path to the directory that holds media.
 # Example: "/home/media/media.lawrence.com/"
 
-MEDIA_ROOT = os.path.join(PROJECT_ROOT, "site_media")
+MEDIA_ROOT = os.path.join(PROJECT_ROOT, "media")
 
 # Absolute path to the directory that holds static files like app media.
 # Example: "/home/media/media.lawrence.com/apps/"
-STATIC_ROOT = os.path.join(PROJECT_ROOT, 'site_media', 'static')
+STATIC_ROOT = os.path.join(PROJECT_ROOT, 'media', 'static')
 
 # URL that handles the static files like app media.
 # Example: "http://media.lawrence.com"
