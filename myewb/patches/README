@@ -1,11 +1,6 @@
 The pinax base requires patching in some cases. Here are known problems
 and fixes.
 
-USING Pinax-0.7beta3
-1. An error in the pinax profiles app causes profile updates to fail. Apply the
-profiles-patch.diff in this folder to 
-${VIRTUAL_ENV_HOME}/lib/python2.x/site-packages/Pinax-0.7beta3-py2.6.egg/
 
-On my machine this looks like this:
-$ cd ~/.virtualenvs/pinax-env/lib/python2.6/site-packages/Pinax-0.7beta3-py2.6.egg/
-$ patch -p0 -i ~/myewb2/trunk/myewb/patches/profiles-patch.diff
+USING Pinax-0.7.1
+None
