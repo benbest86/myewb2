@@ -31,11 +31,11 @@ class GroupTopic(Topic):
         else:
             return reverse("topic_detail", kwargs=kwargs)
         
-    def save(self):
+    def save(self, force_insert=False, force_update=False):
         # Additional options at http://codespeak.net/lxml/lxmlhtml.html#cleaning-up-html
         self.body = clean_html(self.body)
         self.body = autolink_html(self.body)
-        super(GroupTopic, self).save()
+        super(GroupTopic, self).save(force_insert, force_update)
         post_save.send(sender=Topic, instance=GroupTopic.objects.get(id=self.id))
     
     class Meta:
