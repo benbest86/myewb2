@@ -8,6 +8,7 @@
 {% load avatar_tags %}
 {% load group_tags %}
 {% load attachments_tags %}
+{% load icon_tags %}
 
 {% block head_title %}{% trans "Post" %} : {{ topic.title }}{% endblock %}
 
@@ -32,7 +33,7 @@
                         <ul>
                         {% for att in attachments %}
                             <li class="attachmentItem">
-                                <a href="{{ STATIC_URL }}{{ att.attachment_file.name }}">{{ att.filename }}</a>
+                                {% icon_for_filename att.filename %} <a href="{{ STATIC_URL }}{{ att.attachment_file.name }}">{{ att.filename }}</a>
                             </li>
                         {% endfor %}
                         </ul>
