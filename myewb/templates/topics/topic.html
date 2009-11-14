@@ -9,6 +9,7 @@
 {% load group_tags %}
 {% load attachments_tags %}
 {% load icon_tags %}
+{% load filesize_tags %}
 
 {% block head_title %}{% trans "Post" %} : {{ topic.title }}{% endblock %}
 
@@ -34,6 +35,7 @@
                         {% for att in attachments %}
                             <li class="attachmentItem">
                                 {% icon_for_filename att.filename %} <a href="{{ STATIC_URL }}{{ att.attachment_file.name }}">{{ att.filename }}</a>
+                                {% filesize_for_filename att.attachment_file.name %} 
                             </li>
                         {% endfor %}
                         </ul>
