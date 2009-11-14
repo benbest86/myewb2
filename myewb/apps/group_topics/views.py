@@ -9,9 +9,12 @@ Last modified: 2009-08-15
 @author: Joshua Gorner, Francis Kung
 """
 
-from django.http import HttpResponse, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.syndication import feeds
+from django.shortcuts import get_object_or_404, render_to_response
+from django.core.exceptions import ObjectDoesNotExist
+from django.template import RequestContext
 
 from groups import bridge
 
@@ -19,12 +22,11 @@ from base_groups.models import BaseGroup
 from group_topics.models import GroupTopic
 from group_topics.forms import GroupTopicForm
 from group_topics.feeds import TopicFeedAll, TopicFeedGroup
+from threadedcomments.models import ThreadedComment
 
 from attachments.forms import AttachmentForm
 from attachments.models import Attachment
-
-from topics.views import *
-from topics.views import topics as pinaxtopics, topic as pinaxtopic
+from topics.models import Topic
 
 # FIXME: this method is copied wholesale from pinax.apps.topics.views except for one line =(
 
@@ -176,3 +178,34 @@ def get_attachment_form(request, template_name="topics/attachment_form.html", fo
             context_instance=RequestContext(request),
         )
         return response
+
+
+def topic_delete(request, topic_id, group_slug=None, bridge=None):
+    """
+    Another copy-pasta from pinax.apps.topics.views.
+    Again need to update to match our GroupTopic stuff.
+    Mostly we 
+    """
+    if bridge:
+        try:
+            group = bridge.get_group(group_slug)
+        except ObjectDoesNotExist:
+            raise Http404
+    else:
+        group = None
+    
+    if group:
+        topics = group.content_objects(Topic)
+    else:
+        # line below is the only change between pinax and us.
+        # topics = Topic.objects.filter(object_id=None)
+        topics = Topic.objects.all()
+
+    
+    topic = get_object_or_404(topics, id=topic_id)
+    
+    if (request.method == "POST" and (request.user == topic.creator or request.user == topic.group.creator)):
+        ThreadedComment.objects.all_for_object(topic).delete()
+        topic.delete()
+    
+    return HttpResponseRedirect(request.POST["next"])
