@@ -16,7 +16,7 @@ Volunteering » Placements
 	  {% autopaginate placement_list 10 %}
 	  {% paginate %}
 
-		<form method="get">
+		<form class="filter" action="{{ base_url }}" method="get">
 		<select name="sector" onchange="this.form.submit();">
 		{% select_box sector_list selected_sector %}
 		</select>
@@ -76,6 +76,9 @@ Volunteering » Placements
 			  <td>90</td>
 				<td>{{ placement.stipend.get.payment|floatformat:2 }}</td>
 			  <td>{{ placement.stipend.get.repatriation_paid_quarter|floatformat:2 }}</td>
+			  <td>{{ placement.stipend.get.repatriation_accrued_quarter|floatformat:2 }}</td>
+			  <td>{{ placement.stipend.get.repatriation_paid_total|floatformat:2 }}</td>
+			  <td>{{ placement.stipend.get.repatriation_accrued_total|floatformat:2 }}</td>
 			  <td>{{ placement.stipend.get.adjustment|floatformat:2 }}</td>
 			  <td>{{ placement.stipend.get.adjusted_payment|floatformat:2 }}</td>
 			  <td>{{ placement.stipend.get.notes|truncate_tail:30 }}</td>

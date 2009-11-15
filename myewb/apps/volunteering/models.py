@@ -22,19 +22,19 @@ class Session(models.Model):
     return self.name
   
 class Application(models.Model):
-  en_writing = models.PositiveSmallIntegerField(_("English writing (1-10)"))
-  en_reading = models.PositiveSmallIntegerField()
-  en_speaking = models.PositiveSmallIntegerField()
+  en_writing = models.PositiveSmallIntegerField(_("English writing (1-10)"), null=True)
+  en_reading = models.PositiveSmallIntegerField(null=True)
+  en_speaking = models.PositiveSmallIntegerField(null=True)
 
-  fr_writing = models.PositiveSmallIntegerField()
-  fr_reading = models.PositiveSmallIntegerField()
-  fr_speaking = models.PositiveSmallIntegerField()
+  fr_writing = models.PositiveSmallIntegerField(null=True)
+  fr_reading = models.PositiveSmallIntegerField(null=True)
+  fr_speaking = models.PositiveSmallIntegerField(null=True)
   
   schooling = models.TextField()
   resume_text = models.TextField()
   resume_attachment = models.FileField(upload_to="XXXX") #fixme
   references = models.TextField()
-  gpa = models.PositiveIntegerField()
+  gpa = models.PositiveIntegerField(null=True)
   
   profile = models.ForeignKey(MemberProfile)
   session = models.ForeignKey(Session)
@@ -216,4 +216,12 @@ class CaseStudy(models.Model):
   class Meta:
     verbose_name_plural = "Case Studies"
     ordering = ["name"]
+
+class SendingGroup(models.Model):
+  group_type = models.CharField(blank=True, max_length=100)
+  season = models.CharField(blank=True, max_length=100)
+  year = models.PositiveIntegerField()
+  
+  def __unicode__(self):
+    return "%s %s %s" % (self.group_type, self.season, self.year)
 

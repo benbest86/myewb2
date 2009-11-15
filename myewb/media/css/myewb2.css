@@ -229,6 +229,19 @@ form.login label[for="id_remember"] {
     visibility: hidden;
 }
 
+form.filter {
+  display: inline;
+}
+
+form.filter select {
+  margin-top: 1em;
+  background: #eee;
+  border: 0.1em solid #ccc;
+  font-family: verdana;
+	color: rgb(0, 136, 204);
+	height: 2.4em;
+}
+
 th {
     background: black;
     color: white;

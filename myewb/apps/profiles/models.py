@@ -108,6 +108,7 @@ class MemberProfile(Profile):
 
     addresses = generic.GenericRelation(Address)
     phone_numbers = generic.GenericRelation(PhoneNumber)
+    sending_groups = models.ManyToManyField("volunteering.SendingGroup")
 
     objects = MemberProfileManager()
     
