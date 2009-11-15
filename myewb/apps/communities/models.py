@@ -8,7 +8,8 @@ Created on 2009-07-30
 @author Joshua Gorner, Benjamin Best
 """
 from django.core.urlresolvers import reverse
-from base_groups.models import BaseGroup, GroupMember
+from django.db.models.signals import post_save
+from base_groups.models import BaseGroup, GroupMember, add_creator_to_group
 
 class Community(BaseGroup):
     def get_absolute_url(self):
@@ -20,3 +21,5 @@ class Community(BaseGroup):
         
     class Meta:
         verbose_name_plural = "communities"
+# use same add_creator_to_group from base_groups
+post_save.connect(add_creator_to_group, sender=Community)

@@ -20,6 +20,9 @@ from networks.models import Network
 from networks.forms import NetworkForm
 from siteutils.helpers import get_email_user
 
+# import regression tests
+from regression import *
+
 class TestNetwork(TestCase):
     fixtures = ['test_networks.json']
     

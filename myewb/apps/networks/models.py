@@ -14,7 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models
 from django.db.models.signals import post_save
 
-from base_groups.models import BaseGroup, GroupMember, GroupLocation
+from base_groups.models import BaseGroup, GroupMember, GroupLocation, add_creator_to_group
 from networks import emailforwards
 
 class Network(BaseGroup):
@@ -87,3 +87,5 @@ def add_users_to_default_networks(sender, instance=None, created=False, **kwargs
         except Network.DoesNotExist:
             pass
 post_save.connect(add_users_to_default_networks, sender=User)
+# use same add_creator_to_group from base_groups
+post_save.connect(add_creator_to_group, sender=Network)
