@@ -25,40 +25,54 @@ from mailer import engine
 from profiles.forms import ProfileForm, StudentRecordForm
 from profiles.models import MemberProfile, StudentRecord
 
+
 class TestMemberProfile(TestCase):
     fixtures = ['test_member_profiles.json']
     
     def setUp(self):
-        pass
+        self.joe = User.objects.get(username='joe')
+        self.bob = User.objects.get(username='bob')
+        self.john = User.objects.get(username='john')
+        joe_email = EmailAddress.objects.create(user=self.joe, email='joe@smith.ca')
+        joe_email.verified = True
+        joe_email.save()
+        bob_email = EmailAddress.objects.create(user=self.bob, email='bob@roberts.ca', verified=True)
+        bob_email.verified = True
+        bob_email.save()
+        john_email = EmailAddress.objects.create(user=self.john, email='john@doe.ca', verified=True)
+        john_email.verified = True
+        john_email.save()
     
     def tearDown(self):
-        pass
+        EmailAddress.objects.all().delete()
         
     def test_friend_contact_info(self):
         """ensure that users 2 and 3 can "see" each others' contact info"""
-        c = Client()
-        c.post("/account/login/", {'username': 'joe', 'password': 'passw0rd'})
+        c = self.client 
+        c.login(username='joe', password='passw0rd')
         response = c.get("/profiles/john/")
-        self.assertContains(response, "Toronto, ON")
+        self.assertContains(response, "john@doe.ca")
+        c.logout()
         
-        d = Client()
-        d.post("/account/login/", {'username': 'john', 'password': 'passw0rd'})
-        response = d.get("/profiles/joe/")
-        self.assertContains(response, "Berlin")
+        c.login(username='john', password='passw0rd')
+        response = c.get("/profiles/joe/")
+        self.assertContains(response, "joe@smith.ca")
         
     def test_staff_contact_info(self):
         """ensure that user 1 (staff member) can see contact info of non-friend user 2"""
-        c = Client()
-        c.post("/account/login/", {'username': 'bob', 'password': 'passw0rd'})
+        c = self.client
+        c.login(username='bob', password='passw0rd')
         response = c.get("/profiles/joe/")
-        self.assertContains(response, "Berlin")
+        self.assertContains(response, "joe@smith.ca")
+        response = c.get("/profiles/john/")
+        self.assertContains(response, "john@doe.ca")
         
     def test_stranger_contact_info(self):
         """TODO: ensure that user 2 (not staff member) cannot see contact info of non-friend user 1"""
         c = Client()
         c.post("/account/login/", {'username': 'joe', 'password': 'passw0rd'})
         response = c.get("/profiles/bob/")
-        self.assertNotContains(response, "366 Adelaide")
+        self.assertNotContains(response, "bob@roberts.ca")
 
 class TestMemberProfileForm(TestCase):
     fixtures = ['test_member_profiles.json']
@@ -96,7 +110,7 @@ class TestMemberProfileForm(TestCase):
             "date_of_birth": "1986-05-05",
         }
         form = ProfileForm(data)
-        self.assertEquals(True, form.is_valid())
+        self.assertEquals(True, form.is_valid(), 'Form errors: %s' % form.errors)
         
     def test_bad_url(self):        
         form = ProfileForm(instance=self.profile_one)
@@ -110,7 +124,8 @@ class TestMemberProfileForm(TestCase):
         form = ProfileForm(data)
         self.assertEquals(False, form.is_valid())
 
-    def test_bad_country(self):
+    # XXX this test is no longer since addresses have moved.
+    def _test_bad_country(self):
         form = ProfileForm(instance=self.profile_one)
         # include a bad country to force an error
         data = {
@@ -196,14 +211,18 @@ class TestEmailVerification(TestCase):
             pass
 
     def test_verify_email(self):
-        email_address = EmailAddress.objects.create(user=self.joe, email='joe@joe.com')
+        emailless_user = User.objects.create(username='no_email')
+        emailless_user.set_password('password')
+        emailless_user.save()
+        email_address = EmailAddress.objects.create(user=emailless_user, email='joe@joe.com')
 
         # address added but not verified, User email should still be blank
-        self.assertEquals(self.joe.email, '')
+        self.assertEquals(emailless_user.email, '')
         # one email should have been sent to joe about registering
         email_address.verified = True
         email_address.save()
         self.assertEquals(email_address.primary, True)
+        self.assertEquals(emailless_user.email, 'joe@joe.com')
 
     def test_verify_by_client(self):
         logged_in = self.client.login(username='bob', password='password')

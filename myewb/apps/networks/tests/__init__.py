@@ -132,7 +132,7 @@ class TestNetworkTopicMail(TestCase):
         self.client.logout()
 
     def test_new_topic_with_email(self):
-        response = self.client.post('/networks/ewb/posts/', {'title': 'first post', 'body':'Lets make a new topic.', 'send_as_email': True, 'tags':'first, post'})
+        response = self.client.post('/networks/ewb/posts/', {'title': 'first post', 'body':'Lets make a new topic.', 'send_as_email': True, 'tags':'first, post', 'attach_count':0,})
         self.assertEquals(response.status_code, 200)
         self.assertEquals(1, len(mail.outbox))
         self.assertEquals(len(self.ewb.get_member_emails()), len(mail.outbox[0].bcc))
@@ -209,8 +209,9 @@ class TestBulkMembers(TestCase):
         New members shouldn't inherit membership until they confirm
         their email address.
         """
+        new_network = Network.objects.create(slug='new-net', name='new network', creator=self.superman)
         self.assertTrue(self.client.login(username='superman', password='passw0rd'))
-        self.client.post('/networks/ewb/bulk/', {'emails':'test3@server.com'})
+        self.client.post('/networks/new-net/bulk/', {'emails':'test3@server.com'})
 
         self.client.logout()
         new_user_info = {
@@ -220,26 +221,30 @@ class TestBulkMembers(TestCase):
                 'email': 'test3@server.com',
                 }
         self.client.post('/account/signup/', new_user_info)
-        self.assertEquals(self.ewb.members.filter(request_status='B').count(), 1)
-        bulk_user = self.ewb.members.get(request_status='B').user
-        self.assertEquals(self.ewb.members.get(request_status='B').user.email, 'test3@server.com')
-        self.assertEquals(User.objects.filter(email='test3@server.com').count(), 2)
+        self.assertEquals(new_network.members.filter(request_status='B').count(), 1)
+        bulk_user = new_network.members.get(request_status='B').user
+        self.assertEquals(new_network.members.get(request_status='B').user.email, 'test3@server.com')
+        # only original bulk email member should have email
+        self.assertEquals(User.objects.filter(email='test3@server.com').count(), 1)
+        self.assertEquals(User.objects.filter(email='test3@server.com').get(), bulk_user)
             
 
     def test_verify_email_for_bulk_user(self):
+        new_network = Network.objects.create(slug='new-net', name='new network', creator=self.superman)
         self.assertTrue(self.client.login(username='superman', password='passw0rd'))
-        self.client.post('/networks/ewb/bulk/', {'emails':'test2@server.com'})
+        self.client.post('/networks/new-net/bulk/', {'emails':'test2@server.com'})
         bulk_user = get_email_user('test2@server.com')
         self.joe.emailaddress_set.add(EmailAddress(email='test2@server.com'))
         email_address = self.joe.emailaddress_set.get(email='test2@server.com')
         email_address.verified = True
         email_address.save()
-        joe_member = self.ewb.members.get(user=self.joe)
+        joe_member = new_network.members.get(user=self.joe)
         # joe should be accepted
         self.assertEquals(joe_member.request_status, 'A')
         # old dummy user should be gone
         self.assertRaises(User.DoesNotExist, User.objects.get, id=bulk_user.id)
-        self.assertEquals(self.ewb.members.filter(request_status='B').count(), 0)
+        self.assertEquals(new_network.members.filter(request_status='B').count(), 0)
+        new_network.delete()
         
     def test_verify_unsubscribe(self):
         email = '''one@one.com'''

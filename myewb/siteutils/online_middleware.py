@@ -79,6 +79,9 @@ def context(request):
 
 def remove_user(request):
     users = cache.get(CACHE_ONLINE_USERS_KEY, {})
-    del(users[request.session.session_key])
-    cache.set(CACHE_ONLINE_USERS_KEY, users, USER_PAGE_VIEW_TIME)
-    cache.delete(get_cache_key_for_session(request.session.session_key))
+    try:
+        del(users[request.session.session_key])
+        cache.set(CACHE_ONLINE_USERS_KEY, users, USER_PAGE_VIEW_TIME)
+        cache.delete(get_cache_key_for_session(request.session.session_key))
+    except:
+        pass
