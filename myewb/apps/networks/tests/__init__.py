@@ -145,14 +145,14 @@ class TestBulkMembers(TestCase):
     """
     Tests for functionality associated with bulk email users.
     """
-    fixtures = ['test_networks.json']
 
     def setUp(self):
-        self.joe = User.objects.get(username='joe')
-        self.superman = User.objects.get(username='superman')
+        self.joe = User.objects.create_user('joe', 'joe@test.ca', 'passw0rd')
+        superman = User.objects.create_user('superman', 'super@man.com', 'passw0rd')
+        superman.is_superuser = True
+        superman.save()
+        self.superman = superman
         self.ewb = Network.objects.get(slug='ewb')
-        self.utoronto = Network.objects.get(slug='ewb-utoronto')
-        self.uwaterloo = Network.objects.get(slug='ewb-uwaterloo')
 
     def tearDown(self):
         self.ewb.members.all().delete()
@@ -160,9 +160,7 @@ class TestBulkMembers(TestCase):
             self.client.logout()
         except:
             pass
-        for user in User.objects.all():
-            if not user.has_usable_password():
-                user.delete()
+        User.objects.all().delete()
 
     def test_create_bulk_user(self):
         self.assertTrue(self.client.login(username='superman', password='passw0rd'))

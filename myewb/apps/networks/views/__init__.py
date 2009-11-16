@@ -132,12 +132,7 @@ def bulk_import(request, group_slug, form_class=NetworkBulkImportForm, template_
                 
                 existing_members = GroupMember.objects.filter(group=group, user=email_user)
                 if existing_members.count() == 0:              
-                    # set the request_status according to the existence of the user.
-                    # users with a password are real and get 'A', users without are
-                    # bulk users and get 'B'
-                    request_status = email_user.has_usable_password() and 'A' or 'B'
-                    nm = GroupMember(group=group, user=email_user, request_status=request_status)
-                    nm.save()
+                    nm = group.add_member(email_user)
             # redirect to network home page on success
             return HttpResponseRedirect(reverse('network_detail', kwargs={'group_slug': group.slug}))
     else:

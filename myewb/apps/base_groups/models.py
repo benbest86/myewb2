@@ -83,6 +83,13 @@ class BaseGroup(Group):
                 self.members.filter(request_status='B').select_related(depth=1)
         return [member.user.email for member in members_with_emails]
 
+    def add_member(self, user):
+        """
+        Adds a member to a group with the proper request_status.
+        """
+        request_status = user.has_usable_password() and 'A' or 'B'
+        return GroupMember.objects.create(user=user, group=self, request_status=request_status)
+
     def send_mail_to_members(self, subject, body, html=True, fail_silently=False):
         """
         Creates and sends an email to all members of a network using Django's
