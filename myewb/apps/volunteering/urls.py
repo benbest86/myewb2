@@ -28,9 +28,11 @@ def placements_by_type(request, placement_type):
   
   sector_list = [['', '------']] + [[sector.id, sector.abbreviation] for sector in Sector.objects.all()]
   country_list = (('', '------'),) + EWB_PLACEMENTS
+  sending_group_list = [['', '------']] + [[sg.id, sg] for sg in SendingGroup.objects.all()]
   
   selected_sector = request.GET.get("sector", None)
   selected_country = request.GET.get("country", None)
+  selected_sending_group = request.GET.get("sending_group", None)
   
   if selected_sector:
     placement_list = placement_list.filter(sector=selected_sector)
@@ -38,12 +40,17 @@ def placements_by_type(request, placement_type):
   if selected_country:
     placement_list = placement_list.filter(country=selected_country)
 
+  if selected_sending_group:
+    placement_list = placement_list.filter(profile__sending_groups=selected_sending_group)
+
   response = list_detail.object_list(request,
           queryset=placement_list,
           template_name="volunteering/placement/list.html",
           template_object_name="placement",
           extra_context= { "base_url": reverse("placements"),
                              "type": placement_type,
+                             "selected_sending_group": selected_sending_group,
+                             "sending_group_list": sending_group_list,
                              "selected_country": selected_country,
                              "country_list": country_list,
                              "selected_sector": selected_sector,
