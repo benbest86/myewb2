@@ -124,14 +124,6 @@
 			"preferred_first_name": "Bob",
 			"last_name": "Roberts",
 			
-			"country": "CA",
-			"street_address": "366 Adelaide Street West",
-			"street_address_two": "Suite 601",
-			"city": "Toronto",
-			"province": "ON",
-			"postal_code": "M5V 1R9",
-			
-			"work_phone_number": "416-481-3696",
 			"gender": "M",
 			"date_of_birth": "1979-05-23"
 		}
@@ -140,18 +132,16 @@
 		"pk": 2,
 		"model": "profiles.memberprofile",
 		"fields": {
-			"profile_ptr": 2,
+			"profile_ptr": 2
 			
-			"city": "Berlin"
 		}
 	},
 	{
 		"pk": 3,
 		"model": "profiles.memberprofile",
 		"fields": {
-			"profile_ptr": 3,
+			"profile_ptr": 3
 			
-			"city": "Toronto"
 		}
 	},	
 	{
