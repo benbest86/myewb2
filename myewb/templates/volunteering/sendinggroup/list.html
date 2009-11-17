@@ -1,0 +1,35 @@
+{% extends "volunteering/base.html" %}
+{% load sorting_tags pagination_tags %}
+{% load truncate helpers %}
+{% autosort sendinggroup_list %}
+
+{% block head_title %}
+Volunteering » Sending Groups
+{% endblock %}
+
+{% block body %}
+	{% new_button "sendinggroup" "sending group" %}
+
+	{% if sendinggroup_list %}
+		{% autopaginate sendinggroup_list 10 %}
+		{% paginate %}
+		<div class="clear"></div>
+		<table>
+		    <tr>
+		       <th>{% anchor group_type "Group Type" %}</th>
+		       <th>{% anchor season "Season" %}</th>
+		       <th>{% anchor year "Year" %}</th>
+		    </tr>
+		{% for sendinggroup in sendinggroup_list %}
+		<tr>
+			<td><a href="{% url sendinggroup_detail sendinggroup.id %}">{{ sendinggroup.group_type }}</a></td>
+			<td>{{ sendinggroup.season }}</td>
+			<td>{{ sendinggroup.year }}</td>
+		</tr>
+		{% endfor %}
+		</table>
+	{% else %}
+		<p>No travel segments found.</p>
+	{% endif %}
+
+{% endblock %}

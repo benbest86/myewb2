@@ -66,5 +66,8 @@ class CaseStudyForm(forms.ModelForm):
   class Meta:
     model = CaseStudy
 
+class SendingGroupForm(forms.ModelForm):
+  class Meta:
+    model = SendingGroup
 
 

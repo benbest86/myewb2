@@ -111,7 +111,7 @@ session_info_new = {
 }
 
 urlpatterns += patterns('',
-  url(r'^sessions/(?:page/(?P<page>\d+))?$', list_detail.object_list, session_info, name="sessions"),
+  url(r'^sessions/$', list_detail.object_list, session_info, name="sessions"),
   url(r'^sessions/(?P<object_id>\d+)/$', create_update.update_object, session_info_edit, name="session_detail"),
   url(r'^sessions/new$', create_update.create_object, session_info_new, name="session_new"),
 )
@@ -137,7 +137,7 @@ casestudy_info_new = {
 }
 
 urlpatterns += patterns('',
-  url(r'^casestudies/(?:page/(?P<page>\d+))?$', list_detail.object_list, casestudy_info, name="casestudies"),
+  url(r'^casestudies/$', list_detail.object_list, casestudy_info, name="casestudies"),
   url(r'^casestudies/(?P<object_id>\d+)/$', create_update.update_object, casestudy_info_edit, name="casestudy_detail"),
   url(r'^casestudies/new$', create_update.create_object, casestudy_info_new, name="casestudy_new"),
 )
@@ -162,7 +162,7 @@ sector_info_new = {
 }
 
 urlpatterns += patterns('',
-  url(r'^sectors/(?:page/(?P<page>\d+))?$', list_detail.object_list, sector_info, name="sectors"),
+  url(r'^sectors/$', list_detail.object_list, sector_info, name="sectors"),
   url(r'^sectors/(?P<object_id>\d+)/$', create_update.update_object, sector_info_edit, name="sector_detail"),
   url(r'^sectors/new$', create_update.create_object, sector_info_new, name="sector_new"),
 )
@@ -187,7 +187,7 @@ travelsegment_info_new = {
 }
 
 urlpatterns += patterns('',
-  url(r'^travelsegments/(?:page/(?P<page>\d+))?$', list_detail.object_list, travelsegment_info, name="travelsegments"),
+  url(r'^travelsegments/$', list_detail.object_list, travelsegment_info, name="travelsegments"),
   url(r'^travelsegments/(?P<object_id>\d+)/$', create_update.update_object, travelsegment_info_edit, name="travelsegment_detail"),
   url(r'^travelsegments/new$', create_update.create_object, travelsegment_info_new, name="travelsegment_new"),
 )
@@ -212,7 +212,7 @@ insuranceinstance_info_new = {
 }
 
 urlpatterns += patterns('',
-  url(r'^insuranceinstances/(?:page/(?P<page>\d+))?$', list_detail.object_list, insuranceinstance_info, name="insuranceinstances"),
+  url(r'^insuranceinstances/$', list_detail.object_list, insuranceinstance_info, name="insuranceinstances"),
   url(r'^insuranceinstances/(?P<object_id>\d+)/$', create_update.update_object, insuranceinstance_info_edit, name="insuranceinstance_detail"),
   url(r'^insuranceinstances/new$', create_update.create_object, insuranceinstance_info_new, name="insuranceinstance_new"),
 )
@@ -238,7 +238,7 @@ stipend_info_new = {
 }
 
 urlpatterns += patterns('',
-  url(r'^stipends/(?:page/(?P<page>\d+))?$', list_detail.object_list, stipend_info, name="stipends"),
+  url(r'^stipends/$', list_detail.object_list, stipend_info, name="stipends"),
   url(r'^stipends/(?P<object_id>\d+)/$', create_update.update_object, stipend_info_edit, name="stipend_detail"),
   url(r'^stipends/new$', create_update.create_object, stipend_info_new, name="stipend_new"),
 )
@@ -263,7 +263,7 @@ evaluationcriterion_info_new = {
 }
 
 urlpatterns += patterns('',
-  url(r'^evaluationcriterions/(?:page/(?P<page>\d+))?$', list_detail.object_list, evaluationcriterion_info, name="evaluationcriterions"),
+  url(r'^evaluationcriterions/$', list_detail.object_list, evaluationcriterion_info, name="evaluationcriterions"),
   url(r'^evaluationcriterions/(?P<object_id>\d+)/$', create_update.update_object, evaluationcriterion_info_edit, name="evaluationcriterion_detail"),
   url(r'^evaluationcriterions/new$', create_update.create_object, evaluationcriterion_info_new, name="evaluationcriterion_new"),
 )
@@ -289,7 +289,7 @@ evaluationresponse_info_new = {
 }
 
 urlpatterns += patterns('',
-  url(r'^evaluationresponses/(?:page/(?P<page>\d+))?$', list_detail.object_list, evaluationresponse_info, name="evaluationresponses"),
+  url(r'^evaluationresponses/$', list_detail.object_list, evaluationresponse_info, name="evaluationresponses"),
   url(r'^evaluationresponses/(?P<object_id>\d+)/$', create_update.update_object, evaluationresponse_info_edit, name="evaluationresponse_detail"),
   url(r'^evaluationresponses/new$', create_update.create_object, evaluationresponse_info_new, name="evaluationresponse_new"),
 )
@@ -314,7 +314,7 @@ evaluation_info_new = {
 }
 
 urlpatterns += patterns('',
-  url(r'^evaluations/(?:page/(?P<page>\d+))?$', list_detail.object_list, evaluation_info, name="evaluations"),
+  url(r'^evaluations/$', list_detail.object_list, evaluation_info, name="evaluations"),
   url(r'^evaluations/(?P<object_id>\d+)/$', create_update.update_object, evaluation_info_edit, name="evaluation_detail"),
   url(r'^evaluations/new$', create_update.create_object, evaluation_info_new, name="evaluation_new"),
 )
@@ -340,7 +340,7 @@ application_info_new = {
 }
 
 urlpatterns += patterns('',
-  url(r'^applications/(?:page/(?P<page>\d+))?$', list_detail.object_list, application_info, name="applications"),
+  url(r'^applications/$', list_detail.object_list, application_info, name="applications"),
   url(r'^applications/(?P<object_id>\d+)/$', create_update.update_object, application_info_edit, name="application_detail"),
   url(r'^applications/new$', create_update.create_object, application_info_new, name="application_new"),
 )
@@ -365,7 +365,7 @@ answer_info_new = {
 }
 
 urlpatterns += patterns('',
-  url(r'^answers/(?:page/(?P<page>\d+))?$', list_detail.object_list, answer_info, name="answers"),
+  url(r'^answers/$', list_detail.object_list, answer_info, name="answers"),
   url(r'^answers/(?P<object_id>\d+)/$', create_update.update_object, answer_info_edit, name="answer_detail"),
   url(r'^answers/new$', create_update.create_object, answer_info_new, name="answer_new"),
 )
@@ -389,7 +389,31 @@ question_info_new = {
   'post_save_redirect': '/volunteering/questions/',
 }
 urlpatterns += patterns('',
-  url(r'^questions/(?:page/(?P<page>\d+))?$', list_detail.object_list, question_info, name="questions"),
+  url(r'^questions/$', list_detail.object_list, question_info, name="questions"),
   url(r'^questions/(?P<object_id>\d+)/$', create_update.update_object, question_info_edit, name="question_detail"),
   url(r'^questions/new$', create_update.create_object, question_info_new, name="question_new"),
+)
+
+sendinggroup_info = {
+  'queryset': SendingGroup.objects.all(),
+  'template_name': 'volunteering/sendinggroup/list.html',
+  'template_object_name': 'sendinggroup',
+  'paginate_by': 10,
+}
+
+sendinggroup_info_edit = {
+  'template_name': 'volunteering/sendinggroup/form.html',
+  'template_object_name': 'sendinggroup',
+  'form_class':  SendingGroupForm,
+}
+
+sendinggroup_info_new = {
+  'template_name': 'volunteering/sendinggroup/form.html',
+  'form_class':  SendingGroupForm,
+  'post_save_redirect': '/volunteering/sendinggroups/',
+}
+urlpatterns += patterns('',
+  url(r'^sendinggroups/$', list_detail.object_list, sendinggroup_info, name="sendinggroups"),
+  url(r'^sendinggroups/(?P<object_id>\d+)/$', create_update.update_object, sendinggroup_info_edit, name="sendinggroup_detail"),
+  url(r'^sendinggroups/new$', create_update.create_object, sendinggroup_info_new, name="sendinggroup_new"),
 )
