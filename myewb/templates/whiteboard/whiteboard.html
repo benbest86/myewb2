@@ -1,0 +1,30 @@
+{% load i18n %}
+{% load group_tags %}
+
+
+{% if not wb.content %}
+
+	{% if member %}
+		<h2>{% trans "Whiteboard" %}</h2>
+		<a href="{% groupurl wiki_edit group title=wb.title %}">{% trans "Create a whiteboard..." %}</a>
+	{% endif %}
+
+{% else %}
+
+	<h2>{% trans "Whiteboard" %}</h2>
+	
+	<div style="border: solid 1px; padding: 15px; width: 500px;">
+		{# we ignore the markup field, and assume it's html, since we've hacked it up... #}
+		{{ wb.content|safe }}
+
+		{% if member %}
+			<br/><br/>
+			<a href="{% groupurl wiki_edit group title=wb.title %}">{% trans "Edit this article" %}</a>
+			|
+			<a href="{% groupurl wiki_article_history group title=wb.title %}">{% trans "Editing history" %}</a>
+
+		{% endif %}
+
+	</div>
+
+{% endif %}

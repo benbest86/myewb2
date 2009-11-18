@@ -14,6 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 
 from topics.models import Topic
+from wiki.models import Article
 
 from lxml.html.clean import clean_html, autolink_html
 
@@ -23,6 +24,7 @@ class GroupTopic(Topic):
     """
     
     send_as_email = models.BooleanField(_('send as email'), default=False)
+    whiteboard = models.ForeignKey(Article, related_name="topic", verbose_name=_('whiteboard'), null=True)
     
     def get_absolute_url(self, group=None):
         kwargs = {"topic_id": self.pk}

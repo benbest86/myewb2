@@ -8,9 +8,9 @@
 {% load avatar_tags %}
 {% load group_tags %}
 {% load attachments_tags %}
+{% load whiteboard_tags %}
 {% load icon_tags %}
 {% load filesize_tags %}
-
 {% block head_title %}{% trans "Post" %} : {{ topic.title }}{% endblock %}
 
 {% block body %}
@@ -57,6 +57,9 @@
             </div>
         </li>
     </ul>
+
+	{% show_whiteboard topic.whiteboard topic.group member %}
+    
     {% if edit %}
         <h2>Edit</h2>
         <form class="uniForm" method="post" action="{{ request.path }}">

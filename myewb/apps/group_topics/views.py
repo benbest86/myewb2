@@ -27,6 +27,7 @@ from threadedcomments.models import ThreadedComment
 from attachments.forms import AttachmentForm
 from attachments.models import Attachment
 from topics.models import Topic
+from wiki.models import Article
 
 # FIXME: this method is copied wholesale from pinax.apps.topics.views except for one line =(
 
@@ -41,10 +42,10 @@ def topic(request, topic_id, group_slug=None, edit=False, template_name="topics/
         group = None
 
     if group:
-        topics = group.content_objects(Topic)
+        topics = group.content_objects(GroupTopic)
     else:
         # this is the only different line.  which is needed to keep things sane.
-        topics = Topic.objects.all()
+        topics = GroupTopic.objects.all()
         #topics = Topic.objects.filter(object_id=None)
 
     topic = get_object_or_404(topics, id=topic_id)
@@ -59,11 +60,26 @@ def topic(request, topic_id, group_slug=None, edit=False, template_name="topics/
     else:
         group_base = None
 
+    # retrieve whiteboard (create if needed)
+    if topic.whiteboard == None:
+        # group_slug should always be valid - group never null!
+        wb = Article(title="Post%d" % (topic.id), content="")
+        if topic.group:
+            topic.group.associate(wb, commit=False)
+        wb.save()
+        topic.whiteboard = wb
+        topic.save()
+        
+    member = False
+    if topic.group and topic.group.user_is_member(request.user):
+        member = True
+
     return render_to_response(template_name, {
         "topic": topic,
         "edit": edit,
-        "group": group,
+        "group": topic.group,
         "group_base": group_base,
+        "member": member,
     }, context_instance=RequestContext(request))
 
 def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_class=AttachmentForm, template_name="topics/topics.html", bridge=None):
@@ -116,7 +132,7 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
                     
                     # We need the "Topic" object in order to retrieve attachments properly
                     # since other functions only get the Topic object
-                    base_topic = Topic.objects.get(id=topic.id)
+                    base_topic = GroupTopic.objects.get(id=topic.id)
                     for af in attach_forms:
                         attachment = af.save(request, base_topic)
                         
@@ -130,7 +146,7 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
         else:
             return HttpResponseForbidden()
     else:
-        topic_form = form_class(instance=Topic())
+        topic_form = form_class(instance=GroupTopic())
         attach_forms = []
     
     if group:

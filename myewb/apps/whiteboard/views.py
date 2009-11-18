@@ -25,7 +25,7 @@ def edit_article(request, title,
                  ArticleClass=Article, # to get the DoesNotExist exception
                  ArticleFormClass=WhiteboardForm,
                  template_name='edit_whiteboard.html',
-                 template_dir='base_groups',
+                 template_dir='whiteboard',
                  extra_context=None,
                  check_membership=False,
                  is_member=None,
@@ -71,7 +71,15 @@ def edit_article(request, title,
 
                 new_article, changeset = form.save()
             
-                url = group.get_absolute_url()
+                # FIXME: is there a more efficient way of finding the parent
+                # than running these count() queries? 
+                if new_article.topic.count():
+                    url = new_article.topic.all()[0].get_absolute_url()
+                elif new_article.event.count():
+                    url = new_article.event.all()[0].get_absolute_url()
+                else:
+                    url = group.get_absolute_url()
+                    
                 return redirect_to(request, url)
 
     # delegate everything back to the main wiki app
@@ -147,7 +155,7 @@ def view_changeset(request, title, revision,
                    article_qs=ALL_ARTICLES,
                    changes_qs=ALL_CHANGES,
                    template_name='whiteboard_changeset.html',
-                   template_dir='base_groups',
+                   template_dir='whiteboard',
                    extra_context=None,
                    is_member=None,
                    is_private=None,
@@ -185,7 +193,7 @@ def article_history(request, title,
                     group_slug=None, bridge=None,
                     article_qs=ALL_ARTICLES,
                     template_name='whiteboard_history.html',
-                    template_dir='base_groups',
+                    template_dir='whiteboard',
                     extra_context=None,
                     is_member=None,
                     is_private=None,

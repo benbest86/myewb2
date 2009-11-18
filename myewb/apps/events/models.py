@@ -3,7 +3,9 @@ from django.template.defaultfilters import slugify
 
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
+from django.utils.translation import ugettext_lazy as _
 
+from wiki.models import Article
 
 class Event(models.Model):
     ''' Simple event-tag with owner and content_object + meta_data '''
@@ -22,6 +24,8 @@ class Event(models.Model):
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
     content_object = generic.GenericForeignKey()
+    
+    whiteboard = models.ForeignKey(Article, related_name="event", verbose_name=_('whiteboard'), null=True)
 
     def __unicode__(self):
         return "%s, %s" % (self.slug, self.start.date())

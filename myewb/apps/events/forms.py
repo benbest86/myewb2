@@ -26,7 +26,7 @@ class EventForm(forms.ModelForm):
 
     class Meta:
         model = Event
-        exclude = ('object_id', 'content_type', 'owner')
+        exclude = ('object_id', 'content_type', 'owner', 'whiteboard')
 
 '''
 class EventAddForm(EventForm):

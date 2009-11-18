@@ -6,14 +6,16 @@
 {% load base_groups_tags %}
 {% load group_tags %}
 {% load topics_tags %}
+{% load whiteboard_tags %}
+{% load events_tags %}
 
-<h2>{% trans "Whiteboard" %}</h2>
+{% show_whiteboard group.whiteboard group member %}
 
-{% if group.whiteboard %}
-    <table class="topics">
-		{% include "base_groups/whiteboard.html" %}
-    </table>
-{% endif %}
+<h2>{% trans "Upcoming Events" %}</h2>
+{% events_upcoming user group %} <br/>
+<a href="{% link_to_events_for group 'css_class' 1 %}">See all events for {{group}}</a><br/>
+<a href="{% event_link_add_to group 'css_id' 1 %}">Add event</a>
+<br/>
 
 <h2>{% trans "Discussion Topics" %}{% if group.topics.all.count %} ({{ group.topics.all.count }}){% endif %}</h2>
 
@@ -36,25 +38,6 @@
 <h2>{% trans "Tweets" %}</h2>
 
 {% tweet_listing tweets 1 0 %}
-
-<h2>{% trans "Upcoming Events" %}</h2>
-{% get_calendar group as calendar %}
-{% if calendar.get_upcoming_events %}
-    <table class="topics">
-        {% for event in calendar.get_upcoming_events %}
-            <tr class="odd">
-                <td>{{ event.title }}</td>
-                <td>{{ event.start }}-{{ event.end }}</td>
-            </tr>
-        {% endfor %}
-    </table>
-{% else %}
-    {% trans "There are no upcoming events." %}
-{% endif %}
-<p>
-    <a href="{{ calendar.get_absolute_url }}">{% trans "calendar..." %}</a>
-</p>
-
 
 {% if photos %}
     <h2>{% trans "Group Photo Pool" %}</h2>

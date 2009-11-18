@@ -9,8 +9,10 @@ from django.http import HttpResponseNotFound, HttpResponseRedirect
 from django.db.models import Q
 from django.template import RequestContext
 
+from base_groups.models import BaseGroup
 from events.models import Event
 from events.forms import EventForm#, EventAddForm
+from wiki.models import Article
 
 from django.contrib.auth.models import User
 
@@ -88,11 +90,31 @@ def detail(request, id, slug):
     if not helpers.is_visible(request.user, parent):
         return render_to_response('denied.html', context_instance=RequestContext(request))
 
-    return object_detail(request,
-        queryset=Event.objects.all(),
-        object_id=id,
-    )
+    # create whiteboard if needed
+    member = False
+    if event.whiteboard == None:
+        # this will fail if the event's parent is not a group... 
+        # so, only events attached to a group can have a whiteboard.
+        try:
+            method = getattr(event.content_object, "associate")
+            wb = Article(title="Event%d" % (event.id), content="")
+            event.content_object.associate(wb, commit=False)
+            wb.save()
+            event.whiteboard = wb
+            event.save()
+            
+            # FIXME: we assume if you can see the event, you can edit it
+            member = True
+        except:
+            pass
 
+    return render_to_response("events/event_detail.html",
+                               { 'object': event,
+                                'member': member,
+                               },
+                               context_instance=RequestContext(request),
+                             )
+ 
 @login_required
 def delete(request, id):
     e = get_object_or_404(Event, pk=id)

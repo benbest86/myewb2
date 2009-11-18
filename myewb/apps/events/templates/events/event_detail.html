@@ -1,5 +1,6 @@
 {% extends 'events/base.html' %}
 {% load events_tags %}
+{% load whiteboard_tags %}
 
 {% block body %}
 
@@ -15,6 +16,8 @@ End: {{object.end|date:"D, M j \a\t\ P"}}</p>
 <p>Location: {{object.location}}</p>
 
 <p>{{object.description}}</p>
+
+{% show_whiteboard object.whiteboard object.content_object member %}
 
 <p>Created by: {{object.creator.name}}<br/>
 Visible to {{object.content_object}}</p>

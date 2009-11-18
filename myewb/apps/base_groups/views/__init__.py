@@ -133,7 +133,7 @@ def group_detail(request, group_slug, model=None, member_model=None, form_class=
         if request.method == 'GET':
             # retrieve whiteboard (create if needed)
             if group.whiteboard == None:
-                wb = Article(title=group_slug, content="")
+                wb = Article(title="Whiteboard", content="")
                 group.associate(wb, commit=False)
                 wb.save()
                 group.whiteboard = wb
