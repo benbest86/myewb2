@@ -188,25 +188,70 @@ class GroupMember(models.Model):
         
     def is_requested(self):
         return self.request_status == 'R'
-        
-    class Meta:
-        ordering = ('is_admin', 'admin_order')
 
     def is_bulk(self):
         return self.request_status == 'B'
+        
+    def change_status(self, status_string=None):
+        # end any existing statuses
+        old_gsrs = GroupStatusRecord.objects.filter(user=self.user, group=self.group, end=None)
+        for old_gsr in old_gsrs:
+            old_gsr.end = datetime.datetime.now()
+            old_gsr.save()
+        
+        # status_string == None implies user is leaving group
+        if status_string:
+            gsr = GroupStatusRecord(user=self.user, group=self.group, status=status_string)
+            gsr.save()        
+        
+    def save(self, force_insert=False, force_update=False):        
+        if(self.id):
+            prev = GroupMember.objects.get(pk=self.id)
+            
+            if prev.is_bulk and not self.is_bulk:
+                self.change_status("recipient")            
+            elif not prev.is_accepted and self.is_accepted:
+                self.change_status("regular")            
+            elif not prev.is_admin and self.is_admin:
+                self.change_status("admin")
+            elif prev.is_admin == True and not self.is_admin:
+                self.change_status("regular")                
+                
+        else:
+            if self.is_accepted:
+                self.change_status("regular")
+            
+            elif self.is_admin:
+                self.change_status("admin")
+                
+            elif self.is_bulk and not self.is_accepted:       # weird bug - the first really should imply the other
+                # Assuming for now that "recipient" covers mailing-list-only members
+                # This may differ slightly from what's been assumed in myEWB previously
+                self.change_status("recipient")
+        
+        super(GroupMember, self).save(force_insert, force_update)
+        
+    def delete(self):
+        self.change_status()    # i.e. end current status(es)
+        
+        super(GroupMember, self).delete()
     
+    class Meta:
+        ordering = ('is_admin', 'admin_order')
+        
     def __unicode__(self):
         return "%s - %s (%s)" % (self.user, self.group, self.request_status)
-
+        
     # away = models.BooleanField(_('away'), default=False)
     # away_message = models.CharField(_('away_message'), max_length=500)
     # away_since = models.DateTimeField(_('away since'), default=datetime.now)
-    
-class FormerGroupMember(models.Model):
-    group = models.ForeignKey(BaseGroup, related_name="former_members", verbose_name=_('group'))
-    user = models.ForeignKey(User, related_name="former_member_groups", verbose_name=_('user'))
-    joined = models.DateTimeField(_('joined'))
-    left = models.DateTimeField(_('joined'), default=datetime.datetime.now)
+
+class GroupStatusRecord(models.Model):
+    group = models.ForeignKey(BaseGroup, related_name="status_records", verbose_name=_('group'))    
+    user = models.ForeignKey(User, related_name="status_records", verbose_name=_('user'))
+    status = models.CharField(max_length=100, null=True, blank=True)
+    start = models.DateTimeField(_('start'), default=datetime.datetime.now)
+    end = models.DateTimeField(_('end'), null=True, blank=True)
     
 class GroupLocation(models.Model):
     group = models.ForeignKey(BaseGroup, related_name="locations", verbose_name=_('group'))
