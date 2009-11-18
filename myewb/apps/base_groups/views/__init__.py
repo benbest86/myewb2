@@ -81,9 +81,8 @@ def groups_index(request, model=None, member_model=None, form_class=None, templa
                 group.creator = request.user
                 group.save()
 
-                group_member = member_model(group=group, user=request.user, is_admin=True, admin_title="Creator")
-                group.members.add(group_member)
-                group_member.save()
+                # user is made an admin of the group in a base_group.models
+                # post-save hook, no need to do it here.
 
                 if notification:
                     # @@@ might be worth having a shortcut for sending to all users
