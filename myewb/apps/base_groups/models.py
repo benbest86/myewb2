@@ -212,13 +212,13 @@ class GroupMember(models.Model):
         if self.id:
             prev = GroupMember.objects.get(pk=self.id)
             
-            if prev.is_bulk and not self.is_bulk:
+            if self.is_bulk and not prev.is_bulk:
                 self.change_status("recipient")            
             elif not prev.is_accepted and self.is_accepted:
                 self.change_status("regular")            
             elif not prev.is_admin and self.is_admin:
                 self.change_status("admin")
-            elif prev.is_admin == True and not self.is_admin:
+            elif prev.is_admin and not self.is_admin:
                 self.change_status("regular")                
                 
         else:
@@ -228,7 +228,7 @@ class GroupMember(models.Model):
             elif self.is_admin:
                 self.change_status("admin")
                 
-            elif self.is_bulk:       # weird bug - the first really should imply the other
+            elif self.is_bulk:
                 # Assuming for now that "recipient" covers mailing-list-only members
                 # This may differ slightly from what's been assumed in myEWB previously
                 self.change_status("recipient")
