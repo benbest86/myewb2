@@ -180,15 +180,19 @@ class GroupMember(models.Model):
     )
     request_status = models.CharField(_('request status'), max_length=1, choices=REQUEST_STATUS_CHOICES, default='A')
     
+    @property
     def is_accepted(self):
         return self.request_status == 'A'
     
+    @property
     def is_invited(self):
         return self.request_status == 'I'
         
+    @property
     def is_requested(self):
         return self.request_status == 'R'
 
+    @property
     def is_bulk(self):
         return self.request_status == 'B'
         
@@ -205,7 +209,7 @@ class GroupMember(models.Model):
             gsr.save()        
         
     def save(self, force_insert=False, force_update=False):        
-        if(self.id):
+        if self.id:
             prev = GroupMember.objects.get(pk=self.id)
             
             if prev.is_bulk and not self.is_bulk:
@@ -224,7 +228,7 @@ class GroupMember(models.Model):
             elif self.is_admin:
                 self.change_status("admin")
                 
-            elif self.is_bulk and not self.is_accepted:       # weird bug - the first really should imply the other
+            elif self.is_bulk:       # weird bug - the first really should imply the other
                 # Assuming for now that "recipient" covers mailing-list-only members
                 # This may differ slightly from what's been assumed in myEWB previously
                 self.change_status("recipient")

@@ -40,7 +40,9 @@ class TestBulkMembershipHistory(TestMembershipHistory):
     def test_remove_bulk_member(self):
         gm = GroupMember.objects.create(user=self.user, group=self.bg, request_status='B')
         gm.delete()
+        # .get() here will ensure only a single record
         status_record = GroupStatusRecord.objects.get(user=self.user, group=self.bg)
+        # assert an end has been given to our status_record
         self.assertTrue(status_record.end)
 
     def test_change_bulk_to_accepted(self):
