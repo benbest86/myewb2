@@ -56,53 +56,89 @@ class TestBulkMembershipHistory(TestMembershipHistory):
         self.assertTrue(regular_record.start)
         self.assertFalse(regular_record.end)
 
-class TestAcceptedMembershipHistory(TestCase):
+class TestAcceptedMembershipHistory(TestMembershipHistory):
     """
     Tests to ensure that changing status on members creates
     the proper membership history.
     """
-    def setUp(self):
-        pass
 
-    def tearDown(self):
-        pass
+    def test_add_accepted_member(self):
+        gm = GroupMember.objects.create(user=self.user, group=self.bg, request_status='A')
+        status_record = GroupStatusRecord.objects.get(user=self.user, group=self.bg)
+        self.assertEquals(status_record.status, 'regular')
+        # assert True and False for start and end since we can't predict the time of 
+        # creation
+        self.assertTrue(status_record.start)
+        self.assertFalse(status_record.end)
 
-class TestInvitedMembershipHistory(TestCase):
+    def test_delete_accepted_member(self):
+        gm = GroupMember.objects.create(user=self.user, group=self.bg, request_status='A')
+        gm.delete()
+        status_record = GroupStatusRecord.objects.get(user=self.user, group=self.bg)
+        self.assertEquals(status_record.status, 'regular')
+        # assert True and False for start and end since we can't predict the time of 
+        # creation
+        self.assertTrue(status_record.start)
+        self.assertTrue(status_record.end)
+
+
+class TestInvitedMembershipHistory(TestMembershipHistory):
     """
     Tests to ensure that changing status on members creates
     the proper membership history.
     """
-    def setUp(self):
-        pass
-
-    def tearDown(self):
-        pass
-
     def test_invite_member(self):
-        pass
+        gm = GroupMember.objects.create(user=self.user, group=self.bg, request_status='I')
+        status_record = GroupStatusRecord.objects.filter(user=self.user, group=self.bg)
+        # no status record should be created for an invited user
+        self.assertFalse(status_record.count())
 
     def test_change_invited_to_accepted(self):
-        pass
+        gm = GroupMember.objects.create(user=self.user, group=self.bg, request_status='I')
+        gm.request_status = 'A'
+        gm.save()
+        status_record = GroupStatusRecord.objects.get(user=self.user, group=self.bg)
+        self.assertEquals(status_record.status, 'regular')
+        # assert True and False for start and end since we can't predict the time of 
+        # creation
+        self.assertTrue(status_record.start)
+        self.assertFalse(status_record.end)
 
     def test_remove_invited_member(self):
-        pass
+        gm = GroupMember.objects.create(user=self.user, group=self.bg, request_status='I')
+        gm.delete()
+        status_record = GroupStatusRecord.objects.filter(user=self.user, group=self.bg)
+        # no status record should be created for an invited user
+        self.assertFalse(status_record.count())
 
-class TestRequestedMembershipHistory(TestCase):
+class TestRequestedMembershipHistory(TestMembershipHistory):
     """
     Tests to ensure that changing status on members creates
     the proper membership history.
     """
-    def setUp(self):
-        pass
+    def test_add_request_member(self):
+        gm = GroupMember.objects.create(user=self.user, group=self.bg, request_status='R')
+        status_record = GroupStatusRecord.objects.filter(user=self.user, group=self.bg)
+        # no status record should be created for an invited user
+        self.assertFalse(status_record.count())
 
-    def tearDown(self):
-        pass
-
-    def test_remove_requested_member(self):
-        pass
+    def test_delete_requested_member(self):
+        gm = GroupMember.objects.create(user=self.user, group=self.bg, request_status='R')
+        gm.delete()
+        status_record = GroupStatusRecord.objects.filter(user=self.user, group=self.bg)
+        # no status record should be created for an invited user
+        self.assertFalse(status_record.count())
 
     def test_accept_requested_member(self):
-        pass
+        gm = GroupMember.objects.create(user=self.user, group=self.bg, request_status='R')
+        gm.request_status = 'A'
+        gm.save()
+        status_record = GroupStatusRecord.objects.get(user=self.user, group=self.bg)
+        self.assertEquals(status_record.status, 'regular')
+        # assert True and False for start and end since we can't predict the time of 
+        # creation
+        self.assertTrue(status_record.start)
+        self.assertFalse(status_record.end)
 
 class TestAdminMembershipHistory(TestCase):
     """
