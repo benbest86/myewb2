@@ -2,6 +2,9 @@ from django.conf.urls.defaults import *
 from django.core.urlresolvers import reverse
 from django.views.generic.simple import direct_to_template
 
+from django.shortcuts import render_to_response
+from django.template import RequestContext
+
 from django.views.generic import list_detail, create_update
 from volunteering.models import *
 from volunteering.forms import *
@@ -412,8 +415,28 @@ sendinggroup_info_new = {
   'form_class':  SendingGroupForm,
   'post_save_redirect': '/volunteering/sendinggroups/',
 }
+
+def sendinggroup_members(request, object_id):
+  sending_group = SendingGroup.objects.get(id=object_id)
+  group_members = MemberProfile.objects.filter(sending_groups=sending_group)
+  non_group_members = MemberProfile.objects.exclude(sending_groups=sending_group)
+  
+  response = render_to_response("volunteering/sendinggroup/members.html",
+           { 
+             "sending_group": sending_group,
+             "group_members": group_members,
+             "non_members": [[member.id, member.name] for member in non_group_members],
+             "selected_member": None,
+          },
+          context_instance=RequestContext(request)
+          )
+  
+  return response
+
 urlpatterns += patterns('',
   url(r'^sendinggroups/$', list_detail.object_list, sendinggroup_info, name="sendinggroups"),
   url(r'^sendinggroups/(?P<object_id>\d+)/$', create_update.update_object, sendinggroup_info_edit, name="sendinggroup_detail"),
   url(r'^sendinggroups/new$', create_update.create_object, sendinggroup_info_new, name="sendinggroup_new"),
+  url(r'^sendinggroups/members/(?P<object_id>\d+)$', sendinggroup_members, name="sendinggroup_members"),
+
 )

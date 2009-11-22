@@ -38,9 +38,14 @@ class SelectBox(template.Node):
     else:
       raise ValueError, "Can't find key %s in the context" % (self.choice_list)
 
-    if self.selected_item and context.has_key(self.selected_item):
-      selected_item = context[self.selected_item]
+    print "self.selected_item = %s" % (self.selected_item)
+
+    if self.selected_item != None:
+        if context.has_key(self.selected_item):
+          selected_item = context[self.selected_item]
+        else:
+          raise ValueError, "Can't find key %s in the context" % (self.selected_item)
     else:
-      raise ValueError
+        selected_item = None
 
     return Select().render_options(choice_list, [selected_item])
