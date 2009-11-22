@@ -1,0 +1,14 @@
+# git ignore file for myewb project
+# ignore python compiled files
+*.pyc
+# ignore vim swp files
+*.swp
+# ignore db files
+*.db
+*.sqlite
+# ignore local_settings
+myewb/local_settings.py
+
+# ignore any diff/patch files
+*.diff
+*.patch
