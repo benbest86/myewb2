@@ -12,3 +12,8 @@ myewb/local_settings.py
 # ignore any diff/patch files
 *.diff
 *.patch
+
+# eclipse settings files
+.project
+.pydevproject
+
