@@ -13,6 +13,7 @@ from django.db.models.signals import post_save
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 
+from base_groups.models import BaseGroup
 from topics.models import Topic
 from wiki.models import Article
 
@@ -23,6 +24,7 @@ class GroupTopic(Topic):
     a discussion topic for a BaseGroup.
     """
     
+    parent_group = models.ForeignKey(BaseGroup, related_name="topics", verbose_name=_('parent'))
     send_as_email = models.BooleanField(_('send as email'), default=False)
     whiteboard = models.ForeignKey(Article, related_name="topic", verbose_name=_('whiteboard'), null=True)
     
@@ -34,9 +36,15 @@ class GroupTopic(Topic):
             return reverse("topic_detail", kwargs=kwargs)
         
     def save(self, force_insert=False, force_update=False):
+        # validate HTML content
         # Additional options at http://codespeak.net/lxml/lxmlhtml.html#cleaning-up-html
         self.body = clean_html(self.body)
         self.body = autolink_html(self.body)
+        
+        # set parent group
+        group = BaseGroup.objects.get(id=self.object_id)
+        self.parent_group = group
+        
         super(GroupTopic, self).save(force_insert, force_update)
         post_save.send(sender=Topic, instance=GroupTopic.objects.get(id=self.id))
     

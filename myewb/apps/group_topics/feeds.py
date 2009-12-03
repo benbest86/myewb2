@@ -58,7 +58,7 @@ class TopicFeedAll(BaseTopicFeed):
         return 'Post feed for all groups'
 
     def feed_updated(self):
-        qs = GroupTopic.objects.all()
+        qs = GroupTopic.objects.filter(parent_group__visibility='E')
         # We return an arbitrary date if there are no results, because there
         # must be a feed_updated field as per the Atom specifications, however
         # there is no real data to go by, and an arbitrary date can be static.
@@ -75,7 +75,7 @@ class TopicFeedAll(BaseTopicFeed):
         return ({'href': complete_url},)
 
     def items(self):
-        return GroupTopic.objects.order_by("-created")[:ITEMS_PER_FEED]
+        return GroupTopic.objects.filter(parent_group__visibility='E').order_by("-created")[:ITEMS_PER_FEED]
 
 class TopicFeedGroup(BaseTopicFeed):
     def get_object(self, params):
@@ -108,4 +108,6 @@ class TopicFeedGroup(BaseTopicFeed):
         return ({'href': complete_url},)
 
     def items(self, group):
+        # NOTE: security needs to be handled elsewhere!!!
+        # (ie, currently, in group_topics.views.feed())
         return GroupTopic.objects.filter(object_id=group.id).order_by("-created")[:ITEMS_PER_FEED]
