@@ -6,222 +6,198 @@ from django.test.client import Client
 
 from base_groups.models import BaseGroup
 from group_topics.models import GroupTopic
+from tagging.models import Tag, TaggedItem
 
-class TestPost(TestCase):
-    """ These test are somewhat redundant, assuming BaseGroup.is_visible is
-        implemented and tested properly... but just in case."""
+class TestVisibility(TestCase):
+    """ Test all aspects of post visibility """
     
     def setUp(self):
-        self.u = User.objects.create_user('user', 'user@ewb.ca', 'password')
-        self.u.save()
+        self.creator = User.objects.create_user('creator', 'user@ewb.ca', 'password')
+        self.creator.save()
         
-        self.u2 = User.objects.create_user('user2', 'user2@ewb.ca', 'password')
-        self.u2.save()
+        self.member = User.objects.create_user('member', 'user2@ewb.ca', 'password')
+        self.member.save()
         
-        self.u3 = User.objects.create_user('user3', 'user3@ewb.ca', 'password')
-        self.u3.save()
+        self.nonmember = User.objects.create_user('nonmember', 'user3@ewb.ca', 'password')
+        self.nonmember.save()
         
-        self.bg = BaseGroup.objects.create(slug='bg', name='a base group', creator=self.u)
-        self.bg.add_member(self.u2)
-        self.bg.save()
+        self.admin = User.objects.create_user('admin', 'user4@ewb.ca', 'password')
+        self.admin.is_superuser = True
+        self.admin.save()
         
-        self.post = GroupTopic.objects.create(title="test",
-                                              body="some test text.",
-                                              group=self.bg,
-                                              creator=self.u)
+        self.publicgrp = BaseGroup.objects.create(slug='publicgrp',
+                                                  name='a public group',
+                                                  creator=self.member,
+                                                  model='BaseGroup',
+                                                  visibility='E')
+        self.privategrp = BaseGroup.objects.create(slug='privategrp',
+                                                   name='a private group',
+                                                   creator=self.member,
+                                                   model='BaseGroup',
+                                                   visibility='M')
+        
+        self.publicpost = GroupTopic.objects.create(title="publicpost",
+                                                    body="some test text.",
+                                                    group=self.publicgrp,
+                                                    creator=self.creator)
+        
+        self.privatepost = GroupTopic.objects.create(title="privatepost",
+                                                     body="some more test text.",
+                                                     group=self.privategrp,
+                                                     creator=self.creator)
+
+        self.tag = Tag.objects.create(name='testtag')
+        self.item1 = TaggedItem.objects.create(tag=self.tag, object=self.publicpost)
+        self.item2 = TaggedItem.objects.create(tag=self.tag, object=self.privatepost)
     
-    def test_public_group(self):
-        """ ensure everyone can see posts to a public group """
+    def test_guest(self):
+        """ check guest user's visibility """
         
-        self.bg.visibility = 'E'
-        self.bg.save()
-        c = self.client 
+        c = self.client
 
-        # guest
-        response = c.get("/posts/%d/" % self.post.pk)
-        self.assertContains(response, "test")
+        # aggregate listing on front page
+        response = c.get("/")
+        self.assertContains(response, "publicpost")
+        self.assertNotContains(response, "privatepost")
         
-        # creator
-        c.login(username='user', password='password')
-        response = c.get("/posts/%d/" % self.post.pk)
-        self.assertContains(response, "test")
-        c.logout()
-        
-        # group member
-        c.login(username='user2', password='password')
-        response = c.get("/posts/%d/" % self.post.pk)
-        self.assertContains(response, "test")
-        c.logout()
+        # aggregate listing by tag
+        response = c.get("/tags/testtag/")
+        self.assertContains(response, "publicpost")
+        self.assertNotContains(response, "privatepost")
 
-        # non-member
-        c.login(username='user3', password='password')
-        response = c.get("/posts/%d/" % self.post.pk)
-        self.assertContains(response, "test")
-        c.logout()
-       
-    def test_private_group(self):
-        """ ensure only members can see posts to a private group """
+        # public post is visible by direct URL
+        response = c.get("/posts/%d/" % self.publicpost.pk)
+        self.assertContains(response, "publicpost")
         
-        self.bg.visibility = 'M'
-        self.bg.save()
-        c = self.client 
-
-        # guest
-        response = c.get("/posts/%d/" % self.post.pk)
-        #self.assertNotContains(response, "test")
+        # private post is not visible by direct URL
+        response = c.get("/posts/%d/" % self.privatepost.pk)
+        #self.assertNotContains(response, "privatepost")
         self.assertEqual(response.status_code, 403)
         
-        # creator
-        c.login(username='user', password='password')
-        response = c.get("/posts/%d/" % self.post.pk)
-        self.assertContains(response, "test")
-        c.logout()
-        
-        # group member
-        c.login(username='user2', password='password')
-        response = c.get("/posts/%d/" % self.post.pk)
-        self.assertContains(response, "test")
-        c.logout()
+    def test_creator(self):
+        """ check post creator's visibility """
+        c = self.client
+        c.login(username='creator', password='password')
 
-        # non-member
-        c.login(username='user3', password='password')
-        response = c.get("/posts/%d/" % self.post.pk)
-        #self.assertNotContains(response, "test")
-        self.assertEqual(response.status_code, 403)
-        c.logout()
-        
-class TestListing(TestCase):
-    """ Test the main post list, to ensure only visible posts are on it"""
-    
-    def setUp(self):
-        self.u = User.objects.create_user('user', 'user@ewb.ca', 'password')
-        self.u.save()
-        
-        self.u2 = User.objects.create_user('user2', 'user2@ewb.ca', 'password')
-        self.u2.save()
-        
-        self.u3 = User.objects.create_user('user3', 'user3@ewb.ca', 'password')
-        self.u3.save()
-        
-        self.bg = BaseGroup.objects.create(slug='bg', name='a base group', creator=self.u, visibility='E')
-        self.bg.add_member(self.u2)
-        self.bg.save()
-        
-        self.post = GroupTopic.objects.create(title="publicpost",
-                                              body="some test text.",
-                                              group=self.bg,
-                                              creator=self.u)
-    
-        self.bg2 = BaseGroup.objects.create(slug='bg2', name='another base group', creator=self.u, visibility='M')
-        self.bg2.add_member(self.u2)
-        self.bg2.save()
-        
-        self.post2 = GroupTopic.objects.create(title="privatepost",
-                                               body="some more test text.",
-                                               group=self.bg2,
-                                               creator=self.u)
-    
-    def test_public_group(self):
-        """ ensure everyone can see posts to a public group """
-        
-        c = self.client 
-
-        # guest
+        # aggregate listing on front page
         response = c.get("/")
-        self.assertContains(response, "publicpost")
-        
-        # creator
-        c.login(username='user', password='password')
-        response = c.get("/")
-        self.assertContains(response, "publicpost")
-        c.logout()
-        
-        # group member
-        c.login(username='user2', password='password')
-        response = c.get("/")
-        self.assertContains(response, "publicpost")
-        c.logout()
-
-        # non-member
-        c.login(username='user3', password='password')
-        response = c.get("/")
-        # see TODO question in group_topics.views line 161
         self.assertNotContains(response, "publicpost")
-        c.logout()
-       
-    def test_private_group(self):
-        """ ensure only members can see posts to a private group """
+        self.assertNotContains(response, "privatepost")
+        # yes, those are intentional assertNotContains - since the post creator
+        # isn't a member of the group...
         
-        c = self.client 
+        # aggregate listing by tag
+        response = c.get("/tags/testtag/")
+        self.assertContains(response, "publicpost")
+        self.assertNotContains(response, "privatepost")
+        # yes, those are intentional assertNotContains - since the post creator
+        # isn't a member of the group...
 
-        # guest
+        # public post is visible by direct URL
+        response = c.get("/posts/%d/" % self.publicpost.pk)
+        self.assertContains(response, "publicpost")
+        
+        # private post is visible by direct URL
+        response = c.get("/posts/%d/" % self.privatepost.pk)
+        self.assertContains(response, "privatepost")
+        
+        c.logout()
+        
+    def test_member(self):
+        """ check group member's visibility """
+        c = self.client
+        c.login(username='member', password='password')
+
+        # aggregate listing on front page
         response = c.get("/")
+        self.assertContains(response, "publicpost")
+        self.assertContains(response, "privatepost")
+        
+        # aggregate listing by tag
+        response = c.get("/tags/testtag/")
+        self.assertContains(response, "publicpost")
+        self.assertContains(response, "privatepost")
+
+        # public post is visible by direct URL
+        response = c.get("/posts/%d/" % self.publicpost.pk)
+        self.assertContains(response, "publicpost")
+        
+        # private post is visible by direct URL
+        response = c.get("/posts/%d/" % self.privatepost.pk)
+        self.assertContains(response, "privatepost")
+        
+        c.logout()
+        
+    def test_nonmember(self):
+        """ check non-member's visibility """
+        c = self.client
+        c.login(username='nonmember', password='password')
+
+        # aggregate listing on front page
+        response = c.get("/")
+        # see TODO question in group_topics.views:161
+        self.assertNotContains(response, "publicpost")
         self.assertNotContains(response, "privatepost")
         
-        # creator
-        c.login(username='user', password='password')
-        response = c.get("/")
-        self.assertContains(response, "privatepost")
-        c.logout()
-        
-        # group member
-        c.login(username='user2', password='password')
-        response = c.get("/")
-        self.assertContains(response, "privatepost")
-        c.logout()
-
-        # non-member
-        c.login(username='user3', password='password')
-        response = c.get("/")
+        # aggregate listing by tag
+        response = c.get("/tags/testtag/")
+        self.assertContains(response, "publicpost")
         self.assertNotContains(response, "privatepost")
+
+        # public post is visible by direct URL
+        response = c.get("/posts/%d/" % self.publicpost.pk)
+        self.assertContains(response, "publicpost")
+        
+        # private post is not visible by direct URL
+        response = c.get("/posts/%d/" % self.privatepost.pk)
+        #self.assertNotContains(response, "privatepost")
+        self.assertEqual(response.status_code, 403)
+        
         c.logout()
         
-class TestFeeds(TestCase):
-    """ Test the post RSS feeds, to ensure only visible posts are on it"""
-    
-    def setUp(self):
-        self.u = User.objects.create_user('user', 'user@ewb.ca', 'password')
-        self.u.save()
+    def test_admin(self):
+        """ check admin's visibility """
+        c = self.client
+        c.login(username='admin', password='password')
+
+        # aggregate listing on front page
+        response = c.get("/")
+        # see TODO question in group_topics.views:161
+        # (assuming no admin-o-vision)
+        self.assertNotContains(response, "publicpost")
+        self.assertNotContains(response, "privatepost")
         
-        self.bg = BaseGroup.objects.create(slug='bg', name='a base group', creator=self.u, visibility='E', model='BaseGroup')
-        self.bg.save()
+        # aggregate listing by tag
+        response = c.get("/tags/testtag/")
+        self.assertContains(response, "publicpost")
+        self.assertContains(response, "privatepost")
+
+        # public post is visible by direct URL
+        response = c.get("/posts/%d/" % self.publicpost.pk)
+        self.assertContains(response, "publicpost")
         
-        self.post = GroupTopic.objects.create(title="publicpost",
-                                              body="some test text.",
-                                              group=self.bg,
-                                              creator=self.u)
-    
-        self.bg2 = BaseGroup.objects.create(slug='bg2', name='another base group', creator=self.u, visibility='M', model='BaseGroup')
-        self.bg2.save()
+        # private post is visible by direct URL
+        response = c.get("/posts/%d/" % self.privatepost.pk)
+        self.assertContains(response, "privatepost")
         
-        self.post2 = GroupTopic.objects.create(title="privatepost",
-                                               body="some more test text.",
-                                               group=self.bg2,
-                                               creator=self.u)
-    
-    def test_public_group(self):
-        """ ensure feed of a public group is visible """
+        c.logout()
         
+    def test_feeds(self):
+        """ test RSS feed visibility """
+        # membership/etc doesn't exist, as all RSS feeds are guest-only
+
         c = self.client 
 
-        response = c.get("/feeds/posts/bg/")
+        # public group
+        response = c.get("/feeds/posts/publicgrp/")
         self.assertContains(response, "publicpost")
        
-    def test_private_group(self):
-        """ ensure feed of a private group is not visible """
-        
-        c = self.client 
-
-        response = c.get("/feeds/posts/bg2/")
+        # private group (not visible)
+        response = c.get("/feeds/posts/privategrp/")
         #self.assertNotContains(response, "privatepost")
         self.assertEqual(response.status_code, 403)
        
-    def test_listing(self):
-        """ ensure only public posts show in the aggregate RSS feed """
-        
-        c = self.client 
-
+        # only public posts show in the aggregate RSS feed
         response = c.get("/feeds/posts/all/")
         self.assertContains(response, "publicpost")
         self.assertNotContains(response, "privatepost")
-        
