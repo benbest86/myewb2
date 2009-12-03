@@ -47,7 +47,7 @@ def topic(request, topic_id, group_slug=None, edit=False, template_name="topics/
     topic = get_object_or_404(topics, id=topic_id)
     
     parent_group = topic.parent_group
-    if not parent_group.is_visible(request.user):    
+    if not parent_group.is_visible(request.user) and not topic.creator == request.user:
         return HttpResponseForbidden()
 
     if (request.method == "POST" and edit == True and (request.user == topic.creator or request.user == topic.group.creator)):

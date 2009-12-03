@@ -170,7 +170,8 @@ class TestVisibility(TestCase):
         # aggregate listing by tag
         response = c.get("/tags/testtag/")
         self.assertContains(response, "publicpost")
-        self.assertContains(response, "privatepost")
+        self.assertNotContains(response, "privatepost")
+        # (again, no admin-o-vision)
 
         # public post is visible by direct URL
         response = c.get("/posts/%d/" % self.publicpost.pk)
