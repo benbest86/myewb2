@@ -131,7 +131,7 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
 
         else:
             # for guests, show all posts from public groups
-            topics = GroupTopic.objects.filter(parent_group__visibility='E')
+            topics = GroupTopic.objects.visible()
             
     return render_to_response(template_name, {
         "group": group,
