@@ -9,6 +9,7 @@ Created on: 2009-08-13
 """
 
 from django.db import models
+from django.db.models import Q
 from django.db.models.signals import post_save
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
@@ -19,6 +20,19 @@ from wiki.models import Article
 
 from lxml.html.clean import clean_html, autolink_html
 
+class GroupTopicManager(models.Manager):
+
+    def visible(self, user=None):
+        """
+        Returns visible posts by group visibility. Takes an optional
+        user parameter which adds GroupTopics from groups that the
+        member is a part of.
+        """
+        filter_q = Q(parent_group__visibility='E')
+        if user is not None and not user.is_anonymous():
+            filter_q |= Q(parent_group__member_users=user)
+        return self.get_query_set().filter(filter_q)
+
 class GroupTopic(Topic):
     """
     a discussion topic for a BaseGroup.
@@ -27,6 +41,8 @@ class GroupTopic(Topic):
     parent_group = models.ForeignKey(BaseGroup, related_name="topics", verbose_name=_('parent'))
     send_as_email = models.BooleanField(_('send as email'), default=False)
     whiteboard = models.ForeignKey(Article, related_name="topic", verbose_name=_('whiteboard'), null=True)
+
+    objects = GroupTopicManager()
     
     def get_absolute_url(self, group=None):
         kwargs = {"topic_id": self.pk}

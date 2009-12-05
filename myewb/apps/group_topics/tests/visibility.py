@@ -8,9 +8,10 @@ from base_groups.models import BaseGroup
 from group_topics.models import GroupTopic
 from tagging.models import Tag, TaggedItem
 
-class TestVisibility(TestCase):
-    """ Test all aspects of post visibility """
-    
+class VisibilityBaseTest(TestCase):
+    """
+    Base class with common setup function.
+    """
     def setUp(self):
         self.creator = User.objects.create_user('creator', 'user@ewb.ca', 'password')
         self.creator.save()
@@ -49,6 +50,10 @@ class TestVisibility(TestCase):
         self.tag = Tag.objects.create(name='testtag')
         self.item1 = TaggedItem.objects.create(tag=self.tag, object=self.publicpost)
         self.item2 = TaggedItem.objects.create(tag=self.tag, object=self.privatepost)
+
+class TestVisibility(VisibilityBaseTest):
+    """ Test all aspects of post visibility """
+    
     
     def test_guest(self):
         """ check guest user's visibility """
@@ -202,3 +207,28 @@ class TestVisibility(TestCase):
         response = c.get("/feeds/posts/all/")
         self.assertContains(response, "publicpost")
         self.assertNotContains(response, "privatepost")
+
+class TestVisibilityManagerFunctions(VisibilityBaseTest):
+    """
+    Tests the visibility manager functions.
+    """
+    def test_anon_visibility(self):
+        public = GroupTopic.objects.visible()
+        self.assertTrue(self.publicpost in public)
+        self.assertTrue(self.privatepost not in public)
+
+    def test_public_with_anon_user(self):
+        public = GroupTopic.objects.visible(AnonymousUser())
+        self.assertTrue(self.publicpost in public)
+
+    def test_public_with_user(self):
+        visible_to_creator = GroupTopic.objects.visible(self.creator)
+        self.assertTrue(self.publicpost in visible_to_creator)
+
+    def test_private_with_authorized_user(self):
+        visible_to_member = GroupTopic.objects.visible(self.member)
+        self.assertTrue(self.privatepost in visible_to_member)
+
+    def test_private_with_unauthorized_user(self):
+        visible_to_nonmember = GroupTopic.objects.visible(self.nonmember)
+        self.assertTrue(self.privatepost not in visible_to_nonmember)
