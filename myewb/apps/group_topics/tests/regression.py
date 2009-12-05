@@ -13,20 +13,19 @@ class CreateTopics(TestCase):
     """
 
     def setUp(self):
-        top_user = User.objects.create_user('super', 'super@ewb.ca')
-        self.base_group = BaseGroup.objects.create(slug='bg', creator=top_user)
+        self.top_user = User.objects.create_user('super', 'super@ewb.ca')
+        self.base_group = BaseGroup.objects.create(slug='bg', creator=self.top_user)
 
     def tearDown(self):
         BaseGroup.objects.all().delete()
         User.objects.all().delete()
 
     def test_create_group_topic(self):
-        user = User.objects.get()
         gt = GroupTopic.objects.create(
                 title="test",
                 body="some test text.",
                 group=self.base_group,
-                creator=user)
+                creator=self.top_user)
         # make sure we create a topic
         self.assertTrue(gt)
 
