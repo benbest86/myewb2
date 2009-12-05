@@ -27,6 +27,13 @@
             "network_type": "N"
         }
     },
+    {
+        "pk": 1,
+        "model": "auth.user",
+        "fields": {
+            "username": "root"
+        }
+    },
 
 	{
         "pk": 1,
