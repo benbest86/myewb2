@@ -222,6 +222,9 @@ class GroupMemberRecord(BaseGroupMember):
     user = models.ForeignKey(User, related_name="group_records", verbose_name=_('user'))
     datetime = models.DateTimeField(auto_now_add=True)
 
+    class Meta(BaseGroupMember.Meta):
+        get_latest_by = 'datetime'
+
     def __init__(self, *args, **kwargs):
         instance = kwargs.pop('instance', None)
         super(GroupMemberRecord, self).__init__(*args, **kwargs)
