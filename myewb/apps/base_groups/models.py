@@ -16,7 +16,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import  User
 from django.utils.translation import ugettext_lazy as _
 from django.db import models, connection
-from django.db.models.signals import post_save
+from django.db.models.signals import post_save, pre_delete
 from django.core.mail import EmailMessage
 
 from emailconfirmation.models import EmailAddress
@@ -162,10 +162,7 @@ class BaseGroup(Group):
     def get_accepted_members(self):
         return self.members.filter(request_status='A')
 
-    
-class GroupMember(models.Model):
-    group = models.ForeignKey(BaseGroup, related_name="members", verbose_name=_('group'))
-    user = models.ForeignKey(User, related_name="member_groups", verbose_name=_('user'))
+class BaseGroupMember(models.Model):
     is_admin = models.BooleanField(_('admin'), default=False)
     admin_title = models.CharField(_('admin title'), max_length=500, null=True, blank=True)
     admin_order = models.IntegerField(_('admin order (smallest numbers come first)'), default=999)
@@ -178,6 +175,10 @@ class GroupMember(models.Model):
         ('B', _("bulk member")),
     )
     request_status = models.CharField(_('request status'), max_length=1, choices=REQUEST_STATUS_CHOICES, default='A')
+
+    class Meta:
+        abstract = True
+        ordering = ('is_admin', 'admin_order')
     
     @property
     def is_accepted(self):
@@ -194,67 +195,67 @@ class GroupMember(models.Model):
     @property
     def is_bulk(self):
         return self.request_status == 'B'
-        
-    def change_status(self, status_string=None):
-        # end any existing statuses
-        old_gsrs = GroupStatusRecord.objects.filter(user=self.user, group=self.group, end=None)
-        for old_gsr in old_gsrs:
-            old_gsr.end = datetime.datetime.now()
-            old_gsr.save()
-        
-        # status_string == None implies user is leaving group
-        if status_string:
-            gsr = GroupStatusRecord(user=self.user, group=self.group, status=status_string)
-            gsr.save()        
-        
-    def save(self, force_insert=False, force_update=False):        
-        if self.id:
-            prev = GroupMember.objects.get(pk=self.id)
-            
-            if self.is_bulk and not prev.is_bulk:
-                self.change_status("recipient")            
-            elif not prev.is_accepted and self.is_accepted:
-                self.change_status("regular")            
-            elif not prev.is_admin and self.is_admin:
-                self.change_status("admin")
-            elif prev.is_admin and not self.is_admin:
-                self.change_status("regular")                
-                
-        else:
-            if self.is_accepted:
-                self.change_status("regular")
-            
-            elif self.is_admin:
-                self.change_status("admin")
-                
-            elif self.is_bulk:
-                # Assuming for now that "recipient" covers mailing-list-only members
-                # This may differ slightly from what's been assumed in myEWB previously
-                self.change_status("recipient")
-        
-        super(GroupMember, self).save(force_insert, force_update)
-        
-    def delete(self):
-        self.change_status()    # i.e. end current status(es)
-        
-        super(GroupMember, self).delete()
-    
-    class Meta:
-        ordering = ('is_admin', 'admin_order')
-        
+
     def __unicode__(self):
         return "%s - %s (%s)" % (self.user, self.group, self.request_status)
-        
+
+class GroupMember(BaseGroupMember):
+    """
+    Non-abstract representation of BaseGroupMember. Base class is required
+    for GroupMemberRecord.
+    """
+    # had to double these two fields in this model and GroupMemberRecord due to issues with related_name. 
+    # See http://docs.djangoproject.com/en/dev/topics/db/models/#be-careful-with-related-name
+    group = models.ForeignKey(BaseGroup, related_name="members", verbose_name=_('group'))
+    user = models.ForeignKey(User, related_name="member_groups", verbose_name=_('user'))
     # away = models.BooleanField(_('away'), default=False)
     # away_message = models.CharField(_('away_message'), max_length=500)
     # away_since = models.DateTimeField(_('away since'), default=datetime.now)
 
-class GroupStatusRecord(models.Model):
-    group = models.ForeignKey(BaseGroup, related_name="status_records", verbose_name=_('group'))    
-    user = models.ForeignKey(User, related_name="status_records", verbose_name=_('user'))
-    status = models.CharField(max_length=100, null=True, blank=True)
-    start = models.DateTimeField(_('start'), default=datetime.datetime.now)
-    end = models.DateTimeField(_('end'), null=True, blank=True)
+class GroupMemberRecord(BaseGroupMember):
+    """
+    A snapshot of a user's group status at a particular point in time.
+    """
+    # had to double these two fields in this model and GroupMember due to issues with related_name. 
+    # See http://docs.djangoproject.com/en/dev/topics/db/models/#be-careful-with-related-name
+    group = models.ForeignKey(BaseGroup, related_name="member_records", verbose_name=_('group'))
+    user = models.ForeignKey(User, related_name="group_records", verbose_name=_('user'))
+    datetime = models.DateTimeField(auto_now_add=True)
+
+    def __init__(self, *args, **kwargs):
+        instance = kwargs.pop('instance', None)
+        super(GroupMemberRecord, self).__init__(*args, **kwargs)
+        if instance is not None:
+            # copy over all properties from the instance provided
+            # note that these override any values passed to the constructor
+            self.group = instance.group
+            self.user = instance.user
+            self.is_admin = instance.is_admin
+            self.admin_title = instance.admin_title
+            self.admin_order = instance.admin_order
+            self.joined = instance.joined
+            self.request_status = instance.request_status
+
+
+def group_member_snapshot(sender, instance, **kwargs):
+    """
+    Takes a snapshot of a GroupMember object each time is
+    saved.
+    """
+    record = GroupMemberRecord(instance=instance)
+    record.save()
+post_save.connect(group_member_snapshot, sender=GroupMember, dispatch_uid='groupmembersnapshot')
+
+def end_group_member_snapshot(sender, instance, **kwargs):
+    """
+    Takes the final snapshot of a group member as it is deleted.
+    Sets the request_status to 'E' for ended.
+    """
+    record = GroupMemberRecord(instance=instance)
+    record.request_status = 'E' # for ended
+    record.save()
+pre_delete.connect(end_group_member_snapshot, sender=GroupMember, dispatch_uid='endgroupmembersnapshot')
+            
     
 class GroupLocation(models.Model):
     group = models.ForeignKey(BaseGroup, related_name="locations", verbose_name=_('group'))
