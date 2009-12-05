@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 
 from base_groups.models import BaseGroup
+from networks.models import Network
 from group_topics.models import GroupTopic
 
 
@@ -102,11 +103,13 @@ class DeleteTopics(TestCase):
 class TestPostToNowhere(TestCase):
 
     def setUp(self):
+        self.creator = User.objects.create_user('creator', 'creator@ewb.ca', 'password')
         self.u = User.objects.create_user('tester', 'test@ewb.ca', 'password')
 
     def tearDown(self):
         GroupTopic.objects.all().delete()
         self.u.delete()
+        self.creator.delete()
 
     def test_post_to_nowhere(self):
         c = self.client
@@ -116,10 +119,11 @@ class TestPostToNowhere(TestCase):
         self.assertEquals(post_count, GroupTopic.objects.all().count())
 
     def test_unauthorized_post_to_group(self):
+        network = Network.objects.create(creator=self.creator, slug='net', visibility='M')
         c = self.client
         c.login(username='tester', password='password')
         post_count = GroupTopic.objects.all().count()
-        c.post('/networks/ewb/posts/', {'title': 'a post with no parent', 'body': 'some text'})
+        c.post('/networks/net/posts/', {'title': 'a post with no parent', 'body': 'some text'})
         self.assertEquals(post_count, GroupTopic.objects.all().count())
 
 

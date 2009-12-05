@@ -10,7 +10,7 @@ Last modified: 2009-12-02
 """
 
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 from django.contrib.syndication import feeds
 from django.shortcuts import get_object_or_404, render_to_response
 from django.core.exceptions import ObjectDoesNotExist
@@ -67,29 +67,14 @@ def topic(request, topic_id, group_slug=None, edit=False, template_name="topics/
 
 def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_class=AttachmentForm, template_name="topics/topics.html", bridge=None):
     
-    if bridge:
-        try:
-            group = bridge.get_group(group_slug)
-        except ObjectDoesNotExist:
-            raise Http404
-    else:
-        group = None
-    
-    if not request.user.is_authenticated():
-        is_member = False
-    else:
-        if group:
-            is_member = group.user_is_member(request.user)
-        else:
-            is_member = True
-    
-    if group:
-        group_base = bridge.group_base_template()
-    else:
-        group_base = None
+    is_member = False
+    group = None
+    if group_slug is not None:
+        group = get_object_or_404(BaseGroup, slug=group_slug)
+        is_member = group.user_is_member(request.user)
     
     attach_count = 0
-    if request.method == "POST":
+    if request.method == "POST" and group:
         try:
             attach_count = int(request.POST.get("attach_count", 0))
         except ValueError:
@@ -155,7 +140,6 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
         "attach_count": attach_count,
         "is_member": is_member,
         "topics": topics,
-        "group_base": group_base,
     }, context_instance=RequestContext(request))
 
 def feed(request, group_slug):
