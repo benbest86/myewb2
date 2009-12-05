@@ -35,8 +35,8 @@ class BaseGroup(Group):
     parent = models.ForeignKey('self', related_name="children", verbose_name=_('parent'), null=True, blank=True)
     
     member_users = models.ManyToManyField(User, through="GroupMember", verbose_name=_('members'))
-	
-	# private means members can only join if invited
+    
+    # private means members can only join if invited
     private = models.BooleanField(_('private'), default=False)
     
     VISIBILITY_CHOICES = (
@@ -64,7 +64,7 @@ class BaseGroup(Group):
                 if parent_member_list.count() > 0:
                     visible = True
         return visible
-	
+    
     def user_is_member(self, user):
         return user.is_authenticated() and (self.members.filter(user=user, request_status='A').count() > 0)
         
@@ -110,9 +110,9 @@ class BaseGroup(Group):
         if html:
             msg.content_subtype = "html"
         msg.send(fail_silently=fail_silently)
-	
-	# TODO:
-	# list of members (NOT CSV)
+    
+    # TODO:
+    # list of members (NOT CSV)
 
     def save(self, force_insert=False, force_update=False):
         # if we are updating a group, don't change the slug (for consistency)
@@ -124,8 +124,7 @@ class BaseGroup(Group):
             # (http://snippets.dzone.com/posts/show/5499)
             slug = unicodedata.normalize('NFKD', unicode(slug)).encode('ASCII', 'ignore')
             
-            # FIXME: anything else we need to escape??
-            #(?P<group_slug>[-\w]+) yes, lots of things. This is the
+            #(?P<group_slug>[-\w]+) This is the
             # regex definition of a slug so if we don't match on this we 
             # should remove illegal characters.
             match = re.match(r'[-\w]+', slug)
@@ -163,7 +162,7 @@ class BaseGroup(Group):
     def get_accepted_members(self):
         return self.members.filter(request_status='A')
 
-	
+    
 class GroupMember(models.Model):
     group = models.ForeignKey(BaseGroup, related_name="members", verbose_name=_('group'))
     user = models.ForeignKey(User, related_name="member_groups", verbose_name=_('user'))
