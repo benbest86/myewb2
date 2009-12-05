@@ -157,6 +157,11 @@ class TestVisibility(VisibilityBaseTest):
         response = c.get("/posts/%d/" % self.privatepost.pk)
         #self.assertNotContains(response, "privatepost")
         self.assertEqual(response.status_code, 403)
+
+        # private post cannot be edited by nonmember
+        response = c.post("/posts/%d/" % self.privatepost.pk, {'title': 'My new title', 'body': 'hackers for life'})
+        self.assertEqual(response.status_code, 403)
+
         
         c.logout()
         
@@ -232,3 +237,4 @@ class TestVisibilityManagerFunctions(VisibilityBaseTest):
     def test_private_with_unauthorized_user(self):
         visible_to_nonmember = GroupTopic.objects.visible(self.nonmember)
         self.assertTrue(self.privatepost not in visible_to_nonmember)
+

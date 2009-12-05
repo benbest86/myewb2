@@ -31,34 +31,18 @@ from wiki.models import Article
 
 def topic(request, topic_id, group_slug=None, edit=False, template_name="topics/topic.html", bridge=None):
 
-    if bridge:
-        try:
-            group = bridge.get_group(group_slug)
-        except ObjectDoesNotExist:
-            raise Http404
-    else:
-        group = None
-
-    if group:
-        topics = group.content_objects(GroupTopic)
-    else:
-        topics = GroupTopic.objects.all()
-
-    topic = get_object_or_404(topics, id=topic_id)
+    topic = get_object_or_404(GroupTopic, id=topic_id)
     
     parent_group = topic.parent_group
+    # XXX PERMISSIONS CHECK
     if not parent_group.is_visible(request.user) and not topic.creator == request.user:
         return HttpResponseForbidden()
 
+    # XXX PERMISSIONS CHECK
     if (request.method == "POST" and edit == True and (request.user == topic.creator or request.user == topic.group.creator)):
         topic.body = request.POST["body"]
         topic.save()
         return HttpResponseRedirect(topic.get_absolute_url(group))
-
-    if group:
-        group_base = bridge.group_base_template()
-    else:
-        group_base = None
 
     # retrieve whiteboard (create if needed)
     if topic.whiteboard == None:
@@ -78,7 +62,6 @@ def topic(request, topic_id, group_slug=None, edit=False, template_name="topics/
         "topic": topic,
         "edit": edit,
         "group": topic.group,
-        "group_base": group_base,
         "member": member,
     }, context_instance=RequestContext(request))
 
@@ -108,7 +91,7 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
     attach_count = 0
     if request.method == "POST":
         try:
-            attach_count = int(request.POST["attach_count"])
+            attach_count = int(request.POST.get("attach_count", 0))
         except ValueError:
             attach_count = 0
             

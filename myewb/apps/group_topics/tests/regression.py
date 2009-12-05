@@ -98,3 +98,28 @@ class DeleteTopics(TestCase):
         self.assertEquals(response.status_code, 302)
         # make sure the topic is still there
         self.assertEquals(gt, GroupTopic.objects.get(id=topic_id))
+
+class TestPostToNowhere(TestCase):
+
+    def setUp(self):
+        self.u = User.objects.create_user('tester', 'test@ewb.ca', 'password')
+
+    def tearDown(self):
+        GroupTopic.objects.all().delete()
+        self.u.delete()
+
+    def test_post_to_nowhere(self):
+        c = self.client
+        c.login(username='tester', password='password')
+        post_count = GroupTopic.objects.all().count()
+        c.post('/posts/', {'title': 'a post with no parent', 'body': 'some text'})
+        self.assertEquals(post_count, GroupTopic.objects.all().count())
+
+    def test_unauthorized_post_to_group(self):
+        c = self.client
+        c.login(username='tester', password='password')
+        post_count = GroupTopic.objects.all().count()
+        c.post('/networks/ewb/posts/', {'title': 'a post with no parent', 'body': 'some text'})
+        self.assertEquals(post_count, GroupTopic.objects.all().count())
+
+
