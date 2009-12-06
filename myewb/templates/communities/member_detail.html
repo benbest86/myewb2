@@ -63,7 +63,15 @@
         <p>
             {% if member.is_admin %}{% trans "Title:" %} <tt>{{ member.admin_title }}</tt><br />{% endif %}
             {% trans "Administrator:" %} {% if member.is_admin %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}<br />
-            {% trans "Joined:" %} {{ member.joined|date }}
+            {% if member.is_invited %}
+                    {% trans "Invited:" %} {{ member.request_date|date }}
+            {% endif %}
+            {% if member.is_requested %}
+                    {% trans "Requested:" %} {{ member.request_date|date }}
+            {% endif %}
+            {% if member.joined %}
+                    {% trans "Joined:" %} {{ member.joined|date }}
+            {% endif %}
             <br />
         </p>
         

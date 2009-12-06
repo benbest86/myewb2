@@ -10,7 +10,7 @@ Last modified on 2009-08-02
 
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
-from django.http import HttpResponseRedirect, HttpResponseNotFound
+from django.http import HttpResponseRedirect, HttpResponseNotFound, Http404
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -69,18 +69,13 @@ def members_index(request, group_slug, group_model=None, form_class=None, templa
             if existing_members.count() == 0 and (user == member.user or user.is_staff or group.user_is_admin(user)):
                 if user == member.user:
                     if group.private and not user.is_staff:     # we ignore group admins since they must already be members
-                        member.request_status = 'R'             # requested by user
-                    else:
-                        member.request_status = 'A'             # if public group, assume automatic acceptance
-                                                                # ditto for any group if site admin
+                        member = RequestToJoinGroup(user=member.user) # create a membership request instead
                 else:   
                     add_type = request.POST["add_type"]
-                    if add_type == "auto":
-                        member.request_status = 'A'             # group / site admin automatically adds user
-                    else:
-                        member.request_status = 'I'             # another user invited by a group / site admin         
+                    if add_type != "auto":
+                        member = InvitationToJoinGroup(user=member.user) # another user invited by a group / site admin         
                    
-                if not (user.is_staff or group.user_is_admin(user)):
+                if isinstance(member, GroupMember) and not (user.is_staff or group.user_is_admin(user)):
                     # General users cannot make themselves admins
                     member.is_admin = False
                     member.admin_title = ""
@@ -167,7 +162,13 @@ def member_detail(request, group_slug, username, group_model=None, form_class=No
         
     group = get_object_or_404(group_model, slug=group_slug)
     other_user = get_object_or_404(User, username=username)
-    member = get_object_or_404(GroupMember, group=group, user=other_user)
+    if group.user_is_member(other_user):
+        member = get_object_or_404(GroupMember, group=group, user=other_user)
+    elif group.user_is_pending_member(other_user):
+        member = get_object_or_404(PendingMember, group=group, user=other_user)
+    else:
+        raise Http404
+
     user = request.user
     
     # retrieve details
@@ -246,7 +247,12 @@ def delete_member(request, group_slug, username, group_model=None):
     if request.method == 'POST':
         group = get_object_or_404(group_model, slug=group_slug)
         user = get_object_or_404(User, username=username)
-        member = get_object_or_404(GroupMember, group=group, user=user)
+        if group.user_is_member(other_user):
+            member = get_object_or_404(GroupMember, group=group, user=other_user)
+        elif group.user_is_pending_member(other_user):
+            member = get_object_or_404(PendingMember, group=group, user=other_user)
+        else:
+            raise Http404
         
         member.delete()
         if request.is_ajax():
@@ -276,11 +282,10 @@ def accept_invitation(request, group_slug, username, group_model=BaseGroup):
     if request.method == 'POST':
         group = get_object_or_404(group_model, slug=group_slug)
         user = get_object_or_404(User, username=username)
-        member = get_object_or_404(GroupMember, group=group, user=user, request_status='I')
+        invitation = get_object_or_404(InvitationToJoinGroup, group=group, user=user)
         
         if request.user.is_authenticated() and user == request.user:
-            member.request_status = 'A'
-            member.save()
+            membership = GroupMember.objects.create(user=user, group=group)
         
         return HttpResponseRedirect(reverse('%s_member_detail' % group.model.lower(), kwargs={'group_slug': group_slug, 'username': username}))
     else:
@@ -290,11 +295,10 @@ def accept_request(request, group_slug, username, group_model=BaseGroup):
     if request.method == 'POST':
         group = get_object_or_404(group_model, slug=group_slug)
         user = get_object_or_404(User, username=username)
-        member = get_object_or_404(GroupMember, group=group, user=user, request_status='R')
+        group_request = get_object_or_404(RequestToJoinGroup, group=group, user=user)
         
         if request.user.is_authenticated() and group.user_is_admin(request.user):
-            member.request_status = 'A'
-            member.save()
+            membership = GroupMember.objects.create(user=user, group=group)
         
         return HttpResponseRedirect(reverse('%s_member_detail' % group.model.lower(), kwargs={'group_slug': group_slug, 'username': username}))
     else:

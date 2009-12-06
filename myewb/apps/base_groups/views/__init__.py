@@ -123,8 +123,10 @@ def group_detail(request, group_slug, model=None, member_model=None, form_class=
         return HttpResponseRedirect(reverse("%s_detail" % group.model.lower(), kwargs={'group_slug': group_slug}))
     else:
         group = get_object_or_404(model, slug=group_slug)
-        if request.user.is_authenticated() and group.user_is_member_or_pending(request.user):
+        if group.user_is_member(request.user):
             member = member_model.objects.get(user=request.user, group=group)
+        elif group.user_is_pending_member(request.user):
+            member = group.pending_members.get(user=request.user)
         else:
             member = None
         children = group.get_visible_children(request.user)

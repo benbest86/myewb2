@@ -15,8 +15,7 @@ MEMBER_COUNT_SQL = """
 SELECT COUNT(*)
 FROM base_groups_groupmember
 WHERE 
-    base_groups_groupmember.group_id = base_groups_basegroup.id AND
-    base_groups_groupmember.request_status = 'A'
+    base_groups_groupmember.group_id = base_groups_basegroup.id
 """
 
 def group_url_patterns(model, *args):
