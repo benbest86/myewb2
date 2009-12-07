@@ -258,3 +258,32 @@ class TestBulkMembers(TestCase):
         self.assertRaises(GroupMember.DoesNotExist, self.ewb.members.get, user__email=email)
 
 
+
+
+
+
+
+# class TestCustomGroupMemberManager(TestCase):
+#     """
+#     Tests the custom methods added to the GroupMember manager.
+#     """
+# 
+#     def setUp(self):
+#         self.joe = User.objects.create_user('joe', 'joe@test.ca', 'passw0rd')
+#         superman = User.objects.create_user('superman', 'super@man.com', 'passw0rd')
+#         superman.is_superuser = True
+#         superman.save()
+#         self.superman = superman
+#         self.ewb = Network.objects.get(slug='ewb')
+# 
+#     def tearDown(self):
+#         self.ewb.members.all().delete()
+#         try:
+#             self.client.logout()
+#         except:
+#             pass
+#         User.objects.all().delete()
+# 
+#     def test_accepted_members(self):
+#         pass
+
