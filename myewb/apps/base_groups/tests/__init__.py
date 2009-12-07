@@ -27,35 +27,26 @@ class TestMembershipHistory(TestCase):
         A general test that puts a user through a common user
         lifecycle and ensures records are created properly.
         """
-        # add bulk user to start
-        gm = GroupMember.objects.create(user=self.user, group=self.bg, request_status='B')
+        # add user to start
+        gm = GroupMember.objects.create(user=self.user, group=self.bg)
         self.assertEquals(1, GroupMemberRecord.objects.filter(user=self.user, group=self.bg).count())
         gmr = GroupMemberRecord.objects.latest()
-        self.assertEquals('B', gmr.request_status)
-
-        # set user to accepted
-        gm.request_status = 'A'
-        gm.save()
-        self.assertEquals(2, GroupMemberRecord.objects.filter(user=self.user, group=self.bg).count())
-        gmr = GroupMemberRecord.objects.latest()
-        self.assertEquals('A', gmr.request_status)
+        self.assertFalse(gmr.is_admin)
 
         # make user admin
         gm.is_admin = True
         gm.admin_title = 'Lowly peon'
         gm.save()
-        self.assertEquals(3, GroupMemberRecord.objects.filter(user=self.user, group=self.bg).count())
+        self.assertEquals(2, GroupMemberRecord.objects.filter(user=self.user, group=self.bg).count())
         gmr = GroupMemberRecord.objects.latest()
-        self.assertEquals('A', gmr.request_status)
         self.assertTrue(gmr.is_admin)
         self.assertEquals('Lowly peon', gmr.admin_title)
 
         # change admin title
         gm.admin_title = 'President'
         gm.save()
-        self.assertEquals(4, GroupMemberRecord.objects.filter(user=self.user, group=self.bg).count())
+        self.assertEquals(3, GroupMemberRecord.objects.filter(user=self.user, group=self.bg).count())
         gmr = GroupMemberRecord.objects.latest()
-        self.assertEquals('A', gmr.request_status)
         self.assertTrue(gmr.is_admin)
         self.assertEquals('President', gmr.admin_title)
 
@@ -63,17 +54,16 @@ class TestMembershipHistory(TestCase):
         gm.is_admin = False
         gm.admin_title = None
         gm.save()
-        self.assertEquals(5, GroupMemberRecord.objects.filter(user=self.user, group=self.bg).count())
+        self.assertEquals(4, GroupMemberRecord.objects.filter(user=self.user, group=self.bg).count())
         gmr = GroupMemberRecord.objects.latest()
-        self.assertEquals('A', gmr.request_status)
         self.assertFalse(gmr.is_admin)
         self.assertEquals(None, gmr.admin_title)
 
         # end membership
         gm.delete()
-        self.assertEquals(6, GroupMemberRecord.objects.filter(user=self.user, group=self.bg).count())
+        self.assertEquals(5, GroupMemberRecord.objects.filter(user=self.user, group=self.bg).count())
         gmr = GroupMemberRecord.objects.latest()
-        self.assertEquals('E', gmr.request_status)
+        self.assertTrue(gmr.membership_end)
 
 class TestUserDuckPunches(TestCase):
     """

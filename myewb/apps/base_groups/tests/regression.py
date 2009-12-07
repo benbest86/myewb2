@@ -39,7 +39,7 @@ class TestAddBulkMemberToGroup(TestCase):
         group = BaseGroup.objects.create(slug='new-group', name='a random base group.', creator=super_user)
         group.add_member(u)
         new_member = group.members.get(user=u)
-        self.assertEquals('B', new_member.request_status)
+        self.assertTrue(new_member.is_bulk)
 
     def test_add_real_user_to_group(self):
         super_user = User.objects.create_superuser('super', 'root@ewb.ca', 'password')
@@ -48,4 +48,4 @@ class TestAddBulkMemberToGroup(TestCase):
         group = BaseGroup.objects.create(slug='new-group', name='a random base group.', creator=super_user)
         group.add_member(u)
         new_member = group.members.get(user=u)
-        self.assertEquals('A', new_member.request_status)
+        self.assertTrue(new_member.is_accepted)

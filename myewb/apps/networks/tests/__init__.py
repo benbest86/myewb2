@@ -165,7 +165,7 @@ class TestBulkMembers(TestCase):
     def test_create_bulk_user(self):
         self.assertTrue(self.client.login(username='superman', password='passw0rd'))
         self.client.post('/networks/ewb/bulk/', {'emails':'test@server.com'})
-        bulk_users = self.ewb.members.filter(request_status='B')
+        bulk_users = self.ewb.members.bulk()
         # we should have one bulk user at this point
         self.assertEquals(bulk_users.count(), 1)
         bulk_user = bulk_users[0]
@@ -187,7 +187,7 @@ class TestBulkMembers(TestCase):
         '''
         self.client.login(username='superman', password='passw0rd')
         self.client.post('/networks/ewb/bulk/', {'emails':email_list})
-        self.assertEquals(self.ewb.members.filter(request_status='B').count(), 4)
+        self.assertEquals(self.ewb.members.bulk().count(), 4)
         for email in email_list.split():
             self.assertTrue(get_email_user(email).member_groups.get(group__slug='ewb'))
 
@@ -221,9 +221,9 @@ class TestBulkMembers(TestCase):
                 'email': 'test3@server.com',
                 }
         self.client.post('/account/signup/', new_user_info)
-        self.assertEquals(new_network.members.filter(request_status='B').count(), 1)
-        bulk_user = new_network.members.get(request_status='B').user
-        self.assertEquals(new_network.members.get(request_status='B').user.email, 'test3@server.com')
+        self.assertEquals(new_network.members.bulk().count(), 1)
+        bulk_user = new_network.members.bulk().get().user
+        self.assertEquals(bulk_user.email, 'test3@server.com')
         # only original bulk email member should have email
         self.assertEquals(User.objects.filter(email='test3@server.com').count(), 1)
         self.assertEquals(User.objects.filter(email='test3@server.com').get(), bulk_user)
@@ -240,10 +240,10 @@ class TestBulkMembers(TestCase):
         email_address.save()
         joe_member = new_network.members.get(user=self.joe)
         # joe should be accepted
-        self.assertEquals(joe_member.request_status, 'A')
+        self.assertTrue(joe_member.is_accepted)
         # old dummy user should be gone
         self.assertRaises(User.DoesNotExist, User.objects.get, id=bulk_user.id)
-        self.assertEquals(new_network.members.filter(request_status='B').count(), 0)
+        self.assertEquals(new_network.members.bulk().count(), 0)
         new_network.delete()
         
     def test_verify_unsubscribe(self):
@@ -259,31 +259,37 @@ class TestBulkMembers(TestCase):
 
 
 
+class TestCustomGroupMemberManager(TestCase):
+    """
+    Tests the custom methods added to the GroupMember manager.
+    """
 
+    def setUp(self):
+        self.joe = User.objects.create_user('joe', 'joe@test.ca', 'passw0rd')
+        superman = User.objects.create_user('superman', 'super@man.com', 'passw0rd')
+        superman.is_superuser = True
+        superman.save()
+        self.superman = superman
+        self.ewb = Network.objects.get(slug='ewb')
+        self.new_network = Network.objects.create(slug='new-net', name='new network', creator=self.superman)
 
+    def tearDown(self):
+        self.ewb.members.all().delete()
+        try:
+            self.client.logout()
+        except:
+            pass
+        User.objects.all().delete()
 
+    def test_accepted_members(self):
+        self.client.login(username='superman', password='passw0rd')
+        self.assertFalse(self.joe in [member.user for member in self.new_network.members.accepted()])
+        self.client.post('/networks/new-net/bulk/', {'emails':'joe@test.ca'})
+        self.assertTrue(self.joe in [member.user for member in self.new_network.members.accepted()])
 
-# class TestCustomGroupMemberManager(TestCase):
-#     """
-#     Tests the custom methods added to the GroupMember manager.
-#     """
-# 
-#     def setUp(self):
-#         self.joe = User.objects.create_user('joe', 'joe@test.ca', 'passw0rd')
-#         superman = User.objects.create_user('superman', 'super@man.com', 'passw0rd')
-#         superman.is_superuser = True
-#         superman.save()
-#         self.superman = superman
-#         self.ewb = Network.objects.get(slug='ewb')
-# 
-#     def tearDown(self):
-#         self.ewb.members.all().delete()
-#         try:
-#             self.client.logout()
-#         except:
-#             pass
-#         User.objects.all().delete()
-# 
-#     def test_accepted_members(self):
-#         pass
+    def test_bulk_members(self):
+        self.client.login(username='superman', password='passw0rd')
+        self.assertFalse('bulk@test.ca' in [member.user.email for member in self.new_network.members.bulk()])
+        self.client.post('/networks/new-net/bulk/', {'emails':'bulk@test.ca'})
+        self.assertTrue('bulk@test.ca' in [member.user.email for member in self.new_network.members.bulk()])
 

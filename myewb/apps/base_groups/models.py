@@ -83,7 +83,7 @@ class BaseGroup(Group):
         return reverse('group_detail', kwargs={'group_slug': self.slug})
 
     def get_member_emails(self):
-        members_with_emails = self.members().select_related(depth=1)
+        members_with_emails = self.members.all().select_related(depth=1)
         return [member.user.email for member in members_with_emails if member.user.email]
 
     def add_member(self, user):
@@ -180,6 +180,17 @@ class BaseGroupMember(models.Model):
     def __unicode__(self):
         return "%s - %s" % (self.user, self.group,)
 
+class GroupMemberManager(models.Manager):
+    """
+    Adds custom manager methods for accepted and bulk members.
+    """
+    use_for_related_fields = True
+    def accepted(self):
+        return self.get_query_set().filter(user__is_active=True)
+
+    def bulk(self):
+        return self.get_query_set().filter(user__is_active=False)
+
 class GroupMember(BaseGroupMember):
     """
     Non-abstract representation of BaseGroupMember. Base class is required
@@ -192,6 +203,8 @@ class GroupMember(BaseGroupMember):
     # away = models.BooleanField(_('away'), default=False)
     # away_message = models.CharField(_('away_message'), max_length=500)
     # away_since = models.DateTimeField(_('away since'), default=datetime.now)
+
+    objects = GroupMemberManager()
 
     @property
     def is_accepted(self):
