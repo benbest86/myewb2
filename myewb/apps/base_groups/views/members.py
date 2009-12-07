@@ -62,7 +62,7 @@ def members_index(request, group_slug, group_model=None, form_class=None, templa
         if form.is_valid():
             member = form.save(commit=False)
             
-            existing_members = GroupMember.objects.filter(group=group, user=member.user)
+            existing_members = group.members.filter(user=member.user)
             
             # General users can only add themselves as members
             # Users cannot have multiple memberships in the same group

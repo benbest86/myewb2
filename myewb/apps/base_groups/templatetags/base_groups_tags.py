@@ -10,7 +10,6 @@ Last modified on 2009-07-29
 
 from django import template
 from django.contrib.contenttypes.models import ContentType
-from base_groups.models import GroupMember
 from group_topics.models import GroupTopic
 
 register = template.Library()
@@ -47,7 +46,7 @@ class AdminsNode(template.Node):
         except template.VariableDoesNotExist:
             return u''
             
-        admins = GroupMember.objects.filter(group=group, is_admin=True)
+        admins = group.members.filter(is_admin=True)
         context[self.context_name] = admins
         return u''
 

@@ -129,7 +129,7 @@ def bulk_import(request, group_slug, form_class=NetworkBulkImportForm, template_
                         username = User.objects.make_random_password()
                     email_user = User.extras.create_bulk_user(username, email)      # sets "unusable" password
                 
-                existing_members = GroupMember.objects.filter(group=group, user=email_user)
+                existing_members = group.members.filter(user=email_user)
                 if existing_members.count() == 0:              
                     nm = group.add_member(email_user)
             # redirect to network home page on success
