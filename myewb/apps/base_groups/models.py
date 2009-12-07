@@ -22,6 +22,7 @@ from django.core.mail import EmailMessage
 from emailconfirmation.models import EmailAddress
 
 from siteutils.helpers import get_email_user
+from manager_extras.models import ExtraUserManager
 from groups.base import Group
 from wiki.models import Article
 
@@ -303,3 +304,16 @@ def add_creator_to_group(sender, instance, created, **kwargs):
         except:
             pass
 post_save.connect(add_creator_to_group, sender=BaseGroup)
+
+# some duck punches to the User class and extras Manager
+
+def is_bulk_method(self):
+    return not self.is_active
+User.is_bulk = property(is_bulk_method)
+
+def create_bulk_user_method(self, *args, **kwargs):
+    new_user = super(ExtraUserManager, self).create_user(*args, **kwargs)
+    new_user.is_active = False
+    new_user.save()
+    return new_user
+ExtraUserManager.create_bulk_user = create_bulk_user_method

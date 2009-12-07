@@ -207,6 +207,7 @@ INSTALLED_APPS = (
     # MyEWB apps
     'volunteering',
     'siteutils',
+    'manager_extras',
 
 )
 
