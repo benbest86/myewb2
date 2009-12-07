@@ -84,9 +84,6 @@ class MemberProfile(Profile):
     preferred_first_name = models.CharField(_('preferred first name (if different)'), max_length=100, blank=True)
     last_name = models.CharField(_('last name'), max_length=100, blank=True)
 
-    # is_bulk flag
-    is_bulk = models.BooleanField(default=False)
-        
     GENDER_CHOICES = (
         ('M', _('Male')),
         ('F', _('Female')),

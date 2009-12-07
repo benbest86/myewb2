@@ -162,10 +162,8 @@ class BaseGroup(Group):
             return children.distinct()
             
     def get_accepted_members(self):
-        # XXX note this hack - checks user first_name and last_name to determine
-        # whether a member is bulk or not. Ugly. No way to access MemberProfile from
-        # the ORM for is_bulk. Custom SQL time?
-        return self.members.filter(user__first_name__ne='', user__last_name__ne='')
+        # is_active is set to False for bulk members
+        return self.members.filter(user__is_active=True)
 
 class BaseGroupMember(models.Model):
     is_admin = models.BooleanField(_('admin'), default=False)
@@ -194,11 +192,13 @@ class GroupMember(BaseGroupMember):
     # away_message = models.CharField(_('away_message'), max_length=500)
     # away_since = models.DateTimeField(_('away since'), default=datetime.now)
 
+    @property
     def is_accepted(self):
-        return not self.user.get_profile().is_bulk
+        return self.user.is_active
 
+    @property
     def is_bulk(self):
-        return self.user.get_profile().is_bulk
+        return not self.user.is_active
 
 class GroupMemberRecord(BaseGroupMember):
     """

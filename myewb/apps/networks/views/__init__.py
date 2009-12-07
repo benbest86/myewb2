@@ -128,6 +128,7 @@ def bulk_import(request, group_slug, form_class=NetworkBulkImportForm, template_
                     while User.objects.filter(username=username).count() > 0:   # ensure uniqueness
                         username = User.objects.make_random_password()
                     email_user = User.objects.create_user(username, email)      # sets "unusable" password
+                    email_user.is_active = False # is_active is the flag for whether a user is a bulk user or not
                     email_user.save()
                 
                 existing_members = GroupMember.objects.filter(group=group, user=email_user)
