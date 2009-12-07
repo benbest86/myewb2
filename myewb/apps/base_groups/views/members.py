@@ -285,7 +285,7 @@ def accept_invitation(request, group_slug, username, group_model=BaseGroup):
         invitation = get_object_or_404(InvitationToJoinGroup, group=group, user=user)
         
         if request.user.is_authenticated() and user == request.user:
-            membership = GroupMember.objects.create(user=user, group=group)
+            membership = group.add_member(user)
         
         return HttpResponseRedirect(reverse('%s_member_detail' % group.model.lower(), kwargs={'group_slug': group_slug, 'username': username}))
     else:
@@ -298,7 +298,7 @@ def accept_request(request, group_slug, username, group_model=BaseGroup):
         group_request = get_object_or_404(RequestToJoinGroup, group=group, user=user)
         
         if request.user.is_authenticated() and group.user_is_admin(request.user):
-            membership = GroupMember.objects.create(user=user, group=group)
+            membership = group.add_member(user)
         
         return HttpResponseRedirect(reverse('%s_member_detail' % group.model.lower(), kwargs={'group_slug': group_slug, 'username': username}))
     else:
