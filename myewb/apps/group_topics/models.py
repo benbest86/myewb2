@@ -32,6 +32,12 @@ class GroupTopicManager(models.Manager):
         if user is not None and not user.is_anonymous():
             filter_q |= Q(parent_group__member_users=user)
         return self.get_query_set().filter(filter_q)
+    
+    def get_for_group(self, group):
+        """
+        Returns all posts belonging to a given group
+        """
+        return self.get_query_set().filter(parent_group=group)
 
 class GroupTopic(Topic):
     """

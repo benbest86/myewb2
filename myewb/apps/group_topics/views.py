@@ -119,7 +119,7 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
     
     if group:
         if group.is_visible(request.user):
-            topics = group.content_objects(GroupTopic)
+            topics = GroupTopic.objects.get_for_group(group)
         else:
             return HttpResponseForbidden()
 
