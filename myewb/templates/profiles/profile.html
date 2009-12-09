@@ -176,24 +176,22 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
             
             {% if user.is_staff %}
                 <h2>{% trans "User History" %}</h2>
+                we'll add a neat-o search &amp; sort feature and stuff soon
                 <table id="user-history">
                     <tr>
-                        <th>{% trans "Level" %}</th>
+                        <th>{% trans "Date" %}</th>
                         <th>{% trans "Group" %}</th>
-                        <th>{% trans "Started" %}</th>
-                        <th>{% trans "Ended" %}</th>
+                        <th>{% trans "Changed To" %}</th>
                     </tr>
-                    {% for sr in other_user.status_records.all %}
+                    {% for record in other_user.group_records.all %}
                     <tr>
-                        <td>{{ sr.status }}</td>
-                        <td><a href="{% url group_detail sr.group.slug %}">{{ sr.group.slug }}</a></td>
-                        <td>{{ sr.start|date:"d M Y" }}</td>
+                        <td>{{ record.datetime|date:"d M Y" }}</td>
+                        <td>{{ record.group }}</td>
                         <td>
-                            {% if sr.end %}
-                                {{ sr.end|date:"d M Y" }}
-                            {% else %}
-                                <a href="{% url member_detail sr.group.slug user.username %}">{% trans "(ongoing)" %}</a>
-                            {% endif %}
+                        	{% ifequal record.request_status 'A' %}joined{% endifequal %}
+                        	{% ifequal record.request_status 'E' %}left{% endifequal %}
+                        	{% ifequal record.request_status 'I' %}invited{% endifequal %}
+                        	{% ifequal record.request_status 'R' %}requested{% endifequal %}
                         </td>
                     </tr>
                     {% endfor %}
