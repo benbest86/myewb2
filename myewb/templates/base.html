@@ -1,5 +1,5 @@
 {% load i18n %}
-{% load svn_app_version %}
+{% load git_revision %}
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}" xml:lang="{{ LANGUAGE_CODE }}" lang="{{ LANGUAGE_CODE }}">
     <head>
@@ -22,7 +22,7 @@
     </head>
 
 {% if debug %}
-<h1 class="debug">This is a debug version of MyEWB ({% svn_app_version "networks" %})</h1>
+<h1 class="debug">myEWB dev version -- {% git_date %} (<a href="http://github.com/ewbcanada/myewb2/tree/{% git_rev %}">git rev {% git_rev %}</a>)</h1>
 {% endif %}
     
     <body class="{% block body_class %}{% endblock %}">
