@@ -81,8 +81,7 @@ class GroupTopicsForGroupNode(template.Node):
         except template.VariableDoesNotExist:
             return u''
         content_type = ContentType.objects.get_for_model(group)
-        context[self.context_name] = GroupTopic.objects.filter(
-            content_type=content_type, object_id=group.id)
+        context[self.context_name] = GroupTopic.objects.get_for_group(group)
         return u''
 
 def do_get_grouptopics_for_group(parser, token):
