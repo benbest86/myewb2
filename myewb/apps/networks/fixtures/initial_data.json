@@ -6,7 +6,7 @@
 			"slug": "ewb",
             "name": "Engineers Without Borders Canada",
 			"private": false,
-			"creator": 1,
+			"creator": 2,
 			"created": "2009-07-01 00:00:00",
 			"description": "Engineers Without Borders Canada",
 			"model": "Network"
@@ -28,7 +28,7 @@
         }
     },
     {
-        "pk": 1,
+        "pk": 2,
         "model": "auth.user",
         "fields": {
             "username": "root"
@@ -40,7 +40,7 @@
         "model": "base_groups.groupmember",
         "fields": {
 			"group": 1,
-			"user": 1,
+			"user": 2,
 			"is_admin": true,
 			"admin_title": "Administrator"
         }
