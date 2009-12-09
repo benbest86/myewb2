@@ -9,13 +9,11 @@ def tags(request, tag, template_name='tags/index.html'):
     tag = get_object_or_404(Tag, name=tag)
     
     # Get topics that match this tag
-    topictags = TaggedItem.objects.get_by_model(GroupTopic, tag)
-    
-    # perform visibility check!
-    # (commented out pending checkin of visibility patch)
-    #topictags = topictags.filter(Q(parent_group__visibility='E') | 
-    #                             Q(parent_group__member_users=request.user))
-    
+    # filter to visible topics first
+    topics = GroupTopic.objects.visible(request.user)
+
+    topictags = TaggedItem.objects.get_by_model(topics, tag)
+
     return render_to_response(template_name, {
         'tag': tag,
         'topictags': topictags,

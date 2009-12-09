@@ -5,12 +5,12 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 Some code derived from Pinax, copyright 2008-2009 James Tauber and Pinax Team, licensed under the MIT License
 
 Created on: 2009-08-13
-Last modified: 2009-08-15
+Last modified: 2009-12-02
 @author: Joshua Gorner, Francis Kung
 """
 
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 from django.contrib.syndication import feeds
 from django.shortcuts import get_object_or_404, render_to_response
 from django.core.exceptions import ObjectDoesNotExist
@@ -29,36 +29,20 @@ from attachments.models import Attachment
 from topics.models import Topic
 from wiki.models import Article
 
-# FIXME: this method is copied wholesale from pinax.apps.topics.views except for one line =(
-
 def topic(request, topic_id, group_slug=None, edit=False, template_name="topics/topic.html", bridge=None):
 
-    if bridge:
-        try:
-            group = bridge.get_group(group_slug)
-        except ObjectDoesNotExist:
-            raise Http404
-    else:
-        group = None
+    topic = get_object_or_404(GroupTopic, id=topic_id)
+    
+    parent_group = topic.parent_group
+    # XXX PERMISSIONS CHECK
+    if not parent_group.is_visible(request.user) and not topic.creator == request.user:
+        return HttpResponseForbidden()
 
-    if group:
-        topics = group.content_objects(GroupTopic)
-    else:
-        # this is the only different line.  which is needed to keep things sane.
-        topics = GroupTopic.objects.all()
-        #topics = Topic.objects.filter(object_id=None)
-
-    topic = get_object_or_404(topics, id=topic_id)
-
+    # XXX PERMISSIONS CHECK
     if (request.method == "POST" and edit == True and (request.user == topic.creator or request.user == topic.group.creator)):
         topic.body = request.POST["body"]
         topic.save()
         return HttpResponseRedirect(topic.get_absolute_url(group))
-
-    if group:
-        group_base = bridge.group_base_template()
-    else:
-        group_base = None
 
     # retrieve whiteboard (create if needed)
     if topic.whiteboard == None:
@@ -78,37 +62,21 @@ def topic(request, topic_id, group_slug=None, edit=False, template_name="topics/
         "topic": topic,
         "edit": edit,
         "group": topic.group,
-        "group_base": group_base,
         "member": member,
     }, context_instance=RequestContext(request))
 
 def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_class=AttachmentForm, template_name="topics/topics.html", bridge=None):
     
-    if bridge:
-        try:
-            group = bridge.get_group(group_slug)
-        except ObjectDoesNotExist:
-            raise Http404
-    else:
-        group = None
-    
-    if not request.user.is_authenticated():
-        is_member = False
-    else:
-        if group:
-            is_member = group.user_is_member(request.user)
-        else:
-            is_member = True
-    
-    if group:
-        group_base = bridge.group_base_template()
-    else:
-        group_base = None
+    is_member = False
+    group = None
+    if group_slug is not None:
+        group = get_object_or_404(BaseGroup, slug=group_slug)
+        is_member = group.user_is_member(request.user)
     
     attach_count = 0
-    if request.method == "POST":
+    if request.method == "POST" and group:
         try:
-            attach_count = int(request.POST["attach_count"])
+            attach_count = int(request.POST.get("attach_count", 0))
         except ValueError:
             attach_count = 0
             
@@ -150,10 +118,21 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
         attach_forms = []
     
     if group:
-        topics = group.content_objects(GroupTopic)
+        if group.is_visible(request.user):
+            topics = GroupTopic.objects.get_for_group(group)
+        else:
+            return HttpResponseForbidden()
+
     else:
-        topics = GroupTopic.objects.all()
-    
+        if request.user.is_authenticated():
+            # generic topic listing: show posts from groups you're in
+            # TODO: do we want to also show posts from public groups?
+            topics = GroupTopic.objects.filter(parent_group__member_users=request.user)
+
+        else:
+            # for guests, show all posts from public groups
+            topics = GroupTopic.objects.visible()
+            
     return render_to_response(template_name, {
         "group": group,
         "topic_form": topic_form,
@@ -161,7 +140,6 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
         "attach_count": attach_count,
         "is_member": is_member,
         "topics": topics,
-        "group_base": group_base,
     }, context_instance=RequestContext(request))
 
 def feed(request, group_slug):
@@ -170,7 +148,7 @@ def feed(request, group_slug):
             feedgen = TopicFeedAll(group_slug, request).get_feed()
         else:
             group = BaseGroup.objects.get(slug=group_slug)
-            if group.visibility == 'E' or (request.user.is_authenticated() and group.user_is_member(request.user)):
+            if group.is_visible(request.user):
                 feedgen = TopicFeedGroup(group_slug, request).get_feed(group_slug)
             else:
                 return HttpResponseForbidden()
