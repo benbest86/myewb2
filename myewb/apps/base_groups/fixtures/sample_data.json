@@ -1,0 +1,1284 @@
+[
+    {
+        "pk": 1, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Burnaby, BC", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-01-01 00:00:00", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "sfu", 
+            "name": "Simon Fraser University"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Vancouver, BC", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-01-01 00:00:00", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "ubc", 
+            "name": "University of British Columbia"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Victoria, BC", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-01-01 00:00:00", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "uvic", 
+            "name": "University of Victoria"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Vancouver, BC", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-01-01 00:00:00", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "vancouver", 
+            "name": "Vancouver, BC"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Calgary, AB", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-01-01 00:00:00", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "calgary", 
+            "name": "Calgary, AB"
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Edmonton, AB", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:01:58", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "edmonton", 
+            "name": "Edmonton, AB"
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Edmonton, AB", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:05:04", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "ualberta", 
+            "name": "University of Alberta"
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": 3, 
+            "description": "Calgary, AB", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:06:06", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "ucalgary", 
+            "name": "University of Calgary"
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Saskatoon, SK", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:06:50", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "saskatoon", 
+            "name": "Saskatoon, SK"
+        }
+    }, 
+    {
+        "pk": 10, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Regina, SK", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:07:35", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "uregina", 
+            "name": "University of Regina"
+        }
+    }, 
+    {
+        "pk": 11, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Saskatoon, SK", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:08:15", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "usask", 
+            "name": "University of Saskatchewan"
+        }
+    }, 
+    {
+        "pk": 12, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Winnipeg, MB", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:08:42", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "umanitoba", 
+            "name": "University of Manitoba"
+        }
+    }, 
+    {
+        "pk": 13, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Winnipeg, MB", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:09:18", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "winnipeg", 
+            "name": "Winnipeg, MB"
+        }
+    }, 
+    {
+        "pk": 14, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Ottawa, ON", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:09:41", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "carleton", 
+            "name": "Carleton University"
+        }
+    }, 
+    {
+        "pk": 15, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Kitchener, ON", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:10:27", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "grandriver", 
+            "name": "Kitchener, ON"
+        }
+    }, 
+    {
+        "pk": 16, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Hamilton, ON", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:10:54", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "mcmaster", 
+            "name": "McMaster University"
+        }
+    }, 
+    {
+        "pk": 17, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Ottawa, ON", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:11:30", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "ottawa", 
+            "name": "Ottawa, ON"
+        }
+    }, 
+    {
+        "pk": 18, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Kingston, ON", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:11:55", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "queensu", 
+            "name": "Queen's University"
+        }
+    }, 
+    {
+        "pk": 19, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Toronto, ON", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:12:45", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "ryerson", 
+            "name": "Ryerson University"
+        }
+    }, 
+    {
+        "pk": 20, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Toronto, ON", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:13:15", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "toronto", 
+            "name": "Toronto, ON"
+        }
+    }, 
+    {
+        "pk": 21, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Guelph, ON", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:13:36", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "uoguelph", 
+            "name": "University of Guelph"
+        }
+    }, 
+    {
+        "pk": 22, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Oshawa, ON", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:14:08", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "uoit", 
+            "name": "University of Ontario Institute of Technology"
+        }
+    }, 
+    {
+        "pk": 23, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Ottawa, ON", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:14:50", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "uottawa", 
+            "name": "University of Ottawa"
+        }
+    }, 
+    {
+        "pk": 24, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Toronto, ON", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:15:21", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "utoronto", 
+            "name": "University of Toronto"
+        }
+    }, 
+    {
+        "pk": 25, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Waterloo, ON", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:15:46", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "uwaterloo", 
+            "name": "University of Waterloo"
+        }
+    }, 
+    {
+        "pk": 26, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "London, ON", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:16:05", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "uwo", 
+            "name": "University of Western Ontario"
+        }
+    }, 
+    {
+        "pk": 27, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Windsor, ON", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:16:35", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "uwindsor", 
+            "name": "University of Windsor"
+        }
+    }, 
+    {
+        "pk": 28, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Toronto, ON", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:17:01", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "yorku", 
+            "name": "York University"
+        }
+    }, 
+    {
+        "pk": 29, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Montreal, QC", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:17:21", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "concordia", 
+            "name": "Concordia University"
+        }
+    }, 
+    {
+        "pk": 30, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Montreal, QC", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:18:03", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "mcgill", 
+            "name": "McGill University"
+        }
+    }, 
+    {
+        "pk": 31, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Montr\u00e9al, QC", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:18:28", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "polymtl", 
+            "name": "\u00c9cole Polytechnique Montr\u00e9al"
+        }
+    }, 
+    {
+        "pk": 32, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Montreal, QC", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:19:03", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "montreal", 
+            "name": "Montreal, QC"
+        }
+    }, 
+    {
+        "pk": 33, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Sherbrooke, QC", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:19:27", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "usherbrooke", 
+            "name": "Universit\u00e9 de Sherbrooke"
+        }
+    }, 
+    {
+        "pk": 34, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Qu\u00e9bec, QC", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:19:56", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "ulaval", 
+            "name": "Universit\u00e9 Laval"
+        }
+    }, 
+    {
+        "pk": 35, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Fredericton, NB", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:20:32", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "unb", 
+            "name": "University of New Brunswick"
+        }
+    }, 
+    {
+        "pk": 36, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Halifax, NS", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:21:05", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "dal", 
+            "name": "Dalhousie University"
+        }
+    }, 
+    {
+        "pk": 37, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "St. John's, NL", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:21:29", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "mun", 
+            "name": "Memorial University of Newfoundland"
+        }
+    }, 
+    {
+        "pk": 38, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "A mailing list for people working to increase the availability of fair trade at their campuses. 1-2 representatives per chapter, please!", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:53:08", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Community", 
+            "slug": "fairtradecampus", 
+            "name": "Fair Trade Campuses Team"
+        }
+    }, 
+    {
+        "pk": 39, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Job opportunities related to human development, including announcement about EWB overseas positions.  ", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:56:45", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Community", 
+            "slug": "jobs", 
+            "name": "Job and Overseas Volunteering Opportunities"
+        }
+    }, 
+    {
+        "pk": 40, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Volunteers that are interested in volunteering at the National Office ", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:57:15", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Community", 
+            "slug": "volunteer", 
+            "name": "National Office Volunteers"
+        }
+    }, 
+    {
+        "pk": 41, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "A list of national translation volunteers", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:57:39", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Community", 
+            "slug": "traduction", 
+            "name": "traduction"
+        }
+    }, 
+    {
+        "pk": 42, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "A group for updates and ideas on the discussion around our organizational values.  ", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:58:08", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Community", 
+            "slug": "values2009", 
+            "name": "Values Discussion 2009"
+        }
+    }, 
+    {
+        "pk": 43, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Youth Engagement National Reps & Members interested in youth engagement", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:58:33", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Community", 
+            "slug": "youthengagement", 
+            "name": "Youth Engagement National Reps"
+        }
+    }, 
+    {
+        "pk": 44, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "A group of graphics and creative designers who contribute to various EWB local, national, and international campaigns.  ", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:59:13", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Community", 
+            "slug": "design", 
+            "name": "Creative Design Community"
+        }
+    }, 
+    {
+        "pk": 45, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Professional chapters' executive mailing list (all chapters).", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 19:59:43", 
+            "private": true, 
+            "visibility": "E", 
+            "model": "Community", 
+            "slug": "prochaptersexec", 
+            "name": "Professional Chapter Exec"
+        }
+    }, 
+    {
+        "pk": 46, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Student Chapter Presidents' mailing list.", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 20:01:04", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Community", 
+            "slug": "presidents", 
+            "name": "Student Chapter Presidents"
+        }
+    }, 
+    {
+        "pk": 47, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Finance National Reps' mailing list. ", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 20:01:29", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Community", 
+            "slug": "finance", 
+            "name": "Finance National Reps"
+        }
+    }, 
+    {
+        "pk": 48, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Member Learning National Reps' mailing list.", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 20:01:50", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Community", 
+            "slug": "memberlearning", 
+            "name": "Member Learning National Reps"
+        }
+    }, 
+    {
+        "pk": 49, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Learning Partnerships National Reps' mailing list. ", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 20:02:13", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Community", 
+            "slug": "learningpartnerships", 
+            "name": "Learning Partnerships National Reps"
+        }
+    }, 
+    {
+        "pk": 50, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "School Outreach National Reps' mailing list.  ", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 20:02:35", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Community", 
+            "slug": "schooloutreach", 
+            "name": "School Outreach National Reps"
+        }
+    }, 
+    {
+        "pk": 51, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Curriculum Enhancement National Reps' mailing list.  ", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 20:02:59", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Community", 
+            "slug": "curriculumenhancement", 
+            "name": "Curriculum Enhancement National Reps"
+        }
+    }, 
+    {
+        "pk": 52, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Public Outreach National Reps' mailing list.  ", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 20:03:29", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Community", 
+            "slug": "publicoutreach", 
+            "name": "Public Outreach National Reps"
+        }
+    }, 
+    {
+        "pk": 53, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Webmaster Contacts' mailing list.  ", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 20:03:56", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Community", 
+            "slug": "webmaster", 
+            "name": "Webmaster Contacts"
+        }
+    }, 
+    {
+        "pk": 54, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Communications Contacts' mailing list.  ", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 20:04:16", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Community", 
+            "slug": "communications", 
+            "name": "Communications Contacts"
+        }
+    }, 
+    {
+        "pk": 55, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Professional Chapter Presidents' mailing list", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 20:04:36", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Community", 
+            "slug": "prochapterpres", 
+            "name": "Professional Chapter Presidents"
+        }
+    }, 
+    {
+        "pk": 56, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Workplace Outreach National Reps' list  ", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 20:04:59", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Community", 
+            "slug": "workplaceoutreach", 
+            "name": "Workplace Outreach National Reps"
+        }
+    }, 
+    {
+        "pk": 57, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Fundraising National Reps' mailing list.", 
+            "parent": null, 
+            "creator": 1, 
+            "created": "2009-11-14 20:05:31", 
+            "private": false, 
+            "visibility": "E", 
+            "model": "Community", 
+            "slug": "fundraising", 
+            "name": "Fundraising National Reps"
+        }
+    },
+    {
+        "pk": 1, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": 49.278751, 
+            "place": "Burnaby, BC", 
+            "group": 1, 
+            "longitude": -122.917086
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 2, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 3, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 4, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 5, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 6, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 7, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 8, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 9, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 10, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 10, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 11, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 11, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 12, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 12, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 13, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 13, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 14, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 14, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 15, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 15, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 16, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 16, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 17, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 17, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 18, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 18, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 19, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 19, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 20, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 20, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 21, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 21, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 22, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 22, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 23, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 23, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 24, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 24, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 25, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 25, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 26, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 26, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 27, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 27, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 28, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 28, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 29, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 29, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 30, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 30, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 31, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 31, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 32, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 32, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 33, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 33, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 34, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 34, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 35, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 35, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 36, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 36, 
+            "longitude": null
+        }
+    }, 
+    {
+        "pk": 37, 
+        "model": "base_groups.grouplocation", 
+        "fields": {
+            "latitude": null, 
+            "place": null, 
+            "group": 37, 
+            "longitude": null
+        }
+    }
+]

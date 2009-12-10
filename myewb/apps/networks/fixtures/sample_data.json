@@ -1,0 +1,816 @@
+[
+    {
+        "pk": 1, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "U"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "U"
+        }
+    }, 
+    {
+        "pk": 3, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "U"
+        }
+    }, 
+    {
+        "pk": 4, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "R"
+        }
+    }, 
+    {
+        "pk": 5, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "R"
+        }
+    }, 
+    {
+        "pk": 6, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "R"
+        }
+    }, 
+    {
+        "pk": 7, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "U"
+        }
+    }, 
+    {
+        "pk": 8, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "U"
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "R"
+        }
+    }, 
+    {
+        "pk": 10, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "U"
+        }
+    }, 
+    {
+        "pk": 11, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "U"
+        }
+    }, 
+    {
+        "pk": 12, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "U"
+        }
+    }, 
+    {
+        "pk": 13, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "R"
+        }
+    }, 
+    {
+        "pk": 14, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "U"
+        }
+    }, 
+    {
+        "pk": 15, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "R"
+        }
+    }, 
+    {
+        "pk": 16, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "U"
+        }
+    }, 
+    {
+        "pk": 17, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "R"
+        }
+    }, 
+    {
+        "pk": 18, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "U"
+        }
+    }, 
+    {
+        "pk": 19, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "U"
+        }
+    }, 
+    {
+        "pk": 20, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "R"
+        }
+    }, 
+    {
+        "pk": 21, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "U"
+        }
+    }, 
+    {
+        "pk": 22, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "U"
+        }
+    }, 
+    {
+        "pk": 23, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "U"
+        }
+    }, 
+    {
+        "pk": 24, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "U"
+        }
+    }, 
+    {
+        "pk": 25, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "U"
+        }
+    }, 
+    {
+        "pk": 26, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "U"
+        }
+    }, 
+    {
+        "pk": 27, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "U"
+        }
+    }, 
+    {
+        "pk": 28, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "U"
+        }
+    }, 
+    {
+        "pk": 29, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "U"
+        }
+    }, 
+    {
+        "pk": 30, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "U"
+        }
+    }, 
+    {
+        "pk": 31, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "U"
+        }
+    }, 
+    {
+        "pk": 32, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "R"
+        }
+    }, 
+    {
+        "pk": 33, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "U"
+        }
+    }, 
+    {
+        "pk": 34, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "U"
+        }
+    }, 
+    {
+        "pk": 35, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "U"
+        }
+    }, 
+    {
+        "pk": 36, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "U"
+        }
+    }, 
+    {
+        "pk": 37, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "U"
+        }
+    }, 
+    {
+        "pk": 1, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "BC", 
+            "city": "Burnaby", 
+            "fax": "604-999-9998", 
+            "network": 1, 
+            "street_address_two": "Suite 456", 
+            "phone": "604-999-9999", 
+            "chapter_name": "Simon Fraser University Chapter", 
+            "postal_code": "V6V 6V6", 
+            "street_address": "123 Fake Street"
+        }
+    }, 
+    {
+        "pk": 2, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "BC", 
+            "city": "Vancouver", 
+            "fax": "604-999-9998", 
+            "network": 2, 
+            "street_address_two": "Suite 456", 
+            "phone": "604-999-9999", 
+            "chapter_name": "University of British Columbia Chapter", 
+            "postal_code": "V6V 6V6", 
+            "street_address": "123 Fake Street"
+        }
+    },
+    {
+        "pk": 3, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "BC", 
+            "city": "Victoria", 
+            "fax": "604-999-9998", 
+            "network": 3, 
+            "street_address_two": "Suite 456", 
+            "phone": "604-999-9999", 
+            "chapter_name": "University of Victoria Chapter", 
+            "postal_code": "V6V 6V6", 
+            "street_address": "123 Fake Street"
+        }
+    },
+    {
+        "pk": 4, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "BC", 
+            "city": "Vancouver", 
+            "fax": "604-999-9998", 
+            "network": 4, 
+            "street_address_two": "Suite 456", 
+            "phone": "604-999-9999", 
+            "chapter_name": "Vancouver Professional Chapter", 
+            "postal_code": "V6V 6V6", 
+            "street_address": "123 Fake Street"
+        }
+    },
+    {
+        "pk": 5, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "AB", 
+            "city": "Calgary", 
+            "fax": "403-999-9998", 
+            "network": 5, 
+            "street_address_two": "Suite 456", 
+            "phone": "403-999-9999", 
+            "chapter_name": "Calgary Professional Chapter", 
+            "postal_code": "T2T 2T2", 
+            "street_address": "123 Fake Street"
+        }
+    },
+    {
+        "pk": 6, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "AB", 
+            "city": "Edmonton", 
+            "fax": "780-999-9998", 
+            "network": 6, 
+            "street_address_two": "Suite 456", 
+            "phone": "780-999-9999", 
+            "chapter_name": "Edmonton Professional Chapter", 
+            "postal_code": "T2T 2T2", 
+            "street_address": "123 Fake Street"
+        }
+    },
+    {
+        "pk": 7, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "AB", 
+            "city": "Edmonton", 
+            "fax": "780-999-9998", 
+            "network": 7, 
+            "street_address_two": "Suite 456", 
+            "phone": "780-999-9999", 
+            "chapter_name": "University of Alberta Chapter", 
+            "postal_code": "T2T 2T2", 
+            "street_address": "123 Fake Street"
+        }
+    },
+    {
+        "pk": 8, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "AB", 
+            "city": "Calgary", 
+            "fax": "403-999-9998", 
+            "network": 8, 
+            "street_address_two": "Suite 456", 
+            "phone": "403-999-9999", 
+            "chapter_name": "University of Calgary Chapter", 
+            "postal_code": "T2T 2T2", 
+            "street_address": "123 Fake Street"
+        }
+    }, 
+    {
+        "pk": 9, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "SK", 
+            "city": "Saskatoon", 
+            "fax": "306-999-9998", 
+            "network": 9, 
+            "street_address_two": "Suite 456", 
+            "phone": "306-999-9999", 
+            "chapter_name": "Saskatoon Professional Chapter", 
+            "postal_code": "S3S 3S3", 
+            "street_address": "123 Fake Street"
+        }
+    }, 
+    {
+        "pk": 10, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "SK", 
+            "city": "Regina", 
+            "fax": "306-999-9998", 
+            "network": 10, 
+            "street_address_two": "Suite 456", 
+            "phone": "306-999-9999", 
+            "chapter_name": "University of Regina Chapter", 
+            "postal_code": "S3S 3S3", 
+            "street_address": "123 Fake Street"
+        }
+    },
+    {
+        "pk": 11, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "SK", 
+            "city": "Saskatoon", 
+            "fax": "306-999-9998", 
+            "network": 11, 
+            "street_address_two": "Suite 456", 
+            "phone": "306-999-9999", 
+            "chapter_name": "University of Saskatoon Chapter", 
+            "postal_code": "S3S 3S3", 
+            "street_address": "123 Fake Street"
+        }
+    },
+    {
+        "pk": 12, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "MB", 
+            "city": "Winnipeg", 
+            "fax": "204-999-9998", 
+            "network": 12, 
+            "street_address_two": "Suite 456", 
+            "phone": "204-999-9999", 
+            "chapter_name": "University of Manitoba Chapter", 
+            "postal_code": "R4R 4R4", 
+            "street_address": "123 Fake Street"
+        }
+    },
+    {
+        "pk": 13, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "MB", 
+            "city": "Winnipeg", 
+            "fax": "204-999-9998", 
+            "network": 13, 
+            "street_address_two": "Suite 456", 
+            "phone": "204-999-9999", 
+            "chapter_name": "Winnipeg Professional Chapter", 
+            "postal_code": "R4R 4R4", 
+            "street_address": "123 Fake Street"
+        }
+    },
+    {
+        "pk": 14, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "ON", 
+            "city": "Ottawa", 
+            "fax": "613-999-9998", 
+            "network": 14, 
+            "street_address_two": "Suite 456", 
+            "phone": "613-999-9999", 
+            "chapter_name": "Carleton University Chapter", 
+            "postal_code": "K6K 6K6", 
+            "street_address": "123 Fake Street"
+        }
+    },
+    {
+        "pk": 15, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "ON", 
+            "city": "Kitchener", 
+            "fax": "519-999-9998", 
+            "network": 15, 
+            "street_address_two": "Suite 456", 
+            "phone": "519-999-9999", 
+            "chapter_name": "Grand River Professional Chapter", 
+            "postal_code": "N8N 8N8", 
+            "street_address": "123 Fake Street"
+        }
+    },
+    {
+        "pk": 16, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "ON", 
+            "city": "Hamilton", 
+            "fax": "905-999-9998", 
+            "network": 16, 
+            "street_address_two": "Suite 456", 
+            "phone": "905-999-9999", 
+            "chapter_name": "McMaster University Chapter", 
+            "postal_code": "L9L 9L9", 
+            "street_address": "123 Fake Street"
+        }
+    },
+    {
+        "pk": 17, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "ON", 
+            "city": "Ottawa", 
+            "fax": "613-999-9998", 
+            "network": 17, 
+            "street_address_two": "Suite 456", 
+            "phone": "613-999-9999", 
+            "chapter_name": "Ottawa Professional Chapter", 
+            "postal_code": "K6K 6K6", 
+            "street_address": "123 Fake Street"
+        }
+    }, 
+    {
+        "pk": 18, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "ON", 
+            "city": "Kingston", 
+            "fax": "613-999-9998", 
+            "network": 18, 
+            "street_address_two": "Suite 456", 
+            "phone": "613-999-9999", 
+            "chapter_name": "Queen's University Chapter", 
+            "postal_code": "K6K 6K6", 
+            "street_address": "123 Fake Street"
+        }
+    },
+    {
+        "pk": 19, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "ON", 
+            "city": "Toronto", 
+            "fax": "416-999-9998", 
+            "network": 19, 
+            "street_address_two": "Suite 456", 
+            "phone": "416-999-9999", 
+            "chapter_name": "Ryerson University Chapter", 
+            "postal_code": "M5M 5M5", 
+            "street_address": "123 Fake Street"
+        }
+    },
+    {
+        "pk": 20, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "ON", 
+            "city": "Toronto", 
+            "fax": "416-999-9998", 
+            "network": 20, 
+            "street_address_two": "Suite 456", 
+            "phone": "416-999-9999", 
+            "chapter_name": "Toronto Professional Chapter", 
+            "postal_code": "M5M 5M5", 
+            "street_address": "123 Fake Street"
+        }
+    },
+    {
+        "pk": 21, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "ON", 
+            "city": "Guelph", 
+            "fax": "519-999-9998", 
+            "network": 21, 
+            "street_address_two": "Suite 456", 
+            "phone": "519-999-9999", 
+            "chapter_name": "University of Guelph Chapter", 
+            "postal_code": "N8N 8N8", 
+            "street_address": "123 Fake Street"
+        }
+    },
+    {
+        "pk": 22, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "ON", 
+            "city": "Oshawa", 
+            "fax": "905-999-9998", 
+            "network": 22, 
+            "street_address_two": "Suite 456", 
+            "phone": "905-999-9999", 
+            "chapter_name": "University of Ontario Institute of Technology Chapter Initiative", 
+            "postal_code": "L1L 1L1", 
+            "street_address": "123 Fake Street"
+        }
+    },
+    {
+        "pk": 23, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "ON", 
+            "city": "Ottawa", 
+            "fax": "613-999-9998", 
+            "network": 23, 
+            "street_address_two": "Suite 456", 
+            "phone": "613-999-9999", 
+            "chapter_name": "University of Ottawa Chapter", 
+            "postal_code": "K6K 6K6", 
+            "street_address": "123 Fake Street"
+        }
+    },
+    {
+        "pk": 24, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "ON", 
+            "city": "Toronto", 
+            "fax": "416-999-9998", 
+            "network": 24, 
+            "street_address_two": "Suite 456", 
+            "phone": "416-999-9999", 
+            "chapter_name": "University of Toronto Chapter", 
+            "postal_code": "M5M 5M5", 
+            "street_address": "123 Fake Street"
+        }
+    }, 
+    {
+        "pk": 25, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "ON", 
+            "city": "Waterloo", 
+            "fax": "519-999-9998", 
+            "network": 25, 
+            "street_address_two": "Suite 456", 
+            "phone": "519-999-9999", 
+            "chapter_name": "University of Waterloo Chapter", 
+            "postal_code": "N8N 8N8", 
+            "street_address": "123 Fake Street"
+        }
+    }, 
+    {
+        "pk": 26, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "ON", 
+            "city": "London", 
+            "fax": "519-999-9998", 
+            "network": 26, 
+            "street_address_two": "Suite 456", 
+            "phone": "519-999-9999", 
+            "chapter_name": "University of Western Ontario Chapter", 
+            "postal_code": "N8N 8N8", 
+            "street_address": "123 Fake Street"
+        }
+    },
+    {
+        "pk": 27, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "ON", 
+            "city": "Windsor", 
+            "fax": "519-999-9998", 
+            "network": 27, 
+            "street_address_two": "Suite 456", 
+            "phone": "519-999-9999", 
+            "chapter_name": "University of Windsor Chapter", 
+            "postal_code": "N8N 8N8", 
+            "street_address": "123 Fake Street"
+        }
+    },
+    {
+        "pk": 28, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "ON", 
+            "city": "Toronto", 
+            "fax": "416-999-9998", 
+            "network": 28, 
+            "street_address_two": "Suite 456", 
+            "phone": "416-999-9999", 
+            "chapter_name": "York University Chapter", 
+            "postal_code": "M5M 5M5", 
+            "street_address": "123 Fake Street"
+        }
+    },
+    {
+        "pk": 29, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "QC", 
+            "city": "Montreal", 
+            "fax": "514-999-9998", 
+            "network": 29, 
+            "street_address_two": "Suite 456", 
+            "phone": "514-999-9999", 
+            "chapter_name": "Concordia University Chapter", 
+            "postal_code": "H2H 2H2", 
+            "street_address": "123, rue Fake"
+        }
+    },
+    {
+        "pk": 30, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "QC", 
+            "city": "Montreal", 
+            "fax": "514-999-9998", 
+            "network": 30, 
+            "street_address_two": "Suite 456", 
+            "phone": "514-999-9999", 
+            "chapter_name": "McGill University Chapter", 
+            "postal_code": "H2H 2H2", 
+            "street_address": "123, rue Fake"
+        }
+    },
+    {
+        "pk": 31, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "QC", 
+            "city": "Montr\u00e9al", 
+            "fax": "514-999-9998", 
+            "network": 31, 
+            "street_address_two": "Suite 456", 
+            "phone": "514-999-9999", 
+            "chapter_name": "Section \u00c9cole Polytechnique Montr\u00e9al", 
+            "postal_code": "H2H 2H2", 
+            "street_address": "123, rue Fake"
+        }
+    },
+    {
+        "pk": 32, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "QC", 
+            "city": "Montr\u00e9al", 
+            "fax": "514-999-9998", 
+            "network": 32, 
+            "street_address_two": "Suite 456", 
+            "phone": "514-999-9999", 
+            "chapter_name": "Section Professionelle de Montr\u00e9al", 
+            "postal_code": "H2H 2H2", 
+            "street_address": "123, rue Fake"
+        }
+    },
+    {
+        "pk": 33, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "QC", 
+            "city": "Sherbrooke", 
+            "fax": "819-999-9998", 
+            "network": 33, 
+            "street_address_two": "Suite 456", 
+            "phone": "819-999-9999", 
+            "chapter_name": "Section Universit\u00e9 de Sherbrooke", 
+            "postal_code": "J1J 1J1", 
+            "street_address": "123, rue Fake"
+        }
+    },
+    {
+        "pk": 34, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "QC", 
+            "city": "Qu\u00e9bec", 
+            "fax": "418-999-9998", 
+            "network": 34, 
+            "street_address_two": "Suite 456", 
+            "phone": "418-999-9999", 
+            "chapter_name": "Section Universit\u00e9 Laval", 
+            "postal_code": "G3G 3G3", 
+            "street_address": "123, rue Fake"
+        }
+    },
+    {
+        "pk": 35, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "NB", 
+            "city": "Fredericton", 
+            "fax": "506-999-9998", 
+            "network": 35, 
+            "street_address_two": "Suite 456", 
+            "phone": "506-999-9999", 
+            "chapter_name": "University of New Brunswick Chapter", 
+            "postal_code": "E5E 5E5", 
+            "street_address": "123 Fake Street"
+        }
+    },
+    {
+        "pk": 36, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "NS", 
+            "city": "Halifax", 
+            "fax": "902-999-9998", 
+            "network": 36, 
+            "street_address_two": "Suite 456", 
+            "phone": "902-999-9999", 
+            "chapter_name": "Dalhousie University Chapter", 
+            "postal_code": "B7B 7B7", 
+            "street_address": "123 Fake Street"
+        }
+    },
+    {
+        "pk": 37, 
+        "model": "networks.chapterinfo", 
+        "fields": {
+            "province": "NL", 
+            "city": "St. John's", 
+            "fax": "709-999-9998", 
+            "network": 37, 
+            "street_address_two": "Suite 456", 
+            "phone": "709-999-9999", 
+            "chapter_name": "Memorial University of Newfoundland Chapter", 
+            "postal_code": "A1A 1A1", 
+            "street_address": "123 Fake Street"
+        }
+    }
+]
