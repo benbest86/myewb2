@@ -105,6 +105,8 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
                     base_topic = GroupTopic.objects.get(id=topic.id)
                     for af in attach_forms:
                         attachment = af.save(request, base_topic)
+
+                    topic.send_email()
                         
                     request.user.message_set.create(message=_("You have started the topic %(topic_title)s") % {"topic_title": topic.title})
                     topic_form = form_class(instance=GroupTopic()) # @@@ is this the right way to reset it?                    
