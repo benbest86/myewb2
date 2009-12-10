@@ -9,6 +9,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% load avatar_tags %}
 {% load uni_form %}
 {% load profile_tags %}
+{% load group_topics_tags %}
 
 {% block head_title %}{% blocktrans %}Profile for {{ other_user }}{% endblocktrans %}{% endblock %}
 
@@ -52,7 +53,9 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 					Last signed in {{ other_user.get_profile.current_login|timesince }} ago
 				</li>
 				<li>
-					{{ other_user.get_profile.current_login }} posts/replies
+					<a href="{% url topic_list_by_user other_user %}">
+						{% num_topics_for_user other_user %} posts/replies
+					</a>
 				</li>
 			</ul>
 

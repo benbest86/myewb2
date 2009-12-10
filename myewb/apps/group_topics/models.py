@@ -38,6 +38,15 @@ class GroupTopicManager(models.Manager):
         Returns all posts belonging to a given group
         """
         return self.get_query_set().filter(parent_group=group)
+    
+    def get_for_user(self, user, qs=None):
+        """
+        Returns all posts belonging to a given user.  If passed the optional 
+        qs parameter, it will filter that queryset instead of creating a new one.
+        """
+        if qs == None:
+            qs = self.get_query_set()
+        return qs.filter(creator=user)
 
 class GroupTopic(Topic):
     """
