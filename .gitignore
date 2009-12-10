@@ -16,4 +16,5 @@ myewb/local_settings.py
 # eclipse settings files
 .project
 .pydevproject
+.settings
 
