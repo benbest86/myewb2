@@ -14,6 +14,7 @@ from django.db.models.signals import post_save
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
 
+from attachments.models import Attachment
 from base_groups.models import BaseGroup
 from topics.models import Topic
 from wiki.models import Article
@@ -84,5 +85,17 @@ class GroupTopic(Topic):
 
 def send_topic_email(sender, instance, **kwargs):
     if instance.send_as_email:
-        instance.group.send_mail_to_members(instance.title, instance.body)
+        attachments = Attachment.objects.attachments_for_object(instance)
+        
+        tmpl = loader.get_template("email_template.html")
+        c = Context({'group': instance.group,
+                     'title': instance.title,
+                     'body': instance.body,
+                     'topic_id': instance.pk,
+                     'attachments': attachments
+                     })
+        message = tmpl.render(c)
+
+        instance.group.send_mail_to_members(instance.title, message)
+        
 models.signals.post_save.connect(send_topic_email, sender=GroupTopic)
