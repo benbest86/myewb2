@@ -47,7 +47,7 @@ class BaseGroup(Group):
     visibility = models.CharField(_('visibility'), max_length=1, choices=VISIBILITY_CHOICES, default='E')
     
     whiteboard = models.ForeignKey(Article, related_name="group", verbose_name=_('whiteboard'), null=True)
-    
+
     def is_visible(self, user):
         visible = False
         if self.visibility == 'E':
@@ -65,7 +65,10 @@ class BaseGroup(Group):
                     visible = True
         return visible
     
-    def user_is_member(self, user):
+    # setting admin_override = True means that admins will be considered group members
+    def user_is_member(self, user, admin_override = False):
+        if admin_override and user.has_module_perms("base_groups"):
+            return True
         return user.is_authenticated() and (self.members.filter(user=user, request_status='A').count() > 0)
         
     def user_is_member_or_pending(self, user):
