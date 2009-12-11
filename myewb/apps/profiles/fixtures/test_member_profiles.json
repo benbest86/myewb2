@@ -1,6 +1,6 @@
 [
 	{
-		"pk": 1,
+		"pk": 2,
 		"model": "auth.user",
 		"fields": {
 			"username": "bob",
@@ -18,7 +18,7 @@
 		}
 	},
 	{
-		"pk": 2,
+		"pk": 3,
 		"model": "auth.user",
 		"fields": {
 			"username": "joe",
@@ -36,7 +36,7 @@
 		}
 	},
 	{
-		"pk": 3,
+		"pk": 4,
 		"model": "auth.user",
 		"fields": {
 			"username": "john",
@@ -54,7 +54,7 @@
 		}
 	},
 	{
-		"pk": 4,
+		"pk": 5,
 		"model": "auth.user",
 		"fields": {
 			"username": "jane",
@@ -75,7 +75,7 @@
 		"pk": 1,
 		"model": "profiles.profile",
 		"fields": {
-			"user": 1,
+			"user": 2,
 			"name": "Bob Roberts",
 			"about": "The problem with Bob is that he doesn't like beer",
 			"location": "Toronto, ON",
@@ -86,7 +86,7 @@
 		"pk": 2,
 		"model": "profiles.profile",
 		"fields": {
-			"user": 2,
+			"user": 3,
 			"name": "Joe Smith",
 			"about": "Joe like beer",
 			"location": "Berlin",
@@ -97,7 +97,7 @@
 		"pk": 3,
 		"model": "profiles.profile",
 		"fields": {
-			"user": 3,
+			"user": 4,
 			"name": "John Doe",
 			"about": "Just your average John Doe",
 			"location": "Toronto, ON",
@@ -108,7 +108,7 @@
 		"pk": 4,
 		"model": "profiles.profile",
 		"fields": {
-			"user": 4,
+			"user": 5,
 			"name": "Jane Doe",
 			"about": "Yummmm.",
 			"location": "Toronto, ON"
@@ -155,7 +155,7 @@
 		"pk": 1,
 		"model": "profiles.studentrecord",
 		"fields": {
-			"user": 1,
+			"user": 2,
             "network": 1,
 			"institution": "University of Toronto",
 			"student_number": "123456789",
@@ -169,7 +169,7 @@
 		"pk": 2,
 		"model": "profiles.studentrecord",
 		"fields": {
-			"user": 2,
+			"user": 3,
             "network": 1,
 			"institution": "University of Toronto",
 			"student_number": "234567890",
@@ -183,7 +183,7 @@
 		"pk": 3,
 		"model": "profiles.studentrecord",
 		"fields": {
-			"user": 3,
+			"user": 4,
             "network": 1,
 			"institution": "University of Toronto",
 			"student_number": "345678901",
@@ -196,7 +196,7 @@
 		"pk": 4,
 		"model": "profiles.studentrecord",
 		"fields": {
-			"user": 4,
+			"user": 5,
             "network": 1,
 			"institution": "University of Toronto",
 			"student_number": "456789012",
@@ -208,7 +208,7 @@
 		"pk": 1,
 		"model": "profiles.workrecord",
 		"fields": {
-			"user": 1,
+			"user": 2,
             "network": 1,
 			"employer": "Engineers Without Borders Canada",
 			"sector": "Non-profit",
@@ -222,8 +222,8 @@
 		"pk": 1,
 		"model": "friends.friendship",
 		"fields": {
-			"to_user": 2,
-			"from_user": 3,
+			"to_user": 3,
+			"from_user": 4,
 			"added": "2009-07-22"
 		}
 	},
@@ -235,7 +235,7 @@
 			"name": "University of Toronto Chapter",
 			"description": "Toronto, ON",
 			"private": false,
-			"creator": 1,
+			"creator": 2,
 			"created": "2009-07-17 12:34:56",
 			"model": "Network"
         }

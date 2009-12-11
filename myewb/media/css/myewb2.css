@@ -254,3 +254,16 @@ td.right {
 tr:nth-child(odd) {
     background: #eee;
 }
+
+div.right_panel {
+	float: right;
+	width: 300px;
+	margin: 10px;
+	border: 1px solid;
+	background-color: #e0e0e0;
+	padding: 25px;
+}
+
+div.left_panel {
+	margin-right: 370px;
+}

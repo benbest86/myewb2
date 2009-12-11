@@ -69,6 +69,11 @@ class TestVisibility(VisibilityBaseTest):
         response = c.get("/tags/testtag/")
         self.assertContains(response, "publicpost")
         self.assertNotContains(response, "privatepost")
+        
+        # aggregate listing by user
+        response = c.get("/posts/user/%s/" % self.creator.username)
+        self.assertContains(response, "publicpost")
+        self.assertNotContains(response, "privatepost")
 
         # public post is visible by direct URL
         response = c.get("/posts/%d/" % self.publicpost.pk)
@@ -98,6 +103,11 @@ class TestVisibility(VisibilityBaseTest):
         # yes, those are intentional assertNotContains - since the post creator
         # isn't a member of the group...
 
+        # aggregate listing by user
+        response = c.get("/posts/user/%s/" % self.creator.username)
+        self.assertContains(response, "publicpost")
+        self.assertContains(response, "privatepost")
+
         # public post is visible by direct URL
         response = c.get("/posts/%d/" % self.publicpost.pk)
         self.assertContains(response, "publicpost")
@@ -120,6 +130,11 @@ class TestVisibility(VisibilityBaseTest):
         
         # aggregate listing by tag
         response = c.get("/tags/testtag/")
+        self.assertContains(response, "publicpost")
+        self.assertContains(response, "privatepost")
+
+        # aggregate listing by user
+        response = c.get("/posts/user/%s/" % self.creator.username)
         self.assertContains(response, "publicpost")
         self.assertContains(response, "privatepost")
 
@@ -146,6 +161,11 @@ class TestVisibility(VisibilityBaseTest):
         
         # aggregate listing by tag
         response = c.get("/tags/testtag/")
+        self.assertContains(response, "publicpost")
+        self.assertNotContains(response, "privatepost")
+
+        # aggregate listing by user
+        response = c.get("/posts/user/%s/" % self.creator.username)
         self.assertContains(response, "publicpost")
         self.assertNotContains(response, "privatepost")
 
@@ -182,6 +202,12 @@ class TestVisibility(VisibilityBaseTest):
         self.assertContains(response, "publicpost")
         self.assertNotContains(response, "privatepost")
         # (again, no admin-o-vision)
+
+        # aggregate listing by user
+        response = c.get("/posts/user/%s/" % self.creator.username)
+        self.assertContains(response, "publicpost")
+        self.assertNotContains(response, "privatepost")
+        # still waiting for that admin-o-vision
 
         # public post is visible by direct URL
         response = c.get("/posts/%d/" % self.publicpost.pk)
