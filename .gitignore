@@ -17,3 +17,5 @@ myewb/local_settings.py
 .project
 .pydevproject
 
+# ignore Mac folder settings files
+.DS_Store
