@@ -199,25 +199,72 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
                 <h2>{% trans "User History" %}</h2>
                 we'll add a neat-o search &amp; sort feature and stuff soon
                 <table id="user-history">
+                    <thead>
                     <tr>
                         <th>{% trans "Date" %}</th>
                         <th>{% trans "Group" %}</th>
-                        <th>{% trans "Changed To" %}</th>
+                        <th>{% trans "Is Admin?" %}</th>
+                        <th>{% trans "Admin Title" %}</th>
+                        <th>{% trans "Notes" %}</th>
                     </tr>
+                    </thead>
+                    <tbody>
                     {% for record in other_user.group_records.all %}
                     <tr>
                         <td>{{ record.datetime|date:"d M Y" }}</td>
                         <td>{{ record.group }}</td>
                         <td>
-                        	{% ifequal record.request_status 'A' %}joined{% endifequal %}
-                        	{% ifequal record.request_status 'E' %}left{% endifequal %}
-                        	{% ifequal record.request_status 'I' %}invited{% endifequal %}
-                        	{% ifequal record.request_status 'R' %}requested{% endifequal %}
+                            {% if record.is_admin %}
+                                {% trans "Yes" %}
+                            {% else %}
+                                {% trans "No" %}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if record.admin_title %}
+                                {{ record.admin_title }}
+                            {% else %}
+                                {% trans "N/A" %}
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% ifequal record.datetime|date:"d M Y" record.joined|date:"d M Y" %}
+                                {% trans "Joined on this day." %}
+                            {% endifequal %}
+                            {% if record.membership_ended %}
+                                {% trans "Left group." %}
+                            {% endif %}
                         </td>
                     </tr>
                     {% endfor %}
+                    </tbody>
                 </table>
-            {% endif %}
+                <h2>{% trans "Pending Memberships" %}</h2>
+                <table id="pending-memberships">
+                    <thead>
+                        <tr>
+                            <th>{% trans "Date" %}</th>
+                            <th>{% trans "Group" %}</th>
+                            <th>{% trans "Status" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    {% for pending_membership in other_user.pending_memberships.all %}
+                        <tr>
+                            <td>{{ pending_membership.request_date|date:"d M Y" }}</td>
+                            <td>{{ pending_membership.group }}</td>
+                            <td>
+                                {% if pending_membership.is_invited %}
+                                    Invited
+                                {% else %}
+                                    Requested
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            {% endif %}{# end of user.is_staff block #}
         
         {% else %} {# not user.is_authenticated #}
             {% url acct_signup as signup_url %}
