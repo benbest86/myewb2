@@ -20,3 +20,5 @@ myewb/site_media
 .pydevproject
 .settings
 
+# ignore Mac folder settings files
+.DS_Store
