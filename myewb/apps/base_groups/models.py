@@ -112,6 +112,7 @@ class BaseGroup(Group):
                 )
         if html:
             msg.content_subtype = "html"
+            
         msg.send(fail_silently=fail_silently)
     
     # TODO:

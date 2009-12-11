@@ -19,7 +19,7 @@ word-spacing: 0.1em;
 <img src="http://my.ewb.ca/images/emaillogo.jpg" style="float: right; margin-bottom: 10px; margin-left: 10px;" height="103" width="200"/>
 
 
-{{body}}
+{{body|safe}}
 
 {% if attachments %}
 
@@ -28,8 +28,8 @@ word-spacing: 0.1em;
 <ul style="margin-top: 5px; margin-bottom: 0;">
 {% for file in attachments %}
 {# FIXME: any way to use proper reverse URLs for this? #}
-<li><a href="http://preview.ewb.ca/site_media/static/attachments/group_topics_grouptopic/{{ topic_id }}/{{ attachment.filename }}" style="font-size: 12px;">{{attachment.filename}}</a></li>
-#end
+<li><a href="http://preview.ewb.ca/site_media/static/attachments/group_topics_grouptopic/{{ topic_id }}/{{ file.filename }}" style="font-size: 12px;">{{file.filename}}</a></li>
+{% endfor %}
 </ul>
 </div>
 
