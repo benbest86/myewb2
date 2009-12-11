@@ -9,6 +9,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% load avatar_tags %}
 {% load uni_form %}
 {% load profile_tags %}
+{% load group_topics_tags %}
 
 {% block head_title %}{% blocktrans %}Profile for {{ other_user }}{% endblocktrans %}{% endblock %}
 
@@ -27,17 +28,36 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
     </div>
     
     <div class="left_panel">
-        <div id="profile_avatar">
+    	<br/>
+        <h1 style="text-align: center;">{% if other_user.get_profile.name %}{{ other_user.get_profile.name }}{% else %}{{other_user.email}}{% endif %}</h1>
+        
+        <div id="profile_avatar" style="text-align: center;">
             <div>{% avatar other_user 80 %}</div>
             {% if is_me %}
             <a href="{% url avatar_change %}" id="avatar_replace">(replace)</a>
             {% endif %}
         </div>
+        <br/>
         
-        <h1>{% if other_user.get_profile.name %}{{ other_user.get_profile.name }}{% else %}{{other_user.email}}{% endif %}</h1>
-        
-        <div class="profile_info">
+        <div class="profile_info" style="padding-left: 40%;">
             {% if other_user.get_profile.about %}<p><b>{% trans "About" %}</b>: {{ other_user.get_profile.about }}</p>{% endif %}
+
+			<ul>
+				<li>
+					Account created {{ other_user.date_joined|timesince }} ago
+				</li>
+				<li>
+					{{ other_user.get_profile.login_count }} logins
+				</li>
+				<li>
+					Last signed in {{ other_user.get_profile.current_login|timesince }} ago
+				</li>
+				<li>
+					<a href="{% url topic_list_by_user other_user %}">
+						{% num_topics_for_user other_user %} posts/replies
+					</a>
+				</li>
+			</ul>
 
 			{% if is_me or is_friend or user.is_staff %}
 				{% if regular %}<p>(regular member, expiring on {{ other_user.get_profile.membership_expiry }})</p>{% endif %}
@@ -60,7 +80,8 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 				{% if other_user.get_profile.website %}<p><b>{% trans "Website" %}</b>: <a href="{{ other_user.get_profile.website }}">{{ other_user.get_profile.website }}</a></p>{% endif %}
 				
 			{% else %}
-				Contact information is only available for your friends. See below if you wish to add this user as a friend.
+				Full contact information is only available for your friends. See below if you wish to add this user as a friend.<br/><br/>
+				
 			{% endif %}
         </div>
 

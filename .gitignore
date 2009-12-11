@@ -6,8 +6,10 @@
 # ignore db files
 *.db
 *.sqlite
-# ignore local_settings
+
+# ignore local_settings and files
 myewb/local_settings.py
+myewb/site_media
 
 # ignore any diff/patch files
 *.diff
@@ -18,3 +20,5 @@ myewb/local_settings.py
 .pydevproject
 .settings
 
+# ignore Mac folder settings files
+.DS_Store

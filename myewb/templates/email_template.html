@@ -1,0 +1,51 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<title>{{title}}</title>
+</head>
+<body bgcolor="#FFFFFF" text="#000000" style="background: #FFFFFF; font-family: Verdana; line-height: 1.4; word-spacing: 0.1em; font-size: 14px;">
+
+<style>
+p
+{
+font-family: Verdana;
+font-size: 14px;
+line-height: 1.4;
+word-spacing: 0.1em;
+}
+</style>
+
+<div style="width: 700px;">
+<img src="http://my.ewb.ca/images/emaillogo.jpg" style="float: right; margin-bottom: 10px; margin-left: 10px;" height="103" width="200"/>
+
+
+{{body|safe}}
+
+{% if attachments %}
+
+<div style="margin-left: 20px; border: 1px solid black; padding: 10px; width: 400px;">
+<p style="font-size: 12px; margin: 0; padding:0;">There are files associated with this email! (click to download from myEWB)</p>
+<ul style="margin-top: 5px; margin-bottom: 0;">
+{% for file in attachments %}
+{# FIXME: any way to use proper reverse URLs for this? #}
+<li><a href="http://preview.ewb.ca/site_media/static/attachments/group_topics_grouptopic/{{ topic_id }}/{{ file.filename }}" style="font-size: 12px;">{{file.filename}}</a></li>
+{% endfor %}
+</ul>
+</div>
+
+{% endif %}
+
+<a href="{% url topic_detail topic_id %}" target="_blank">
+Reply to this email through myEWB &raquo;
+</a>
+
+<br />
+<hr />
+This message was sent to you through <a href="http://my.ewb.ca/">myEWB</a>, EWB-ISF Canada's online community website, <br />
+to all members of the {{group}} group.<br/><br/>
+Unsubscribe from this list at <a href="http://www.ewb.ca/unsubscribe" target="_blank">http://www.ewb.ca/unsubscribe</a> <br />
+
+<br />
+</div>
+</body>
+</html>
