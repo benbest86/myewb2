@@ -16,4 +16,5 @@ urlpatterns = patterns('',
     url(r'^(?P<topic_id>\d+)/edit/$', 'group_topics.views.topic', kwargs={"edit": True}, name="topic_edit"),
     url(r'^(?P<topic_id>\d+)/delete/$', 'group_topics.views.topic_delete', name="topic_delete"),
     url(r'^(?P<topic_id>\d+)/$', 'group_topics.views.topic', name="topic_detail"),
+    url(r'^user/(?P<username>[\w\._-]+)/$', 'group_topics.views.topics_by_user', name="topic_list_by_user"),
 )
