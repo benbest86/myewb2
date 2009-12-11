@@ -48,13 +48,13 @@ class BaseGroup(Group):
     visibility = models.CharField(_('visibility'), max_length=1, choices=VISIBILITY_CHOICES, default='E')
     
     whiteboard = models.ForeignKey(Article, related_name="group", verbose_name=_('whiteboard'), null=True)
-    
+
     def is_visible(self, user):
         visible = False
         if self.visibility == 'E':
             visible = True
         elif user.is_authenticated():
-            if user.is_superuser:
+            if user.has_module_perms("base_groups"):
                 return True
             
             member_list = self.members.filter(user=user)
@@ -66,7 +66,10 @@ class BaseGroup(Group):
                     visible = True
         return visible
     
-    def user_is_member(self, user):
+    # setting admin_override = True means that admins will be considered group members
+    def user_is_member(self, user, admin_override = False):
+        if admin_override and user.has_module_perms("base_groups"):
+            return True
         return user.is_authenticated() and (self.members.filter(user=user).count() > 0)
         
     def user_is_member_or_pending(self, user):
@@ -76,8 +79,12 @@ class BaseGroup(Group):
         return user.is_authenticated() and self.pending_members.filter(user=user).count() > 0
             
     def user_is_admin(self, user):
-        return user.is_authenticated() and \
-            ((self.members.filter(user=user, is_admin=True).count() > 0) or user.is_superuser)
+        if user.is_authenticated():
+            if user.has_module_perms("base_groups"):
+                return True
+            if self.members.filter(user=user, is_admin=True).count() > 0:
+                return True
+        return False
 
     def get_absolute_url(self):
         return reverse('group_detail', kwargs={'group_slug': self.slug})
@@ -155,7 +162,7 @@ class BaseGroup(Group):
     def get_visible_children(self, user):
         if not user.is_authenticated():
             return self.children.filter(visibility='E')
-        elif user.is_superuser:
+        elif user.has_module_perms("base_groups"):
             return self.children.all()
         else:
             children = self.children.filter(visibility='E') | self.children.filter(member_users=user)

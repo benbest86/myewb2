@@ -18,8 +18,7 @@ class group_admin_required(object):
                 # deny access - would set this to redirect
                 # to a custom template eventually
                 return render_to_response('denied.html', context_instance=RequestContext(request))
-            elif user.is_superuser: # or is_staff
-                return f(request, *args, **kwargs)
+            
             group = get_object_or_404(BaseGroup, slug=group_slug)
             if group.user_is_admin(user):
                 # add object to list of kwargs because we had to hit
@@ -47,8 +46,7 @@ class own_member_object_required(object):
                 # deny access - would set this to redirect
                 # to a custom template eventually
                 return render_to_response('denied.html', context_instance=RequestContext(request))
-            elif user.is_superuser: # or is_staff
-                return f(request, *args, **kwargs)                
+            
             group = get_object_or_404(BaseGroup, slug=group_slug)
             other_user = get_object_or_404(User, username=username)
             if user == other_user or group.user_is_admin(user):
@@ -67,9 +65,7 @@ class visibility_required(object):
         def newf(request, *args, **kwargs):
             user = request.user
             group_slug = kwargs.get('group_slug', None) or (len(args) > 0 and args[0])
-            
-            if user.is_superuser: # or is_staff
-                return f(request, *args, **kwargs)
+
             group = get_object_or_404(BaseGroup, slug=group_slug)
             if group.is_visible(user):
                 return f(request, *args, **kwargs)
