@@ -133,7 +133,7 @@ class TestNetworkTopicMail(TestCase):
 
     def test_new_topic_with_email(self):
         response = self.client.post('/networks/ewb/posts/', {'title': 'first post', 'body':'Lets make a new topic.', 'send_as_email': True, 'tags':'first, post', 'attach_count':0,})
-        self.assertEquals(response.status_code, 200)
+        self.assertEquals(response.status_code, 302)
         self.assertEquals(1, len(mail.outbox))
         self.assertEquals(len(self.ewb.get_member_emails()), len(mail.outbox[0].bcc))
 
