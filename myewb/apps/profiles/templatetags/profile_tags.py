@@ -59,6 +59,11 @@ def show_profile_search(search_terms):
     return {"search_terms": search_terms}
 register.inclusion_tag("profiles/profile_search.html")(show_profile_search)
 
+def show_user_search():
+    """Load and show the user search widget"""
+    return {}
+register.inclusion_tag("profiles/user_search.html")(show_user_search)
+
 # These may be useful down the road, specifically if we have time to develop a means of dynamically
 # fetching record forms
 

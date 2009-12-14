@@ -199,6 +199,14 @@ class MemberProfile(Profile):
                                       self.membership_expiry.month,
                                       self.membership_expiry.day)
         self.save()
+        
+    def chapters(self):
+        net_members = self.user.member_groups.filter(group__network__chapter_info__isnull=False)
+        chapters = []
+        for nm in net_members:
+            chapters.append(nm.group)
+        return chapters
+            
 
 def create_member_profile(sender, instance=None, **kwargs):
     """Automatically creates a MemberProfile for a new User."""

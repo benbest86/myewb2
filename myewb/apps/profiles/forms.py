@@ -4,7 +4,7 @@ This file is part of myEWB
 Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
 
 Created on 2009-06-22
-Last modified on 2009-07-31
+Last modified on 2009-12-14
 @author Joshua Gorner, Francis Kung, Ben Best
 """
 from datetime import date
@@ -89,3 +89,25 @@ class MembershipFormPreview(PaymentFormPreview):
         	f.clean
         	context = {'form': f, 'stage_field': self.unused_name('stage'), 'state': self.state}
         	return render_to_response(self.form_template, context, context_instance=RequestContext(request))
+        	
+class UserSearchForm(forms.Form):
+    first_name = forms.CharField(required=False)
+    last_name = forms.CharField(required=False)
+    chapters = [('none', _('Any chapter'))]
+    chapter = forms.ChoiceField(choices=chapters, required=False)
+  
+    def __init__(self, *args, **kwargs):
+        chapterlist = kwargs.pop('chapters', None)
+        
+        self.base_fields['first_name'].initial = kwargs.pop('first_name', None)
+        self.base_fields['last_name'].initial = kwargs.pop('last_name', None)
+        
+        for chapter in chapterlist:
+            try:
+                i = self.base_fields['chapter'].choices.index((chapter.slug, chapter.chapter_info.chapter_name))
+            except ValueError:
+                self.base_fields['chapter'].choices.append((chapter.slug, chapter.chapter_info.chapter_name))
+        
+        self.base_fields['chapter'].initial = kwargs.pop('chapter', None)
+
+        super(UserSearchForm, self).__init__(*args, **kwargs)

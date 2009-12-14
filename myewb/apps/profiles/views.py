@@ -21,7 +21,7 @@ from django.contrib.auth.models import User
 
 from siteutils.decorators import owner_required
 from profiles.models import MemberProfile, StudentRecord, WorkRecord
-from profiles.forms import StudentRecordForm, WorkRecordForm, MembershipForm
+from profiles.forms import StudentRecordForm, WorkRecordForm, MembershipForm, UserSearchForm
 
 from networks.models import Network
 from base_groups.models import GroupMember
@@ -469,3 +469,40 @@ def pay_membership2(request, username):
     else:
         return render_to_response('denied.html', context_instance=RequestContext(request))
 
+def user_search(request):
+    first_name = request.GET.get('first_name', '')
+    last_name = request.GET.get('last_name', '')
+    chapter = request.GET.get('chapter', '')
+    chapters = Network.objects.filter(chapter_info__isnull=False)
+    
+    form = UserSearchForm(first_name=first_name, last_name=last_name, chapter=chapter, chapters=chapters)
+    
+    if first_name or last_name or chapter:
+        users = User.objects.filter(first_name__icontains=first_name, last_name__icontains=last_name)
+        if not chapter == 'none':
+            users = users.filter(member_groups__group__slug=chapter)
+    else:
+        users = None
+        
+    if request.is_ajax():
+        return render_to_response(
+                'profiles/user_search_ajax.html', 
+                {
+                    'form': form, 
+                    'first_name': first_name, 
+                    'last_name': last_name, 
+                    'chapter': chapter, 
+                    'chapters': chapters, 
+                    'users': users
+                }, context_instance=RequestContext(request))
+    else:
+        return render_to_response(
+                'profiles/user_search.html', 
+                {
+                    'form': form, 
+                    'first_name': first_name, 
+                    'last_name': last_name, 
+                    'chapter': chapter, 
+                    'chapters': chapters, 
+                    'users': users
+                }, context_instance=RequestContext(request))
