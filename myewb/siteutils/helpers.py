@@ -42,7 +42,9 @@ def is_visible(user, obj):
     except:
         # the parent object didn't have an is_visible method defined -
         # assume global visibility (???)
-        # for now shouldn't happen, as event.parent can only be a baes_group
+        # for now shouldn't happen, as event.parent can only be a base_group
+        # and threadedcomment.parent a grouptopic
+        # (but this "keep track of where this is used" strategy won't work forever)
         pass
     
     return True
