@@ -140,14 +140,14 @@ def group_detail(request, group_slug, model=None, member_model=None,
 
     # get group
     group = get_object_or_404(model, slug=group_slug)
-    
+
     # membership status
-    if request.user.is_authenticated() and group.user_is_member_or_pending(request.user):
-        member = member_model.objects.get(user=request.user, group=group)
+    if group.user_is_member(request.user):
+        member = group.members.get(user=request.user)
+    elif group.user_is_pending_member(request.user):
+        member = group.pending_members.get(user=request.user)
     else:
         member = None
-        
-    # children groups
     children = group.get_visible_children(request.user)
 
     # retrieve whiteboard (create if needed)

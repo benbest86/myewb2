@@ -63,10 +63,7 @@ class GroupTopic(Topic):
     
     def get_absolute_url(self, group=None):
         kwargs = {"topic_id": self.pk}
-        if group:
-            return group.content_bridge.reverse("topic_detail", group, kwargs=kwargs)
-        else:
-            return reverse("topic_detail", kwargs=kwargs)
+        return reverse("topic_detail", kwargs=kwargs)
         
     def save(self, force_insert=False, force_update=False):
         # validate HTML content

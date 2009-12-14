@@ -77,9 +77,10 @@ def create_student_record(request, username, object=None):
         else:
             network = networks[0]
 
-        existing_members=GroupMember.objects.filter(group=network, user=other_user)
+        # FIXME this should be implemented as a signal - profiles should not know about GroupMember
+        existing_members=network.members.filter(user=other_user)
         if existing_members.count() == 0:
-            network_member = GroupMember(group=network, user=other_user, is_admin=False, request_status='A')
+            network_member = GroupMember(group=network, user=other_user, is_admin=False)
             network.members.add(network_member)
             network_member.save()
 
@@ -225,9 +226,10 @@ def create_work_record(request, username, object=None):
         else:
             network = networks[0]
 
-        existing_members=GroupMember.objects.filter(group=network, user=other_user)
+        # FIXME this should be implemented as a signal - profiles should not know about GroupMember
+        existing_members=network.members.filter(user=other_user)
         if existing_members.count() == 0:
-            network_member = GroupMember(group=network, user=other_user, is_admin=False, request_status='A')
+            network_member = GroupMember(group=network, user=other_user, is_admin=False)
             network.members.add(network_member)
             network_member.save()
 

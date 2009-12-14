@@ -22,6 +22,7 @@ from django.core.mail import EmailMessage
 from emailconfirmation.models import EmailAddress
 
 from siteutils.helpers import get_email_user
+from manager_extras.models import ExtraUserManager
 from groups.base import Group
 from wiki.models import Article
 
@@ -56,11 +57,11 @@ class BaseGroup(Group):
             if user.has_module_perms("base_groups"):
                 return True
             
-            member_list = self.members.filter(user=user, request_status='A')
+            member_list = self.members.filter(user=user)
             if member_list.count() > 0:
                 visible = True
             elif self.visibility == 'P':
-                parent_member_list = self.parent.members.filter(user=user, request_status='A')
+                parent_member_list = self.parent.members.filter(user=user)
                 if parent_member_list.count() > 0:
                     visible = True
         return visible
@@ -69,16 +70,19 @@ class BaseGroup(Group):
     def user_is_member(self, user, admin_override = False):
         if admin_override and user.has_module_perms("base_groups"):
             return True
-        return user.is_authenticated() and (self.members.filter(user=user, request_status='A').count() > 0)
+        return user.is_authenticated() and (self.members.filter(user=user).count() > 0)
         
     def user_is_member_or_pending(self, user):
-        return user.is_authenticated() and (self.members.filter(user=user).count() > 0)
+        return user.is_authenticated() and ((self.members.filter(user=user).count() > 0) or self.pending_members.filter(user=user).count() > 0)
+
+    def user_is_pending_member(self, user):
+        return user.is_authenticated() and self.pending_members.filter(user=user).count() > 0
             
     def user_is_admin(self, user):
         if user.is_authenticated():
             if user.has_module_perms("base_groups"):
                 return True
-            if self.members.filter(user=user, request_status='A', is_admin=True).count() > 0:
+            if self.members.filter(user=user, is_admin=True).count() > 0:
                 return True
         return False
 
@@ -86,16 +90,15 @@ class BaseGroup(Group):
         return reverse('group_detail', kwargs={'group_slug': self.slug})
 
     def get_member_emails(self):
-        members_with_emails = self.get_accepted_members().select_related(depth=1).exclude(user__email='') | \
-                self.members.filter(request_status='B').select_related(depth=1)
-        return [member.user.email for member in members_with_emails]
+        members_with_emails = self.members.all().select_related(depth=1)
+        return [member.user.email for member in members_with_emails if member.user.email]
 
     def add_member(self, user):
         """
-        Adds a member to a group with the proper request_status.
+        Adds a member to a group.
+        Retained for backwards compatibility with request_status days.
         """
-        request_status = user.has_usable_password() and 'A' or 'B'
-        return GroupMember.objects.create(user=user, group=self, request_status=request_status)
+        return GroupMember.objects.create(user=user, group=self)
 
     def send_mail_to_members(self, subject, body, html=True, fail_silently=False):
         """
@@ -168,7 +171,8 @@ class BaseGroup(Group):
             return children.distinct()
             
     def get_accepted_members(self):
-        return self.members.filter(request_status='A')
+        # is_active is set to False for bulk members
+        return self.members.filter(user__is_active=True)
 
 class BaseGroupMember(models.Model):
     is_admin = models.BooleanField(_('admin'), default=False)
@@ -176,36 +180,24 @@ class BaseGroupMember(models.Model):
     admin_order = models.IntegerField(_('admin order (smallest numbers come first)'), default=999)
     joined = models.DateTimeField(_('joined'), default=datetime.datetime.now)
     
-    REQUEST_STATUS_CHOICES = (
-        ('A', _("accepted")),
-        ('I', _("invited")),
-        ('R', _("requested")),
-        ('B', _("bulk member")),
-    )
-    request_status = models.CharField(_('request status'), max_length=1, choices=REQUEST_STATUS_CHOICES, default='A')
-
     class Meta:
         abstract = True
         ordering = ('is_admin', 'admin_order')
     
-    @property
-    def is_accepted(self):
-        return self.request_status == 'A'
-    
-    @property
-    def is_invited(self):
-        return self.request_status == 'I'
-        
-    @property
-    def is_requested(self):
-        return self.request_status == 'R'
-
-    @property
-    def is_bulk(self):
-        return self.request_status == 'B'
 
     def __unicode__(self):
-        return "%s - %s (%s)" % (self.user, self.group, self.request_status)
+        return "%s - %s" % (self.user, self.group,)
+
+class GroupMemberManager(models.Manager):
+    """
+    Adds custom manager methods for accepted and bulk members.
+    """
+    use_for_related_fields = True
+    def accepted(self):
+        return self.get_query_set().filter(user__is_active=True)
+
+    def bulk(self):
+        return self.get_query_set().filter(user__is_active=False)
 
 class GroupMember(BaseGroupMember):
     """
@@ -220,6 +212,16 @@ class GroupMember(BaseGroupMember):
     # away_message = models.CharField(_('away_message'), max_length=500)
     # away_since = models.DateTimeField(_('away since'), default=datetime.now)
 
+    objects = GroupMemberManager()
+
+    @property
+    def is_accepted(self):
+        return self.user.is_active
+
+    @property
+    def is_bulk(self):
+        return not self.user.is_active
+
 class GroupMemberRecord(BaseGroupMember):
     """
     A snapshot of a user's group status at a particular point in time.
@@ -229,6 +231,7 @@ class GroupMemberRecord(BaseGroupMember):
     group = models.ForeignKey(BaseGroup, related_name="member_records", verbose_name=_('group'))
     user = models.ForeignKey(User, related_name="group_records", verbose_name=_('user'))
     datetime = models.DateTimeField(auto_now_add=True)
+    membership_end = models.BooleanField(default=False, help_text=_('Whether this record signifies the end of a membership or not.'))
 
     class Meta(BaseGroupMember.Meta):
         get_latest_by = 'datetime'
@@ -245,7 +248,6 @@ class GroupMemberRecord(BaseGroupMember):
             self.admin_title = instance.admin_title
             self.admin_order = instance.admin_order
             self.joined = instance.joined
-            self.request_status = instance.request_status
 
 
 def group_member_snapshot(sender, instance, **kwargs):
@@ -260,13 +262,32 @@ post_save.connect(group_member_snapshot, sender=GroupMember, dispatch_uid='group
 def end_group_member_snapshot(sender, instance, **kwargs):
     """
     Takes the final snapshot of a group member as it is deleted.
-    Sets the request_status to 'E' for ended.
+    Sets the membership_end = True to signify the end.
     """
     record = GroupMemberRecord(instance=instance)
-    record.request_status = 'E' # for ended
+    record.membership_end = True
     record.save()
 pre_delete.connect(end_group_member_snapshot, sender=GroupMember, dispatch_uid='endgroupmembersnapshot')
             
+class PendingMember(models.Model):
+    user = models.ForeignKey(User, related_name='pending_memberships')
+    group = models.ForeignKey(BaseGroup, related_name='pending_members')
+    request_date = models.DateField(auto_now_add=True)
+    message = models.TextField(help_text=_("Message indicating reason for request."))
+
+    @property
+    def is_invited(self):
+        return hasattr(self, 'invitationtojoingroup')
+
+    @property
+    def is_requested(self):
+        return hasattr(self, 'requesttojoingroup')
+
+class RequestToJoinGroup(PendingMember):
+    pass
+
+class InvitationToJoinGroup(PendingMember):
+    pass
     
 class GroupLocation(models.Model):
     group = models.ForeignKey(BaseGroup, related_name="locations", verbose_name=_('group'))
@@ -284,9 +305,8 @@ def clean_up_bulk_users(sender, instance, created, **kwargs):
         # a 
         if not email_user == user:
             for membership in email_user.member_groups.all():
-                if membership.request_status == 'B' and not user.member_groups.filter(group=membership.group):
+                if not user.member_groups.filter(group=membership.group):
                     membership.user = instance.user
-                    membership.request_status = 'A'
                     membership.save()
             # delete old bulk user - should delete GroupMember objects as well
             email_user.delete()
@@ -305,3 +325,16 @@ def add_creator_to_group(sender, instance, created, **kwargs):
         except:
             pass
 post_save.connect(add_creator_to_group, sender=BaseGroup)
+
+# some duck punches to the User class and extras Manager
+
+def is_bulk_method(self):
+    return not self.is_active
+User.is_bulk = property(is_bulk_method)
+
+def create_bulk_user_method(self, *args, **kwargs):
+    new_user = super(ExtraUserManager, self).create_user(*args, **kwargs)
+    new_user.is_active = False
+    new_user.save()
+    return new_user
+ExtraUserManager.create_bulk_user = create_bulk_user_method
