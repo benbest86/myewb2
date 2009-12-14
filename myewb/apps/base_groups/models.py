@@ -283,6 +283,19 @@ class PendingMember(models.Model):
     def is_requested(self):
         return hasattr(self, 'requesttojoingroup')
 
+    def accept(self):
+        """
+        Accepts the current request or invitation.
+        """
+        GroupMember.objects.create(user=self.user, group=self.group)
+        self.delete()
+
+    def reject(self):
+        """
+        Rejects the current request or invitation.
+        """
+        self.delete()
+
 class RequestToJoinGroup(PendingMember):
     pass
 

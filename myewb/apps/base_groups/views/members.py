@@ -265,12 +265,11 @@ def accept_invitation(request, group_slug, username, group_model=BaseGroup):
     if request.method == 'POST':
         # load up basic objects
         group = get_object_or_404(group_model, slug=group_slug)
-        user = get_object_or_404(User, username=username)
+        other_user = get_object_or_404(User, username=username)
         invitation = get_object_or_404(InvitationToJoinGroup, group=group, user=user)
         
-        # only a user is able to accept their own invitations (no admin override here!)
-        if request.user.is_authenticated() and user == request.user:
-            membership = group.add_member(user)
+        if request.user.is_authenticated() and other_user == request.user:
+            invitation.accept()
         
         return HttpResponseRedirect(reverse('%s_member_detail' % group.model.lower(), kwargs={'group_slug': group_slug, 'username': username}))
     else:
@@ -286,7 +285,7 @@ def accept_request(request, group_slug, username, group_model=BaseGroup):
         
         # only admins can approve requests
         if request.user.is_authenticated() and group.user_is_admin(request.user):
-            membership = group.add_member(user)
+            group_request.accept()
         
         return HttpResponseRedirect(reverse('%s_member_detail' % group.model.lower(), kwargs={'group_slug': group_slug, 'username': username}))
     else:
