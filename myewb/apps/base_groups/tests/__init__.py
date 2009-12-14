@@ -5,6 +5,7 @@ from django.contrib.auth.models import User
 from base_groups.models import BaseGroup, GroupMember, GroupMemberRecord
 from regression import *
 from visibility import *
+from membership import *
 
 class TestMembershipHistory(TestCase):
     """

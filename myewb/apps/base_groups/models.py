@@ -263,7 +263,7 @@ def end_group_member_snapshot(sender, instance, **kwargs):
 pre_delete.connect(end_group_member_snapshot, sender=GroupMember, dispatch_uid='endgroupmembersnapshot')
             
 class PendingMember(models.Model):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, related_name='pending_memberships')
     group = models.ForeignKey(BaseGroup, related_name='pending_members')
     request_date = models.DateField(auto_now_add=True)
     message = models.TextField(help_text=_("Message indicating reason for request."))
@@ -275,6 +275,19 @@ class PendingMember(models.Model):
     @property
     def is_requested(self):
         return hasattr(self, 'requesttojoingroup')
+
+    def accept(self):
+        """
+        Accepts the current request or invitation.
+        """
+        GroupMember.objects.create(user=self.user, group=self.group)
+        self.delete()
+
+    def reject(self):
+        """
+        Rejects the current request or invitation.
+        """
+        self.delete()
 
 class RequestToJoinGroup(PendingMember):
     pass
