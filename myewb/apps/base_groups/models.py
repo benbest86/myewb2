@@ -171,8 +171,12 @@ class BaseGroup(Group):
             return children.distinct()
             
     def get_accepted_members(self):
-        # is_active is set to False for bulk members
-        return self.members.filter(user__is_active=True)
+        """
+        Accepted members are members that are not bulk (i.e. mailing list)
+        users. They have a profile on the site and have signed up for MyEWB.
+        """
+        # is_bulk is set to True for bulk members
+        return self.members.filter(user__is_bulk=False)
 
 class BaseGroupMember(models.Model):
     is_admin = models.BooleanField(_('admin'), default=False)
@@ -194,10 +198,10 @@ class GroupMemberManager(models.Manager):
     """
     use_for_related_fields = True
     def accepted(self):
-        return self.get_query_set().filter(user__is_active=True)
+        return self.get_query_set().filter(user__is_bulk=False)
 
     def bulk(self):
-        return self.get_query_set().filter(user__is_active=False)
+        return self.get_query_set().filter(user__is_bulk=True)
 
 class GroupMember(BaseGroupMember):
     """
@@ -216,11 +220,11 @@ class GroupMember(BaseGroupMember):
 
     @property
     def is_accepted(self):
-        return self.user.is_active
+        return not self.user.is_bulk
 
     @property
     def is_bulk(self):
-        return not self.user.is_active
+        return self.user.is_bulk
 
 class GroupMemberRecord(BaseGroupMember):
     """
@@ -341,13 +345,12 @@ post_save.connect(add_creator_to_group, sender=BaseGroup)
 
 # some duck punches to the User class and extras Manager
 
-def is_bulk_method(self):
-    return not self.is_active
-User.is_bulk = property(is_bulk_method)
+# add an is_bulk boolean directly to the User model
+User.add_to_class('is_bulk', models.BooleanField(default=False))
 
 def create_bulk_user_method(self, *args, **kwargs):
-    new_user = super(ExtraUserManager, self).create_user(*args, **kwargs)
-    new_user.is_active = False
+    new_user = self.create_user(*args, **kwargs)
+    new_user.is_bulk = True
     new_user.save()
     return new_user
 ExtraUserManager.create_bulk_user = create_bulk_user_method
