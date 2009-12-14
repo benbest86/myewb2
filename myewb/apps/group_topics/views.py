@@ -75,7 +75,7 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
     group = None
     if group_slug is not None:
         group = get_object_or_404(BaseGroup, slug=group_slug)
-        is_member = group.user_is_member(request.user, True)
+        is_member = group.user_is_member(request.user, admin_override=True)
     
     attach_count = 0
     if request.method == "POST" and group:
@@ -137,11 +137,11 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
     else:
         if request.user.is_authenticated():
             # generic topic listing: show posts from groups you're in
-            # TODO: do we want to also show posts from public groups?
-            topics = GroupTopic.objects.filter(parent_group__member_users=request.user)
+            # also shows posts from public groups...
+            topics = GroupTopic.objects.visible(user=request.user)
 
         else:
-            # for guests, show all posts from public groups
+            # for guests, show posts from public groups only
             topics = GroupTopic.objects.visible()
             
     return render_to_response(template_name, {
@@ -211,7 +211,7 @@ def topic_delete(request, topic_id, group_slug=None, bridge=None):
     
     topic = get_object_or_404(topics, id=topic_id)
     
-    if (request.method == "POST" and (request.user == topic.creator or request.user == topic.group.creator)):
+    if (request.method == "POST" and (request.user == topic.creator or topic.group.user_is_admin(request.user))):
         ThreadedComment.objects.all_for_object(topic).delete()
         topic.delete()
     
