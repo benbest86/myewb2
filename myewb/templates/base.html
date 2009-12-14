@@ -21,9 +21,7 @@
 		{% endblock %}
     </head>
 
-{% if debug %}
 <h1 class="debug">myEWB dev version -- {% git_date %} (<a href="http://github.com/ewbcanada/myewb2/tree/{% git_rev %}">git rev {% git_rev %}</a>)</h1>
-{% endif %}
     
     <body class="{% block body_class %}{% endblock %}">
         {% if site_wide_announcements %}

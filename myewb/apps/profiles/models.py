@@ -95,7 +95,7 @@ class MemberProfile(Profile):
     membership_expiry = models.DateField(_('membership expiry'), null=True, blank=True)
     
     current_login = models.DateTimeField(_('current login'), null=True, blank=True)
-    login_count = models.IntegerField(_('login count'), null=True, blank=True)
+    login_count = models.IntegerField(_('login count'), null=False, default=0)
     
     social_insurance = CASocialInsuranceNumberField()
     health_card = models.CharField(blank=True, max_length=100)

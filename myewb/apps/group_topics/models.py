@@ -13,7 +13,9 @@ from django.db.models import Q
 from django.db.models.signals import post_save
 from django.utils.translation import ugettext_lazy as _
 from django.core.urlresolvers import reverse
+from django.template import Context, loader
 
+from attachments.models import Attachment
 from base_groups.models import BaseGroup
 from topics.models import Topic
 from wiki.models import Article
@@ -38,6 +40,15 @@ class GroupTopicManager(models.Manager):
         Returns all posts belonging to a given group
         """
         return self.get_query_set().filter(parent_group=group)
+    
+    def get_for_user(self, user, qs=None):
+        """
+        Returns all posts belonging to a given user.  If passed the optional 
+        qs parameter, it will filter that queryset instead of creating a new one.
+        """
+        if qs == None:
+            qs = self.get_query_set()
+        return qs.filter(creator=user)
 
 class GroupTopic(Topic):
     """
@@ -70,10 +81,20 @@ class GroupTopic(Topic):
         super(GroupTopic, self).save(force_insert, force_update)
         post_save.send(sender=Topic, instance=GroupTopic.objects.get(id=self.id))
     
+    def send_email(self):
+        if self.send_as_email:
+            attachments = Attachment.objects.attachments_for_object(self)
+            
+            tmpl = loader.get_template("email_template.html")
+            c = Context({'group': self.group,
+                         'title': self.title,
+                         'body': self.body,
+                         'topic_id': self.pk,
+                         'attachments': attachments
+                         })
+            message = tmpl.render(c)
+    
+            self.group.send_mail_to_members(self.title, message)
+        
     class Meta:
         ordering = ('-modified', )
-
-def send_topic_email(sender, instance, **kwargs):
-    if instance.send_as_email:
-        instance.group.send_mail_to_members(instance.title, instance.body)
-models.signals.post_save.connect(send_topic_email, sender=GroupTopic)

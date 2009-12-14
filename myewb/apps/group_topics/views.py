@@ -11,10 +11,12 @@ Last modified: 2009-12-02
 
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.utils.translation import ugettext as _
+from django.contrib.auth.models import User
 from django.contrib.syndication import feeds
 from django.shortcuts import get_object_or_404, render_to_response
 from django.core.exceptions import ObjectDoesNotExist
 from django.template import RequestContext
+from django.db.models import Q
 
 from groups import bridge
 
@@ -107,6 +109,8 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
                     base_topic = GroupTopic.objects.get(id=topic.id)
                     for af in attach_forms:
                         attachment = af.save(request, base_topic)
+
+                    topic.send_email()
                         
                     # redirect out.
                     request.user.message_set.create(message=_("You have started the topic %(topic_title)s") % {"topic_title": topic.title})
@@ -212,3 +216,28 @@ def topic_delete(request, topic_id, group_slug=None, bridge=None):
         topic.delete()
     
     return HttpResponseRedirect(request.POST["next"])
+
+def topics_by_user(request, username):
+    """
+    Return a listing of all topics visible the current user, and created by
+    the given user
+    """
+    user = get_object_or_404(User, username=username)
+
+    if request.user == user:
+        # user can always see their own post, regardless of group visibility
+        # (ie, if I write some posts to a private group then leave the group, 
+        #  those posts should still show in this listing)
+        topics = GroupTopic.objects.get_for_user(user)
+        
+    else:
+        # start with all visible topics
+        topics = GroupTopic.objects.visible(request.user)
+            
+        # then restrict further to only ones by the given user
+        topics = GroupTopic.objects.get_for_user(user, topics)
+            
+    return render_to_response("topics/topics.html",
+                              {"topics": topics},
+                              context_instance=RequestContext(request)
+                             )

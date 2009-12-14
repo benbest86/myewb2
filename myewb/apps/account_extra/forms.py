@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django import forms
 from django.conf import settings
 from django.core.cache import cache
@@ -65,6 +67,13 @@ class EmailLoginForm(forms.Form):
         if self.is_valid():
             online_middleware.remove_user(request)
             login(request, self.user)
+            
+            # update stats
+            self.user.get_profile().login_count += 1
+            self.user.get_profile().current_login = datetime.now()
+            self.user.get_profile().save()
+            
+            # set message
             if self.user.first_name and self.user.last_name:
                 login_message=ugettext(u"Successfully logged in. Welcome, %(first_name)s %(last_name)s.") % {
                     'first_name': self.user.first_name,
