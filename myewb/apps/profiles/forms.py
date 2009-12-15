@@ -111,3 +111,6 @@ class UserSearchForm(forms.Form):
         self.base_fields['chapter'].initial = kwargs.pop('chapter', None)
 
         super(UserSearchForm, self).__init__(*args, **kwargs)
+        
+class SampleUserSearchForm(forms.Form):
+    selected_user = forms.CharField()

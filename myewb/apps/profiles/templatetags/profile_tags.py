@@ -10,8 +10,9 @@ Last modified: 2009-07-31
 from django import template
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404
-from profiles.forms import StudentRecordForm, WorkRecordForm
+from profiles.forms import StudentRecordForm, WorkRecordForm, UserSearchForm
 from profiles.models import StudentRecord, WorkRecord
+from networks.models import Network
 
 register = template.Library()
 
@@ -61,8 +62,10 @@ register.inclusion_tag("profiles/profile_search.html")(show_profile_search)
 
 def show_user_search():
     """Load and show the user search widget"""
-    return {}
-register.inclusion_tag("profiles/user_search.html")(show_user_search)
+    chapters = Network.objects.filter(chapter_info__isnull=False)
+    form = UserSearchForm(chapters=chapters)
+    return {"user_search_form": form}
+register.inclusion_tag("profiles/user_search_ajax.html")(show_user_search)
 
 # These may be useful down the road, specifically if we have time to develop a means of dynamically
 # fetching record forms

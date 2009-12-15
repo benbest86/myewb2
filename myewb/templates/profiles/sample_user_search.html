@@ -1,0 +1,66 @@
+{% extends "profiles/base.html" %}
+
+{% comment %}
+This file is part of myEWB
+Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
+{% endcomment %}
+
+{% load i18n %}
+{% load extra_tagging_tags %}
+{% load profile_tags %}
+{% load uni_form %}
+
+{% block head_title %}{% blocktrans %}Sample Usage of AJAX User Search{% endblocktrans %}{% endblock %}
+
+{% block subnav %}
+{% if user.is_authenticated %}
+    <ul class="subnav green">
+        <li><a href="{% url profile_detail user.username %} ">{% trans "Your Profile" %}</a></li>
+        <li><a href="{% url profile_list %} ">{% trans "All Profiles" %}</a></li>
+    </ul>
+{% endif %}
+{% endblock %}
+
+{% block body %}
+    <h2>Sample Usage of AJAX User Search</h2>
+    
+    {% comment %}
+    <form class="uniForm" id="search-users" method="POST" action="{% url profile_sample_user_search %}">
+    	<fieldset class="inlineLabels">
+    		{{ form|as_uni_form }}
+    		<div class="form_block">
+            <input type="hidden" name="action" value="search" />
+            <input type="submit" value="{% trans "search" %}"/>
+            </div>
+    	</fieldset>
+    </form>
+    {% endcomment %}
+    
+    <div id="user_search" style="border: solid 2px black; padding: 8px;">
+        {% show_user_search %}
+    </div>
+    
+    {# possible future work? #}
+    {# <div id="selectedUsers" /> #}
+{% endblock %}
+
+{% block extra_body %}
+    {# based in part on http://www.nomadjourney.com/2009/01/using-django-templates-with-jquery-ajax/ #}
+    <script type="text/javascript">
+		$(document).ready(function() {
+		    $( '#userSearchSubmit' ).click( function(event) {
+		        event.preventDefault();
+        		first_name = $( '#id_first_name' ).val();
+            	last_name = $( '#id_last_name' ).val();
+                chapter = $( '#id_chapter' ).val();
+        		$( '#userSearchResults' ).html( '&nbsp;' ).load(
+                            '{% url profile_user_search %}', {
+                                'first_name': first_name, 
+                                'last_name': last_name,
+                                'chapter': chapter
+                            }
+                );
+        	});        
+		});
+	</script>
+{% endblock %}

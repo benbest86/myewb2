@@ -21,7 +21,7 @@ from django.contrib.auth.models import User
 
 from siteutils.decorators import owner_required
 from profiles.models import MemberProfile, StudentRecord, WorkRecord
-from profiles.forms import StudentRecordForm, WorkRecordForm, MembershipForm, UserSearchForm
+from profiles.forms import StudentRecordForm, WorkRecordForm, MembershipForm, UserSearchForm, SampleUserSearchForm
 
 from networks.models import Network
 from base_groups.models import GroupMember
@@ -470,12 +470,12 @@ def pay_membership2(request, username):
         return render_to_response('denied.html', context_instance=RequestContext(request))
 
 def user_search(request):
-    first_name = request.GET.get('first_name', '')
-    last_name = request.GET.get('last_name', '')
-    chapter = request.GET.get('chapter', '')
+    first_name = request.POST.get('first_name', '')
+    last_name = request.POST.get('last_name', '')
+    chapter = request.POST.get('chapter', '')
     chapters = Network.objects.filter(chapter_info__isnull=False)
     
-    form = UserSearchForm(first_name=first_name, last_name=last_name, chapter=chapter, chapters=chapters)
+    # form = UserSearchForm(first_name=first_name, last_name=last_name, chapter=chapter, chapters=chapters)
     
     if first_name or last_name or chapter:
         users = User.objects.filter(first_name__icontains=first_name, last_name__icontains=last_name)
@@ -486,23 +486,35 @@ def user_search(request):
         
     if request.is_ajax():
         return render_to_response(
-                'profiles/user_search_ajax.html', 
+                'profiles/user_search_ajax_results.html', 
                 {
-                    'form': form, 
-                    'first_name': first_name, 
-                    'last_name': last_name, 
-                    'chapter': chapter, 
-                    'chapters': chapters, 
                     'users': users
                 }, context_instance=RequestContext(request))
+    # else:
+    #     return render_to_response(
+    #             'profiles/user_search.html', 
+    #             {
+    #                 'form': form, 
+    #                 'first_name': first_name, 
+    #                 'last_name': last_name, 
+    #                 'chapter': chapter, 
+    #                 'chapters': chapters, 
+    #                 'users': users
+    #             }, context_instance=RequestContext(request))
+                
+def sample_user_search(request):
+    selected_user = None
+    if request.method == 'POST':
+        form = SampleUserSearchForm(request.POST)
+        if form.is_valid():
+            selected_user = form.cleaned_data['selected_user']
+            return HttpResponseRedirect(reverse('profile_detail', kwargs={'username': selected_user }))
     else:
-        return render_to_response(
-                'profiles/user_search.html', 
-                {
-                    'form': form, 
-                    'first_name': first_name, 
-                    'last_name': last_name, 
-                    'chapter': chapter, 
-                    'chapters': chapters, 
-                    'users': users
-                }, context_instance=RequestContext(request))
+        form = SampleUserSearchForm()
+        
+    return render_to_response(
+            'profiles/sample_user_search.html', 
+            {
+                'form': form,
+                'user': selected_user
+            }, context_instance=RequestContext(request))
