@@ -64,6 +64,12 @@ class GroupTopic(Topic):
     def get_absolute_url(self, group=None):
         kwargs = {"topic_id": self.pk}
         return reverse("topic_detail", kwargs=kwargs)
+    
+    def is_visible(self, user):
+        if self.creator == user:
+            return True
+        else:
+            return self.parent_group.is_visible(user)
         
     def save(self, force_insert=False, force_update=False):
         # validate HTML content
