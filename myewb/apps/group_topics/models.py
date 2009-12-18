@@ -28,7 +28,8 @@ class GroupTopicManager(models.Manager):
         """
         Returns visible posts by group visibility. Takes an optional
         user parameter which adds GroupTopics from groups that the
-        member is a part of.
+        member is a part of. Handles AnonymousUser instances
+        transparently
         """
         filter_q = Q(parent_group__visibility='E')
         if user is not None and not user.is_anonymous():
@@ -70,6 +71,9 @@ class GroupTopic(Topic):
             return True
         else:
             return self.parent_group.is_visible(user)
+
+    def is_editable(self, user):
+        return user == self.creator or self.parent_group.user_is_admin(user))
         
     def save(self, force_insert=False, force_update=False):
         # validate HTML content
