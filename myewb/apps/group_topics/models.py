@@ -73,7 +73,7 @@ class GroupTopic(Topic):
             return self.parent_group.is_visible(user)
 
     def is_editable(self, user):
-        return user == self.creator or self.parent_group.user_is_admin(user))
+        return user == self.creator or self.parent_group.user_is_admin(user)
         
     def save(self, force_insert=False, force_update=False):
         # validate HTML content
