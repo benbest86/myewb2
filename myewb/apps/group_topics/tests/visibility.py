@@ -50,6 +50,8 @@ class VisibilityBaseTest(TestCase):
         self.item1 = TaggedItem.objects.create(tag=self.tag, object=self.publicpost)
         self.item2 = TaggedItem.objects.create(tag=self.tag, object=self.privatepost)
 
+	self.gtopic = ContentType.objects.get(app_label="group_topics", model="grouptopic")
+
 class TestVisibility(VisibilityBaseTest):
     """ Test all aspects of post visibility """
     
@@ -292,8 +294,6 @@ class TestComments(VisibilityBaseTest):
     """ Test permissions check on posting replies """
     # this is done here instead of in the mythreadedcomments app because
     # you can't run tests on an app that has no models, apparently.
-    
-    gtopic = ContentType.objects.get(app_label="group_topics", model="grouptopic")
     
     def test_member(self):
         """ check group member's visibility """
