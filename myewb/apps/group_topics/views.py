@@ -43,10 +43,12 @@ def topic(request, topic_id, group_slug=None, edit=False, template_name="topics/
     # XXX PERMISSIONS CHECK
     # only the owner of a topic or a group admin can edit a topic (??)
     if (request.method == "POST" and edit == True and \
-       (request.user == topic.creator or parent_group.user_is_admin(request.user))):
-        topic.body = request.POST["body"]
-        topic.save()
-        return HttpResponseRedirect(topic.get_absolute_url(group))
+            topic.is_editable(request.user)):
+        updated_body = request.POST.get('body', None)
+        if updated_body is not None:
+            topic.body = updated_body
+            topic.save()
+        return HttpResponseRedirect(topic.get_absolute_url())
 
     # retrieve whiteboard (create if needed)
     if topic.whiteboard == None:
@@ -76,73 +78,68 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
     if group_slug is not None:
         group = get_object_or_404(BaseGroup, slug=group_slug)
         is_member = group.user_is_member(request.user, admin_override=True)
+
+    if group and not group.is_visible(request.user):
+        return HttpResponseForbidden()
     
     attach_count = 0
     if request.method == "POST" and group:
+        if not request.user.is_authenticated():
+            return HttpResponseForbidden()
         try:
             attach_count = int(request.POST.get("attach_count", 0))
         except ValueError:
             attach_count = 0
             
-        if request.user.is_authenticated():
-            if is_member:
-                topic_form = form_class(request.POST)
-                attach_forms = [attach_form_class(request.POST, request.FILES, prefix=str(x), instance=Attachment()) for x in range(0,attach_count)]
+        if is_member:
+            topic_form = form_class(request.POST)
+            attach_forms = [attach_form_class(request.POST, request.FILES, prefix=str(x), instance=Attachment()) for x in range(0,attach_count)]
+            
+            # do not take blank attachment forms into account
+            for af in attach_forms:
+                if not af.is_valid() and not af['attachment_file'].data:
+                    attach_forms.remove(af)
+                    attach_count = attach_count - 1
+            
+            # all good.  save it!
+            if topic_form.is_valid() and all([af.is_valid() for af in attach_forms]):
+                topic = topic_form.save(commit=False)
+                if group:
+                    group.associate(topic, commit=False)
+                topic.creator = request.user
+                topic.save()
                 
-                # do not take blank attachment forms into account
+                # save the attachment.
+                # We need the "Topic" object in order to retrieve attachments properly
+                # since other functions only get the Topic object
+                base_topic = GroupTopic.objects.get(id=topic.id)
                 for af in attach_forms:
-                    if not af.is_valid() and not af['attachment_file'].data:
-                        attach_forms.remove(af)
-                        attach_count = attach_count - 1
-                
-                # all good.  save it!
-                if topic_form.is_valid() and all([af.is_valid() for af in attach_forms]):
-                    topic = topic_form.save(commit=False)
-                    if group:
-                        group.associate(topic, commit=False)
-                    topic.creator = request.user
-                    topic.save()
-                    
-                    # save the attachment.
-                    # We need the "Topic" object in order to retrieve attachments properly
-                    # since other functions only get the Topic object
-                    base_topic = GroupTopic.objects.get(id=topic.id)
-                    for af in attach_forms:
-                        attachment = af.save(request, base_topic)
+                    attachment = af.save(request, base_topic)
 
-                    topic.send_email()
-                        
-                    # redirect out.
-                    request.user.message_set.create(message=_("You have started the topic %(topic_title)s") % {"topic_title": topic.title})
-                    return HttpResponseRedirect(topic.get_absolute_url(group))
-            else:
-                # if they can't start a topic, why are we still loading up a form?
-                request.user.message_set.create(message=_("You are not a member and so cannot start a new topic"))
-                topic_form = form_class(instance=GroupTopic())                
-                attach_forms = [attach_form_class(prefix=str(x), instance=Attachment()) for x in range(0,attach_count)]
+                topic.send_email()
+                    
+                # redirect out.
+                request.user.message_set.create(message=_("You have started the topic %(topic_title)s") % {"topic_title": topic.title})
+                return HttpResponseRedirect(topic.get_absolute_url())
         else:
-            return HttpResponseForbidden()
+            # if they can't start a topic, why are we still loading up a form?
+            request.user.message_set.create(message=_("You are not a member and so cannot start a new topic"))
+            topic_form = form_class(instance=GroupTopic())                
+            attach_forms = [attach_form_class(prefix=str(x), instance=Attachment()) for x in range(0,attach_count)]
     else:
         topic_form = form_class(instance=GroupTopic())
         attach_forms = []
     
     # if it's a listing by group, check group visibility
     if group:
-        if group.is_visible(request.user):
-            topics = GroupTopic.objects.get_for_group(group)
-        else:
-            return HttpResponseForbidden()
+        topics = GroupTopic.objects.get_for_group(group)
 
     # otherwise throw up a generic listing of visible posts
     else:
-        if request.user.is_authenticated():
-            # generic topic listing: show posts from groups you're in
-            # also shows posts from public groups...
-            topics = GroupTopic.objects.visible(user=request.user)
-
-        else:
-            # for guests, show posts from public groups only
-            topics = GroupTopic.objects.visible()
+        # generic topic listing: show posts from groups you're in
+        # also shows posts from public groups...
+        # for guests, show posts from public groups only
+        topics = GroupTopic.objects.visible(user=request.user)
             
     return render_to_response(template_name, {
         "group": group,
