@@ -11,6 +11,11 @@ Last modified on 2009-07-29
 from django.conf import settings
 from django.db.models import signals
 from django.utils.translation import ugettext_noop as _
+from django.contrib.auth.models import Group, Permission
+from django.contrib.contenttypes.models import ContentType
+
+from base_groups.models import BaseGroup
+from base_groups import models as bg
 
 if "notification" in settings.INSTALLED_APPS:
     from notification import models as notification
@@ -23,3 +28,15 @@ if "notification" in settings.INSTALLED_APPS:
     signals.post_syncdb.connect(create_notice_types, sender=notification)
 else:
     print "Skipping creation of NoticeTypes as notification app not found"
+
+def create_perm_group(sender, **kwargs):
+    group, created = Group.objects.get_or_create(name="Groups admin")
+    if created:
+        print 'creating base_groups permission group'
+    
+        basegroup = ContentType.objects.get_for_model(BaseGroup)
+        perm, created = Permission.objects.get_or_create(name="Groups admin",
+                                                         content_type=basegroup,
+                                                         codename="admin")
+        group.permissions.add(perm)
+signals.post_syncdb.connect(create_perm_group, sender=bg)
