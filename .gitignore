@@ -10,6 +10,7 @@
 # ignore local_settings and files
 myewb/local_settings.py
 myewb/site_media
+myewb/media/attachments
 
 # ignore any diff/patch files
 *.diff
