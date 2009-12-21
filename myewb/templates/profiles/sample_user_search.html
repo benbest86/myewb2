@@ -24,43 +24,89 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% block body %}
     <h2>Sample Usage of AJAX User Search</h2>
     
-    {% comment %}
+    {% if users %}
+    <div id="selected_user_results" style="border: solid 2px black; padding: 8px;">
+        The following users were successfully selected on the previous page:
+        <ul>
+        {% for sel_user in users %}
+            <li>{{ sel_user.first_name }} {{ sel_user.last_name }} ({{ sel_user.username }})</li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% else %}
+    
     <form class="uniForm" id="search-users" method="POST" action="{% url profile_sample_user_search %}">
     	<fieldset class="inlineLabels">
-    		{{ form|as_uni_form }}
+    	    <div id="selectedUsers">
+    	        <span>Selected users:</span>
+    	        
+    	        <span id="addSelectionSpan"><a href="#" id="addSelection">+</a></span>
+    	    </div>
+    	    
     		<div class="form_block">
-            <input type="hidden" name="action" value="search" />
-            <input type="submit" value="{% trans "search" %}"/>
+            <input type="hidden" name="action" value="submit" />
+            <input type="submit" value="{% trans "submit" %}"/>
             </div>
     	</fieldset>
     </form>
-    {% endcomment %}
     
     <div id="user_search" style="border: solid 2px black; padding: 8px;">
         {% show_user_search %}
     </div>
-    
-    {# possible future work? #}
-    {# <div id="selectedUsers" /> #}
+    {% endif %}
 {% endblock %}
 
 {% block extra_body %}
     {# based in part on http://www.nomadjourney.com/2009/01/using-django-templates-with-jquery-ajax/ #}
     <script type="text/javascript">
+        
+        function onSelectionLoad(xmlRequest, textStatus) {
+            $( '#addSelectionSpan' ).before(xmlRequest.responseText);                      
+            $( '.su-remove' ).click( function(event) {
+                $(this).parent().remove()
+            })
+        }
+        
+        function onSearchResultSelect(event) {
+            event.preventDefault();
+            theUsername = event.currentTarget.id.substring(4)
+
+            $.ajax({
+                url: "{% url selected_user %}",
+                type: "POST",
+                data: ({username: theUsername}),
+                complete: onSelectionLoad                             
+            });
+        }
+        
+        function onSearchResultsLoad(responseText, textStatus, xmlRequest) {
+            $( 'a.userSearchChoice' ).click( function(event) { onSearchResultSelect(event) });
+        }
+        
+        function onSearchSubmit(event) {
+	        event.preventDefault();
+    		first_name = $( '#id_first_name' ).val();
+        	last_name = $( '#id_last_name' ).val();
+            chapter = $( '#id_chapter' ).val();
+    		$( '#userSearchResults' ).html( '&nbsp;' ).load(
+                '{% url profile_user_search %}', {
+                    'first_name': first_name, 
+                    'last_name': last_name,
+                    'chapter': chapter
+                },
+                onSearchResultsLoad
+            );
+    	}
+    	
+    	function onAddSelection(event) {
+    	    $( '#user_search' ).slideToggle();
+    	    return false;
+    	}
+    
 		$(document).ready(function() {
-		    $( '#userSearchSubmit' ).click( function(event) {
-		        event.preventDefault();
-        		first_name = $( '#id_first_name' ).val();
-            	last_name = $( '#id_last_name' ).val();
-                chapter = $( '#id_chapter' ).val();
-        		$( '#userSearchResults' ).html( '&nbsp;' ).load(
-                            '{% url profile_user_search %}', {
-                                'first_name': first_name, 
-                                'last_name': last_name,
-                                'chapter': chapter
-                            }
-                );
-        	});        
+		    $( '#user_search' ).hide();
+		    $( '#userSearchSubmit' ).click( function(event) { onSearchSubmit(event) } );
+		    $( '#addSelection' ).click( function(event) { onAddSelection(event) } );      
 		});
 	</script>
 {% endblock %}

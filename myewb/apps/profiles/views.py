@@ -21,7 +21,7 @@ from django.contrib.auth.models import User
 
 from siteutils.decorators import owner_required
 from profiles.models import MemberProfile, StudentRecord, WorkRecord
-from profiles.forms import StudentRecordForm, WorkRecordForm, MembershipForm, UserSearchForm, SampleUserSearchForm
+from profiles.forms import StudentRecordForm, WorkRecordForm, MembershipForm, UserSearchForm
 
 from networks.models import Network
 from base_groups.models import GroupMember
@@ -505,16 +505,26 @@ def user_search(request):
 def sample_user_search(request):
     selected_user = None
     if request.method == 'POST':
-        form = SampleUserSearchForm(request.POST)
-        if form.is_valid():
-            selected_user = form.cleaned_data['selected_user']
-            return HttpResponseRedirect(reverse('profile_detail', kwargs={'username': selected_user }))
+        usernames = request.POST.getlist('selected-user')
+        users = []
+        for username in usernames:
+            cur_user = get_object_or_404(User, username=username)
+            users.append(cur_user)
+        return render_to_response(
+                'profiles/sample_user_search.html', 
+                {
+                    'users': users
+                }, 
+                context_instance=RequestContext(request))
     else:
-        form = SampleUserSearchForm()
-        
-    return render_to_response(
-            'profiles/sample_user_search.html', 
-            {
-                'form': form,
-                'user': selected_user
-            }, context_instance=RequestContext(request))
+        return render_to_response('profiles/sample_user_search.html', {}, context_instance=RequestContext(request))
+            
+def selected_user(request):
+    if request.is_ajax() and request.method == 'POST':
+        username = request.POST.get('username', '')
+        sel_user = User.objects.get(username=username)
+        return render_to_response(
+                'profiles/selected_user.html', 
+                {
+                    'sel_user': sel_user
+                }, context_instance=RequestContext(request))
