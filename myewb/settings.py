@@ -2,6 +2,7 @@
 # Django settings for complete pinax project.
 
 import os.path
+import sys
 import posixpath
 import pinax
 
@@ -74,6 +75,9 @@ ADMIN_MEDIA_PREFIX = '/media/'
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'r6b801^aa5%)5cf5!&1z160o^u-!7^8kn**x5vsgvp^+7of&zg'
+
+# Add the contribs directory to our path too
+sys.path.insert(0, os.path.join(PROJECT_ROOT, "contrib"))
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -209,6 +213,8 @@ INSTALLED_APPS = (
     'siteutils',
     'manager_extras',
 
+    # our own third-party libs
+    'contrib.django_evolution',
 )
 
 ABSOLUTE_URL_OVERRIDES = {
