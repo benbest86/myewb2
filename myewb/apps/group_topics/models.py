@@ -41,8 +41,10 @@ class GroupTopicManager(models.Manager):
             
             # everyone else only sees stuff from their own groups
             filter_q |= Q(parent_group__member_users=user)
-            
-        return self.get_query_set().filter(filter_q)
+
+        # would it be more efficient to remove the OR query above and just write
+        # two different queries, instead of using distinct() here?
+        return self.get_query_set().filter(filter_q).distinct()
     
     def get_for_group(self, group):
         """
