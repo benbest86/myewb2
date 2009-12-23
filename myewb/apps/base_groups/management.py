@@ -32,7 +32,7 @@ else:
 def create_perm_group(sender, **kwargs):
     group, created = Group.objects.get_or_create(name="Groups admin")
     if created:
-        print 'creating base_groups permission group'
+        # print 'creating base_groups permission group'
     
         basegroup = ContentType.objects.get_for_model(BaseGroup)
         perm, created = Permission.objects.get_or_create(name="Groups admin",

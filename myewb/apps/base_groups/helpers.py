@@ -111,3 +111,12 @@ def get_valid_parents(user, group=None, model=BaseGroup):
         vps = vps.exclude(slug=group.slug)
     return vps
     
+def user_can_adminovision(user):
+    """
+    Check if user is capable of admin-o-vision (but not whether it is currently enabled)
+    """
+    if user.is_staff or user.has_module_perms("base_groups"):
+        return True
+    else:
+        return False
+    

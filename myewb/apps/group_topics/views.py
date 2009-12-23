@@ -15,16 +15,19 @@ from django.contrib.auth.models import User
 from django.contrib.syndication import feeds
 from django.shortcuts import get_object_or_404, render_to_response
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.db.models import Q
 
 from groups import bridge
 
 from base_groups.models import BaseGroup
+from base_groups.helpers import user_can_adminovision
 from group_topics.models import GroupTopic
 from group_topics.forms import GroupTopicForm
 from group_topics.feeds import TopicFeedAll, TopicFeedGroup
 from threadedcomments.models import ThreadedComment
+from profiles.models import MemberProfile
 
 from attachments.forms import AttachmentForm
 from attachments.models import Attachment
@@ -148,6 +151,8 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
         "attach_count": attach_count,
         "is_member": is_member,
         "topics": topics,
+        "can_adminovision": user_can_adminovision(request.user),
+        "adminovision": request.user.get_profile().adminovision,
     }, context_instance=RequestContext(request))
 
 def feed(request, group_slug):
@@ -238,3 +243,19 @@ def topics_by_user(request, username):
                               {"topics": topics},
                               context_instance=RequestContext(request)
                              )
+
+def adminovision_toggle(request, group_slug=None):
+    """
+    Toggles admin-o-vision for the current user.
+    No effect if user is not an admin
+    """
+
+    if user_can_adminovision(request.user):
+        profile = request.user.get_profile()
+    
+        profile.adminovision = not profile.adminovision
+        profile.save()
+    
+    return HttpResponseRedirect(reverse('topic_list'))
+
+    

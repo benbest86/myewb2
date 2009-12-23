@@ -41,6 +41,20 @@
         {% endif %}
     </p>
     
+   	{% if can_adminovision %}
+	    <p>
+   		{% spaceless %}
+   			<a href="{% url topic_adminovision %}">
+    		{% if adminovision %}
+    			Turn off adminovision
+    		{% else %}
+    			Turn on adminovision
+    		{% endif %}
+    		</a>
+    	{% endspaceless %}
+    	</p>
+   	{% endif %}
+    
     {% autopaginate topics 10 %}
     
     {% for topic in topics %}

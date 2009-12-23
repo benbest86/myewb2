@@ -17,6 +17,7 @@ from django.template import Context, loader
 
 from attachments.models import Attachment
 from base_groups.models import BaseGroup
+from base_groups.helpers import user_can_adminovision
 from topics.models import Topic
 from wiki.models import Article
 
@@ -33,7 +34,14 @@ class GroupTopicManager(models.Manager):
         """
         filter_q = Q(parent_group__visibility='E')
         if user is not None and not user.is_anonymous():
+            
+            # admins with admin-o-vision on automatically see everything
+            if user_can_adminovision(user) and user.get_profile().adminovision is True:
+                return self.get_query_set()
+            
+            # everyone else only sees stuff from their own groups
             filter_q |= Q(parent_group__member_users=user)
+            
         return self.get_query_set().filter(filter_q)
     
     def get_for_group(self, group):

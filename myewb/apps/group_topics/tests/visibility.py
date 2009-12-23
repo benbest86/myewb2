@@ -187,14 +187,12 @@ class TestVisibility(VisibilityBaseTest):
         c.logout()
         
     def test_admin(self):
-        """ check admin's visibility """
+        """ check admin's visibility, assumes no admin-o-vision """
         c = self.client
         c.login(username='admin', password='password')
 
         # aggregate listing on front page
         response = c.get("/")
-        # see TODO question in group_topics.views:161
-        # (assuming no admin-o-vision)
         self.assertContains(response, "publicpost")
         self.assertNotContains(response, "privatepost")
         
@@ -202,14 +200,12 @@ class TestVisibility(VisibilityBaseTest):
         response = c.get("/tags/testtag/")
         self.assertContains(response, "publicpost")
         self.assertNotContains(response, "privatepost")
-        # (again, no admin-o-vision)
-
+        
         # aggregate listing by user
         response = c.get("/posts/user/%s/" % self.creator.username)
         self.assertContains(response, "publicpost")
         self.assertNotContains(response, "privatepost")
-        # still waiting for that admin-o-vision
-
+        
         # public post is visible by direct URL
         response = c.get("/posts/%d/" % self.publicpost.pk)
         self.assertContains(response, "publicpost")
@@ -264,7 +260,21 @@ class TestVisibilityManagerFunctions(VisibilityBaseTest):
     def test_private_with_unauthorized_user(self):
         visible_to_nonmember = GroupTopic.objects.visible(self.nonmember)
         self.assertTrue(self.privatepost not in visible_to_nonmember)
+        
+    def test_public_with_admin(self):
+        visible_to_admin = GroupTopic.objects.visible(self.admin)
+        self.assertTrue(self.publicpost in visible_to_admin)
+        
+    def test_private_with_admin(self):
+        self.admin.get_profile().adminovision = False
+        visible_to_admin = GroupTopic.objects.visible(self.admin)
+        self.assertTrue(self.privatepost not in visible_to_admin)
 
+    def test_private_with_adminovision(self):
+        self.admin.get_profile().adminovision = True
+        visible_to_admin = GroupTopic.objects.visible(self.admin)
+        self.assertTrue(self.privatepost in visible_to_admin)
+        
 class TestVisibleFunction(VisibilityBaseTest):
     """
     Tests the is_visible function
