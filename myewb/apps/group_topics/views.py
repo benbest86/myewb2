@@ -143,6 +143,13 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
         # also shows posts from public groups...
         # for guests, show posts from public groups only
         topics = GroupTopic.objects.visible(user=request.user)
+
+    if request.user.is_authenticated():
+        can_adminovision = user_can_adminovision(request.user)
+        adminovision = request.user.get_profile().adminovision
+    else:
+        can_adminovision = False
+        adminovision = False
             
     return render_to_response(template_name, {
         "group": group,
@@ -151,8 +158,8 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
         "attach_count": attach_count,
         "is_member": is_member,
         "topics": topics,
-        "can_adminovision": user_can_adminovision(request.user),
-        "adminovision": request.user.get_profile().adminovision,
+        "can_adminovision": can_adminovision,
+        "adminovision": adminovision,
     }, context_instance=RequestContext(request))
 
 def feed(request, group_slug):
