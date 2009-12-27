@@ -1,8 +1,12 @@
 # git ignore file for myewb project
+
 # ignore python compiled files
 *.pyc
-# ignore vim swp files
+
+# ignore vim swp files and gedit temp files
 *.swp
+*.*~
+
 # ignore db files
 *.db
 *.sqlite
