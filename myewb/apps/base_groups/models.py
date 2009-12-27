@@ -37,8 +37,8 @@ class BaseGroup(Group):
     
     member_users = models.ManyToManyField(User, through="GroupMember", verbose_name=_('members'))
     
-    # private means members can only join if invited
-    private = models.BooleanField(_('private'), default=False)
+    # if true, members can only join if invited
+    invite_only = models.BooleanField(_('invite only'), default=False)
     
     VISIBILITY_CHOICES = (
         ('E', _("everyone")),

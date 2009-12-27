@@ -103,7 +103,7 @@ def new_member(request, group_slug, group_model=None, form_class=None,
             # TODO: split out invitations/requests into a different process & object
             if existing_members.count() == 0 and (user == member.user or user.is_staff or group.user_is_admin(user)):
                 if user == member.user:
-                    if group.private and not user.is_staff:     # we ignore group admins since they must already be members
+                    if group.invite_only and not user.is_staff:     # we ignore group admins since they must already be members
                         member = RequestToJoinGroup(user=member.user) # create a membership request instead
                 else:   
                     add_type = request.POST["add_type"]

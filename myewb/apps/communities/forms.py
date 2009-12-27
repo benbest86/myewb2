@@ -29,4 +29,4 @@ class CommunityForm(BaseGroupForm):
     
     class Meta:
         model = Community
-        fields = ('name', 'slug', 'description', 'parent', 'private', 'visibility')
+        fields = ('name', 'slug', 'description', 'parent', 'invite_only', 'visibility')
