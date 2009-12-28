@@ -15,9 +15,10 @@ from base_groups.helpers import get_valid_parents
 class BaseGroupForm(forms.ModelForm):
     
     slug = forms.SlugField(max_length=20,
+        label = _("Short name"),
         help_text = _("a short version of the name consisting only of letters, numbers, underscores and hyphens."),
         error_message = _("This value must contain only letters, numbers, underscores and hyphens."))
-
+        
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)     # pop off user arg, in case subclass doesn't use it
         super(BaseGroupForm, self).__init__(*args, **kwargs)
