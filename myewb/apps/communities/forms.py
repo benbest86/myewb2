@@ -61,7 +61,7 @@ class CommunityForm(BaseGroupForm):
         else:
             raise forms.ValidationError(_('Select a valid permissions level'))
             
-        return self.cleaned_data
+        return super(CommunityForm, self).clean()
     
     class Meta:
         model = Community
