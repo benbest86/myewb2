@@ -16,7 +16,7 @@ urlpatterns = patterns('profiles.views',
     url(r'^$', 'profiles', name='profile_list'),    
     url(r'^edit/$', 'profile_edit', name='profile_edit'),
     url(r'^search/$', 'user_search', name='profile_user_search'),
-    url(r'^samplesearch/$', 'sample_user_search', name='profile_sample_user_search'),
+    url(r'^samplesearch/$', 'sample_user_search_2', name='profile_sample_user_search'),
     url(r'selectuser/$', 'selected_user', name='selected_user'),
 
     url(r'^(?P<username>[\w\._-]+)/$', 'profile', name='profile_detail'),

@@ -8,31 +8,17 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% load profile_tags %}
 {% load uni_form %}
 
-<form class="uniForm" id="search-users" method="POST" action="{% url profile_user_search %}">
-	<fieldset class="inlineLabels">  
-		{{ user_search_form|as_uni_form }}
-		<div class="form_block">
-        <input type="hidden" name="action" value="search" />
-        <input id="userSearchSubmit" type="submit" value="{% trans "search" %}"/>
-        </div>
-	</fieldset>
-</form>
+<div class="usi-form" id="usi_form_{{ field }}">
+    <form class="uniForm" id="search-users" method="POST" action="{% url profile_user_search %}">
+    	<fieldset class="inlineLabels">  
+    		{{ user_search_form|as_uni_form }}
+    		<div class="form_block">
+            <input type="hidden" name="action" value="search" />
+            <input type="hidden" name="field" class="usi-field" value="{{ field }}" />
+            <input class="usi-submit" id="usi_submit_{{ field }}" type="submit" value="{% trans "search" %}"/>
+            </div>
+    	</fieldset>
+    </form>
 
-<div id="userSearchResults" />
-
-{% comment %}
-{% if users %}
-<ul>
-    {% for result_user in users %}
-    <!-- FIXME: remove usernames once UI is such that we know users will have real name listed in profile -->
-    <li>
-        <a href="{% url profile_detail result_user.username %}">{{ result_user.first_name }} {{ result_user.last_name }} ({{ result_user.username }})</a>
-        {% if result_user.get_profile.chapters %}
-        <br/>
-        <small>({% for chapter in result_user.get_profile.chapters %}{{ chapter }}{% if not forloop.first %}, {% endif %}{% endfor %})</small>
-        {% endif %}
-    </li>
-    {% endfor %}
-</ul>
-{% endif %}
-{% endcomment %}
+    <div class="usi-search-results" id="usi_search_results_{{field}}"></div>
+</div>

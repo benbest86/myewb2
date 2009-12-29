@@ -4,15 +4,17 @@ This file is part of myEWB
 Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
 
 Created on 2009-06-22
-Last modified on 2009-12-14
+Last modified on 2009-12-29
 @author Joshua Gorner, Francis Kung, Ben Best
 """
+from settings import STATIC_URL
 from datetime import date
 from django import forms
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext, Context, loader
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from profiles.models import MemberProfile, StudentRecord, WorkRecord
 from creditcard.forms import PaymentForm, PaymentFormPreview, ProductWidget
@@ -112,5 +114,30 @@ class UserSearchForm(forms.Form):
 
         super(UserSearchForm, self).__init__(*args, **kwargs)
         
+class UserSelectionInput(forms.MultipleHiddenInput):
+    """
+    Used to select one or more users, which are shown as labels
+    corresponding to the users' real names, but stored as hidden
+    inputs (usernames) behind the scenes.
+    """
+    class Media:
+        css = {
+            "all": (STATIC_URL + 'css/user_selection.css',)
+        }
+        js = (STATIC_URL + 'js/user_selection.js',)
+
+    def render(self, name, value, attrs=None, choices=()):
+        if value is None: value = []        
+        users = []
+
+        for v in value:
+            u = User.objects.get(username=v)
+            users.append(u)
+        t = loader.get_template('profiles/user_selection_input.html')
+        c = Context({'users': users, 'field_name': name})
+        return mark_safe(t.render(c))
+        
 class SampleUserSearchForm(forms.Form):
-    selected_user = forms.CharField()
+    to = forms.Field(widget=UserSelectionInput(), required=False)
+    cc = forms.Field(widget=UserSelectionInput(), required=False)
+    bcc = forms.Field(widget=UserSelectionInput(), required=False)

@@ -60,12 +60,16 @@ def show_profile_search(search_terms):
     return {"search_terms": search_terms}
 register.inclusion_tag("profiles/profile_search.html")(show_profile_search)
 
-def show_user_search():
+def show_user_search(field):
     """Load and show the user search widget"""
     chapters = Network.objects.filter(chapter_info__isnull=False)
-    form = UserSearchForm(chapters=chapters)
-    return {"user_search_form": form}
+    form = UserSearchForm(prefix=field, chapters=chapters)
+    return {"user_search_form": form, "field": field}
 register.inclusion_tag("profiles/user_search_ajax.html")(show_user_search)
+
+def get_selected_user(user, field):
+    return {"user": user, "field": field}
+register.inclusion_tag("profiles/selected_user.html")(get_selected_user)
 
 # These may be useful down the road, specifically if we have time to develop a means of dynamically
 # fetching record forms
