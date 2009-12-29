@@ -1,6 +1,6 @@
 /*********************** post boxes *****************/
 
-.post
+div.post
 {
 	margin-bottom: 12px;
 }
@@ -11,7 +11,7 @@
 	text-align: center;
 }
 
-.postheader
+.post div.postheader
 {
     background-color: #0049EE;
     border-top: 0;
@@ -48,7 +48,7 @@
 	text-decoration: none;
 }
 
-.postsubheader
+.post div.postsubheader
 {
 	border-left: 1px solid #002BA2;
 	background: #C2D1FF;
@@ -56,7 +56,7 @@
 	font-size:10px;
 }
 
-.postcontent
+.post div.postcontent
 {
 	border-left: 1px solid #002BA2;
 	padding:10px;

@@ -1,4 +1,28 @@
-body {
+
+/* Standard colours */
+.blue, .blue .bkgd  { background: #0049ee; }
+.green, .green .bkgd  { background: #00a81c; }
+.yellow, .yellow .bkgd { background: #f1ce00; }
+.orange, .orange .bkgd { background: #ff7900; }
+.red, .red .bkgd    { background: #b71818; }
+.purple, .purple .bkgd { background: #8b00cc; }
+
+/*
+body.blue div  { border: 0px solid #0049ee; }
+body.green div  { border: 0px solid #00a81c; }
+body.yellow div { border: 0px solid #f1ce00; }
+body.orange div { border: 0px solid #ff7900; }
+body.red div    { border: 0px solid #b71818; }
+body.purple div { border: 0px solid #8b00cc; }
+*/
+.blue div  { border: 0px solid #0049ee; }
+.green div  { border: 0px solid #00a81c; }
+.yellow div { border: 0px solid #f1ce00; }
+.orange div { border: 0px solid #ff7900; }
+.red div    { border: 0px solid #b71818; }
+.purple div { border: 0px solid #8b00cc; }
+
+body, body#bodybackground {
     background: #C1C1C3;
     font-family: verdana;
     min-width: 59.3em;
@@ -95,12 +119,20 @@ ul.subnav.orange, ul.subnav.orange a { color: #FB6400; }
 ul.subnav.red,    ul.subnav.red    a { color: #A5090D; }
 ul.subnav.purple, ul.subnav.purple a { color: #7500C6; }
 
-ul.tabs .blue   { background: #0028F1; border: 1px solid #001595; border-bottom: 0; }
+/*
+ul.tabs .blue   { background: #0049ee; border: 1px solid #001595; border-bottom: 0; }
 ul.tabs .green  { background: #179B00; border: 1px solid #0A4800; border-bottom: 0; }
 ul.tabs .yellow { background: #EDC600; border: 1px solid #634E00; border-bottom: 0; }
 ul.tabs .orange { background: #FB6400; border: 1px solid #823300; border-bottom: 0; }
 ul.tabs .red    { background: #A5090D; border: 1px solid #600608; border-bottom: 0; }
 ul.tabs .purple { background: #7500C6; border: 1px solid #3F0074; border-bottom: 0; }
+*/
+ul.tabs .blue   { border: 1px solid #001595; border-bottom: 0; }
+ul.tabs .green  { border: 1px solid #0A4800; border-bottom: 0; }
+ul.tabs .yellow { border: 1px solid #634E00; border-bottom: 0; }
+ul.tabs .orange { border: 1px solid #823300; border-bottom: 0; }
+ul.tabs .red    { border: 1px solid #600608; border-bottom: 0; }
+ul.tabs .purple { border: 1px solid #3F0074; border-bottom: 0; }
 
 ul.subnav li {
     font-size: 0.8em;

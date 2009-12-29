@@ -12,6 +12,7 @@
 		<link rel="stylesheet" href="{{ STATIC_URL }}uni_form/uni-form.css" />
 		<link rel="stylesheet" href="{{ STATIC_URL }}pinax/css/facebox.css" />
 		<link rel="stylesheet" href="{{ STATIC_URL }}pinax/css/accounts.css" />
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/toolbars.css" />    
 		<script src="{{ STATIC_URL }}pinax/js/jquery.js" type="text/javascript"></script>
 		<script src="{{ STATIC_URL }}uni_form/uni-form.jquery.js" type="text/javascript"></script>
 		<script type="text/javascript" charset="utf-8" src="{{ STATIC_URL }}pinax/js/facebox.js"></script>
@@ -22,7 +23,7 @@
 
 <h1 class="debug">myEWB dev version -- {% git_date %} (<a href="http://github.com/ewbcanada/myewb2/tree/{% git_rev %}">git rev {% git_rev %}</a>)</h1>
     
-    <body class="{% block body_class %}{% endblock %}">
+    <body id="bodybackground" class="{% block body_class %}{% endblock %}">
         <div id="tabhead">
             {% block login %}{% endblock %}
             {% block logo_link_image %}{% endblock %}
@@ -61,12 +62,39 @@
                 </div>
             {% endif %}
             
-            {% block body %}
-
-            {% endblock %}
-			</div>
+            <div id="toolbarcolumn_left">
+                {% block toolbar_left %}
+                    {% comment %}
+                        Sub-classing templates should use the toolbarheader and
+                        toolbarcontent classes to ensure toolbars look good!
+                    
+                        ie:
+                    
+                        <div class="toolbarheader">Toolbar Title</div>
+                        <div class="toolbarcontent">Toolbar content</div>
             
+                        <div class="toolbarheader">Toolbar2 Title</div>
+                        <div class="toolbarcontent">Toolbar2 content</div>
+                    
+                    {% endcomment%}
+                {% endblock %}
+            </div>
+
+            <div id="toolbarcolumn_right">
+                {% block toolbar_right %}
+                    {# same scheme as toolbarcolumn_left #}
+                {% endblock %}            
+            </div>
+
+            <div id="maincolumn" style="overflow-x: hidden;">
+
+                {% block body %}
+
+                {% endblock %}
+            </div>
+    
 			<div class="clear"></div>
+			</div>
         </div>
         {% endblock %}
         

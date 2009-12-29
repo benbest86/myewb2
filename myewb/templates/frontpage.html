@@ -17,66 +17,44 @@
 {% block head_title %}{% trans "Discussion Board" %}{% endblock %}
 
 {% block body %}
-        <div id="toolbarcolumn">
-            {# loop #}
-            <div>
-                <div class="toolbarheader">Toolbar Title</div>
-                <div class="toolbarcontent">Toolbar content</div>
-            </div>
-            
-            <div>
-                <div class="toolbarheader">Toolbar2 Title</div>
-                <div class="toolbarcontent">Toolbar2 content</div>
-            </div>
-        </div>
 
-        <div id="toolbarcolumn_right">
-            {# loop #}
-            <div>
-                <div class="toolbarheader_right">Right Toolbar Title</div>
-                <div class="toolbarcontent_right">Toolbar content</div>
-            </div>
-            <div class="toolbarbottom_right"> &nbsp; </div>
-            
-            <div>
-                <div class="toolbarheader_right">Right Toolbar2 Title</div>
-                <div class="toolbarcontent_right">Toolbar2 content</div>
-            </div>
-            <div class="toolbarbottom_right"> &nbsp; </div>
-            
-        </div>
-
-        <div id="maincolumn" style="overflow-x: hidden;">
-
-            {# actual "local content" begins here - should the rest go into site_base.html? #}
-
-           	{% if can_adminovision %}
-	            <p style="margin-top: 0; text-align: right;">
-           		{% spaceless %}
-   			        <a href="{% url topic_adminovision %}">
-            		{% if adminovision %}
+    {% if can_adminovision %}
+        <p style="margin-top: 0; text-align: right;">
+            {% spaceless %}
+                <a href="{% url topic_adminovision %}">
+                    {% if adminovision %}
             			Turn off adminovision
             		{% else %}
             			Turn on adminovision
             		{% endif %}
-            		</a>
-            	{% endspaceless %}
-            	</p>
-           	{% endif %}
+            	</a>
+            {% endspaceless %}
+        </p>
+    {% endif %}
     
-            {% autopaginate topics 10 %}
+    {% autopaginate topics 10 %}
     
-            {% for topic in topics %}
-                {% include "topics/topic_item.html" %}
-            {% endfor %}
+    {% for topic in topics %}
+        {% include "topics/topic_item.html" %}
+    {% endfor %}
     
-            {% paginate %}
+    {% paginate %}
             
-            {# and "local content" ends here #}
-    
-        </div>
-    
-        <div class="clearer">&nbsp;</div>
-    
 {% endblock %}
+
+{% block toolbar_left %}
+    <div class="toolbarheader bkgd">Toolbar Title</div>
+    <div class="toolbarcontent">Toolbar content</div>
+            
+    <div class="toolbarheader bkgd">Toolbar2 Title</div>
+    <div class="toolbarcontent">Toolbar2 content</div>
+{% endblock %}
+
+{% block toolbar_right %}
+    <div class="toolbarheader bkgd">Right Toolbar Title</div>
+    <div class="toolbarcontent">Toolbar content</div>
+            
+    <div class="toolbarheader bkgd">Right Toolbar2 Title</div>
+    <div class="toolbarcontent">Toolbar2 content</div>
+{% endblock %}            
 
