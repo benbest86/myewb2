@@ -3,7 +3,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from django.test.client import Client
 
-from base_groups.models import BaseGroup
+from base_groups.models import BaseGroup, GroupMember
+from networks.models import Network
 from group_topics.models import GroupTopic
 from tagging.models import Tag, TaggedItem
 
@@ -25,16 +26,19 @@ class VisibilityBaseTest(TestCase):
         self.admin.is_superuser = True
         self.admin.save()
         
-        self.publicgrp = BaseGroup.objects.create(slug='publicgrp',
-                                                  name='a public group',
-                                                  creator=self.member,
-                                                  model='BaseGroup',
-                                                  visibility='E')
+        self.grpadmin = User.objects.create_user('grpadmin', 'user5@ewb.ca', 'password')
+        self.grpadmin.save()
+        
+        self.publicgrp = Network.objects.create(slug='publicgrp',
+                                                name='a public group',
+                                                creator=self.member,
+                                                visibility='E')
         self.privategrp = BaseGroup.objects.create(slug='privategrp',
                                                    name='a private group',
                                                    creator=self.member,
-                                                   model='BaseGroup',
-                                                   visibility='M')
+                                                   model='Community',
+                                                   visibility='M',
+                                                   parent=self.publicgrp)
         
         self.publicpost = GroupTopic.objects.create(title="publicpost",
                                                     body="some test text.",
@@ -49,8 +53,13 @@ class VisibilityBaseTest(TestCase):
         self.tag = Tag.objects.create(name='testtag')
         self.item1 = TaggedItem.objects.create(tag=self.tag, object=self.publicpost)
         self.item2 = TaggedItem.objects.create(tag=self.tag, object=self.privatepost)
+        
+        m = GroupMember(user=self.grpadmin,
+                        group=self.publicgrp,
+                        is_admin=True)
+        m.save()
 
-	self.gtopic = ContentType.objects.get(app_label="group_topics", model="grouptopic")
+        self.gtopic = ContentType.objects.get(app_label="group_topics", model="grouptopic")
 
 class TestVisibility(VisibilityBaseTest):
     """ Test all aspects of post visibility """
@@ -273,6 +282,64 @@ class TestVisibilityManagerFunctions(VisibilityBaseTest):
     def test_private_with_adminovision(self):
         self.admin.get_profile().adminovision = True
         visible_to_admin = GroupTopic.objects.visible(self.admin)
+        self.assertTrue(self.privatepost in visible_to_admin)
+        
+    def test_private_with_exec(self):
+        self.grpadmin.get_profile().adminovision = False
+        visible_to_admin = GroupTopic.objects.visible(self.grpadmin)
+        self.assertTrue(self.privatepost not in visible_to_admin)
+
+    def test_private_with_execovision(self):
+        self.grpadmin.get_profile().adminovision = True
+        visible_to_admin = GroupTopic.objects.visible(self.grpadmin)
+        self.assertTrue(self.privatepost in visible_to_admin)
+        
+    def test_private_with_execovision2(self):
+        # ensure someone with execovision access only has that power in their 
+        # own group, not in all groups =)
+        publicgrp2 = Network.objects.create(slug='publicgrp2',
+                                             name='a public group2',
+                                             creator=self.member,
+                                             visibility='E')
+        privategrp2 = BaseGroup.objects.create(slug='privategrp2',
+                                              name='a private group2',
+                                              creator=self.member,
+                                              model='Community',
+                                              visibility='M',
+                                              parent=publicgrp2)
+        
+        privatepost2 = GroupTopic.objects.create(title="privatepost2",
+                                                body="some more test text2.",
+                                                group=privategrp2,
+                                                creator=self.creator)
+
+        self.grpadmin.get_profile().adminovision = True
+        visible_to_admin = GroupTopic.objects.visible(self.grpadmin)
+        self.assertFalse(privatepost2 in visible_to_admin)
+        
+        # but. because i'm paranoid.  a publicgrp2 admin *can* see privatepost2
+        # and can't see privatepost.
+        grpadmin2 = User.objects.create_user('grpadmin2', 'grpadmin2@ewb.ca', 'password')
+        grpadmin2.save()
+        
+        m2 = GroupMember(user=grpadmin2,
+                        group=publicgrp2,
+                        is_admin=True)
+        m2.save()
+        
+        grpadmin2.get_profile().adminovision = True
+        visible_to_admin = GroupTopic.objects.visible(grpadmin2)
+        self.assertTrue(privatepost2 in visible_to_admin)
+        self.assertFalse(self.privatepost in visible_to_admin)
+        
+        # and i'm way too paranoid.  if you're an admin of two networks...
+        m3 = GroupMember(user=grpadmin2,
+                        group=self.publicgrp,
+                        is_admin=True)
+        m3.save()
+        
+        visible_to_admin = GroupTopic.objects.visible(grpadmin2)
+        self.assertTrue(privatepost2 in visible_to_admin)
         self.assertTrue(self.privatepost in visible_to_admin)
         
 class TestVisibleFunction(VisibilityBaseTest):

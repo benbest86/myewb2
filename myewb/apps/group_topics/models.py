@@ -17,7 +17,7 @@ from django.template import Context, loader
 
 from attachments.models import Attachment
 from base_groups.models import BaseGroup
-from base_groups.helpers import user_can_adminovision
+from base_groups.helpers import user_can_adminovision, user_can_execovision
 from topics.models import Topic
 from wiki.models import Article
 
@@ -38,6 +38,11 @@ class GroupTopicManager(models.Manager):
             # admins with admin-o-vision on automatically see everything
             if user_can_adminovision(user) and user.get_profile().adminovision is True:
                 return self.get_query_set()
+            
+            # and similar for exec-o-vision, except only for your own chapter's groups
+            if user_can_execovision(user) and user.get_profile().adminovision is True:
+                filter_q |= Q(parent_group__parent__members__user=user,
+                              parent_group__parent__members__is_admin=True)
             
             # everyone else only sees stuff from their own groups
             filter_q |= Q(parent_group__member_users=user)
