@@ -3,6 +3,7 @@
 *.pyc
 # ignore vim swp files
 *.swp
+*.*~
 # ignore db files
 *.db
 *.sqlite
