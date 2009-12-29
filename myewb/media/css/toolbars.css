@@ -1,0 +1,85 @@
+/* ********************* Toolbars *********************** */
+
+#maincolumn
+{
+        margin-bottom: 15px;
+        padding: 0px;
+        overflow: hidden; /* this is what prevents looong post URLS from stretching */
+}
+
+#toolbarcolumn
+{
+        margin: 0 1em 15px -1em;
+        width: 180px;
+        float: left;
+}
+
+#toolbarcolumn_right
+{
+        margin: 0 -1em 15px 1em;
+        width: 180px;
+        float: right;
+}
+
+.toolbarheader
+{
+        background-color: #0049EE;
+        border-top: 0;
+        -webkit-border-top-right-radius: 7px;
+        -moz-border-radius-topright: 7px;
+
+        color: white;
+        font-weight: bold;
+        padding:3px;
+        padding-left: 9px;
+        font-size: 13px;
+}
+
+.toolbarheader_right
+{
+        background-color: #0049EE;
+        border-top: 0;
+        padding: 10px 5px 5px 8px;
+        -webkit-border-top-left-radius: 7px;
+        -moz-border-radius-topleft: 7px;
+
+        color: white;
+        font-weight: bold;
+        padding:3px;
+        padding-left: 9px;
+        font-size: 13px;
+
+}
+
+.toolbarcontent
+{
+        border-right: 1px solid #0049EE;
+        border-bottom: 1px solid #0049EE;
+        padding:5px;
+        padding-left: 10px;
+        margin-bottom: 1.5em;
+}
+
+.toolbarcontent_right
+{
+        border-left: 1px solid #0049EE;
+        border-bottom: 1px solid #0049EE;
+        padding:5px;
+        padding-right: 10px;
+        margin-bottom: 1.5em;
+}
+
+.toolbarcontent ul, .toolbarcontent_right ul
+{
+        list-style-type: none;
+        padding:0;
+        margin:0;
+        font-size: 13px;
+}
+
+.toolbarcontent ul li, .toolbarcontent_right ul li
+{
+        padding-top: 2px;
+        padding-bottom: 2px;
+}
+
