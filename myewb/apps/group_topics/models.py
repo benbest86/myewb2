@@ -113,5 +113,22 @@ class GroupTopic(Topic):
     
             self.group.send_mail_to_members(self.title, message)
         
+    def num_whiteboard_edits(self):
+        if self.whiteboard:
+            return self.whiteboard.changeset_set.count()
+        else:
+            return 0
+            
+    def intro(self):
+        if len(self.body) < 600:
+            return self.body
+
+        # thanks http://stackoverflow.com/questions/250357/smart-truncate-in-python
+        return self.body[:600].rsplit(' ', 1)[0]+"..."
+    
+    def intro_has_more(self):
+        return (len(self.body) >= 600)
+
     class Meta:
         ordering = ('-modified', )
+        
