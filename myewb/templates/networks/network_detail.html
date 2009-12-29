@@ -67,7 +67,7 @@
 			</ul>
 		{% endif %}
         
-        {% if perms.networks.change %}
+        {% if is_admin %}
 
 			<p><a href="{% url edit_network group.slug %}">{% trans "Edit details" %}</a></p>
             

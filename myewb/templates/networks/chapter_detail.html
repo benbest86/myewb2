@@ -93,7 +93,7 @@
             <div>Subscribe to our mailing list:</div>
             {# TODO: Subscribe-to-mailing-list form #}
         {% else %}        
-            {% if perms.networks.change %}
+            {% if is_admin %}
     			<div><a href="{% url edit_network group.slug %}">{% trans "Edit network details" %}</a></div>
             {% endif %}            
             
@@ -107,16 +107,14 @@
     					</form>
                     {% endifequal %}
                     
-                    {% if member.is_admin %}
+                    {% if is_admin %}
                         <div><a href="{% url edit_chapter group.slug %}">{% trans "Edit chapter information" %}</a></div>
         				<div><a href="{% url network_new_member group.slug %}">{% trans "Invite another user" %}</a></div>
         				<div><a href="{% url network_bulk_import group.slug %}">{% trans "Email bulk import" %}</a></div>
                         <div>Member management</div>
-                        <div>Email forwards</div>
+                        <div><a href="{% url email_forwards_index group.slug %}">{% trans "Email forwards" %}</a></div>
                         <div>Monitoring and evaluation</div>
                     {% endif %}
-
-					<p><a href="{% url email_forwards_index group.slug %}">{% trans "See email forwards" %}</a></p>
                 {% endif %}
             
                 {% if member.is_invited %}

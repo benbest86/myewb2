@@ -99,47 +99,10 @@
             <p>{% blocktrans %}<a href="{{ signup_url }}">Sign up</a> and <a href="{{ login_url }}">log in </a> to join this community.{% endblocktrans %}</p>
         {% endif %}
 
-        {% if member.is_admin %}
+        {% if is_admin %}
 			<p><a href="{% url edit_community group.slug %}">{% trans "Edit details" %}</a></p>           
         {% endif %}
-        
-        {% if user.is_authenticated %}
-            <div>
-                {% if member %}
-                    {% if member.is_accepted %}
-                        {% ifequal user group.creator %}
-                            <p>{% trans "You are the creator of this community so can't leave (yet)." %}</p>
-                        {% else %}
-    						<form method="POST" action="{% url community_delete_member group.slug user.username %}">
-                            	<input type="submit" value="{% trans "Leave community" %}" />
-    						</form>
-                        {% endifequal %}                        
-                    {% endif %}
-                    
-                    {% if member.is_invited %}
-                        {% trans "You have been invited to join this community. Do you wish to join?" %}
-                        <form method="POST" action="{% url community_accept_invitation group.slug member.user.username %}">
-                        	<input type="submit" value="{% trans "Join community" %}" />
-            			</form>            			
-        				<form method="POST" action="{% url community_delete_member group.slug member.user.username %}">
-                        	<input type="submit" value="{% trans "Decline" %}" />
-        				</form>
-                    {% endif %}
-                    
-                    {% if member.is_requested %}
-                        {% trans "You have requested membership in this community and your request is pending." %}
-                    {% endif %}
-                    
-                {% else %}
-					<a href="{% url community_new_member group.slug %}">{% trans "Join community" %}</a>
-                {% endif %}
-            </div>
-        {% else %}
-            {% url acct_signup as signup_url %}
-            {% url acct_login as login_url %}
-            <p>{% blocktrans %}<a href="{{ signup_url }}">Sign up</a> and <a href="{{ login_url }}">log in </a> to join this community.{% endblocktrans %}</p>
-        {% endif %}
-        
+
         {% show_group_content group %}
 
     </div>

@@ -148,8 +148,7 @@ def group_detail(request, group_slug, model=None, member_model=None,
         member = group.pending_members.get(user=request.user)
     else:
         member = None
-    children = group.get_visible_children(request.user)
-
+        
     # retrieve whiteboard (create if needed)
     if group.whiteboard == None:
         wb = Article(title="Whiteboard", content="")
@@ -164,7 +163,8 @@ def group_detail(request, group_slug, model=None, member_model=None,
         {
             'group': group,                
             'member': member,
-            'children': children,
+            'children': group.get_visible_children(request.user),
+            'is_admin': group.user_is_admin(request.user)
         },
         context_instance=RequestContext(request)
     )
