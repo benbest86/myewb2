@@ -11,13 +11,12 @@
 <script type="text/javascript" src="{{ STATIC_URL }}pinax/js/topics.js"></script>
 {% endblock %}
 
-{% comment %}
 {% block subnav %}
-    <ul class="subnav">
-        <li><a href="{% url topic_list %}">{% trans "All Posts" %}</a></li>
-    </ul>
-{% endblock %}
-{% endcomment %}
-{% block subnav %}
-    {{ block.super }}
+<ul class="subnav blue">
+<li {# class="current" #}><a href="{% url topic_list %}">Discussion Board</a></li>
+<li><a href="{% url topic_cloud %}">Tag Cloud</a></li>
+<li><a href="#">Hot Posts</a></li>
+<li><a href="#">About</a></li>
+<li><a href="#">Help</a></li>
+</ul>
 {% endblock %}

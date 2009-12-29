@@ -18,4 +18,5 @@ urlpatterns = patterns('',
     url(r'^(?P<topic_id>\d+)/$', 'group_topics.views.topic', name="topic_detail"),
     url(r'^user/(?P<username>[\w\._-]+)/$', 'group_topics.views.topics_by_user', name="topic_list_by_user"),
     url(r'^admin/$', 'group_topics.views.adminovision_toggle', name="topic_adminovision"),
+    url(r'^cloud/$', 'django.views.generic.simple.direct_to_template', {'template': 'topics/cloud.html'}, name="topic_cloud"),
 )

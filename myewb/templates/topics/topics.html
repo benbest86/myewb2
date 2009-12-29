@@ -85,20 +85,6 @@
             </fieldset>
         </form>
     {% endif %}
-
-    {% if not group %}
-		<br/><br/>
-		<h2>Tag Cloud</h2>    
-	    (this probably isn't the best place for the tag cloud, but we'll leave
-	    it here for now as a feature demo.)<br/>
-	    
-    	{% tag_cloud_for_model group_topics.GroupTopic as topic_cloud with steps=6 %}
-    	
-    	{% for tag in topic_cloud %}
-			<a href="{% url tag_results tag %}"><font size={{tag.font_size}}>{{tag}}</font></a><br/>
-		{% endfor %}
-    {% endif %}
-    
 {% endblock %}
 
 {% block extra_body %}
