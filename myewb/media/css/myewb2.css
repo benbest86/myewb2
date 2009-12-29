@@ -1,5 +1,5 @@
 
-/* Standard colours */
+/* Standard colours (ie toolbar header backgrounds & borders) */
 .blue, .blue .bkgd  { background: #0049ee; }
 .green, .green .bkgd  { background: #00a81c; }
 .yellow, .yellow .bkgd { background: #f1ce00; }
@@ -7,20 +7,29 @@
 .red, .red .bkgd    { background: #b71818; }
 .purple, .purple .bkgd { background: #8b00cc; }
 
-/*
-body.blue div  { border: 0px solid #0049ee; }
-body.green div  { border: 0px solid #00a81c; }
-body.yellow div { border: 0px solid #f1ce00; }
-body.orange div { border: 0px solid #ff7900; }
-body.red div    { border: 0px solid #b71818; }
-body.purple div { border: 0px solid #8b00cc; }
-*/
 .blue div  { border: 0px solid #0049ee; }
 .green div  { border: 0px solid #00a81c; }
 .yellow div { border: 0px solid #f1ce00; }
 .orange div { border: 0px solid #ff7900; }
 .red div    { border: 0px solid #b71818; }
 .purple div { border: 0px solid #8b00cc; }
+
+/* Light colours (ie for subnav background) */
+.blue ul.subnav   { background: #c2d1ff; }
+.green ul.subnav  { background: #bce2bc; }
+.yellow ul.subnav { background: #fcf2bd; }
+.orange ul.subnav { background: #ffcf9f; }
+.red ul.subnav    { background: #efcaca; }
+.purple ul.subnav { background: #d9c1e5; }
+
+/* Dark colours (ie for subnav text) */
+.blue ul.subnav,   .blue ul.subnav   a { color: #002ba2; }
+.green ul.subnav,  .green ul.subnav  a { color: #00590f; }
+.yellow ul.subnav, .yellow ul.subnav a { color: #776000; }
+.orange ul.subnav, .orange ul.subnav a { color: #964400; }
+.red ul.subnav,    .red ul.subnav    a { color: #750c0c; }
+.purple ul.subnav, .purple ul.subnav a { color: #530084; }
+
 
 body, body#bodybackground {
     background: #C1C1C3;
@@ -105,28 +114,6 @@ ul.subnav {
     font-size: 1.5em;
 }
 
-ul.subnav.blue   { background: #B4C4FF; }
-ul.subnav.green  { background: #AEDAAA; }
-ul.subnav.yellow { background: #FBF0AA; }
-ul.subnav.orange { background: #FDC588; }
-ul.subnav.red    { background: #E9BDBD; }
-ul.subnav.purple { background: #CFB1E0; }
-
-ul.subnav.blue,   ul.subnav.blue   a { color: #001595; }
-ul.subnav.green,  ul.subnav.green  a { color: #179B00; }
-ul.subnav.yellow, ul.subnav.yellow a { color: #EDC600; }
-ul.subnav.orange, ul.subnav.orange a { color: #FB6400; }
-ul.subnav.red,    ul.subnav.red    a { color: #A5090D; }
-ul.subnav.purple, ul.subnav.purple a { color: #7500C6; }
-
-/*
-ul.tabs .blue   { background: #0049ee; border: 1px solid #001595; border-bottom: 0; }
-ul.tabs .green  { background: #179B00; border: 1px solid #0A4800; border-bottom: 0; }
-ul.tabs .yellow { background: #EDC600; border: 1px solid #634E00; border-bottom: 0; }
-ul.tabs .orange { background: #FB6400; border: 1px solid #823300; border-bottom: 0; }
-ul.tabs .red    { background: #A5090D; border: 1px solid #600608; border-bottom: 0; }
-ul.tabs .purple { background: #7500C6; border: 1px solid #3F0074; border-bottom: 0; }
-*/
 ul.tabs .blue   { border: 1px solid #001595; border-bottom: 0; }
 ul.tabs .green  { border: 1px solid #0A4800; border-bottom: 0; }
 ul.tabs .yellow { border: 1px solid #634E00; border-bottom: 0; }
@@ -189,16 +176,6 @@ ul.tabs li {
     border-bottom: 0;
 }
 
-ul.tabs li.current {
-    padding-top: 0.4em;
-    padding-bottom: 0.2em;
-}
-
-/* negate the hover effect -- don't grow the height */
-ul.tabs li.current:hover {
-    padding-top: 0.4em;
-}
-
 /* increase padding by 0.1em */
 ul.tabs li:hover {
     padding-top: 0.3em;
@@ -207,6 +184,23 @@ ul.tabs li:hover {
 ul.tabs li a { 
     color: white;
     text-decoration: none;
+}
+
+
+/* Make the current tab pop up */
+.blue ul.tabs .blue,
+.green ul.tabs .green,
+.yellow ul.tabs .yellow,
+.orange ul.tabs .orange,
+.red ul.tabs .red,
+.purple ul.tabs .purple
+{
+    -webkit-border-top-right-radius: 0.8em;
+    -webkit-border-top-left-radius: 0.8em;
+    -moz-border-radius-topright: 0.8em;
+    -moz-border-radius-topleft: 0.8em;
+    
+    padding: 0.6em 1.2em 0.2em;
 }
 
 ul.legal {
