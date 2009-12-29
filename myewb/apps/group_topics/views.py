@@ -263,6 +263,7 @@ def adminovision_toggle(request, group_slug=None):
         profile.adminovision = not profile.adminovision
         profile.save()
     
-    return HttpResponseRedirect(reverse('topic_list'))
+    # this redirect should be OK, since the adminovision link is only visible from reverse('home')
+    return HttpResponseRedirect(reverse('home'))
 
     

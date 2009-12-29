@@ -16,6 +16,15 @@
     {% endif %}
 {% endblock %}
 
+{% comment %}
+**********
+NOTE: this template should only be used in the context of a group (ie, the group 
+variable is not None).  The generic/combined post listing has been moved to
+templates/frontpage.html
+
+The {% if group %} checks are left in just in case, and should be removed eventually.
+***********
+{% endcomment %}
 
 {% block head_title %}{% spaceless %}
 {% if group %}

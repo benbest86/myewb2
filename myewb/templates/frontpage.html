@@ -1,0 +1,41 @@
+{% extends "topics/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+{% load pagination_tags %}
+{% load group_tags %}
+{% load tagging_tags %}
+
+{% block extra_head %}
+    {{ block.super }}
+    
+    <link rel="alternate" type="application/rss+xml" title="myEWB Front Page" href="{% url topic_feed "all" %}" />
+{% endblock %}
+
+
+{% block head_title %}{% trans "Discussion Board" %}{% endblock %}
+
+{% block body %}
+   	{% if can_adminovision %}
+	    <p style="margin-top: 0; text-align: right;">
+   		{% spaceless %}
+   			<a href="{% url topic_adminovision %}">
+    		{% if adminovision %}
+    			Turn off adminovision
+    		{% else %}
+    			Turn on adminovision
+    		{% endif %}
+    		</a>
+    	{% endspaceless %}
+    	</p>
+   	{% endif %}
+    
+    {% autopaginate topics 10 %}
+    
+    {% for topic in topics %}
+        {% include "topics/topic_item.html" %}
+    {% endfor %}
+    
+    {% paginate %}
+{% endblock %}
+
