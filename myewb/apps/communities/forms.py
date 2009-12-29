@@ -45,6 +45,17 @@ class CommunityForm(BaseGroupForm):
             group = kwargs.get('instance', None)
             valid_parents = get_valid_parents(user, group=group, model=Network)     # only networks may be parent to a community
             self.fields['parent'].queryset = valid_parents
+
+        # set the initial visibility state (since it's not a direct mapping to 
+        # a model field, it isn't done automatically)        
+        if self.instance.pk:
+            # not sure why "if self.instance" doesn't work; that's set even for a new form
+            if not self.instance.invite_only:
+                self.fields['group_permissions'].initial='P'
+            elif self.instance.visibility == 'E':
+                self.fields['group_permissions'].initial='I'
+            elif self.instance.visibility == 'M':
+                self.fields['group_permissions'].initial='R'
             
     def clean(self):
         perms = self.cleaned_data['group_permissions']
