@@ -51,6 +51,7 @@ div.post
 .post div.postsubheader
 {
 	border-left: 1px solid #002BA2;
+	border-right: 1px solid #002BA2;
 	background: #C2D1FF;
 	padding: 2px 5px;
 	font-size:10px;
@@ -59,6 +60,7 @@ div.post
 .post div.postcontent
 {
 	border-left: 1px solid #002BA2;
+	border-right: 1px solid #002BA2;
 	padding:10px;
 }
 

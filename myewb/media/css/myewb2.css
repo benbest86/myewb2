@@ -33,7 +33,7 @@
 
 body, body#bodybackground {
     background: #C1C1C3;
-    font-family: verdana;
+    font-family: verdana, sans serif;
     min-width: 59.3em;
     font-size: 1em;
 }
@@ -104,39 +104,6 @@ div#content {
     padding: 1em;
 }
 
-ul.subnav {
-    margin: 0;
-    -webkit-border-top-right-radius: 0.3em;
-    -webkit-border-top-left-radius: 0.3em;
-    -moz-border-radius-topright: 0.3em;
-    -moz-border-radius-topleft: 0.3em;
-    padding: 0.3em 1em;
-    font-size: 1.5em;
-}
-
-ul.tabs .blue   { border: 1px solid #001595; border-bottom: 0; }
-ul.tabs .green  { border: 1px solid #0A4800; border-bottom: 0; }
-ul.tabs .yellow { border: 1px solid #634E00; border-bottom: 0; }
-ul.tabs .orange { border: 1px solid #823300; border-bottom: 0; }
-ul.tabs .red    { border: 1px solid #600608; border-bottom: 0; }
-ul.tabs .purple { border: 1px solid #3F0074; border-bottom: 0; }
-
-ul.subnav li {
-    font-size: 0.8em;
-}
-
-ul.subnav li.current {
-    font-weight: bold;
-}
-
-ul.subnav li a {
-    text-decoration: none;
-}
-
-ul.subnav li a:hover {
-    text-decoration: underline;
-}
-
 div#tabhead {
     background: #E8E8E8;
     border: 1px solid black;
@@ -187,6 +154,13 @@ ul.tabs li a {
 }
 
 
+ul.tabs .blue   { border: 1px solid #001595; border-bottom: 0; }
+ul.tabs .green  { border: 1px solid #0A4800; border-bottom: 0; }
+ul.tabs .yellow { border: 1px solid #634E00; border-bottom: 0; }
+ul.tabs .orange { border: 1px solid #823300; border-bottom: 0; }
+ul.tabs .red    { border: 1px solid #600608; border-bottom: 0; }
+ul.tabs .purple { border: 1px solid #3F0074; border-bottom: 0; }
+
 /* Make the current tab pop up */
 .blue ul.tabs .blue,
 .green ul.tabs .green,
@@ -201,6 +175,32 @@ ul.tabs li a {
     -moz-border-radius-topleft: 0.8em;
     
     padding: 0.6em 1.2em 0.2em;
+}
+
+ul.subnav {
+    margin: 0;
+    -webkit-border-top-right-radius: 0.3em;
+    -webkit-border-top-left-radius: 0.3em;
+    -moz-border-radius-topright: 0.3em;
+    -moz-border-radius-topleft: 0.3em;
+    padding: 0.3em 1em;
+    font-size: 1.5em;
+}
+
+ul.subnav li {
+    font-size: 0.8em;
+}
+
+ul.subnav li.current {
+    font-weight: bold;
+}
+
+ul.subnav li a {
+    text-decoration: none;
+}
+
+ul.subnav li a:hover {
+    text-decoration: underline;
 }
 
 ul.legal {

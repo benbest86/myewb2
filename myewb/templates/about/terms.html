@@ -1,0 +1,19 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Terms Of Use" %}{% endblock %}
+
+{% block body %}
+    <h1>{% trans "Terms Of Use" %}</h1>
+
+    {% blocktrans %}
+    
+        <p>The use of the myEWB system (or any other EWB system which links here for its Terms of Use) is governed by EWB's general IT Terms of Use which can be found <a
+        href="http://accra.ewb.ca/termsofuse.html">here</a>.</p>
+        <p>If you have any questions regarding this page, please contact us at <a href="mailto:support@my.ewb.ca">support@my.ewb.ca</a>.</p>
+    
+    {% endblocktrans %}
+
+{% endblock %}    
+

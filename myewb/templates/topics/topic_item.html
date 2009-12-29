@@ -35,14 +35,14 @@
 		        
 				{# TODO: show how *many* new replies? #}
 			{% else %}
-					<a href="{{ topic.get_absolute_url }}" style="color: white;" class="nodeco">no replies</a>
+					&nbsp;
 			{% endif %}
 			<br/>
 
 			{% if topic.num_whiteboard_edits %}
  				<a href="{{ topic.get_absolute_url }}" style="color: white;" class="nodeco">{{topic.num_whiteboard_edits}} whiteboard edits</a>
             {% else %}
- 				<a href="{{ topic.get_absolute_url }}" style="color: white;" class="nodeco">no whiteboard edits</a>
+ 				&nbsp;
 			{% endif %}
 		</div>
 		
@@ -66,7 +66,7 @@
 		</table>
 	</div>
 
-	<div class="postcontent" style="width: 98%"> <!-- main row -->
+	<div class="postcontent"> <!-- main row -->
 
 		<a href="{% url profile_detail topic.creator.username %}">
 		    {# {% avatar topic.creator 40 %} #}
