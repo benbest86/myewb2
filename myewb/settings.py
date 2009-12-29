@@ -242,7 +242,7 @@ EMAIL_DEBUG = DEBUG
 CONTACT_EMAIL = "info@my.ewb.ca"
 SITE_NAME = "myEWB"
 LOGIN_URL = "/account/login/"
-LOGIN_REDIRECT_URLNAME = "what_next"
+LOGIN_REDIRECT_URLNAME = "topic_list"
 
 INTERNAL_IPS = (
     '127.0.0.1',
