@@ -268,32 +268,35 @@ div.left_panel {
 	margin-right: 370px;
 }
 
-div#messages {
+div.roundtop {
     border-top: 0;
     margin: 0 auto;
-    padding: 2em 3px 3px 3px;
+    padding: 1.8em 3px 3px 3px;
     width: 500px;
     -webkit-border-top-right-radius: 10px;
     -webkit-border-top-left-radius: 10px;
     -moz-border-radius-topright: 10px;
     -moz-border-radius-topleft: 10px;
+}
+
+div#messages {
     background: green;
 }
 
-div#messages hr {
-    background: #ffffff;
+div#site_wide_announcements {
+    background: blue;
 }
 
-div#message-header {
+div.message-header {
     position: relative;
-    top: -1.7em;
+    top: -1.6em;
     left: 15px;
     height: 0;
     color: #ffffff;
     font-weight: bold;
 }
 
-div#message-close {
+div.message-close {
     position: relative;
     top: -1.6em;
     right: 15px;
@@ -301,7 +304,7 @@ div#message-close {
     text-align: right;
 }
 
-div#message-close a {
+div.message-close a {
     color: #ffffff;
     font-weight: bold;
     text-decoration: none;
