@@ -16,6 +16,12 @@ class TestVisibility(TestCase):
         # admin of the child group
         self.u3 = User.objects.create_user('user3', 'user3@ewb.ca', 'password')
         
+        # member (non-admin) of the child group
+        self.u4 = User.objects.create_user('user4', 'user4@ewb.ca', 'password')
+        
+        # random nobody
+        self.u5 = User.objects.create_user('user5', 'user5@ewb.ca', 'password')
+        
         # set up the groups & memberships...s
         self.parent = BaseGroup.objects.create(slug='bg',
                                                name='a base group',
@@ -31,6 +37,11 @@ class TestVisibility(TestCase):
                                               creator=self.u3,
                                               parent=self.parent,
                                               visibility='M')
+        m2 = GroupMember(group=self.child,
+                         user=self.u4,
+                         is_admin=False)
+        m2.save()
+        
 
     def test_parent_permissions(self):
         """
@@ -43,4 +54,18 @@ class TestVisibility(TestCase):
         # but members (non-admins) of the parent don't have permissions on the child...
         self.assertFalse(self.child.is_visible(self.u2))
         self.assertFalse(self.child.user_is_admin(self.u2))
+    
+    def test_visible_children(self):
+        """
+        Ensure the "get_visible_children" function is working
+        """
         
+        # get_visible_children returns a list of BaseGroups, not communities...
+        childgroup = BaseGroup.objects.get(slug=self.child.slug)
+
+        self.assertTrue(childgroup in self.parent.get_visible_children(self.u))
+        self.assertFalse(childgroup in self.parent.get_visible_children(self.u2))
+        self.assertTrue(childgroup in self.parent.get_visible_children(self.u3))
+        self.assertTrue(childgroup in self.parent.get_visible_children(self.u4))
+        self.assertFalse(childgroup in self.parent.get_visible_children(self.u5))
+

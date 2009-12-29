@@ -104,7 +104,7 @@ class BaseGroup(Group):
             # and check for regular admins
             if self.members.filter(user=user, is_admin=True).count() > 0:
                 return True
-                
+        
         return False
 
     def get_absolute_url(self):
@@ -183,7 +183,7 @@ class BaseGroup(Group):
     def get_visible_children(self, user):
         if not user.is_authenticated():
             return self.children.filter(visibility='E')
-        elif user.has_module_perms("base_groups"):
+        elif user.has_module_perms("base_groups") | self.user_is_admin(user):
             return self.children.all()
         else:
             children = self.children.filter(visibility='E') | self.children.filter(member_users=user)
