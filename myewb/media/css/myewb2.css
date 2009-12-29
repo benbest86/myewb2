@@ -267,3 +267,50 @@ div.right_panel {
 div.left_panel {
 	margin-right: 370px;
 }
+
+div#messages {
+    border-top: 0;
+    margin: 0 auto;
+    padding: 2em 3px 3px 3px;
+    width: 500px;
+    -webkit-border-top-right-radius: 10px;
+    -webkit-border-top-left-radius: 10px;
+    -moz-border-radius-topright: 10px;
+    -moz-border-radius-topleft: 10px;
+    background: green;
+}
+
+div#messages hr {
+    background: #ffffff;
+}
+
+div#message-header {
+    position: relative;
+    top: -1.7em;
+    left: 15px;
+    height: 0;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+div#message-close {
+    position: relative;
+    top: -1.6em;
+    right: 15px;
+    height: 0;
+    text-align: right;
+}
+
+div#message-close a {
+    color: #ffffff;
+    font-weight: bold;
+    text-decoration: none;
+    border: 1px solid #e0e0e0;
+    padding: 0 2px;
+}
+
+div.message {
+    background: #ffffff;
+    padding: 2px;
+    text-align: center;
+}

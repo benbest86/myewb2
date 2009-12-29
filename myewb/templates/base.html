@@ -52,11 +52,16 @@
 			<div id="content">
 	
             {% if messages %}
-                <ul id="messages">
-                    {% for message in messages %}
-                    <li id="message_{{ forloop.counter }}"><a href="#" onclick="$('#message_{{ forloop.counter }}').fadeOut(); return false;"><small>{% trans "clear" %}</small></a> {{ message|safe }}</li>
-                    {% endfor %}
-                </ul>
+                <div id="messages">
+                    <div id="message-header">Messages</div>
+                    <div id="message-close"><a href="#" onclick="$('#messages').fadeOut(); return false;">x</a></div>
+                    <div class="message">
+                        {% for message in messages %}
+                            <div class="message">{{ message|safe }}</div>
+                            {% if not forloop.last %}<hr/>{% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
             {% endif %}
             
             {% block body %}
