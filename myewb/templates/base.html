@@ -62,7 +62,7 @@
                 </div>
             {% endif %}
             
-            <div id="toolbarcolumn_left">
+            <div id="toolbarcolumn_left">{% spaceless %}
                 {% block toolbar_left %}
                     {% comment %}
                         Sub-classing templates should use the toolbarheader and
@@ -78,13 +78,13 @@
                     
                     {% endcomment%}
                 {% endblock %}
-            </div>
+            {% endspaceless %}</div>
 
-            <div id="toolbarcolumn_right">
+            <div id="toolbarcolumn_right">{% spaceless %}
                 {% block toolbar_right %}
                     {# same scheme as toolbarcolumn_left #}
                 {% endblock %}            
-            </div>
+            {% endspaceless %}</div>
 
             <div id="maincolumn" style="overflow-x: hidden;">
 

@@ -9,14 +9,14 @@
 
 #toolbarcolumn_left
 {
-        margin: 0 1em 15px -1em;
+        margin: 0 1em 0 -1em;
         width: 180px;
         float: left;
 }
 
 #toolbarcolumn_right
 {
-        margin: 0 -1em 15px 1em;
+        margin: 0 -1em 0 1em;
         width: 180px;
         float: right;
 }
