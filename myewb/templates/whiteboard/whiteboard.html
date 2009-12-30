@@ -5,8 +5,7 @@
 {% if not wb.content %}
 
 	{% if member %}
-		<h2>{% trans "Whiteboard" %}</h2>
-		<a href="{% groupurl wiki_edit group title=wb.title %}">{% trans "Create a whiteboard..." %}</a>
+		{% trans "No whiteboard" %} - <a href="{% groupurl wiki_edit group title=wb.title %}">{% trans "create a whiteboard..." %}</a>
 	{% endif %}
 
 {% else %}

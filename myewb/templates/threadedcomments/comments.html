@@ -11,8 +11,62 @@
 {% get_threaded_comment_tree for object as responses %}
 {% autopaginate responses %}
 
-<ul class="responses">
+<div class="post">
+
+	<div class="postheader" style="position: relative;"> <!-- header row -->
+		Replies
+	</div>
+
     {% for response in responses %}
+
+        <div class="postsubheader"> <!-- stat row -->
+            <table width="100%" style="margin:0; padding: 0;">
+            <tr>
+				<td>By <a href="{% url profile_detail response.user.username %}">{{ response.user.get_full_name }}</a>, {{ response.date_submitted|date }}</td>
+            </tr>
+            </table>
+        </div>
+
+        <div class="postcontent" style="width: 98%;"> <!-- main row -->
+    		<a href="{% url profile_detail response.user.username %}">
+    		    <img src="{% avatar_url response.user 40 %}" style="border: 1px solid #CCC; float:right; margin: 10px; margin-left:14px; padding:5px;" title="{{response.user.get_full_name}}" alt="{{response.user.get_full_name}}"/>
+    		</a>
+
+            {{ response.comment|safe }}
+
+            <br style="clear:both; height: 1px; line-height: 1px;" />
+
+            <table width="100%" style="margin:0; padding: 0; margin-top: 6px;"> <!-- tags and drill-in link table -->
+            <tr>
+                <td valign="top" style="padding-left: 15px; font-size: 10px;">
+                    {% get_attachments_for response as "attachments" %}
+
+                    {% if attachments.count %}
+                        attached files:
+                        <ul style="margin-top: 0px; margin-bottom: 5px; margin-left: 25px;">
+                            {% for att in attachments %}
+                                <li class="file_$file.extension">
+                                {% icon_for_filename att.filename %}<a href="{% get_STATIC_URL %}{{ att.attachment_file.name }}">{{ att.filename }}</a>
+                                {% filesize_for_filename att.attachment_file.name %} 
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% endif %}
+                <td align="right" valign="top" width="300" style="font-size: 10px; padding-right: 10px;">
+                    {% if grpadmin %}
+                        <form method="POST" action="{% url tc_comment_delete response.id %}">
+                            <input type="submit" value="{% trans "Delete Post" %}" />
+                            <input type="hidden" name="next" value="{{ request.path }}" />
+                        </form>
+                    {% endif %}
+                </td>
+            </tr>
+            </table>
+        </div>
+
+
+    
+        {% comment %}
         <li class="{% cycle even,odd %} thread-{{ response.depth }} clearfix">
             <div class="meta">
                 <div class="avatar">{% avatar response.user 40 %}</div>
@@ -50,8 +104,10 @@
                 </form>
             </div>
         </li>
+        
+        {% endcomment %}
     {% endfor %}
-</ul>
+</div>
 
 {% paginate %}
 
@@ -59,27 +115,30 @@
 	{# FIXME: is there any way to use a proper django form, instead of hardcoding? #}
 	{# FIXME: this is also loaded for EVERY comment, which gets really slow if there #}
 	{#        are a lot of comments (esp with the tinymce editor #}
-    <form class="uniForm" method="POST" enctype="multipart/form-data" action="{% get_comment_url object %}">
-        <fieldset class="inlineLabels">
-            <div class="ctrlHolder">
-                <textarea id="id_comment" class="tinymce" rows="10" cols="40" name="comment"></textarea>
+	<h2>{% trans "Add a reply" %}</h2>
+    <form method="POST" enctype="multipart/form-data" action="{% get_comment_url object %}">
+                <textarea id="id_comment" class="tinymce" rows="8" cols="80" name="comment"></textarea>
+                <br/><br/>
                 <div id="attachFiles">                    
                     {% for af in attach_forms %}
-                        {{ af|as_uni_form }}
+                        {{ af.as_p }}
                     {% endfor %}
                     <div id="attachLink">
                         <a class="getAttachForm" href="{% url ac_get_attachment_form %}">{% trans "Attach a file to this post" %}</a>
                     </div>
                 </div>
-            </div>
-             Tags: <input id="id_tags" type="text" class="textinput" name="tags" maxlength="255" />
+            
+            <p>
+                <label for="id_tags">Tags:</label>
+                <input id="id_tags" type="text" class="textinput" name="tags" maxlength="255" />
+            </p>
+            
             <div class="form_block">
                 <input type="hidden" id="attachCount" name="attach_count" value="0">
                 <input type="hidden" name="next" value="{{ request.path }}" />
                 <input type="submit" value="{% trans "Post Response" %}" />
             </div>
-        </fieldset>
     </form>
 {% else %}
-    <h3>Please <a href="{% url acct_login %}">Login</a> (or <a href="{% url acct_signup %}">Sign Up</a>) to leave a comment</h3>
+    <h3>Please <a href="{% url acct_login %}">Sign in</a> (or <a href="{% url acct_signup %}">Sign Up</a>) to respond</h3>
 {% endif %}

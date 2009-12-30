@@ -67,12 +67,14 @@ def topic(request, topic_id, group_slug=None, edit=False, template_name="topics/
     member = False
     if topic.group and topic.group.user_is_member(request.user):
         member = True
+        
+    grpadmin = topic.group.user_is_admin(request.user)
 
     return render_to_response(template_name, {
         "topic": topic,
-        "edit": edit,
         "group": topic.group,
         "member": member,
+        "grpadmin": grpadmin,
     }, context_instance=RequestContext(request))
 
 def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_class=AttachmentForm, template_name="topics/topics.html", bridge=None):
