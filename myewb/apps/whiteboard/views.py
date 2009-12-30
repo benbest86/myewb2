@@ -40,7 +40,7 @@ def edit_article(request, title,
             raise Http404
         
         # permissions check
-        if not group.is_member(request.user, admin_override=True):
+        if not group.user_is_member(request.user, admin_override=True):
             return HttpResponseForbidden()
         
         try:
@@ -114,7 +114,7 @@ def revert_to_revision(request, title,
                 raise Http404
             
             # permissions check
-            if not group.is_member(request.user, admin_override=True):
+            if not group.user_is_member(request.user, admin_override=True):
                 return HttpResponseForbidden()
         
             # @@@ use bridge instead

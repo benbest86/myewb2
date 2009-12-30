@@ -19,20 +19,6 @@
 
 {% block body %}
 
-    {% if can_adminovision %}
-        <p style="margin-top: 0; text-align: right;">
-            {% spaceless %}
-                <a href="{% url topic_adminovision %}">
-                    {% if adminovision %}
-            			Turn off adminovision
-            		{% else %}
-            			Turn on adminovision
-            		{% endif %}
-            	</a>
-            {% endspaceless %}
-        </p>
-    {% endif %}
-    
     {% autopaginate topics 10 %}
     
     {% for topic in topics %}
@@ -45,9 +31,24 @@
 
 {% block toolbar_left %}
     {% if user.is_authenticated %}
-        <div class="toolbarheader bkgd">{% trans "At A Glance" %}</div>
+        <div class="toolbarheader bkgd">{% trans "Latest Activity" %}</div>
         <div class="toolbarcontent">
             woot
+
+            {% if can_adminovision %}
+                <p style="margin-top: 0; text-align: right;">
+                    {% spaceless %}
+                        <a href="{% url topic_adminovision %}">
+                            {% if adminovision %}
+                    			Turn off adminovision
+                    		{% else %}
+                    			Turn on adminovision
+                    		{% endif %}
+                    	</a>
+                    {% endspaceless %}
+                </p>
+            {% endif %}
+    
         </div>
     {% else %}
         <div class="toolbarheader bkgd">{% trans "Sign In" %}</div>
@@ -67,7 +68,7 @@
         </div>
     {% endif %}
             
-    <div class="toolbarheader bkgd">{% trans "This Month's Events" %}</div>
+    <div class="toolbarheader bkgd">{% trans "Happening in EWB" %}</div>
     <div class="toolbarcontent" style="padding: 2px; overflow: none;">
         {% events_widget user %}
         <a href="{% url events_all %}">{% trans "more events" %} &raquo;</a>

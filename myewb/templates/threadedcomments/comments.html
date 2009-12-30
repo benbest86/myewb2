@@ -13,9 +13,11 @@
 
 <div class="post">
 
-	<div class="postheader" style="position: relative;"> <!-- header row -->
-		Replies
-	</div>
+    {% if responses %}
+    	<div class="postheader" style="position: relative;"> <!-- header row -->
+		    Replies
+    	</div>
+    {% endif %}
 
     {% for response in responses %}
 
