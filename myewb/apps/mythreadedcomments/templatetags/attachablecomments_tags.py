@@ -16,6 +16,14 @@ def attachablecomments(context, obj):
 
 register.inclusion_tag('threadedcomments/comments.html', takes_context=True)(attachablecomments)
 
+def printablecomments(context, obj):
+    return {
+        'object': obj, 
+        'request': context['request'],
+        'user': context['user'],
+    }
+register.inclusion_tag('threadedcomments/printablecomments.html', takes_context=True)(printablecomments)
+
 # for some reason it doesn't load properly...
 @register.simple_tag
 def get_STATIC_URL():
