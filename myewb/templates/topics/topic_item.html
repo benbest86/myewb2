@@ -31,7 +31,9 @@
 					<a href="{{ topic.get_absolute_url }}" style="color: white;" class="nodeco">{{ num_comments }} replies</a>
 				{% endifequal %}
 				
-				<em>{% isnewer latest.0.date_submitted user.get_profile.previous_login %}</em>
+				{% if user.is_authenticated %}
+    				<em>{% isnewer latest.0.date_submitted user.get_profile.previous_login %}</em>
+    			{% endif %}
 		        
 				{# TODO: show how *many* new replies? #}
 			{% else %}
