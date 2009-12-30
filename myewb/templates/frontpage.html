@@ -5,6 +5,7 @@
 {% load pagination_tags %}
 {% load group_tags %}
 {% load tagging_tags %}
+{% load events_tags %}
 
 {% block extra_head %}
     {{ block.super }}
@@ -43,18 +44,46 @@
 {% endblock %}
 
 {% block toolbar_left %}
-    <div class="toolbarheader bkgd">Toolbar Title</div>
-    <div class="toolbarcontent">Toolbar content</div>
+    {% if user.is_authenticated %}
+        <div class="toolbarheader bkgd">{% trans "At A Glance" %}</div>
+        <div class="toolbarcontent">
+            woot
+        </div>
+    {% else %}
+        <div class="toolbarheader bkgd">{% trans "Sign In" %}</div>
+        <div class="toolbarcontent">
+            <form class="toolbarlogin" method="POST" action="{% url acct_login %}">
+                {% for field in login_form %}
+                    <div style="padding-bottom: 7px;">
+                        {{ field.label_tag }} &nbsp;&nbsp;&nbsp;
+                        {{ field }}
+                    </div>
+                {% endfor %}
+                <div style="text-align: center;">
+                    <input type="submit" value="{% trans "sign in" %} &raquo;" /><br/>
+                    <a href="{% url acct_passwd_reset %}">{% trans "Forgot password?" %}</a>
+                </div>
+            </form>
+        </div>
+    {% endif %}
             
-    <div class="toolbarheader bkgd">Toolbar2 Title</div>
-    <div class="toolbarcontent">Toolbar2 content</div>
+    <div class="toolbarheader bkgd">{% trans "Upcoming Events" %}</div>
+    <div class="toolbarcontent" style="padding: 2px; overflow: none;">
+        {% events_widget user %}
+        <a href="{% url events_all %}">{% trans "more events" %} &raquo;</a>
+    </div>
+    
+    <div class="toolbarheader bkgd">{% trans "Who's Online" %}</div>
+    <div class="toolbarcontent">
+        {% for online in online_users %}
+            <a href="{% url profile_detail online %}">{{ online.first_name }} {{ online.last_name }}</a><br/>
+        {% endfor %} <br/>
+        and {{ online_anon }} guests
+    </div>
 {% endblock %}
 
 {% block toolbar_right %}
-    <div class="toolbarheader bkgd">Right Toolbar Title</div>
-    <div class="toolbarcontent">Toolbar content</div>
-            
-    <div class="toolbarheader bkgd">Right Toolbar2 Title</div>
-    <div class="toolbarcontent">Toolbar2 content</div>
+    {# put this in its own file, since its so big (and others like kyle may want to edit it #}
+    {% include "frontpage-right.html" %}
 {% endblock %}            
 

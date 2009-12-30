@@ -255,6 +255,13 @@ form.login label[for="id_remember"] {
     visibility: hidden;
 }
 
+/* FIXME: this probably doesn't work in 50% of browsers... */
+form.toolbarlogin input[type="text"],
+form.toolbarlogin input[type="password"]
+{
+    width: 150px;
+}
+
 form.filter {
   display: inline;
 }
@@ -342,5 +349,25 @@ div.message {
     background: #ffffff;
     padding: 2px;
     text-align: center;
+}
+
+input, select, option, textarea
+{
+        font-size: 13px;
+        margin: 0px;
+        padding: 0px;
+}
+
+/* FIXME: this probably doesn't work in 50% of browsers... */
+input[type="submit"],
+input[type="reset"]
+{
+        border: 1px solid black;
+        color: black;
+        background: #c2d1ff;
+        font-size: 13px;
+        padding: 0 3px;
+        width: auto;
+        overflow: visible;
 }
 

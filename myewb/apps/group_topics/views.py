@@ -21,6 +21,7 @@ from django.db.models import Q
 
 from groups import bridge
 
+from account_extra.forms import EmailLoginForm
 from base_groups.models import BaseGroup
 from base_groups.helpers import user_can_adminovision
 from group_topics.models import GroupTopic
@@ -150,7 +151,7 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
     else:
         can_adminovision = False
         adminovision = False
-            
+        
     return render_to_response(template_name, {
         "group": group,
         "topic_form": topic_form,
@@ -160,6 +161,7 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
         "topics": topics,
         "can_adminovision": can_adminovision,
         "adminovision": adminovision,
+        "login_form": EmailLoginForm(),                # for front-page toolbar
     }, context_instance=RequestContext(request))
 
 def feed(request, group_slug):
