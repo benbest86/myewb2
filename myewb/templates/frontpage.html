@@ -1,0 +1,60 @@
+{% extends "topics/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+{% load pagination_tags %}
+{% load group_tags %}
+{% load tagging_tags %}
+
+{% block extra_head %}
+    {{ block.super }}
+    
+    <link rel="alternate" type="application/rss+xml" title="myEWB Front Page" href="{% url topic_feed "all" %}" />
+	<link rel="stylesheet" href="{{ STATIC_URL }}css/toolbars.css" />    
+{% endblock %}
+
+
+{% block head_title %}{% trans "Discussion Board" %}{% endblock %}
+
+{% block body %}
+
+    {% if can_adminovision %}
+        <p style="margin-top: 0; text-align: right;">
+            {% spaceless %}
+                <a href="{% url topic_adminovision %}">
+                    {% if adminovision %}
+            			Turn off adminovision
+            		{% else %}
+            			Turn on adminovision
+            		{% endif %}
+            	</a>
+            {% endspaceless %}
+        </p>
+    {% endif %}
+    
+    {% autopaginate topics 10 %}
+    
+    {% for topic in topics %}
+        {% include "topics/topic_item.html" %}
+    {% endfor %}
+    
+    {% paginate %}
+            
+{% endblock %}
+
+{% block toolbar_left %}
+    <div class="toolbarheader bkgd">Toolbar Title</div>
+    <div class="toolbarcontent">Toolbar content</div>
+            
+    <div class="toolbarheader bkgd">Toolbar2 Title</div>
+    <div class="toolbarcontent">Toolbar2 content</div>
+{% endblock %}
+
+{% block toolbar_right %}
+    <div class="toolbarheader bkgd">Right Toolbar Title</div>
+    <div class="toolbarcontent">Toolbar content</div>
+            
+    <div class="toolbarheader bkgd">Right Toolbar2 Title</div>
+    <div class="toolbarcontent">Toolbar2 content</div>
+{% endblock %}            
+

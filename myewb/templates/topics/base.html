@@ -3,21 +3,20 @@
 {% load i18n %}
 {% load group_tags %}
 
-{% block body_class %}topics{% endblock %}
+{% block body_class %}topics blue{% endblock %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{{ STATIC_URL }}networks/css/networks.css" />
-<link rel="stylesheet" href="{{ STATIC_URL }}pinax/css/topics.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}/css/myewb2-posts.css" />
 <script type="text/javascript" src="{{ STATIC_URL }}pinax/js/topics.js"></script>
 {% endblock %}
 
-{% comment %}
 {% block subnav %}
-    <ul class="subnav">
-        <li><a href="{% url topic_list %}">{% trans "All Posts" %}</a></li>
-    </ul>
-{% endblock %}
-{% endcomment %}
-{% block subnav %}
-    {{ block.super }}
+<ul class="subnav">
+<li {# class="current" #}><a href="{% url home %}">Discussion Board</a></li>
+<li><a href="{% url topic_cloud %}">Tag Cloud</a></li>
+<li><a href="#">Hot Posts</a></li>
+<li><a href="#">About</a></li>
+<li><a href="#">Help</a></li>
+</ul>
 {% endblock %}

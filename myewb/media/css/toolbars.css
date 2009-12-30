@@ -1,0 +1,76 @@
+/* ********************* Toolbars *********************** */
+
+#maincolumn
+{
+        margin-bottom: 15px;
+        padding: 0px;
+        overflow: hidden; /* this is what prevents looong post URLS from stretching */
+}
+
+#toolbarcolumn_left
+{
+        margin: 0 1em 0 -1em;
+        width: 180px;
+        float: left;
+}
+
+#toolbarcolumn_right
+{
+        margin: 0 -1em 0 1em;
+        width: 180px;
+        float: right;
+}
+
+.toolbarheader
+{
+        border-top: 0;
+        color: white;
+        font-weight: bold;
+        padding:3px;
+        padding-left: 9px;
+        font-size: 13px;
+}
+
+#toolbarcolumn_left .toolbarheader
+{
+        -webkit-border-top-right-radius: 7px;
+        -moz-border-radius-topright: 7px;
+}
+
+#toolbarcolumn_right .toolbarheader
+{
+        -webkit-border-top-left-radius: 7px;
+        -moz-border-radius-topleft: 7px;
+}
+
+.toolbarcontent
+{
+        padding:5px;
+        padding-left: 10px;
+        margin-bottom: 1.5em;
+}
+
+#toolbarcolumn_left .toolbarcontent
+{
+        border-width: 0 1px 1px 0;
+}
+
+#toolbarcolumn_right .toolbarcontent
+{
+        border-width: 0 0 1px 1px;
+}
+
+.toolbarcontent ul
+{
+        list-style-type: none;
+        padding:0;
+        margin:0;
+        font-size: 13px;
+}
+
+.toolbarcontent ul li
+{
+        padding-top: 2px;
+        padding-bottom: 2px;
+}
+

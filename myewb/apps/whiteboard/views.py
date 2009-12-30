@@ -7,6 +7,7 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.simple import redirect_to
 
+from base_groups.decorators import group_membership_required, visibility_required
 from whiteboard.forms import WhiteboardForm
 from wiki.models import Article
 from wiki.utils import get_ct, login_required
@@ -18,7 +19,7 @@ from wiki.views import article_history as wiki_article_history
 # mostly copied from wiki.views
 # but modified so the redirect on successful edit goes to the group's homepage,
 # not the list of wiki articles.
-@login_required
+#@group_membership_required
 def edit_article(request, title,
                  group_slug=None, bridge=None,
                  article_qs=ALL_ARTICLES,
@@ -38,16 +39,10 @@ def edit_article(request, title,
         except ObjectDoesNotExist:
             raise Http404
         
-        # modified for our own permissions
-        allow_read = group.is_visible(request.user)
-        allow_write = group.user_is_member(request.user)
-            # should this be admins only?
-            # one day we'll have tiered lists... some with "all can post"
-            # permission some with "only admins can post" perms
-        
-        if not allow_write:
+        # permissions check
+        if not group.is_member(request.user, admin_override=True):
             return HttpResponseForbidden()
-
+        
         try:
             article = article_qs.get_by(title, group)
         except ArticleClass.DoesNotExist:
@@ -96,7 +91,7 @@ def edit_article(request, title,
                              is_private,
                              *args, **kw)
 
-@login_required
+#@group_membership_required
 def revert_to_revision(request, title,
                        group_slug=None, bridge=None,
                        article_qs=ALL_ARTICLES,
@@ -117,21 +112,15 @@ def revert_to_revision(request, title,
                 group = bridge.get_group(group_slug)
             except ObjectDoesNotExist:
                 raise Http404
+            
+            # permissions check
+            if not group.is_member(request.user, admin_override=True):
+                return HttpResponseForbidden()
+        
             # @@@ use bridge instead
             article_args.update({'content_type': get_ct(group),
                                  'object_id': group.id})
             
-            # our own perms
-            allow_read = group.is_visible(request.user)
-            allow_write = group.user_is_member(request.user)
-
-        else:
-            group = None
-            allow_read = allow_write = True
-
-        if not (allow_read or allow_write):
-            return HttpResponseForbidden()
-
         article = get_object_or_404(article_qs, **article_args)
 
         if request.user.is_authenticated():
@@ -150,6 +139,7 @@ def revert_to_revision(request, title,
     return HttpResponseNotAllowed(['POST'])
 
 # overridden so i can pass in a different template
+#@visibility_required
 def view_changeset(request, title, revision,
                    group_slug=None, bridge=None,
                    article_qs=ALL_ARTICLES,
@@ -167,16 +157,10 @@ def view_changeset(request, title, revision,
         except ObjectDoesNotExist:
             raise Http404
         
-        # modified for our own permissions
-        allow_read = group.is_visible(request.user)
-        allow_write = group.user_is_member(request.user)
-            # should this be admins only?
-            # one day we'll have tiered lists... some with "all can post"
-            # permission some with "only admins can post" perms
-        
-        if not allow_read:
-            return HttpResponseForbidden()
-
+    # permissions check
+    if not group.is_visible(request.user):
+        return HttpResponseForbidden()
+    
     return wiki_view_changeset(request, title, revision,
                                group_slug, bridge,
                                article_qs,
@@ -189,6 +173,7 @@ def view_changeset(request, title, revision,
                                *args, **kw)
 
 # overridden so i can pass in a different template
+#@visibility_required
 def article_history(request, title,
                     group_slug=None, bridge=None,
                     article_qs=ALL_ARTICLES,
@@ -205,16 +190,10 @@ def article_history(request, title,
         except ObjectDoesNotExist:
             raise Http404
         
-        # modified for our own permissions
-        allow_read = group.is_visible(request.user)
-        allow_write = group.user_is_member(request.user)
-            # should this be admins only?
-            # one day we'll have tiered lists... some with "all can post"
-            # permission some with "only admins can post" perms
-        
-        if not allow_read:
-            return HttpResponseForbidden()
-
+    # permissions check
+    if not group.is_visible(request.user):
+        return HttpResponseForbidden()
+    
     return wiki_article_history(request, title,
                                 group_slug, bridge,
                                 article_qs,

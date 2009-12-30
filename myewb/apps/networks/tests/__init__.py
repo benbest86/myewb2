@@ -133,7 +133,7 @@ class TestNetworkTopicMail(TestCase):
 
     def test_new_topic_with_email(self):
         response = self.client.post('/networks/ewb/posts/', {'title': 'first post', 'body':'Lets make a new topic.', 'send_as_email': True, 'tags':'first, post', 'attach_count':0,})
-        self.assertEquals(response.status_code, 200)
+        self.assertEquals(response.status_code, 302)
         self.assertEquals(1, len(mail.outbox))
         self.assertEquals(len(self.ewb.get_member_emails()), len(mail.outbox[0].bcc))
 
@@ -145,13 +145,11 @@ class TestBulkMembers(TestCase):
     """
     Tests for functionality associated with bulk email users.
     """
+    fixtures = ['test_networks.json']
 
     def setUp(self):
-        self.joe = User.objects.create_user('joe', 'joe@test.ca', 'passw0rd')
-        superman = User.objects.create_user('superman', 'super@man.com', 'passw0rd')
-        superman.is_superuser = True
-        superman.save()
-        self.superman = superman
+        self.joe = User.objects.get(username='joe')
+        self.superman = User.objects.get(username='superman')
         self.ewb = Network.objects.get(slug='ewb')
 
     def tearDown(self):
@@ -263,13 +261,11 @@ class TestCustomGroupMemberManager(TestCase):
     """
     Tests the custom methods added to the GroupMember manager.
     """
+    fixtures = ['test_networks.json']
 
     def setUp(self):
-        self.joe = User.objects.create_user('joe', 'joe@test.ca', 'passw0rd')
-        superman = User.objects.create_user('superman', 'super@man.com', 'passw0rd')
-        superman.is_superuser = True
-        superman.save()
-        self.superman = superman
+        self.joe = User.objects.get(username='joe')
+        self.superman = User.objects.get(username='superman')
         self.ewb = Network.objects.get(slug='ewb')
         self.new_network = Network.objects.create(slug='new-net', name='new network', creator=self.superman)
 
@@ -284,7 +280,7 @@ class TestCustomGroupMemberManager(TestCase):
     def test_accepted_members(self):
         self.client.login(username='superman', password='passw0rd')
         self.assertFalse(self.joe in [member.user for member in self.new_network.members.accepted()])
-        self.client.post('/networks/new-net/bulk/', {'emails':'joe@test.ca'})
+        self.client.post('/networks/new-net/bulk/', {'emails':'joe@smith.com'})
         self.assertTrue(self.joe in [member.user for member in self.new_network.members.accepted()])
 
     def test_bulk_members(self):

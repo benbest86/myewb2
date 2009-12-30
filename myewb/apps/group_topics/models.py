@@ -17,6 +17,7 @@ from django.template import Context, loader
 
 from attachments.models import Attachment
 from base_groups.models import BaseGroup
+from base_groups.helpers import user_can_adminovision
 from topics.models import Topic
 from wiki.models import Article
 
@@ -28,12 +29,22 @@ class GroupTopicManager(models.Manager):
         """
         Returns visible posts by group visibility. Takes an optional
         user parameter which adds GroupTopics from groups that the
-        member is a part of.
+        member is a part of. Handles AnonymousUser instances
+        transparently
         """
         filter_q = Q(parent_group__visibility='E')
         if user is not None and not user.is_anonymous():
+            
+            # admins with admin-o-vision on automatically see everything
+            if user_can_adminovision(user) and user.get_profile().adminovision is True:
+                return self.get_query_set()
+            
+            # everyone else only sees stuff from their own groups
             filter_q |= Q(parent_group__member_users=user)
-        return self.get_query_set().filter(filter_q)
+
+        # would it be more efficient to remove the OR query above and just write
+        # two different queries, instead of using distinct() here?
+        return self.get_query_set().filter(filter_q).distinct()
     
     def get_for_group(self, group):
         """
@@ -63,10 +74,16 @@ class GroupTopic(Topic):
     
     def get_absolute_url(self, group=None):
         kwargs = {"topic_id": self.pk}
-        if group:
-            return group.content_bridge.reverse("topic_detail", group, kwargs=kwargs)
+        return reverse("topic_detail", kwargs=kwargs)
+    
+    def is_visible(self, user):
+        if self.creator == user:
+            return True
         else:
-            return reverse("topic_detail", kwargs=kwargs)
+            return self.parent_group.is_visible(user)
+
+    def is_editable(self, user):
+        return user == self.creator or self.parent_group.user_is_admin(user)
         
     def save(self, force_insert=False, force_update=False):
         # validate HTML content
@@ -96,5 +113,22 @@ class GroupTopic(Topic):
     
             self.group.send_mail_to_members(self.title, message)
         
+    def num_whiteboard_edits(self):
+        if self.whiteboard:
+            return self.whiteboard.changeset_set.count()
+        else:
+            return 0
+            
+    def intro(self):
+        if len(self.body) < 600:
+            return self.body
+
+        # thanks http://stackoverflow.com/questions/250357/smart-truncate-in-python
+        return self.body[:600].rsplit(' ', 1)[0]+"..."
+    
+    def intro_has_more(self):
+        return (len(self.body) >= 600)
+
     class Meta:
         ordering = ('-modified', )
+        

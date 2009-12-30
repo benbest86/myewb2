@@ -1,6 +1,7 @@
 from django import template
 from django.core.urlresolvers import reverse
 from django.forms.widgets import Select
+from django.utils.translation import ugettext_lazy as _
 register = template.Library()
 
 @register.inclusion_tag("new_button.html")
@@ -49,3 +50,13 @@ class SelectBox(template.Node):
         selected_item = None
 
     return Select().render_options(choice_list, [selected_item])
+    
+# if the first date is newer than the second date, print "new".  duh.
+# now, if django's templates supported "greater than" comparisons, I wouldn't need this...
+@register.simple_tag
+def isnewer(date1, date2):
+    if date1 > date2:
+        return _("new")
+    else:
+        return ""
+

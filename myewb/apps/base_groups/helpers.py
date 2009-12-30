@@ -102,7 +102,7 @@ def enforce_visibility(groups, user):
     return visible_groups.distinct()
     
 def get_valid_parents(user, group=None, model=BaseGroup):
-    if user.is_superuser or user.is_staff:
+    if user.has_module_perms("base_groups"):
         vps = model.objects.all()
     else:
         vps = model.objects.filter(member_users=user)
@@ -110,4 +110,13 @@ def get_valid_parents(user, group=None, model=BaseGroup):
     if group:
         vps = vps.exclude(slug=group.slug)
     return vps
+    
+def user_can_adminovision(user):
+    """
+    Check if user is capable of admin-o-vision (but not whether it is currently enabled)
+    """
+    if user.is_staff or user.has_module_perms("base_groups"):
+        return True
+    else:
+        return False
     

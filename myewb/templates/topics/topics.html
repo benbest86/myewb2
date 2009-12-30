@@ -6,6 +6,26 @@
 {% load group_tags %}
 {% load tagging_tags %}
 
+{% block extra_head %}
+    {{ block.super }}
+    
+    {% if group %}
+        <link rel="alternate" type="application/rss+xml" title="{{ group }}" href="{% url topic_feed group.slug %}" />
+    {% else %}
+        <link rel="alternate" type="application/rss+xml" title="myEWB Front Page" href="{% url topic_feed "all" %}" />
+    {% endif %}
+{% endblock %}
+
+{% comment %}
+**********
+NOTE: this template should only be used in the context of a group (ie, the group 
+variable is not None).  The generic/combined post listing has been moved to
+templates/frontpage.html
+
+The {% if group %} checks are left in just in case, and should be removed eventually.
+***********
+{% endcomment %}
+
 {% block head_title %}{% spaceless %}
 {% if group %}
     {% blocktrans with group.name as group_name %}Posts for {{ group_name }}{% endblocktrans %}
@@ -15,32 +35,24 @@
 {% endspaceless %}{% endblock %}
 
 {% block body %}
-    <h1>{% spaceless %}
-        {% if group %}
-            {% blocktrans with group.get_absolute_url as group_url and group.name as group_name %}Posts for <a href="{{ group_url }}">{{ group_name }}</a>{% endblocktrans %}
-        {% else %}
-            {% trans "Topics" %}
-        {% endif %}
-    {% endspaceless %}</h1>
-
-    {% if user.is_authenticated %}
-        {% url what_next as what_next_url %}
-        <p class="what_next">{% blocktrans %}Wondering <a href="{{ what_next_url }}">What Next</a>?{% endblocktrans %}</p>
-    {% else %}
-        {% url acct_signup as signup_url %}
-        {% url acct_login as login_url %}
-        <p>{% blocktrans %}You can <a href="{{ signup_url }}">Sign up</a> and <a href="{{ login_url }}">Log in</a> to try out the site.{% endblocktrans %}</p>
-
+   	{% if can_adminovision %}
+	    <p style="margin-top: 0; text-align: right;">
+   		{% spaceless %}
+   			<a href="{% url topic_adminovision %}">
+    		{% if adminovision %}
+    			Turn off adminovision
+    		{% else %}
+    			Turn on adminovision
+    		{% endif %}
+    		</a>
+    	{% endspaceless %}
+    	</p>
+   	{% endif %}
+    
+    {% if group %}
+        <h1>{% blocktrans with group.get_absolute_url as group_url and group.name as group_name %}Posts for <a href="{{ group_url }}">{{ group_name }}</a>{% endblocktrans %}</h1>
     {% endif %}
 
-    <p>
-        {% if group %}
-            <a href="{% url topic_feed group.slug %}">View RSS feed</a>
-        {% else %}            
-            <a href="{% url topic_feed "all" %}">View RSS feed</a>
-        {% endif %}
-    </p>
-    
     {% autopaginate topics 10 %}
     
     {% for topic in topics %}
@@ -71,20 +83,6 @@
             </fieldset>
         </form>
     {% endif %}
-
-    {% if not group %}
-		<br/><br/>
-		<h2>Tag Cloud</h2>    
-	    (this probably isn't the best place for the tag cloud, but we'll leave
-	    it here for now as a feature demo.)<br/>
-	    
-    	{% tag_cloud_for_model group_topics.GroupTopic as topic_cloud with steps=6 %}
-    	
-    	{% for tag in topic_cloud %}
-			<a href="{% url tag_results tag %}"><font size={{tag.font_size}}>{{tag}}</font></a><br/>
-		{% endfor %}
-    {% endif %}
-    
 {% endblock %}
 
 {% block extra_body %}

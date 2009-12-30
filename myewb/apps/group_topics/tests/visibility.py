@@ -1,6 +1,5 @@
-import re
-
 from django.contrib.auth.models import User, AnonymousUser
+from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
 from django.test.client import Client
 
@@ -51,6 +50,8 @@ class VisibilityBaseTest(TestCase):
         self.item1 = TaggedItem.objects.create(tag=self.tag, object=self.publicpost)
         self.item2 = TaggedItem.objects.create(tag=self.tag, object=self.privatepost)
 
+	self.gtopic = ContentType.objects.get(app_label="group_topics", model="grouptopic")
+
 class TestVisibility(VisibilityBaseTest):
     """ Test all aspects of post visibility """
     
@@ -91,7 +92,7 @@ class TestVisibility(VisibilityBaseTest):
 
         # aggregate listing on front page
         response = c.get("/")
-        self.assertNotContains(response, "publicpost")
+        self.assertContains(response, "publicpost")
         self.assertNotContains(response, "privatepost")
         # yes, those are intentional assertNotContains - since the post creator
         # isn't a member of the group...
@@ -156,7 +157,7 @@ class TestVisibility(VisibilityBaseTest):
         # aggregate listing on front page
         response = c.get("/")
         # see TODO question in group_topics.views:161
-        self.assertNotContains(response, "publicpost")
+        self.assertContains(response, "publicpost")
         self.assertNotContains(response, "privatepost")
         
         # aggregate listing by tag
@@ -186,29 +187,25 @@ class TestVisibility(VisibilityBaseTest):
         c.logout()
         
     def test_admin(self):
-        """ check admin's visibility """
+        """ check admin's visibility, assumes no admin-o-vision """
         c = self.client
         c.login(username='admin', password='password')
 
         # aggregate listing on front page
         response = c.get("/")
-        # see TODO question in group_topics.views:161
-        # (assuming no admin-o-vision)
-        self.assertNotContains(response, "publicpost")
+        self.assertContains(response, "publicpost")
         self.assertNotContains(response, "privatepost")
         
         # aggregate listing by tag
         response = c.get("/tags/testtag/")
         self.assertContains(response, "publicpost")
         self.assertNotContains(response, "privatepost")
-        # (again, no admin-o-vision)
-
+        
         # aggregate listing by user
         response = c.get("/posts/user/%s/" % self.creator.username)
         self.assertContains(response, "publicpost")
         self.assertNotContains(response, "privatepost")
-        # still waiting for that admin-o-vision
-
+        
         # public post is visible by direct URL
         response = c.get("/posts/%d/" % self.publicpost.pk)
         self.assertContains(response, "publicpost")
@@ -263,4 +260,123 @@ class TestVisibilityManagerFunctions(VisibilityBaseTest):
     def test_private_with_unauthorized_user(self):
         visible_to_nonmember = GroupTopic.objects.visible(self.nonmember)
         self.assertTrue(self.privatepost not in visible_to_nonmember)
+        
+    def test_public_with_admin(self):
+        visible_to_admin = GroupTopic.objects.visible(self.admin)
+        self.assertTrue(self.publicpost in visible_to_admin)
+        
+    def test_private_with_admin(self):
+        self.admin.get_profile().adminovision = False
+        visible_to_admin = GroupTopic.objects.visible(self.admin)
+        self.assertTrue(self.privatepost not in visible_to_admin)
 
+    def test_private_with_adminovision(self):
+        self.admin.get_profile().adminovision = True
+        visible_to_admin = GroupTopic.objects.visible(self.admin)
+        self.assertTrue(self.privatepost in visible_to_admin)
+        
+class TestVisibleFunction(VisibilityBaseTest):
+    """
+    Tests the is_visible function
+    """
+    def test_guest(self):
+        guest = AnonymousUser()
+        self.assertTrue(self.publicpost.is_visible(guest))
+        self.assertFalse(self.privatepost.is_visible(guest))
+        
+    def test_creator(self):
+        self.assertTrue(self.publicpost.is_visible(self.creator))
+        self.assertTrue(self.privatepost.is_visible(self.creator))
+        
+    def test_member(self):
+        self.assertTrue(self.publicpost.is_visible(self.member))
+        self.assertTrue(self.privatepost.is_visible(self.member))
+        
+    def test_nonmember(self):
+        self.assertTrue(self.publicpost.is_visible(self.nonmember))
+        self.assertFalse(self.privatepost.is_visible(self.nonmember))
+        
+    def test_admin(self):
+        self.assertTrue(self.publicpost.is_visible(self.admin))
+        self.assertTrue(self.privatepost.is_visible(self.admin))
+        
+class TestComments(VisibilityBaseTest):
+    """ Test permissions check on posting replies """
+    # this is done here instead of in the mythreadedcomments app because
+    # you can't run tests on an app that has no models, apparently.
+    
+    def test_member(self):
+        """ check group member's visibility """
+        c = self.client
+        c.login(username='member', password='password')
+
+        # posting to public group
+        response = c.post("/comments/comment/%d/%d/" % (self.gtopic.pk, self.publicpost.pk),
+                          {'comment': 'this is a comment',
+                           'attachCount': '0',
+                           'next': '/posts/%d/' % (self.publicpost.pk)
+                          },
+                          follow=True)
+        self.assertEquals(response.status_code, 302)        # success is a reidrect...
+        
+        # posting to private group
+        response = c.post("/comments/comment/%d/%d/" % (self.gtopic.pk, self.privatepost.pk),
+                          {'comment': 'this is a comment',
+                           'attachCount': '0',
+                           'next': '/posts/%d/' % (self.privatepost.pk)
+                          },
+                          follow=True)
+        self.assertEquals(response.status_code, 302)        # success is a reidrect...
+        
+        c.logout()
+        
+    def test_nonmember(self):
+        """ check non-member's visibility """
+        c = self.client
+        c.login(username='nonmember', password='password')
+
+        # posting to public group
+        response = c.post("/comments/comment/%d/%d/" % (self.gtopic.pk, self.publicpost.pk),
+                          {'comment': 'this is a comment',
+                           'attachCount': '0',
+                           'next': '/posts/%d/' % (self.publicpost.pk)
+                          },
+                          follow=True)
+        self.assertEquals(response.status_code, 302)        # success is a reidrect...
+        
+        # posting to private group
+        response = c.post("/comments/comment/%d/%d/" % (self.gtopic.pk, self.privatepost.pk),
+                          {'comment': 'this is a comment',
+                           'attachCount': '0',
+                           'next': '/posts/%d/' % (self.privatepost.pk)
+                          },
+                          follow=True)
+        self.assertEquals(response.status_code, 403)
+        
+        c.logout()
+        
+    def test_admin(self):
+        """ check admin's visibility """
+        c = self.client
+        c.login(username='admin', password='password')
+
+        # posting to public group
+        response = c.post("/comments/comment/%d/%d/" % (self.gtopic.pk, self.publicpost.pk),
+                          {'comment': 'this is a comment',
+                           'attachCount': '0',
+                           'next': '/posts/%d/' % (self.publicpost.pk)
+                          },
+                          follow=True)
+        self.assertEquals(response.status_code, 302)        # success is a reidrect...
+        
+        # posting to private group
+        response = c.post("/comments/comment/%d/%d/" % (self.gtopic.pk, self.privatepost.pk),
+                          {'comment': 'this is a comment',
+                           'attachCount': '0',
+                           'next': '/posts/%d/' % (self.privatepost.pk)
+                          },
+                          follow=True)
+        self.assertEquals(response.status_code, 302)        # success is a reidrect...
+        
+        c.logout()
+        

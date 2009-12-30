@@ -67,7 +67,7 @@ class TopicFeedAll(BaseTopicFeed):
         return qs.latest('created').created
 
     def feed_links(self):
-        absolute_url = reverse('topic_list')
+        absolute_url = reverse('home')
         complete_url = "http://%s%s" % (
                 Site.objects.get_current().domain,
                 absolute_url,

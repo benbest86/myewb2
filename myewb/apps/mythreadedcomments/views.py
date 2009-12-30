@@ -1,4 +1,4 @@
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404, HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404, render_to_response
@@ -12,6 +12,8 @@ from mythreadedcomments.forms import MyThreadedCommentForm, MyFreeThreadedCommen
 
 from attachments.models import Attachment
 from attachments.forms import AttachmentForm
+
+from siteutils import helpers
 
 def _preview(request, context_processors, extra_context, model=FreeThreadedComment, form_class=MyThreadedCommentForm, attach_form_class=AttachmentForm):
     """
@@ -45,6 +47,10 @@ def _preview(request, context_processors, extra_context, model=FreeThreadedComme
         context['comment'] = new_comment
     else:
         context['comment'] = None
+        
+    # do we need a visibility check here?
+    # probably not, since nothing is actually saved.
+        
     return render_to_response(
         'threadedcomments/preview_comment.html',
         extra_context, 
@@ -98,6 +104,16 @@ def free_comment(request, content_type=None, object_id=None, edit_id=None, paren
     
     if form.is_valid() and all([af.is_valid() for af in attach_forms]):
         new_comment = form.save(commit=False)
+        
+        # visibility check!
+        if request.user.is_anonymous():
+            return HttpResponseForbidden()
+        
+        ctype = ContentType.objects.get(id=content_type)
+        parentgrp = helpers.get_obj(ct=ctype, id=object_id)
+        if not helpers.is_visible(request.user, parentgrp):
+            return HttpResponseForbidden()
+        
         if not edit_id:
             new_comment.ip_address = request.META.get('REMOTE_ADDR', None)
             new_comment.content_type = get_object_or_404(ContentType, id = int(content_type))

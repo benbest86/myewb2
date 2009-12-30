@@ -26,8 +26,7 @@ import os.path
 admin.autodiscover()
 
 urlpatterns = patterns('',
-#    url(r'^$', direct_to_template, {"template": "homepage.html"}, name="home"),
-    url(r'^$', 'group_topics.views.topics', name="home"),
+    url(r'^$', 'group_topics.views.topics', {'template_name': 'frontpage.html'}, name="home"),
 
     (r'^volunteering/', include('volunteering.urls')),
 

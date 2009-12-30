@@ -3,26 +3,126 @@
 {% load threadedcommentstags %}
 {% load extra_tagging_tags %}
 {% load group_tags %}
+{% load attachments_tags %}
+{% load helpers %}
 
-<div class="topic clearfix">
-    <div class="task-meta">
-        <div class="avatar">{% avatar topic.creator 40 %}</div>
-        <div class="details"><a href="{{ topic.creator.get_profile.get_absolute_url }}">{{ topic.creator }}</a></div>
-        <div class="created">{{ topic.created|date }}</div>
-    </div>
-    <div class="bulk">
-        {% if not group %}<div class="topic_group"><a href="{% groupurl topic_list topic.group %}">{{topic.group}}</a></div>{% endif %}
-        <h2><a href="{{ topic.get_absolute_url }}">{{ topic.title }}</a></h2>
-        <div class="body">{{ topic.body|safe }}</div>
-        {% get_comment_count for topic as comment_count %}
-        {% if comment_count %}
-            <div class="comment_stats">
-                {{ comment_count }} comment{{ comment_count|pluralize }}
-                {% blocktrans with topic.modified|date as topic_modified %}
-                (most recent: {{ topic_modified }})
-                {% endblocktrans %}
-            </div>
+<div class="post">
+	<div class="postheader" style="position: relative;"> <!-- header row -->
+		
+		{# is there a more efficient way than calling get_attachments_for ? #}
+		{# TODO: display the icon if any replies have an attachment, too #}
+        {% get_attachments_for topic as "attachments" %}
+        {% if attachments.count %}
+		<a href="{{ topic.get_absolute_url }}"><img src="{{ STATIC_URL }}images/post_icons/paperclip.gif" style="float: right; margin: -5px 10px 0 0; padding: 0;" border="0"/></a>
+		{% endif %}
+
+		<div style="float: right; margin-top: -8px; margin-right: 15px; font-size: 10px; font-weight: normal; text-align: right; width: 150px;">
+			{% get_comment_count for topic as num_comments %}
+            {% get_latest_comments 1 as latest %}
+            
+			{% if topic.num_whiteboard_edits %}
+    			<a href="{{ topic.get_absolute_url }}" style="float: right; margin-top: 3px; margin-left: 10px; padding: 0;" border="0"><img src="{{ STATIC_URL }}images/post_icons/whiteboard.gif" border="0"/></a>
+    		{% endif %}
+
+			{% if num_comments %}
+				{% ifequal num_comments 1 %}
+					<a href="{{ topic.get_absolute_url }}" style="color: white;" class="nodeco">1 reply</a>
+				{% else %}
+					<a href="{{ topic.get_absolute_url }}" style="color: white;" class="nodeco">{{ num_comments }} replies</a>
+				{% endifequal %}
+				
+				<em>{% isnewer latest.0.date_submitted user.get_profile.previous_login %}</em>
+		        
+				{# TODO: show how *many* new replies? #}
+			{% else %}
+					<a href="{{ topic.get_absolute_url }}" style="color: white;" class="nodeco">no replies</a>
+			{% endif %}
+			<br/>
+
+			{% if topic.num_whiteboard_edits %}
+ 				<a href="{{ topic.get_absolute_url }}" style="color: white;" class="nodeco">{{topic.num_whiteboard_edits}} whiteboard edits</a>
+            {% else %}
+ 				<a href="{{ topic.get_absolute_url }}" style="color: white;" class="nodeco">no whiteboard edits</a>
+			{% endif %}
+		</div>
+		
+		{% if topic.send_as_email %}
+			<a href="{{ topic.get_absolute_url }}"><img src="{{ STATIC_URL }}images/post_icons/envelope.gif"
+			style="float: left; margin-right: 5px; margin-top: 0; padding: 0;" border="0" title="this post was sent as an email"/></a>
+		{% endif %} 
+		
+		<a href="{{ topic.get_absolute_url }}" class="postheaderlink">{{ topic.title }}</a>
+
+	</div>
+
+	<div class="postsubheader"> <!-- stat row -->
+		<table width="100%" style="margin:0; padding: 0;">
+			<tr>
+				<td>By <a href="{% url profile_detail topic.creator.username %}">{{ topic.creator }}</a>, {{ topic.created|date }}</td>
+				<td align="right" width="330">
+				    <a href="{% groupurl topic_list topic.group %}">{{ topic.group }}</a>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+	<div class="postcontent" style="width: 98%"> <!-- main row -->
+
+		<a href="{% url profile_detail topic.creator.username %}">
+		    {# {% avatar topic.creator 40 %} #}
+		    <img src="{% avatar_url topic.creator 40 %}" style="border: 1px solid #CCC; float:right; margin: 10px; margin-left:14px; padding:5px;" title="{{topic.creator}}" alt="{{topic.creator}}"/>
+		</a>
+
+        {{ topic.intro|safe }}
+        
+        {% if topic.intro_has_more %}
+            <em>(more inside)</em>
         {% endif %}
-        <p>{% show_tags_for topic %}</p>
-    </div>
+		
+		<br style="clear:both; height: 1px; line-height: 1px;" />
+	
+		<table width="100%" style="margin:0; padding: 0; margin-top: 6px;"> <!-- tags and drill-in link table -->
+			<tr>
+			<td align="right" valign="top" colspan="2" style="font-size: 10px; padding-right: 10px;">
+		        {% if num_comments %}
+					Latest reply by <a href="{% url profile_detail latest.0.user.username %}" class="nodeco">{{ latest.0.user }}</a>, {{ latest.0.date_submitted|date }} 
+
+                    {% if topic.num_whiteboard_edits %}<br/>{% endif %}
+				{% endif %}
+					
+		        {% if topic.num_whiteboard_edits %}
+		            Lastest whiteboard edit by <a href="{% url profile_detail topic.whiteboard.latest_changeset.editor.username %}">{{ topic.whiteboard.latest_changeset.editor }}</a>, {{ topic.whiteboard.latest_changeset.modified|date }}
+		        {% endif %}
+		    </td>
+    		</tr>
+
+    		<tr>
+		    <td valign="top" style="padding-left: 15px; font-size: 10px;">
+				
+				{% comment %}
+				### TODO: implement watch-lists...
+            		#if(!$isGuest)
+    			#if($user.hasFlagged($post))
+    				<a href="#" onclick="return togglePostFlag('$base/actions/UnFlagPost/$post.id', this, '$base/home/FlaggedPosts', 'removed from watch list')"  class="more">[remove from watch-list]</a>
+    			#else
+    				<a href="#" onclick="return togglePostFlag('$base/actions/FlagPost/$post.id', this, '$base/home/FlaggedPosts', 'added to watch list')"  class="more">[add to watch-list]</a>
+    			#end
+        			#end
+			
+			    {% endcomment %}
+
+                {% show_tags_for topic %}
+		    </td>
+
+			<td align="right" valign="top" width="300" style="font-size: 10px; padding-right: 10px;">
+				<a href="{{ topic.get_absolute_url }}" class="more">read more and reply &raquo;</a>
+			</td>
+    		</tr>
+
+		</table> <!-- end tags and drill-in link table -->	
+
+
+	</div>
+
 </div>
+

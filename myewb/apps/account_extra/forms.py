@@ -70,6 +70,12 @@ class EmailLoginForm(forms.Form):
             
             # update stats
             self.user.get_profile().login_count += 1
+            
+            if self.user.get_profile().current_login == None:
+                self.user.get_profile().previous_login = datetime.now()
+            else:
+                self.user.get_profile().previous_login = self.user.get_profile().current_login
+            
             self.user.get_profile().current_login = datetime.now()
             self.user.get_profile().save()
             
