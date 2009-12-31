@@ -17,7 +17,7 @@ register = template.Library()
 
 def show_profile(user):
     return {"user": user}
-register.inclusion_tag("profile_item.html")(show_profile)
+register.inclusion_tag("profiles/profile_item.html")(show_profile)
 
 def clear_search_url(request):
     getvars = request.GET.copy()
