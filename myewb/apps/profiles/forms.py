@@ -137,7 +137,10 @@ class UserSelectionInput(forms.MultipleHiddenInput):
         c = Context({'users': users, 'field_name': name})
         return mark_safe(t.render(c))
         
+class UserField(forms.Field):
+    widget = UserSelectionInput
+        
 class SampleUserSearchForm(forms.Form):
-    to = forms.Field(widget=UserSelectionInput(), required=False)
-    cc = forms.Field(widget=UserSelectionInput(), required=False)
-    bcc = forms.Field(widget=UserSelectionInput(), required=False)
+    to = UserField(required=False)
+    cc = UserField(required=False)
+    bcc = UserField(required=False)

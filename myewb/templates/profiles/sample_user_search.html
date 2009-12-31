@@ -9,13 +9,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% load extra_tagging_tags %}
 {% load profile_tags %}
 {% load uni_form %}
-
 {% block head_title %}{% blocktrans %}Sample Usage of AJAX User Search{% endblocktrans %}{% endblock %}
-
-{% block extra_head %}
-<script type="text/javascript" src="{{ STATIC_URL }}js/user_selection.js"></script>
-<link rel="stylesheet" href="{{ STATIC_URL }}css/user_selection.css" />
-{% endblock %}
 
 {% block subnav %}
 {% if user.is_authenticated %}
@@ -26,12 +20,16 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% endif %}
 {% endblock %}
 
+{% block extra_head %}
+{{ form.media }}
+{% endblock %}
+
 {% block body %}
     <h2>Sample Usage of AJAX User Search</h2>
     
     {% if results %}
     <div id="selected_user_results" style="border: solid 2px black; padding: 8px;">
-        The following users were successfully selected on the previous page:
+        The following users were successfully selected on the previous page:<br/>
         <b>To:</b>
         <ul>
         {% for sel_user in to_users %}
@@ -57,32 +55,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
     
     <form class="uniForm" id="search-users" method="POST" action="{% url profile_sample_user_search %}">
     	<fieldset class="inlineLabels">
-    	    <div class="userSelection" id="usi_to">
-    	        <span>To:</span>    	        
-    	        <span class="usi-add" id="usi_add_to"><a href="#" class="usi-add-link" id="usi-add-link-to">+</a></span>
-    	        
-    	        <div class="usi-search" id="usi_search_to">
-                    {% show_user_search "to" %}
-                </div>
-    	    </div>    	    
-    	    
-    	    <div class="userSelection" id="usi_cc">
-    	        <span>Cc:</span>    	        
-    	        <span class="usi-add" id="usi_add_cc"><a href="#" class="usi-add-link" id="usi-add-link-cc">+</a></span>
-
-    	        <div class="usi-search" id="usi_search_cc">
-                    {% show_user_search "cc" %}
-                </div>
-    	    </div>
-    	    
-    	    <div class="userSelection" id="usi_bcc">
-    	        <span>Bcc:</span>    	        
-    	        <span class="usi-add" id="usi_add_bcc"><a href="#" class="usi-add-link" id="usi-add-link-bcc">+</a></span>
-
-    	        <div class="usi-search" id="usi_search_bcc">
-                    {% show_user_search "bcc" %}
-                </div>
-    	    </div>
+    	    {{ form|as_uni_form }}
     	    
     		<div class="form_block">
             <input type="hidden" name="action" value="submit" />

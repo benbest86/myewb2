@@ -476,8 +476,6 @@ def user_search(request):
     chapter = request.POST.get('chapter', '')
     chapters = Network.objects.filter(chapter_info__isnull=False)
     
-    # form = UserSearchForm(first_name=first_name, last_name=last_name, chapter=chapter, chapters=chapters)
-    
     if first_name or last_name or chapter:
         users = User.objects.filter(first_name__icontains=first_name, last_name__icontains=last_name)
         if not chapter == 'none':
@@ -492,17 +490,6 @@ def user_search(request):
                     'users': users,
                     'field': field
                 }, context_instance=RequestContext(request))
-    # else:
-    #     return render_to_response(
-    #             'profiles/user_search.html', 
-    #             {
-    #                 'form': form, 
-    #                 'first_name': first_name, 
-    #                 'last_name': last_name, 
-    #                 'chapter': chapter, 
-    #                 'chapters': chapters, 
-    #                 'users': users
-    #             }, context_instance=RequestContext(request))
     
 def usernames_to_users(usernames):
     users = []
@@ -510,31 +497,8 @@ def usernames_to_users(usernames):
         cur_user = get_object_or_404(User, username=username)
         users.append(cur_user)
     return users
-                
+
 def sample_user_search(request):
-    selected_user = None
-    if request.method == 'POST':
-        to_usernames = request.POST.getlist('selected-to')        
-        cc_usernames = request.POST.getlist('selected-cc')        
-        bcc_usernames = request.POST.getlist('selected-bcc')
-        
-        to_users = usernames_to_users(to_usernames)
-        cc_users = usernames_to_users(cc_usernames)
-        bcc_users = usernames_to_users(bcc_usernames)
-        
-        return render_to_response(
-                'profiles/sample_user_search.html', 
-                {
-                    'results': True,
-                    'to_users': to_users,
-                    'cc_users': cc_users,
-                    'bcc_users': bcc_users
-                }, 
-                context_instance=RequestContext(request))
-    else:
-        return render_to_response('profiles/sample_user_search.html', {}, context_instance=RequestContext(request))
-        
-def sample_user_search_2(request):
     form = SampleUserSearchForm(request.POST)
     
     if request.method == 'POST':
@@ -547,7 +511,7 @@ def sample_user_search_2(request):
         bcc_users = usernames_to_users(bcc_usernames)
         
         return render_to_response(
-                'profiles/sample_user_search_2.html', 
+                'profiles/sample_user_search.html', 
                 { 
                     'form': form,
                     'results': True,
@@ -558,7 +522,7 @@ def sample_user_search_2(request):
                 context_instance=RequestContext(request))
     else:
         return render_to_response(
-                'profiles/sample_user_search_2.html', 
+                'profiles/sample_user_search.html', 
                 { 
                     'form': form
                 }, 

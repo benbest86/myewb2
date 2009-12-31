@@ -16,7 +16,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
         <a href="{% url profile_detail result_user.username %}">{{ result_user.first_name }} {{ result_user.last_name }} ({{ result_user.username }})</a> - <a class="userSearchChoice" id="usr-{{ field }}-{{ result_user.username}}" href="#">Select</a>{# hyphens required for JS to work #}
         {% if result_user.get_profile.chapters %}
         <br/>
-        <small>({% for chapter in result_user.get_profile.chapters %}{{ chapter }}{% if not forloop.first %}, {% endif %}{% endfor %})</small>
+        <small>({% for chapter in result_user.get_profile.chapters %}{% if not forloop.first %}, {% endif %}{{ chapter }}{% endfor %})</small>
         {% endif %}
     </li>
     {% endfor %}
