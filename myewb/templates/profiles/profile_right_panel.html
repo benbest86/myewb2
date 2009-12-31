@@ -9,34 +9,37 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 
 {# should probably pull this CSS stuff out into the css file... #}
 <div style="padding-bottom: 15px;">
-	<h2 style="margin-bottom: 0px; padding-bottom: 0px;">{% trans "Find other people" %}</h2>
+	<strong>{% trans "Find other people" %}</strong><br/>
 	{% show_profile_search "" %}
 </div>
 
-{% if is_me %}
-	{% if renew %}
-		<div class="membership">
-			<a href="{% url profile_pay_membership other_user %}">Pay my membership fee</a>
-			<br/><br/>
-		</div>
-	{% endif %}
-
-	<div class="groups">
-        <h2>{% trans "Your Groups" %}</h2>
-        {% if other_user.basegroup_set.all %}
-			<ul>
+{% if is_me or is_friend or user.is_staff %}
+    {% if other_user.basegroup_set.all %}
+    	<div class="groups">
+    	    {% if is_me %}
+                <strong>{% trans "My Groups" %}</strong>
+            {% else %}
+    	        <strong>{% blocktrans %}{{ other_user }}'s Groups{% endblocktrans %}</strong>
+            {% endif %}
+            <br/>
+                        
             {% for group in other_user.basegroup_set.all %}
-                <li><a href="{% url group_detail group.slug %}">{{ group.name }}</a></li>
+                <a href="{% url group_detail group.slug %}">{{ group.name }}</a><br/>
             {% endfor %}
-			</ul>
-        {% else %}
-			{% url groups_index as groups_url %}
-            <p>{% blocktrans %}You are not yet a member of any <a href="{{ groups_url }}">groups</a>.{% endblocktrans %}</p>
-        {% endif %}
-    </div>
-    <div class="friends">
-        <h2>{% trans "Your Friends" %}</h2>
-        {% if other_friends %}
+        </div>
+    {% endif %}
+    
+    {% comment %}
+    ehh.... leave this out until we figure out this whole friending thing/
+    
+    {% if other_friends %}
+        <div class="friends">
+            {% if is_me %}
+                <h2>{% trans "Your Friends" %}</h2>
+            {% else %}
+    	        <h2>{% blocktrans %}{{ other_user }}'s Friends{% endblocktrans %}</h2>
+            {% endif %}
+                
             <table width="100%">
                 {% for friendship in other_friends %}
                 {% if forloop.counter0|divisibleby:"3" %}<tr>{% endif %}
@@ -48,46 +51,9 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
                 {% endfor %}
                 {% if other_friends|length|divisibleby:"3" %}{% else %}</tr>{% endif %}
             </table>
-        {% else %}
-            <p>{% blocktrans %}None. You should look at the list of <a href="/profiles/">profiles</a> and see if there's anyone you know.{% endblocktrans %}</p>
-        {% endif %}
-    </div>
-{% else %}
-	{# TODO: is chapter exec?? #}
-	{% if user.is_staff and renew %}
-		<div class="membership">
-			<a href="{% url profile_pay_membership other_user %}">Make regular member</a><br/>
-			(only click if they have paid their fee in cash)
-			<br/><br/>
-		</div>
-	{% endif %}
-
-	{% if is_friend or user.is_staff %}
-		<div class="groups">
-	        <h2>{% blocktrans %}{{ other_user }}'s Groups{% endblocktrans %}</h2>
-	        {% if other_user.basegroup_set.all %}
-				<ul>
-	            {% for group in other_user.basegroup_set.all %}
-	                <li><a href="{% url group_detail group.slug %}">{{ group.name }}</a></li>
-	            {% endfor %}
-				</ul>
-	        {% else %}
-	            <p>{% blocktrans %}Not yet a member of any groups.{% endblocktrans %}</p>
-	        {% endif %}
-	    </div>
-	    <div class="friends">
-	        <h2>{% blocktrans %}{{ other_user }}'s Friends{% endblocktrans %}</h2>
-	        <table width="100%">
-	            {% for friendship in other_friends %}
-	                {% if forloop.counter0|divisibleby:"3" %}<tr>{% endif %}
-	                <td>
-	                    <div class="avatar">{% avatar friendship.friend 40 %}</div>
-	                    <div class="details"><a href="{% url profile_detail friendship.friend.username %}" title="{{ friendship.friend.username }}">{{ friendship.friend.username }}</a></div>
-	                </td>
-	                {% if forloop.counter0|add:"1"|divisibleby:"3" %}</tr>{% endif %}
-	            {% endfor %}
-	        {% if other_friends|length|divisibleby:"3" %}{% else %}</tr>{% endif %}
-	        </table>
-	    </div>
-	{% endif %}
+        </div>
+    {% endif %}
+    {% endcomment %}
+    
 {% endif %}
+

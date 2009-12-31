@@ -27,13 +27,6 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
     </div>
     <br/>
     
-    {% if other_user.get_profile.about %}
-        <p class="profile_info">
-            <b>{% trans "About" %}</b>:<br/>
-            {{ other_user.get_profile.about }}
-        </p>
-    {% endif %}
-        
     <p class="profile_info" style="text-align: center;">
 	    Account created {{ other_user.date_joined|timesince }} ago
 		<br/>
@@ -46,6 +39,13 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 		</a>
 	</p>
 
+    {% if other_user.get_profile.about %}
+        <h2>{% trans "About" %}</h2>
+        <p class="profile_info">
+            {{ other_user.get_profile.about }}
+        </p>
+    {% endif %}
+        
     {# TODO: don't use user.is_staff #}
 	{% if is_me or is_friend or user.is_staff %}
 		{% if regular %}regular member, expiring on {{ other_user.get_profile.membership_expiry }}{% endif %}
@@ -275,20 +275,28 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
             <a href="{% url profile_edit %}" rel="facebox">update profile info</a><br/>
             change password<br/>
             <a href="{% url avatar_change %}">update picture</a><br/>
-            delete picture<br/>
+            <br/>
+            
+	        {% if renew %}
+	            <a href="{% url profile_pay_membership other_user %}">Pay my membership fee</a><br/>
+	        {% endif %}
         </div>
+    {% else %}
+        {% if user.is_staff %}
+            <div class="toolbarheader bkgd">{% trans "Actions" %}</div>
+            <div class="toolbarcontent">
+            	{# TODO: is chapter exec?? #}
+            	{% if renew %}
+    			    <a href="{% url profile_pay_membership other_user %}">Make regular member</a><br/>
+    			    (only click if they have paid their fee in cash)
+            	{% endif %}
+            </div>
+        {% endif %}
     {% endif %}
     
 {% endblock %}
 
 {% block toolbar_right %}
-    <style type="text/css" media="all">
-        #toolbarcolumn_right
-        {
-            width: 300px;
-        }
-    </style>
-
     <div class="toolbarheader bkgd">{% trans "Right Toolbar" %}</div>
     <div class="toolbarcontent">
         {% include "profiles/profile_right_panel.html" %}
