@@ -1,0 +1,29 @@
+{% load i18n %}
+{% load threadedcommentstags %}
+{% load attachablecomments_tags %}
+{% load attachments_tags %}
+{% load icon_tags %}
+{% load filesize_tags %}
+
+{% get_threaded_comment_tree for object as responses %}
+
+{% for response in responses %}
+    <hr/>
+    <p>Reply by {{ response.user.get_full_name }}, {{ response.date_submitted|date }}</p>
+
+    <div class="postcontent"> <!-- main row -->
+        {{ response.comment|safe }}
+    </div>
+
+    {% get_attachments_for response as "attachments" %}
+    {% if attachments.count %}
+        <p>
+            attached files:<br/>
+            {% for att in attachments %}
+                {{ att.filename }} 
+                ({% filesize_for_filename att.attachment_file.name %} ) <br/>
+            {% endfor %}
+        </p>
+    {% endif %}
+
+{% endfor %}

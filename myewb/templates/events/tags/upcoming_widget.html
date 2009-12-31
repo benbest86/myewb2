@@ -1,0 +1,75 @@
+
+<div id="calendar" style="font-size: 9px;">
+{% for event in events %}
+  <p>{{event}}</p>
+{% endfor %}
+</div>
+<div id="hidden-helper" style="display: none;">
+<div id="hidden-helper2">
+{% for e in events %}{{e.start|date:"Y/m/d"}}{% if not forloop.last %}
+{% endif %}{% endfor %}</div>
+</div>
+
+<div id="loading" style="height: 1; width: 1; overflow: visible; position: relative; top: 0.8em; left: 2em; display: none;">loading...</div>
+<div id="detail" style="margin-left: 18.5em; padding: 0.2em; display: none;" class="ui-widget ui-widget-content ui-corner-all">
+<div id="detail-title" class="ui-widget-header ui-corner-all" style="padding: 0.2em;"></div>
+<div id="detail-content" style="padding-top: 0.5em;"></div>
+</div>
+
+  <link type="text/css" href="{{STATIC_URL}}css/jquery-ui.css" rel="stylesheet" />
+  <script type="text/javascript" src="{{STATIC_URL}}js/jquery-ui.js"></script> 
+  <script type="text/javascript" src="{{STATIC_URL}}js/ui.datepicker.js"></script>
+  
+  <style type="text/css" media="all">
+    div.ui-datepicker-header { display: none; }
+  </style>
+
+  <script type="text/javascript">
+  $(document).ready(function(){
+  
+    $("div#calendar").html('');
+
+	function checkEvents(date){
+		var events = $('#hidden-helper2').html().split("\n");
+		
+		{# probably efficiency gains in here somewhere! #}
+		{#  (but at 3AM, I'll go for functional)  #}
+		for (i in events)
+			if (events[i] == $.datepicker.formatDate("yy/mm/dd", date))
+			{
+	           	var a = new Array(true, '');
+	            return a;
+	        }
+   	    var a = new Array(false, '');
+       	return a;
+    }
+
+    var datepicker = $("div#calendar").datepicker({
+        dateFormat: 'yy/mm/dd',
+        hideIfNoPrevNext: true,
+        beforeShowDay: checkEvents,
+        onSelect: function(dateText, inst) {
+            window.location="{% url events_all %}";
+        }
+{% comment %}
+        onSelect: function(dateText, inst) {
+        	var working = true;
+            $('#detail').slideUp('normal', function() {
+	            $('#loading').show();
+            });
+            $('#detail-content').load('{% link_to_events_for parent "css_class" 1 %}' + dateText + '/' + ' #for_day',
+            						  null,
+              						  function() {
+						                  $('#detail').stop(true, true);
+               						  	  $('#loading').hide();
+						                  $('#detail-title').html("Events for " + dateText);
+						                  $('#detail').slideDown();
+									  });
+        }
+{% endcomment %}
+    });
+  });
+  </script>
+
+
+{# {% endblock %} #}

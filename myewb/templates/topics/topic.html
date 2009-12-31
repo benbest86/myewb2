@@ -14,36 +14,77 @@
 {% block head_title %}{% trans "Post" %} : {{ topic.title }}{% endblock %}
 
 {% block body %}
-    <p><a href="{{ topic.group.get_absolute_url }}">{{ topic.group }}</a> &gt; <a href="{% groupurl topic_list topic.group %}">{% trans "Posts" %}</a></p>
-    
-    <ul class="responses">
-        <li class="odd thread-0 clearfix">
-            <div class="meta">
-                <div class="avatar">{% avatar topic.creator 40 %}</div>
-                <div class="details"><a href="{% url profile_detail topic.creator.username %}">{{ topic.creator }}</a></div>
-                {{ topic.created|date }}
-            </div>
-            <div class="bulk">
-                <h1>{{ topic.title }}</h1>
-                <div class="body">{{ topic.body|safe }}</div>
-                
-                {% get_attachments_for topic as "attachments" %}
+
+<div class="post">
+	<div class="postheader" style="position: relative;"> <!-- header row -->
+		
+        {% get_attachments_for topic as "attachments" %}
+        {% if attachments.count %}
+		<a href="{{ topic.get_absolute_url }}"><img src="{{ STATIC_URL }}images/post_icons/paperclip.gif" style="float: right; margin: -5px 10px 0 0; padding: 0;" border="0"/></a>
+		{% endif %}
+
+		<div style="float: right; margin-top: -8px; margin-right: 15px; font-size: 10px; font-weight: normal; text-align: right; width: 150px;">
+			{% if topic.num_whiteboard_edits %}
+    			<a href="{{ topic.get_absolute_url }}" style="float: right; margin-top: 3px; margin-left: 10px; padding: 0;" border="0"><img src="{{ STATIC_URL }}images/post_icons/whiteboard.gif" border="0"/></a>
+    		{% endif %}
+		</div>
+		
+		{% if topic.send_as_email %}
+			<a href="{{ topic.get_absolute_url }}"><img src="{{ STATIC_URL }}images/post_icons/envelope.gif"
+			style="float: left; margin-right: 5px; margin-top: 0; padding: 0;" border="0" title="this post was sent as an email"/></a>
+		{% endif %} 
+		
+		<a href="{{ topic.get_absolute_url }}" class="postheaderlink">{{ topic.title }}</a>
+
+	</div>
+
+	<div class="postsubheader"> <!-- stat row -->
+		<table width="100%" style="margin:0; padding: 0;">
+			<tr>
+				<td>By <a href="{% url profile_detail topic.creator.username %}">{{ topic.creator }}</a>, {{ topic.created|date }}</td>
+				<td align="right" width="50%">
+				    <a href="{% groupurl topic_list topic.group %}">{{ topic.group }}</a>
+				</td>
+			</tr>
+		</table>
+	</div>
+
+	<div class="postcontent"> <!-- main row -->
+	
+	    <div align="right" style="font-size: 1-px; margin-bottom: 15px;">
+	        printable verison:
+	        <a href="{% url topic_printable_with_replies topic.id %}" class="more">with replies</a> |
+	        <a href="{% url topic_printable topic.id %}" class="more">without replies</a>
+	    </div>
+
+		<a href="{% url profile_detail topic.creator.username %}">
+		    {# {% avatar topic.creator 40 %} #}
+		    <img src="{% avatar_url topic.creator 40 %}" style="border: 1px solid #CCC; float:right; margin: 10px; margin-left:14px; padding:5px;" title="{{topic.creator}}" alt="{{topic.creator}}"/>
+		</a>
+
+        {{ topic.body|safe }}
+        
+		<br style="clear:both; height: 1px; line-height: 1px;" />
+	
+		<table width="100%" style="margin:0; padding: 0; margin-top: 6px;"> <!-- tags and drill-in link table -->
+    		<tr>
+		    <td valign="top" style="padding-left: 15px; font-size: 10px;">
                 {% if attachments.count %}
-                    <div class="attachments">
-                        <div class="attachmentsTitle">Attachments</div>
-                        <ul>
+                    attached files:
+                    <ul style="margin-top: 0px; margin-bottom: 5px; margin-left: 25px;">
                         {% for att in attachments %}
                             <li class="attachmentItem">
                                 {% icon_for_filename att.filename %} <a href="{{ STATIC_URL }}{{ att.attachment_file.name }}">{{ att.filename }}</a>
                                 {% filesize_for_filename att.attachment_file.name %} 
                             </li>
                         {% endfor %}
-                        </ul>
-                    </div>
+                    </ul>
                 {% endif %}
-            
-                <p>{% show_tags_for topic %}</p>
-                {% ifequal user topic.creator %}
+		    </td>
+
+			<td align="right" valign="top" width="300" style="font-size: 10px; padding-right: 10px;">
+				{# TODO: toggle watchlists, hot list, etc, etc #}
+                {% if grpadmin %}
                 <form class="uniForm" method="POST" action="{{ request.path }}delete/">
                     <fieldset class="inlineLabels">
                         <div class="form_block">
@@ -52,27 +93,30 @@
                         </div>
                     </fieldset>
                 </form>
-                {% if not edit %}<p><a href="{{ request.path }}edit/">Edit Post</a></p>{% endif %}
-                {% endifequal %}
-            </div>
-        </li>
-    </ul>
+                
+                {# <p><a href="{{ request.path }}edit/">Edit Post</a></p> #}
+                
+                {% endif %}
+			</td>
+    		</tr>
 
-	{% show_whiteboard topic.whiteboard topic.group member %}
+            <tr>
+			<td align="left" valign="top" colspan="2" style="font-size: 10px; padding-right: 10px;">
+                {% show_tags_for topic %}
+			</td>
+			</tr>
+			
+		</table> <!-- end tags and drill-in link table -->	
+
+	</div>
+</div>
+
+<p>
+{% show_whiteboard topic.whiteboard topic.group member %}
+</p>
     
-    {% if edit %}
-        <h2>Edit</h2>
-        <form class="uniForm" method="post" action="{{ request.path }}">
-            <fieldset class="inlineLabels">
-                <div class="form_block">
-                    <textarea id="id_body" class="tinymce" name="body">{{ topic.body }}</textarea>
-                    <input type="submit" name="edit" value="Edit!" />
-                </div>
-            </fieldset>
-        </form>
-    {% else %}
-        {% attachablecomments topic %}
-    {% endif %}
+{% attachablecomments topic %}
+
 {% endblock %}
 
 {% block extra_body %}

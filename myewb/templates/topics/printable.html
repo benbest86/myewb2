@@ -1,0 +1,42 @@
+{% load i18n %}
+{% load extra_tagging_tags %}
+{% load attachments_tags %}
+{% load whiteboard_tags %}
+{% load filesize_tags %}
+
+<h1>myEWB</h1>
+
+<h2>{{ topic.title }}</h2>
+
+<p>
+By {{ topic.creator }}, {{ topic.created|date }}<br/>
+Posted to {{ topic.group }}
+</p>
+
+<div class="postcontent"> <!-- main row -->
+    {{ topic.body|safe }}
+</div>
+        
+{% get_attachments_for topic as "attachments" %}
+{% if attachments.count %}
+    <p>
+    attached files:<br/>
+    {% for att in attachments %}
+        {{ att.filename }} 
+        ({% filesize_for_filename att.attachment_file.name %} ) <br/>
+    {% endfor %}
+    </p>
+{% endif %}
+
+<p>
+{% show_tags_for topic %}
+</p>
+	
+{% comment %}
+TODO: implement a "show_whiteboard_printable" tag and call it here
+<p>
+{% show_whiteboard topic.whiteboard topic.group member %}
+</p>
+{% endcomment %}
+
+

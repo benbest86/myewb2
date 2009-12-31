@@ -6,6 +6,8 @@ from datetime import datetime
 from django.contrib.contenttypes.models import ContentType
 from siteutils import helpers
 from events.models import Event
+from events.views import timebound, filter_visibility
+import settings
 
 @register.inclusion_tag('events/tags/add.html')
 def add_event_to(model_instance, css_id):
@@ -80,3 +82,15 @@ def events_upcoming(user, model_instance):
     events = events[:5]  # TODO: non-hard-code?
 
     return {"events": events}
+    
+@register.inclusion_tag('events/tags/upcoming_widget.html')
+def events_widget(user):
+    ''' Show upcoming events widget '''
+    
+    events = Event.objects.all()
+    events = timebound(events)
+    events = filter_visibility(events, user)
+
+    return {"STATIC_URL": settings.STATIC_URL,
+            "events": events}    
+

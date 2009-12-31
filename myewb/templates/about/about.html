@@ -1,0 +1,41 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "About myEWB" %}{% endblock %}
+
+{% block body %}
+    <h1>{% trans "About myEWB" %}</h1>
+
+    {% blocktrans %}
+    
+    <p>myEWB is Engineers Without Borders Canada's online community!
+    We envision this online community as a place where EWB members and non-members alike can connect to discuss human development and EWB's operations.
+    EWB is a large, distributed virtual organization and myEWB can help to keep us connected and working together effectively.</p>
+
+    <p>myEWB is also EWB's chapter membership management system, providing EWB chapters with automatic mailing lists and other useful tools.</p>
+
+    <p>The software powering myEWB is also an open-source project: see our 
+    <a href="http://office.ewb.ca/fastrac/myewb2">project page</a> and
+    <a href="http://github.com/ewbcanada/myewb2">GitHub repository</a>.
+    myEWB is written in Python, using the <a href="http://djangoproject.com">django</a>
+    and <a href="http://pinaxproject.com">pinax</a> projects.
+    The old version of myEWB (myEWB1 or OpenMyEWB, written in Java) is also available 
+    <a href="http://nicolas.kruchten.com/openmyewb.html">here</a>.
+    </p>
+    
+    {% endblocktrans %}
+	
+{% comment %}
+    <p>Here's a quick list of what you can do here:</p>
+        <ul>
+            <li><span><a href="{% url frontpage %}">Read through past and current myEWB discussions &raquo;</a></span></li>
+            <li><span><a href="$base/home/NewPost">Start a new discussion &raquo;</a></span></li>
+            <li><span><a href="$base/profile/Profile">Manage your myEWB profile &raquo;</a></span></li>
+            <li><span><a href="$base/chapter/Chapter">Get involved in the EWB chapter system &raquo;</a></span></li>
+            <li><span><a href="$base/mailing/Mailing">Sign up to a variety of myEWB mailing lists &raquo;</a></span></li>
+        </ul>
+{% endcomment %}
+
+{% endblock %}    
+

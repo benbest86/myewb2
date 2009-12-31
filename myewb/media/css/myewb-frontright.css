@@ -1,0 +1,46 @@
+#toolbarcolumn_right
+{
+        width: 300px;
+        float: right;
+}
+
+.toolbarheader_right
+{
+        /* background-repeat:no-repeat;
+        background-position:top left;
+        background-image:url("$base/images/${area}_l_long.gif"); */
+        background-color: #001f65;
+        color: white;
+        font-weight: bold;
+        padding:3px;
+        padding-left: 9px;
+        font-size: 13px;
+
+}
+
+.toolbarheader_right a
+{
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.toolbarcontent_right
+{
+        background-color: #f1f5ff;
+        padding: 6px;
+        padding-bottom: 0px;
+        border: 1px solid white;
+        border-top: 0px;
+        border-left: 1px solid #002BA2;
+}
+
+.toolbarbottom_right
+{
+        background-repeat:no-repeat;
+        background-position:top left;
+        background-image: url("$base/images/${area}_body_bottom.gif");
+        height:5px;
+        overflow:hidden;
+/*      width:300px; */
+        margin-bottom: 12px;
+}

@@ -7,7 +7,6 @@
 
 {% block extra_head_base %}
 		<link rel="SHORTCUT ICON" href="{{ STATIC_URL}}favicon.ico" />
-{#		<link rel="stylesheet" href="{{ STATIC_URL }}css/site_tabs.css" /> #}
 		<link rel="stylesheet" href="{{ STATIC_URL }}pinax/css/topics.css" />
 		<link rel="stylesheet" href="{{ STATIC_URL }}css/social_project.css" />
 		<script type="text/javascript" src="{{ STATIC_URL }}pinax/js/topics.js"></script>
@@ -58,7 +57,7 @@
 <ul class="legal">
 	<li><a href="{% url terms %}">Terms of Use</a></li>
 	<li><a href="{% url privacy %}">Privacy Policy</a></li>
-    <li>&copy; 2005&ndash;{% now "y" %} <a href="http://www.ewb.ca/">{% trans "Engineers Without Borders (Canada) Organisation" %}</a></li>
+    <li>&copy; 2005&ndash;{% now "y" %} <a href="http://www.ewb.ca/">{% trans "EWB-ISF Canada" %}</a></li>
 	{% if user.is_staff %}<li><a href="/admin/">{% trans "Admin" %}</a></li>{% endif %}
 	{% block locale_switcher %}
 		<li>
