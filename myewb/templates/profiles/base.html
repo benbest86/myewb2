@@ -16,12 +16,13 @@ This file derived from Pinax 0.7.1 (http://pinaxproject.com/), licensed under th
 {% endblock %}
 
 {% block subnav %}
+<ul class="subnav green">
     {% if user.is_authenticated %}
-        <ul>
-            <li><a href="{% url profile_detail user.username %} ">{% trans "Your Profile" %}</a></li>
-            <li><a href="{% url profile_list %} ">{% trans "All Profiles" %}</a></li>
-        </ul>
+        <li><a href="{% url profile_detail user.username %} ">{% trans "Your Profile" %}</a></li>
     {% else %}
-        &nbsp;
+        <li><a href="{% url acct_signup %}">{% trans "Sign Up" %}</a></li>
     {% endif %}
+</ul>
 {% endblock %}
+
+

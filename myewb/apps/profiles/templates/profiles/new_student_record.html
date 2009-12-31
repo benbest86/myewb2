@@ -13,8 +13,9 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% block head_title %}{% blocktrans %}Add student record{% endblocktrans %}{% endblock %}
 
 {% block extra_head %}
- <link type="text/css" href="{{STATIC_URL}}css/jquery-ui.css" rel="stylesheet" />
- <link type="text/css" href="{{STATIC_URL}}css/ui.timepickr.css" rel="stylesheet" />
+ <link rel="stylesheet" href="{{STATIC_URL}}css/jquery-ui.css" rel="stylesheet" />
+ <link rel="stylesheet" href="{{STATIC_URL}}css/ui.timepickr.css" rel="stylesheet" />
+ <link rel="stylesheet" href="{{ STATIC_URL }}css/autocomplete.css" />
 {% endblock %}
 
 {% block body %}
