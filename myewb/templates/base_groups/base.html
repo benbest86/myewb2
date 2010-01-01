@@ -1,13 +1,176 @@
 {% extends "site_base.html" %}
 
 {% load i18n %}
+{% load wiki_tags %}
+{% load pagination_tags %}
+{% load extra_tagging_tags %}
+{% load base_groups_tags %}
+{% load group_tags %}
+{% load topics_tags %}
+{% load whiteboard_tags %}
+{% load events_tags %}
+{% load avatar_tags %}
+{% load threadedcommentstags %}
+{% load pagination_tags %}
+{% load extra_tagging_tags %}
 
 {% block extra_head %}
-<link rel="stylesheet" href="{{ STATIC_URL }}networks/css/networks.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}pinax/css/topics.css" />
 <script type="text/javascript" src="{{ STATIC_URL }}pinax/js/topics.js"></script>
+
 {% endblock %}
 
 {# FIXME: how to choose between communities & networks? #}
 {% block body_class %}communities orange{% endblock %}
 
+{% block body %}
+    <style type="text/css" media="all">
+        .group-subsection { display: none; }
+    </style>
+
+    {% block grouptitle %}
+        <h1>{{ group.name }}</h1>
+    {% endblock %}
+
+    <div id="groupheader">
+        <a href="#" id="show-group-info" class="group-link">{{ group.name }}</a> |
+        <a href="#" id="show-group-posts" class="group-link">Group Posts</a> |
+        <a href="#" id="show-group-events" class="group-link">Upcoming Events</a> |
+        <a href="#" id="show-group-whiteboard" class="group-link">Whiteboard</a>
+    </div>        
+    
+    <div id="group-info" class="group-subsection" style="display: block;">
+        {% block groupbody %}
+            {# OVERRIDE ME! #}
+        {% endblock %}
+    </div>
+
+    <div id="group-posts" class="group-subsection">
+        <h2>{% trans "Discussions" %}{% if group.topics.all.count %} ({{ group.topics.all.count }}){% endif %}</h2>
+
+        {% get_grouptopics_for_group group as topic_queryset %}
+        {% with topic_queryset|slice:":5" as topics %}
+            {% if topics %}
+                {% for topic in topics|slice:":5" %}
+                    {% show_topic topic %}
+                    <br/>
+                {% endfor %}
+                <p><a href="{% groupurl topic_list group %}">{% trans "more..." %}</a></p>
+            {% else %}
+                {% groupurl topic_list group as new_topic_url %}
+                <p>
+                    {% trans "None yet." %}
+                    {% if user.is_authenticated %}<br/><a href="{{ new_topic_url }}">{% trans "Start one..." %}</a>{% endif %}
+                </p>
+            {% endif %}
+        {% endwith %}
+    </div>
+    
+    <div id="group-events" class="group-subsection">
+        <h2>{% trans "Upcoming Events" %}</h2>
+        {% events_upcoming user group %} <br/>
+        <a href="{% link_to_events_for group 'css_class' 1 %}">Go to the {{group}} calendar</a><br/>
+    </div>
+    
+    <div id="group-whiteboard" class="group-subsection">
+        {% show_whiteboard group.whiteboard group member %}
+    </div>
+
+    {% comment %}
+
+    <h2>{% trans "Tweets" %}</h2>
+
+    {% tweet_listing tweets 1 0 %}
+
+    {% if photos %}
+        <h2>{% trans "Group Photo Pool" %}</h2>
+        <div class="thumb-row clearfix">
+            {% for photo in photos %}
+            <div class="gallery-photo-thumb">
+                <a href="/photos/details/{{ photo.photo.id }}/"><img src="{{ photo.photo.get_thumbnail_url }}" alt="{{ photo.photo.title }}"/></a><br />
+                <img src="{{ STATIC_URL }}pinax/images/silk/icons/comment.png" border="0" class="noborder" align="absmiddle" /><a href="/photos/details/{{ photo.photo.id }}/">{% get_comment_count for photo as commentcount %} {% blocktrans %}{{ commentcount }} Comments {% endblocktrans %}</a>
+           </div>
+           {% endfor %}
+       </div>
+    {% endif %}
+    {% endcomment %}
+
+{% endblock %}
+
+{% block toolbar_left %}
+    {% if user.is_authenticated %}
+        <div class="toolbarheader bkgd">{% trans "Membership" %}</div>
+        <div class="toolbarcontent">
+            {% if member %}
+                {% if member.is_accepted %}
+                    {% ifequal user group.creator %}
+                        <p>{% trans "You are the creator of this group so can't leave (yet)." %}</p>
+                    {% else %}
+						<form method="POST" action="{% url network_delete_member group.slug user.username %}">
+                        	<input type="submit" value="{% trans "Leave group" %}" />
+						</form><br/>
+                    {% endifequal %}                        
+                {% endif %}
+                
+                {% if member.is_invited %}
+                    {% trans "You have been invited to join this group. Do you wish to join?" %}<br/>
+                    <form method="POST" action="{% url network_accept_invitation group.slug member.user.username %}">
+                    	<input type="submit" value="{% trans "Join group" %}" />
+        			</form>            			
+					<form method="POST" action="{% url network_delete_member group.slug member.user.username %}">
+                    	<input type="submit" value="{% trans "Decline" %}" />
+					</form><br/>
+                {% endif %}
+                
+                {% if member.is_requested %}
+                    {% trans "You have requested membership in this group and your request is pending." %}<br/>
+                {% endif %}
+                
+            {% else %}
+				<a href="{% url network_new_member group.slug %}">{% trans "Join group" %}</a><br/>
+            {% endif %}
+        </div>        
+    {% endif %}
+{% endblock %}
+
+{% block toolbar_right %}
+    {% if user.is_authenticated %}
+        <div class="toolbarheader bkgd">{% trans "Members" %}</div>
+        <div class="toolbarcontent">
+            <form method="GET" action="{% url network_members_index group.slug %}">
+                <input type="text" name="search" style="width: 150px" value="{{ search_terms }}" />
+                <input type="submit" value="Search" style="margin: 2px 0 0 5px;" />
+            </form>
+            <br/>
+
+            {# TODO: make this a random listing of 10-ish people #}
+            {% for member in group.get_accepted_members %}
+                <div style="float: left; width: 15px; height: 15px;">
+                    {% avatar member.user 15 %}
+                </div>
+                <div style="margin-left: 18px; height: 18px;">
+                    <a href="{% url profile_detail member.user.username %}">{{ member.user.get_profile.name }}</a>
+                </div>
+            {% endfor %}
+            
+            <p><a href="{% url network_members_index group.slug %}">{% trans "Full list" %}</a></p>
+        </div>
+    {% endif %}
+{% endblock %}
+
+{% block extra_body %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.group-link').each(function() {
+                $(this).click(function() {
+                    $('.group-subsection').each(function() {
+                        $(this).slideUp();
+                    });
+                    $('#' + $(this).attr('id').substring(5)).slideDown();
+                    return false;
+                });
+            });
+
+        });
+    </script>
+{% endblock %}

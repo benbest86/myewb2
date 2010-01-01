@@ -21,8 +21,7 @@
     {% endif %}
 {% endspaceless %}{% endblock %}
 
-{% block body %}
-    
+{% block grouptitle %}
     <h1>{% spaceless %}
         {% if group.is_chapter %}
             {{ group.chapter_info.chapter_name }}
@@ -30,7 +29,11 @@
             {{ group.name }}
         {% endif %}
     {% endspaceless %}</h1>
-    ({{ group.slug }})<br/>
+{% endblock %}
+
+{% block groupbody %}
+
+    <p>({{ group.slug }})</p>
             
     {% if group.is_chapter %}
         <p>
@@ -71,8 +74,6 @@
 
     {% endif %}
 
-    {% show_group_content group %}
-
     {% if children.count %}
         <h2>{% trans "Communities" %}</h2>
         
@@ -80,7 +81,7 @@
             <a href="{{ child.get_absolute_url }}">{{ child.name }}</a><br/>
 	    {% endfor %}
     {% endif %}
-        
+
 {% endblock %}
 
 {% block toolbar_left %}
@@ -90,58 +91,25 @@
             link to photo gallery, etc?
         </div>
     {% endif %}
+    
+    {{ block.super }}
 
-    {% if user.is_authenticated %}
-        <div class="toolbarheader bkgd">{% trans "Membership" %}</div>
+	{% if user.is_staff or member.is_admin %}
+        <div class="toolbarheader bkgd">{% trans "Admin Options" %}</div>
         <div class="toolbarcontent">
-            {% if member %}
-                {% if member.is_accepted %}
-                    {% ifequal user group.creator %}
-                        <p>{% trans "You are the creator of this network so can't leave (yet)." %}</p>
-                    {% else %}
-						<form method="POST" action="{% url network_delete_member group.slug user.username %}">
-                        	<input type="submit" value="{% trans "Leave network" %}" />
-						</form><br/>
-                    {% endifequal %}                        
-                {% endif %}
-                
-                {% if member.is_invited %}
-                    {% trans "You have been invited to join this network. Do you wish to join?" %}<br/>
-                    <form method="POST" action="{% url network_accept_invitation group.slug member.user.username %}">
-                    	<input type="submit" value="{% trans "Join network" %}" />
-        			</form>            			
-					<form method="POST" action="{% url network_delete_member group.slug member.user.username %}">
-                    	<input type="submit" value="{% trans "Decline" %}" />
-					</form><br/>
-                {% endif %}
-                
-                {% if member.is_requested %}
-                    {% trans "You have requested membership in this network and your request is pending." %}<br/>
-                {% endif %}
-                
-            {% else %}
-				<a href="{% url network_new_member group.slug %}">{% trans "Join network" %}</a><br/>
+		    <a href="{% url network_new_member group.slug %}">{% trans "Invite another user" %}</a><br/>
+	        <a href="{% url network_bulk_import group.slug %}">{% trans "Email bulk import" %}</a><br/>
+	        <br/>
+	        
+            {% if perms.networks.change %}
+    			<a href="{% url edit_network group.slug %}">{% trans "Edit network details" %}</a><br/><br/>
             {% endif %}
-
-			{% if user.is_staff or member.is_admin %}
-			    <p>
-    				<a href="{% url network_new_member group.slug %}">{% trans "Invite another user" %}</a><br/>
-				    <a href="{% url network_bulk_import group.slug %}">{% trans "Email bulk import" %}</a><br/>
-				</p>
-			{% endif %}
+            
+            {% if user.is_staff and not group.is_chapter %}
+                <a href="{% url new_chapter %}?network={{ group.slug }}">{% trans "Convert to chapter" %}</a><br/>
+            {% endif %}      
         </div>
-    {% endif %}
-
-    <div class="toolbarheader bkgd">{% trans "Actions" %}</div>
-    <div class="toolbarcontent">
-        {% if perms.networks.change %}
-			<a href="{% url edit_network group.slug %}">{% trans "Edit network details" %}</a><br/>
-        {% endif %}
-
-        {% if user.is_staff and not group.is_chapter %}
-            <a href="{% url new_chapter %}?network={{ group.slug }}">{% trans "Convert to chapter" %}</a><br/>
-        {% endif %}      
-    </div>
+	{% endif %}
 {% endblock %}
 
 
@@ -162,27 +130,6 @@
         </div>
     {% endif %}
 
-    {% if user.is_authenticated %}
-        <div class="toolbarheader bkgd">{% trans "Members" %}</div>
-        <div class="toolbarcontent">
-            <form method="GET" action="{% url network_members_index group.slug %}">
-                <input type="text" name="search" style="width: 150px" value="{{ search_terms }}" />
-                <input type="submit" value="Search" style="margin: 2px 0 0 5px;" />
-            </form>
-            <br/>
-
-            {# TODO: make this a random listing of 10-ish people #}
-            {% for member in group.get_accepted_members %}
-                <div style="float: left; width: 15px; height: 15px;">
-                    {% avatar member.user 15 %}
-                </div>
-                <div style="margin-left: 18px; height: 18px;">
-                    <a href="{% url profile_detail member.user.username %}">{{ member.user.get_profile.name }}</a>
-                </div>
-            {% endfor %}
-            
-            <p><a href="{% url network_members_index group.slug %}">{% trans "Full list" %}</a></p>
-        </div>
-    {% endif %}
+    {{ block.super }}
 {% endblock %}
 
