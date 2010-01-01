@@ -13,11 +13,10 @@
 
 <h2>{% trans "Upcoming Events" %}</h2>
 {% events_upcoming user group %} <br/>
-<a href="{% link_to_events_for group 'css_class' 1 %}">See all events for {{group}}</a><br/>
-<a href="{% event_link_add_to group 'css_id' 1 %}">Add event</a>
+<a href="{% link_to_events_for group 'css_class' 1 %}">Go to the {{group}} calendar</a><br/>
 <br/>
 
-<h2>{% trans "Discussion Topics" %}{% if group.topics.all.count %} ({{ group.topics.all.count }}){% endif %}</h2>
+<h2>{% trans "Discussions" %}{% if group.topics.all.count %} ({{ group.topics.all.count }}){% endif %}</h2>
 
 {% get_grouptopics_for_group group as topic_queryset %}
 {% with topic_queryset|slice:":5" as topics %}
@@ -29,7 +28,10 @@
         <p><a href="{% groupurl topic_list group %}">{% trans "more..." %}</a></p>
     {% else %}
         {% groupurl topic_list group as new_topic_url %}
-        <p>{% trans "None yet." %} {% if user.is_authenticated %}<a href="{{ new_topic_url }}">{% trans "Start one..." %}</a>{% endif %}</p>
+        <p>
+            {% trans "None yet." %}
+            {% if user.is_authenticated %}<br/><a href="{{ new_topic_url }}">{% trans "Start one..." %}</a>{% endif %}
+        </p>
     {% endif %}
 {% endwith %}
 
@@ -51,3 +53,4 @@
    </div>
 {% endif %}
 {% endcomment %}
+

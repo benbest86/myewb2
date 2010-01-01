@@ -13,132 +13,176 @@
 {% load topics_tags %}
 {% load events_tags %} 
 
-{% block head_title %}{{ group.name }}{% endblock %}
+{% block head_title %}{% spaceless %}
+    {% if group.is_chapter %}
+        {{ group.chapter_info.chapter_name }}
+    {% else %}
+        {{ group.name }}
+    {% endif %}
+{% endspaceless %}{% endblock %}
 
 {% block body %}
     
-    {% if user.is_authenticated %}
-        <div class="right_panel">
-            <div class="members">
-                <h2>{% trans "Members" %}</h2>
-                <table width="100%">
-                    {% for member in group.get_accepted_members %}
-                        {% if forloop.counter0|divisibleby:"3" %}<tr>{% endif %}
-                        <td>
-                            <div class="avatar">{% avatar member.user 40 %}</div>
-                            <div class="details"><a href="{% url profile_detail member.user.username %}" title="{{ member.user.username }}">{{ member.user.username }}</a></div>
-                        </td>
-                        {% if forloop.counter0|add:"1"|divisibleby:"3" %}</tr>{% endif %}
-                    {% endfor %}
-                    {% if group.get_accepted_members|length|divisibleby:"3" %}{% else %}</tr>{% endif %}
-                </table>
-                <p>
-                    Search members:
-                    <form method="GET" action="{% url network_members_index group.slug %}">
-                        <input type="text" name="search" size="8" value="{{ search_terms }}" />
-                        <input type="submit" value="Search" />
-                    </form>
-                </p>
-                <p><a href="{% url network_members_index group.slug %}">{% trans "Detailed list" %}</a></p>
-            </div>
-        </div>
-    {% endif %}
-    
-    <div style="width: 550px;">
-        
-        <h1>{{ group.name }}</h1>
+    <h1>{% spaceless %}
+        {% if group.is_chapter %}
+            {{ group.chapter_info.chapter_name }}
+        {% else %}
+            {{ group.name }}
+        {% endif %}
+    {% endspaceless %}</h1>
+    ({{ group.slug }})<br/>
+            
+    {% if group.is_chapter %}
+        <p>
+            <strong>{% trans "Mailing address" %}</strong><br/>
+            {{ group.chapter_info.street_address }}<br/>
+            {% if group.chapter_info.street_address_two %}{{ group.chapter_info.street_address_two }}<br/>{% endif %}
+            {{ group.chapter_info.city }}, {{ group.chapter_info.province }}<br/>
+            {{ group.chapter_info.postal_code }}<br/>
+        </p>
         
         <p>
-            {% trans "Slug:" %} <tt>{{ group.slug }}</tt><br />
-            {% trans "Creator:" %} <a href="{% url profile_detail group.creator.username %}">{{ group.creator }}</a><br />
+            <strong>{% trans "Phone:" %}</strong>&nbsp;{{ group.chapter_info.phone }}
+        </p>
+        
+        {% if group.chapter_info.fax %}
+            <p>
+                <strong>{% trans "Fax:" %}</strong>&nbsp;{{ group.chapter_info.fax }}
+            </p>
+        {% endif %}
+
+        <p>
+            <strong>{% trans "Email:" %}</strong>&nbsp;
+                <a href="mailto:{{ group.slug }}@ewb.ca">{{ group.slug }}@ewb.ca</a>
+        </p>
+        
+        <p>
+            <strong>{% trans "Website:" %}</strong>&nbsp;<a href="http://{{ group.slug }}.ewb.ca/">http://{{ group.slug }}.ewb.ca/</a>
+        </p>
+    {% else %}
+        <p>
+            {% trans "Creator:" %} <a href="{% url profile_detail group.creator.username %}">{{ group.creator.get_profile.name }}</a><br />
             {% trans "Created:" %} {{ group.created|date }}
             <br />
             {% show_tags_for group %}
         </p>
-        
+            
         <p>{{ group.description }}</p>
 
-		{% if children.count %}
-			<p>{% trans "Child groups:" %}</p>
-			<ul>
-			{% for child in children %}
-				<li><a href="{{ child.get_absolute_url }}">{{ child.name }}</a></li>
-			{% endfor %}
-			</ul>
-		{% endif %}
-        
-        {% if perms.networks.change %}
+    {% endif %}
 
-			<p><a href="{% url edit_network group.slug %}">{% trans "Edit details" %}</a></p>
-            
-        {% endif %}
+    {% show_group_content group %}
+
+    {% if children.count %}
+        <h2>{% trans "Communities" %}</h2>
         
-        {% if user.is_authenticated %}
-            <div>
-                {% if member %}
-                    {% if member.is_accepted %}
-                        {% ifequal user group.creator %}
-                            <p>{% trans "You are the creator of this network so can't leave (yet)." %}</p>
-                        {% else %}
-    						<form method="POST" action="{% url network_delete_member group.slug user.username %}">
-                            	<input type="submit" value="{% trans "Leave network" %}" />
-    						</form>
-                        {% endifequal %}                        
-                    {% endif %}
-                    
-                    {% if member.is_invited %}
-                        {% trans "You have been invited to join this network. Do you wish to join?" %}
-                        <form method="POST" action="{% url network_accept_invitation group.slug member.user.username %}">
-                        	<input type="submit" value="{% trans "Join network" %}" />
-            			</form>            			
-						<form method="POST" action="{% url network_delete_member group.slug member.user.username %}">
-                        	<input type="submit" value="{% trans "Decline" %}" />
-						</form>
-                    {% endif %}
-                    
-                    {% if member.is_requested %}
-                        {% trans "You have requested membership in this network and your request is pending." %}
-                    {% endif %}
-                    
-                {% else %}
-					<a href="{% url network_new_member group.slug %}">{% trans "Join network" %}</a>
+	    {% for child in children %}
+            <a href="{{ child.get_absolute_url }}">{{ child.name }}</a><br/>
+	    {% endfor %}
+    {% endif %}
+        
+{% endblock %}
+
+{% block toolbar_left %}
+    {% if group.is_chapter %}
+        <div class="toolbarheader bkgd">{% trans "Chapter Info" %}</div>
+        <div class="toolbarcontent">
+            link to photo gallery, etc?
+        </div>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+        <div class="toolbarheader bkgd">{% trans "Membership" %}</div>
+        <div class="toolbarcontent">
+            {% if member %}
+                {% if member.is_accepted %}
+                    {% ifequal user group.creator %}
+                        <p>{% trans "You are the creator of this network so can't leave (yet)." %}</p>
+                    {% else %}
+						<form method="POST" action="{% url network_delete_member group.slug user.username %}">
+                        	<input type="submit" value="{% trans "Leave network" %}" />
+						</form><br/>
+                    {% endifequal %}                        
                 {% endif %}
+                
+                {% if member.is_invited %}
+                    {% trans "You have been invited to join this network. Do you wish to join?" %}<br/>
+                    <form method="POST" action="{% url network_accept_invitation group.slug member.user.username %}">
+                    	<input type="submit" value="{% trans "Join network" %}" />
+        			</form>            			
+					<form method="POST" action="{% url network_delete_member group.slug member.user.username %}">
+                    	<input type="submit" value="{% trans "Decline" %}" />
+					</form><br/>
+                {% endif %}
+                
+                {% if member.is_requested %}
+                    {% trans "You have requested membership in this network and your request is pending." %}<br/>
+                {% endif %}
+                
+            {% else %}
+				<a href="{% url network_new_member group.slug %}">{% trans "Join network" %}</a><br/>
+            {% endif %}
 
-				{% if user.is_staff or member.is_admin %}
-					<a href="{% url network_new_member group.slug %}">{% trans "Invite another user" %}</a>
-					<a href="{% url network_bulk_import group.slug %}">{% trans "Email bulk import" %}</a>
-				{% endif %}
-            </div>
-        {% else %}
-            {% url acct_signup as signup_url %}
-            {% url acct_login as login_url %}
-            <p>{% blocktrans %}<a href="{{ signup_url }}">Sign up</a> and <a href="{{ login_url }}">log in </a> to join this network.{% endblocktrans %}</p>
+			{% if user.is_staff or member.is_admin %}
+			    <p>
+    				<a href="{% url network_new_member group.slug %}">{% trans "Invite another user" %}</a><br/>
+				    <a href="{% url network_bulk_import group.slug %}">{% trans "Email bulk import" %}</a><br/>
+				</p>
+			{% endif %}
+        </div>
+    {% endif %}
+
+    <div class="toolbarheader bkgd">{% trans "Actions" %}</div>
+    <div class="toolbarcontent">
+        {% if perms.networks.change %}
+			<a href="{% url edit_network group.slug %}">{% trans "Edit network details" %}</a><br/>
         {% endif %}
-        
-        {% if user.is_staff or user.is_superuser %}
-            <p><a href="{% url new_chapter %}?network={{ group.slug }}">{% trans "Convert to chapter" %}</a></p>
+
+        {% if user.is_staff and not group.is_chapter %}
+            <a href="{% url new_chapter %}?network={{ group.slug }}">{% trans "Convert to chapter" %}</a><br/>
         {% endif %}      
-        
-        {% show_group_content group %}
-
     </div>
-
 {% endblock %}
 
-{% block extra_body %}
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $('#edit-network').hide();
-            $('#edit-network-toggle').click(function() {
-                $('#edit-network').toggle();
-                $('#edit-network').autoscroll();
-                return false;
-            });
-            if ($('#edit-network .error').length) {
-                $('#edit-network').show();
-                $('#edit-network .error').autoscroll();
-            }
-        });
-    </script>
-    
+
+{% block toolbar_right %}
+    {% if group.is_chapter %}
+        <div class="toolbarheader bkgd">{% trans "Chapter Executive" %}</div>
+        <div class="toolbarcontent">
+            {% get_admins group as admins %}
+            {% for admin in admins %}
+                <div style="float: left; width: 30px; height: 30px;">
+                    {% avatar admin.user 30 %}
+                </div>
+                <div style="margin-left: 35px; height: 35px;">
+                    <a href="{% url profile_detail admin.user.username %}">{{ admin.user.get_profile.name }}</a><br/>
+                    {{ admin.admin_title }} {% if member and member.is_admin %}<a href="{% url network_edit_member group.slug admin.user.username %}">(edit)</a>{% endif %}
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if user.is_authenticated %}
+        <div class="toolbarheader bkgd">{% trans "Members" %}</div>
+        <div class="toolbarcontent">
+            <form method="GET" action="{% url network_members_index group.slug %}">
+                <input type="text" name="search" style="width: 150px" value="{{ search_terms }}" />
+                <input type="submit" value="Search" style="margin: 2px 0 0 5px;" />
+            </form>
+            <br/>
+
+            {# TODO: make this a random listing of 10-ish people #}
+            {% for member in group.get_accepted_members %}
+                <div style="float: left; width: 15px; height: 15px;">
+                    {% avatar member.user 15 %}
+                </div>
+                <div style="margin-left: 18px; height: 18px;">
+                    <a href="{% url profile_detail member.user.username %}">{{ member.user.get_profile.name }}</a>
+                </div>
+            {% endfor %}
+            
+            <p><a href="{% url network_members_index group.slug %}">{% trans "Full list" %}</a></p>
+        </div>
+    {% endif %}
 {% endblock %}
+
