@@ -2,7 +2,7 @@
 {% load group_tags %}
 
 
-{% if not wb.content %}
+{% if not wb.content and not force %}
 
 	{% if member %}
 		{% trans "No whiteboard" %} - <a href="{% groupurl wiki_edit group title=wb.title %}">{% trans "create a whiteboard..." %}</a>

@@ -16,6 +16,7 @@
 
 {% block extra_head %}
 <link rel="stylesheet" href="{{ STATIC_URL }}pinax/css/topics.css" />
+<link rel="stylesheet" href="{{ STATIC_URL }}css/myewb2-posts.css" />
 <script type="text/javascript" src="{{ STATIC_URL }}pinax/js/topics.js"></script>
 
 {% endblock %}
@@ -32,12 +33,12 @@
         <h1>{{ group.name }}</h1>
     {% endblock %}
 
-    <div id="groupheader">
-        <a href="#" id="show-group-info" class="group-link">{{ group.name }}</a> |
-        <a href="#" id="show-group-posts" class="group-link">Group Posts</a> |
-        <a href="#" id="show-group-events" class="group-link">Upcoming Events</a> |
-        <a href="#" id="show-group-whiteboard" class="group-link">Whiteboard</a>
-    </div>        
+    <ul class="segmented" id="groupheader" style="float: none;">
+        <li><a href="#" id="show-group-info">{{ group.name }}</a></li>
+        <li><a href="#" id="show-group-posts">Group Posts</a></li>
+        <li><a href="#" id="show-group-events">Upcoming Events</a></li>
+        <li><a href="#" id="show-group-whiteboard">Whiteboard</a></li>
+    </ul>
     
     <div id="group-info" class="group-subsection" style="display: block;">
         {% block groupbody %}
@@ -73,7 +74,7 @@
     </div>
     
     <div id="group-whiteboard" class="group-subsection">
-        {% show_whiteboard group.whiteboard group member %}
+        {% show_whiteboard_force group.whiteboard group member %}
     </div>
 
     {% comment %}
@@ -161,7 +162,7 @@
 {% block extra_body %}
     <script type="text/javascript">
         $(document).ready(function() {
-            $('.group-link').each(function() {
+            $('#groupheader a').each(function() {
                 $(this).click(function() {
                     $('.group-subsection').each(function() {
                         $(this).slideUp();
