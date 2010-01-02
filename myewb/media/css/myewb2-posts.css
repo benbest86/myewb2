@@ -13,7 +13,6 @@ div.post
 
 .post div.postheader
 {
-    background-color: #0049EE;
     border-top: 0;
     padding: 10px 5px 5px 8px;
     -webkit-border-top-right-radius: 10px;
@@ -23,11 +22,6 @@ div.post
 	color: white; 
 	font-weight: bold; 
 	font-size: 14px;
-}
-
-.postheader a
-{
-	background-color: #0049EE;
 }
 
 .postheaderlink
@@ -50,17 +44,16 @@ div.post
 
 .post div.postsubheader
 {
-	border-left: 1px solid #002BA2;
-	border-right: 1px solid #002BA2;
-	background: #C2D1FF;
+	border-left-width: 1px;
+	border-right-width: 1px;
 	padding: 2px 5px;
 	font-size:10px;
 }
 
 .post div.postcontent
 {
-	border-left: 1px solid #002BA2;
-	border-right: 1px solid #002BA2;
+	border-left-width: 1px;
+	border-right-width: 1px;
 	padding:10px;
 }
 

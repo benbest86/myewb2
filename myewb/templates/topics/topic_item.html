@@ -7,7 +7,7 @@
 {% load helpers %}
 
 <div class="post">
-	<div class="postheader" style="position: relative;"> <!-- header row -->
+	<div class="postheader bkgd" style="position: relative;"> <!-- header row -->
 		
 		{# is there a more efficient way than calling get_attachments_for ? #}
 		{# TODO: display the icon if any replies have an attachment, too #}
@@ -57,7 +57,7 @@
 
 	</div>
 
-	<div class="postsubheader"> <!-- stat row -->
+	<div class="postsubheader bkgd-light"> <!-- stat row -->
 		<table width="100%" style="margin:0; padding: 0;">
 			<tr>
 				<td>By <a href="{% url profile_detail topic.creator.username %}">{{ topic.creator }}</a>, {{ topic.created|date }}</td>

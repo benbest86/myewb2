@@ -14,13 +14,13 @@
 .red div    { border: 0px solid #b71818; }
 .purple div { border: 0px solid #8b00cc; }
 
-/* Light colours (ie for subnav background) */
-.blue ul.subnav   { background: #c2d1ff; }
-.green ul.subnav  { background: #bce2bc; }
-.yellow ul.subnav { background: #fcf2bd; }
-.orange ul.subnav { background: #ffcf9f; }
-.red ul.subnav    { background: #efcaca; }
-.purple ul.subnav { background: #d9c1e5; }
+/* Light colours (ie for subnav, subheader background) */
+.blue .bkgd-light   { background: #c2d1ff; }
+.green .bkgd-light  { background: #bce2bc; }
+.yellow .bkgd-light { background: #fcf2bd; }
+.orange .bkgd-light { background: #ffcf9f; }
+.red .bkgd-light    { background: #efcaca; }
+.purple .bkgd-light { background: #d9c1e5; }
 
 /* Dark colours (ie for subnav text) */
 .blue ul.subnav,   .blue ul.subnav   a { color: #002ba2; }
@@ -94,7 +94,7 @@ div.login a.signout {
 div#body {
     background: white;
     margin: 0 2%;
-    border: 1px solid #001595;
+    border-width: 1px;
     -webkit-border-radius: 0.5em;
     -moz-border-radius: 0.5em;
     font-size: 0.7em;
