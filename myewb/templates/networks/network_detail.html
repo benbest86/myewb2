@@ -71,56 +71,7 @@
         </p>
             
         <p>{{ group.description }}</p>
-
-<<<<<<< HEAD:myewb/templates/networks/network_detail.html
     {% endif %}
-=======
-		{% if children.count %}
-			<p>{% trans "Child groups:" %}</p>
-			<ul>
-			{% for child in children %}
-				<li><a href="{{ child.get_absolute_url }}">{{ child.name }}</a></li>
-			{% endfor %}
-			</ul>
-		{% endif %}
-        
-        {% if is_admin %}
-
-			<p><a href="{% url edit_network group.slug %}">{% trans "Edit details" %}</a></p>
-            
-        {% endif %}
-        
-        {% if user.is_authenticated %}
-            <div>
-                {% if member %}
-                    {% if member.is_accepted %}
-                        {% ifequal user group.creator %}
-                            <p>{% trans "You are the creator of this network so can't leave (yet)." %}</p>
-                        {% else %}
-    						<form method="POST" action="{% url network_delete_member group.slug user.username %}">
-                            	<input type="submit" value="{% trans "Leave network" %}" />
-    						</form>
-                        {% endifequal %}                        
-                    {% endif %}
-                    
-                    {% if member.is_invited %}
-                        {% trans "You have been invited to join this network. Do you wish to join?" %}
-                        <form method="POST" action="{% url network_accept_invitation group.slug member.user.username %}">
-                        	<input type="submit" value="{% trans "Join network" %}" />
-            			</form>            			
-						<form method="POST" action="{% url network_delete_member group.slug member.user.username %}">
-                        	<input type="submit" value="{% trans "Decline" %}" />
-						</form>
-                    {% endif %}
-                    
-                    {% if member.is_requested %}
-                        {% trans "You have requested membership in this network and your request is pending." %}
-                    {% endif %}
-                    
-                {% else %}
-					<a href="{% url network_new_member group.slug %}">{% trans "Join network" %}</a>
-                {% endif %}
->>>>>>> permissions_framework:myewb/templates/networks/network_detail.html
 
     {% if children.count %}
         <h2>{% trans "Communities" %}</h2>
