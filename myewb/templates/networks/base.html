@@ -33,8 +33,8 @@
 	    {% if user.is_staff or member.is_admin %}
             <div class="toolbarheader bkgd">{% trans "Admin Options" %}</div>
             <div class="toolbarcontent">
-		        <a href="{% url network_new_member group.slug %}">{% trans "Invite another user" %}</a><br/>
-	            <a href="{% url network_bulk_import group.slug %}">{% trans "Email bulk import" %}</a><br/>
+		        <a href="{% url network_new_member group.slug %}">{% trans "Add/invite users" %}</a><br/>
+	            <a href="{% url network_bulk_import group.slug %}">{% trans "Bulk-add email addresses" %}</a><br/>
 	            <br/>
 	            
                 {% if perms.networks.change %}

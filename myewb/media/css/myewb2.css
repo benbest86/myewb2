@@ -59,7 +59,7 @@ h1.debug {
     left: 0;
 }
 
-a {
+a, a:visited {
 	color: #002BA2;
 }
 

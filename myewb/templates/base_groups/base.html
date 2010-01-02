@@ -48,10 +48,10 @@
     {% endblock %}
 
     <ul class="segmented" id="groupheader" style="float: none;">
-        <li><a href="#group-info" id="show-group-info">{{ group.name }}</a></li>
-        <li><a href="#group-posts" id="show-group-posts">Group Posts</a></li>
-        <li><a href="#group-events" id="show-group-events">Upcoming Events</a></li>
-        <li><a href="#group-whiteboard" id="show-group-whiteboard">Whiteboard</a></li>
+        <li id="li-group-info" class="current"><a href="#group-info" id="show-group-info">{{ group.name }}</a></li>
+        <li id="li-group-posts"><a href="#group-posts" id="show-group-posts">Group Posts</a></li>
+        <li id="li-group-events"><a href="#group-events" id="show-group-events">Upcoming Events</a></li>
+        <li id="li-group-whiteboard"><a href="#group-whiteboard" id="show-group-whiteboard">Whiteboard</a></li>
     </ul>
     
     <div id="group-info" class="group-subsection" style="display: block;">
@@ -186,7 +186,11 @@
                     $('.group-subsection').each(function() {
                         $(this).slideUp();
                     });
+                    $('#groupheader li').each(function() {
+                        $(this).removeClass('current');
+                    });
                     $('#' + $(this).attr('id').substring(5)).slideDown();
+                    $('#li-' + $(this).attr('id').substring(5)).addClass('current');
                 });
             });
             

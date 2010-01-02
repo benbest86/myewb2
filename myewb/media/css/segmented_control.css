@@ -16,8 +16,8 @@ ul.segmented li {
   float: left;
 }
 
-ul.segmented li a:visited {
-  color: rgb(0, 136, 204);
+ul.segmented li:hover {
+  background: #fff;
 }
 
 ul.segmented li.current a,
