@@ -28,6 +28,7 @@ def group_url_patterns(model, *args):
         # GET - groups index
         # POST - create group
         url(r'^$', '%s_index' % plural, name='%s_index' % plural,),
+        url(r'^$', '%s_index' % plural, name='%s_index' % name,),
         # GET - new group form
         # POST - create group (redirects to '<plural>_index'
         url(r'^new/$', 'new_%s' % name, name='new_%s' % name,),

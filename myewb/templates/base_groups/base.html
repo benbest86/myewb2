@@ -88,6 +88,7 @@
     </div>
     
     <div id="group-whiteboard" class="group-subsection">
+        {% get_membership group request.user as member %}
         {% show_whiteboard_force group.whiteboard group member %}
     </div>
 
@@ -116,12 +117,13 @@
     {% if group and user.is_authenticated %}
         <div class="toolbarheader bkgd">{% trans "Membership" %}</div>
         <div class="toolbarcontent">
+            {% get_membership group request.user as member %}
             {% if member %}
                 {% if member.is_accepted %}
                     {% ifequal user group.creator %}
                         <p>{% trans "You are the creator of this group so can't leave (yet)." %}</p>
                     {% else %}
-						<form method="POST" action="{% url network_delete_member group.slug user.username %}">
+						<form method="POST" action="{% groupurl delete_member group username=user.username %}">
                         	<input type="submit" value="{% trans "Leave group" %}" />
 						</form><br/>
                     {% endifequal %}                        
@@ -129,10 +131,10 @@
                 
                 {% if member.is_invited %}
                     {% trans "You have been invited to join this group. Do you wish to join?" %}<br/>
-                    <form method="POST" action="{% url network_accept_invitation group.slug member.user.username %}">
+                    <form method="POST" action="{% groupurl accept_invitation group username=member.user.username %}">
                     	<input type="submit" value="{% trans "Join group" %}" />
         			</form>            			
-					<form method="POST" action="{% url network_delete_member group.slug member.user.username %}">
+					<form method="POST" action="{% groupurl delete_member group username=member.user.username %}">
                     	<input type="submit" value="{% trans "Decline" %}" />
 					</form><br/>
                 {% endif %}
@@ -142,7 +144,7 @@
                 {% endif %}
                 
             {% else %}
-				<a href="{% url network_new_member group.slug %}">{% trans "Join group" %}</a><br/>
+				<a href="{% groupurl new_member group %}">{% trans "Join group" %}</a><br/>
             {% endif %}
         </div>        
     {% endif %}
@@ -152,7 +154,7 @@
     {% if group and user.is_authenticated %}
         <div class="toolbarheader bkgd">{% trans "Members" %}</div>
         <div class="toolbarcontent">
-            <form method="GET" action="{% url network_members_index group.slug %}">
+            <form method="GET" action="{% groupurl members_index group %}">
                 <input type="text" name="search" style="width: 150px" value="{{ search_terms }}" />
                 <input type="submit" value="Search" style="margin: 2px 0 0 5px;" />
             </form>
@@ -168,7 +170,7 @@
                 </div>
             {% endfor %}
             
-            <p><a href="{% url network_members_index group.slug %}">{% trans "Full list" %}</a></p>
+            <p><a href="{% groupurl members_index group %}">{% trans "Full list" %}</a></p>
         </div>
     {% endif %}
 {% endblock %}

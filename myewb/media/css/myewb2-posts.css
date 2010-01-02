@@ -24,7 +24,7 @@ div.post
 	font-size: 14px;
 }
 
-.postheaderlink
+.postheaderlink, .postheaderlink:visited
 {
 	color: white; 
 	font-weight: bold; 

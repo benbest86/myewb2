@@ -14,7 +14,8 @@ from communities.models import Community
 from groups.bridge import ContentBridge
 from base_groups.helpers import group_url_patterns
 
-bridge = ContentBridge(Community, 'communities')
+#bridge = ContentBridge(Community, 'communities')
+bridge = ContentBridge(Community, Community._meta.verbose_name)
 
 urlpatterns = group_url_patterns(Community)    
 urlpatterns += bridge.include_urls('group_topics.urls.groups', r'^(?P<group_slug>[-\w]+)/posts/')

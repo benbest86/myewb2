@@ -14,7 +14,8 @@ from networks.models import Network
 from groups.bridge import ContentBridge
 from base_groups.helpers import group_url_patterns
 
-bridge = ContentBridge(Network, 'networks')
+#bridge = ContentBridge(Network, 'networks')
+bridge = ContentBridge(Network, Network._meta.verbose_name)
 
 urlpatterns = group_url_patterns(Network, url(r'^ajax/(?P<network_type>[-\w]+)/$', 'ajax_search', name='ajax_search_network',))
 

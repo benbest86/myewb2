@@ -15,151 +15,21 @@
 
 {% block head_title %}{{ group.name }}{% endblock %}
 
-{% block body %}
+{% block groupbody %}
     
-    {% if user.is_authenticated %}
-        <div class="right_panel">
-            <div class="members">
-                <h2>{% trans "Members" %}</h2>
-                <table width="100%">
-                    {% for member in group.get_accepted_members %}
-                        {% if forloop.counter0|divisibleby:"3" %}<tr>{% endif %}
-                        <td>
-                            <div class="avatar">{% avatar member.user 40 %}</div>
-                            <div class="details"><a href="{% url profile_detail member.user.username %}" title="{{ member.user.username }}">{{ member.user.username }}</a></div>
-                        </td>
-                        {% if forloop.counter0|add:"1"|divisibleby:"3" %}</tr>{% endif %}
-                    {% endfor %}
-                    {% if group.get_accepted_members|length|divisibleby:"3" %}{% else %}</tr>{% endif %}
-                </table>
-                <p>
-                    Search members:
-                    <form method="GET" action="{% url community_members_index group.slug %}">
-                        <input type="text" name="search" size="8" value="{{ search_terms }}" />
-                        <input type="submit" value="Search" />
-                    </form>
-                </p>                   
-                <p><a href="{% url community_members_index group.slug %}">{% trans "Detailed list" %}</a></p>
-            </div>
-        </div>
-    {% endif %}
-    
-    <div style="width: 550px;">
+    <p>
+        {% trans "Slug:" %} <tt>{{ group.slug }}</tt><br />
+        {% trans "Creator:" %} <a href="{% url profile_detail group.creator.username %}">{{ group.creator }}</a><br />
+        {% trans "Created:" %} {{ group.created|date }}
+        <br />
+        {% show_tags_for group %}
+    </p>
         
-        <h1>{{ group.name }}</h1>
-        
-        <p>
-            {% trans "Slug:" %} <tt>{{ group.slug }}</tt><br />
-            {% trans "Creator:" %} <a href="{% url profile_detail group.creator.username %}">{{ group.creator }}</a><br />
-            {% trans "Created:" %} {{ group.created|date }}
-            <br />
-            {% show_tags_for group %}
-        </p>
-        
-        <p>{{ group.description }}</p>
+    <p>{{ group.description }}</p>
 
-		{% if group.parent %}
-			<p>{% trans "Parent:" %} <a href="{% url group_detail group.parent.slug %}">{{ group.parent.name }}</a></p>
-		{% endif %}
+	{% if group.parent %}
+		<p>{% trans "Parent:" %} <a href="{{ group.parent.get_absolute_url }}">{{ group.parent.name }}</a></p>
+	{% endif %}
         
-        {% if user.is_authenticated %}
-            <div>
-                {% if member %}
-                    {% if member.is_accepted %}
-                        {% ifequal user group.creator %}
-                            <p>{% trans "You are the creator of this community so can't leave (yet)." %}</p>
-                        {% else %}
-    						<form method="POST" action="{% url community_delete_member group.slug user.username %}">
-                            	<input type="submit" value="{% trans "Leave community" %}" />
-    						</form>
-                        {% endifequal %}                        
-                    {% endif %}
-                    
-                    {% if member.is_invited %}
-                        {% trans "You have been invited to join this community. Do you wish to join?" %}
-                        <form method="POST" action="{% url community_accept_invitation group.slug member.user.username %}">
-                        	<input type="submit" value="{% trans "Join network" %}" />
-            			</form>            			
-						<form method="POST" action="{% url community_delete_member group.slug member.user.username %}">
-                        	<input type="submit" value="{% trans "Decline" %}" />
-						</form>
-                    {% endif %}
-                    
-                    {% if member.is_requested %}
-                        {% trans "You have requested membership in this community and your request is pending." %}
-                    {% endif %}
-                    
-                {% else %}
-					<a href="{% url community_new_member group.slug %}">{% trans "Join community" %}</a>
-                {% endif %}
-            </div>
-        {% else %}
-            {% url acct_signup as signup_url %}
-            {% url acct_login as login_url %}
-            <p>{% blocktrans %}<a href="{{ signup_url }}">Sign up</a> and <a href="{{ login_url }}">log in </a> to join this community.{% endblocktrans %}</p>
-        {% endif %}
-
-        {% if member.is_admin %}
-			<p><a href="{% url edit_community group.slug %}">{% trans "Edit details" %}</a></p>           
-        {% endif %}
-        
-        {% if user.is_authenticated %}
-            <div>
-                {% if member %}
-                    {% if member.is_accepted %}
-                        {% ifequal user group.creator %}
-                            <p>{% trans "You are the creator of this community so can't leave (yet)." %}</p>
-                        {% else %}
-    						<form method="POST" action="{% url community_delete_member group.slug user.username %}">
-                            	<input type="submit" value="{% trans "Leave community" %}" />
-    						</form>
-                        {% endifequal %}                        
-                    {% endif %}
-                    
-                    {% if member.is_invited %}
-                        {% trans "You have been invited to join this community. Do you wish to join?" %}
-                        <form method="POST" action="{% url community_accept_invitation group.slug member.user.username %}">
-                        	<input type="submit" value="{% trans "Join community" %}" />
-            			</form>            			
-        				<form method="POST" action="{% url community_delete_member group.slug member.user.username %}">
-                        	<input type="submit" value="{% trans "Decline" %}" />
-        				</form>
-                    {% endif %}
-                    
-                    {% if member.is_requested %}
-                        {% trans "You have requested membership in this community and your request is pending." %}
-                    {% endif %}
-                    
-                {% else %}
-					<a href="{% url community_new_member group.slug %}">{% trans "Join community" %}</a>
-                {% endif %}
-            </div>
-        {% else %}
-            {% url acct_signup as signup_url %}
-            {% url acct_login as login_url %}
-            <p>{% blocktrans %}<a href="{{ signup_url }}">Sign up</a> and <a href="{{ login_url }}">log in </a> to join this community.{% endblocktrans %}</p>
-        {% endif %}
-        
-        {% show_group_content group %}
-
-    </div>
-
 {% endblock %}
 
-{% block extra_body %}
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $('#edit-community').hide();
-            $('#edit-community-toggle').click(function() {
-                $('#edit-community').toggle();
-                $('#edit-community').autoscroll();
-                return false;
-            });
-            if ($('#edit-community .error').length) {
-                $('#edit-community').show();
-                $('#edit-community .error').autoscroll();
-            }
-        });
-    </script>
-    
-{% endblock %}

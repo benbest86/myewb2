@@ -141,13 +141,6 @@ def group_detail(request, group_slug, model=None, member_model=None,
     # get group
     group = get_object_or_404(model, slug=group_slug)
 
-    # membership status
-    if group.user_is_member(request.user):
-        member = group.members.get(user=request.user)
-    elif group.user_is_pending_member(request.user):
-        member = group.pending_members.get(user=request.user)
-    else:
-        member = None
     children = group.get_visible_children(request.user)
 
     # retrieve whiteboard (create if needed)
@@ -163,7 +156,6 @@ def group_detail(request, group_slug, model=None, member_model=None,
         template_name,
         {
             'group': group,                
-            'member': member,
             'children': children,
         },
         context_instance=RequestContext(request)

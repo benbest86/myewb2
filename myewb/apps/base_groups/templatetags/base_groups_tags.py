@@ -63,9 +63,41 @@ def do_get_admins(parser, token):
 
 register.tag('get_admins', do_get_admins)
 
-@register.inclusion_tag("base_groups/group_content.html", takes_context=True)
-def show_group_content(context, group):
-    return {'group': group, 'user': context['user'], 'member': context['member']}
+class MembershipNode(template.Node):
+    def __init__(self, group, user, context_name):
+        self.group = template.Variable(group)
+        self.user = template.Variable(user)
+        self.context_name = context_name
+
+    def render(self, context):
+        try:
+            group = self.group.resolve(context)
+            user = self.user.resolve(context)
+        except template.VariableDoesNotExist:
+            return u''
+            
+        # membership status
+        if group.user_is_member(user):
+            member = group.members.get(user=user)
+        elif group.user_is_pending_member(user):
+            member = group.pending_members.get(user=user)
+        else:
+            member = None
+        context[self.context_name] = member
+        return u''
+
+def do_get_membership(parser, token):
+    """
+    Provides the template tag {% get_membership GROUP USER as VARIABLE %}
+    """
+    try:
+        _tagname, group, user, _as, context_name = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError(u'%(tagname)r tag syntax is as follows: '
+            '{%% %(tagname)r GROUP USER as VARIABLE %%}' % {'tagname': _tagname})
+    return MembershipNode(group, user, context_name)
+
+register.tag('get_membership', do_get_membership)
 
 # Copied and modified from pinax/apps/topics/templatetags/topics_tags.py
 # (only change is to return list of GroupTopic objects instead of Topic -

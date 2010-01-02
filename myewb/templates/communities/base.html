@@ -1,20 +1,34 @@
-{% extends "site_base.html" %}
+{% extends "base_groups/base.html" %}
 
 {% load i18n %}
 
 {% block body_class %}communities orange{% endblock %}
 
-{% block extra_head %}
-<link rel="stylesheet" href="{{ STATIC_URL }}communities/css/communities.css" />
-<link rel="stylesheet" href="{{ STATIC_URL }}pinax/css/topics.css" />
-<script type="text/javascript" src="{{ STATIC_URL }}pinax/js/topics.js"></script>
-{% endblock %}
-
 {% block subnav %}
     <ul class="subnav">
         {% if group %}
-        <li><a href="{% url community_detail group.slug %}">{{ group.name }} {% trans "Home" %}</a></li>
+        <li><a href="{% url community_detail group.slug %}">{{ group.name }}</a></li>
         {% endif %}
         <li><a href="{% url communities_index %}">{% trans "All Communities" %}</a></li>
     </ul>
 {% endblock %}
+
+{% block toolbar_left %}
+    {{ block.super }}
+
+    {% if group %}
+	    {% if user.is_staff or member.is_admin %}
+            <div class="toolbarheader bkgd">{% trans "Admin Options" %}</div>
+            <div class="toolbarcontent">
+		        <a href="{% url community_new_member group.slug %}">{% trans "Add/invite users" %}</a><br/>
+	            <br/>
+	            
+                {% if perms.communities.change %}
+        			<a href="{% url edit_community group.slug %}">{% trans "Edit community details" %}</a><br/><br/>
+                {% endif %}
+            </div>
+        {% endif %}
+	{% endif %}
+{% endblock %}
+
+
