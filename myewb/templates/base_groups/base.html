@@ -19,16 +19,30 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/myewb2-posts.css" />
 <script type="text/javascript" src="{{ STATIC_URL }}pinax/js/topics.js"></script>
 
+{# TODO: move this into an appropriate CSS file #}
+<style type="text/css" media="all">
+    .group-subsection { display: none; }
+</style>
 {% endblock %}
 
 {# FIXME: how to choose between communities & networks? #}
+{# do we need to? (or will this always be overridden?) #}
 {% block body_class %}communities orange{% endblock %}
 
 {% block body %}
-    <style type="text/css" media="all">
-        .group-subsection { display: none; }
-    </style>
-
+    {% comment %}
+    Ideally this wouldn't really be in a base.html file, but rather 
+    group_detail.html
+    
+    We can't do this because the templates don't support multiple inheritence -
+    a child template (ie, networks/network_detail.html) would need to inherit 
+    from group_detail.html (to get the groupbody tag), but also inherit from
+    networks/base.html to get the additional toolbars defined there.
+    
+    The only solution is to define *_detail.html in these base.html files, but 
+    always override the body...
+    {% endcomment %}
+    
     {% block grouptitle %}
         <h1>{{ group.name }}</h1>
     {% endblock %}
@@ -99,7 +113,7 @@
 {% endblock %}
 
 {% block toolbar_left %}
-    {% if user.is_authenticated %}
+    {% if group and user.is_authenticated %}
         <div class="toolbarheader bkgd">{% trans "Membership" %}</div>
         <div class="toolbarcontent">
             {% if member %}
@@ -135,7 +149,7 @@
 {% endblock %}
 
 {% block toolbar_right %}
-    {% if user.is_authenticated %}
+    {% if group and user.is_authenticated %}
         <div class="toolbarheader bkgd">{% trans "Members" %}</div>
         <div class="toolbarcontent">
             <form method="GET" action="{% url network_members_index group.slug %}">
@@ -160,6 +174,11 @@
 {% endblock %}
 
 {% block extra_body %}
+    {% comment %}
+    Child templates that override the body block should also override this, even 
+    if it's just an empty block, for efficiency.
+    {% endcomment %}
+    
     <script type="text/javascript">
         $(document).ready(function() {
             $('#groupheader a').each(function() {
@@ -175,3 +194,4 @@
         });
     </script>
 {% endblock %}
+

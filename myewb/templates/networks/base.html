@@ -11,7 +11,7 @@
 {% block subnav %}
     <ul class="subnav">
         {% if group %}
-        <li><a href="{% url network_detail group.slug %}">{{ group.name }} {% trans "Home" %}</a></li>
+            <li><a href="{% url network_detail group.slug %}">{{ group.name }}</a></li>
         {% endif %}
         <li><a href="{% url networks_index %}">{% trans "All Networks" %}</a></li>
         <li><a href="{% url chapters_index %}">{% trans "All Chapters" %}</a></li>
@@ -20,7 +20,7 @@
 
 
 {% block toolbar_left %}
-    {% if group.is_chapter %}
+    {% if group and group.is_chapter %}
         <div class="toolbarheader bkgd">{% trans "Chapter Info" %}</div>
         <div class="toolbarcontent">
             link to photo gallery, etc?
@@ -29,27 +29,29 @@
     
     {{ block.super }}
 
-	{% if user.is_staff or member.is_admin %}
-        <div class="toolbarheader bkgd">{% trans "Admin Options" %}</div>
-        <div class="toolbarcontent">
-		    <a href="{% url network_new_member group.slug %}">{% trans "Invite another user" %}</a><br/>
-	        <a href="{% url network_bulk_import group.slug %}">{% trans "Email bulk import" %}</a><br/>
-	        <br/>
-	        
-            {% if perms.networks.change %}
-    			<a href="{% url edit_network group.slug %}">{% trans "Edit network details" %}</a><br/><br/>
-            {% endif %}
-            
-            {% if user.is_staff and not group.is_chapter %}
-                <a href="{% url new_chapter %}?network={{ group.slug }}">{% trans "Convert to chapter" %}</a><br/>
-            {% endif %}      
-        </div>
+    {% if group %}
+	    {% if user.is_staff or member.is_admin %}
+            <div class="toolbarheader bkgd">{% trans "Admin Options" %}</div>
+            <div class="toolbarcontent">
+		        <a href="{% url network_new_member group.slug %}">{% trans "Invite another user" %}</a><br/>
+	            <a href="{% url network_bulk_import group.slug %}">{% trans "Email bulk import" %}</a><br/>
+	            <br/>
+	            
+                {% if perms.networks.change %}
+        			<a href="{% url edit_network group.slug %}">{% trans "Edit network details" %}</a><br/><br/>
+                {% endif %}
+                
+                {% if user.is_staff and not group.is_chapter %}
+                    <a href="{% url new_chapter %}?network={{ group.slug }}">{% trans "Convert to chapter" %}</a><br/>
+                {% endif %}      
+            </div>
+        {% endif %}
 	{% endif %}
 {% endblock %}
 
 
 {% block toolbar_right %}
-    {% if group.is_chapter %}
+    {% if group and group.is_chapter %}
         <div class="toolbarheader bkgd">{% trans "Chapter Executive" %}</div>
         <div class="toolbarcontent">
             {% get_admins group as admins %}
