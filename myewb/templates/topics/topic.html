@@ -16,7 +16,7 @@
 {% block body %}
 
 <div class="post">
-	<div class="postheader" style="position: relative;"> <!-- header row -->
+	<div class="postheader bkgd" style="position: relative;"> <!-- header row -->
 		
         {% get_attachments_for topic as "attachments" %}
         {% if attachments.count %}
@@ -38,7 +38,7 @@
 
 	</div>
 
-	<div class="postsubheader"> <!-- stat row -->
+	<div class="postsubheader bkgd-light"> <!-- stat row -->
 		<table width="100%" style="margin:0; padding: 0;">
 			<tr>
 				<td>By <a href="{% url profile_detail topic.creator.username %}">{{ topic.creator.visible_name }}</a>, {{ topic.created|date }}</td>
