@@ -48,10 +48,10 @@
     {% endblock %}
 
     <ul class="segmented" id="groupheader" style="float: none;">
-        <li><a href="#" id="show-group-info">{{ group.name }}</a></li>
-        <li><a href="#" id="show-group-posts">Group Posts</a></li>
-        <li><a href="#" id="show-group-events">Upcoming Events</a></li>
-        <li><a href="#" id="show-group-whiteboard">Whiteboard</a></li>
+        <li><a href="#group-info" id="show-group-info">{{ group.name }}</a></li>
+        <li><a href="#group-posts" id="show-group-posts">Group Posts</a></li>
+        <li><a href="#group-events" id="show-group-events">Upcoming Events</a></li>
+        <li><a href="#group-whiteboard" id="show-group-whiteboard">Whiteboard</a></li>
     </ul>
     
     <div id="group-info" class="group-subsection" style="display: block;">
@@ -187,9 +187,14 @@
                         $(this).slideUp();
                     });
                     $('#' + $(this).attr('id').substring(5)).slideDown();
-                    return false;
                 });
             });
+            
+            {# Pre-select one of the boxes if needed #}
+            {# thanks http://blog.rebeccamurphey.com/2007/12/04/anchor-based-url-navigation-with-jquery/ #}
+            var url = document.location.toString();
+            if (url.match('#'))
+                $('#show-' + url.split('#')[1]).click();
 
         });
     </script>
