@@ -35,34 +35,6 @@ The {% if group %} checks are left in just in case, and should be removed eventu
 {% endspaceless %}{% endblock %}
 
 {% block body %}
-   	{% if can_adminovision %}
-	    <p style="margin-top: 0; text-align: right;">
-   		{% spaceless %}
-   			<a href="{% url topic_adminovision %}">
-    		{% if adminovision %}
-    			Turn off adminovision
-    		{% else %}
-    			Turn on adminovision
-    		{% endif %}
-    		</a>
-    	{% endspaceless %}
-    	</p>
-   	{% else %}
-       	{% if can_execovision %}
-	        <p>
-       		{% spaceless %}
-       			<a href="{% url topic_adminovision %}">
-        		{% if adminovision %}
-        			Turn off execovision
-        		{% else %}
-        			Turn on execovision
-        		{% endif %}
-        		</a>
-        	{% endspaceless %}
-        	</p>
-        {% endif %}
-   	{% endif %}
-    
     {% if group %}
         <h1>{% blocktrans with group.get_absolute_url as group_url and group.name as group_name %}Posts for <a href="{{ group_url }}">{{ group_name }}</a>{% endblocktrans %}</h1>
     {% endif %}

@@ -47,8 +47,21 @@
                     	</a>
                     {% endspaceless %}
                 </p>
-            {% endif %}
-    
+           	{% else %}
+               	{% if can_execovision %}
+                <p style="margin-bottom: 0; text-align: right;">
+               		{% spaceless %}
+               			<a href="{% url topic_adminovision %}">
+                		{% if adminovision %}
+                			Turn off execovision
+                		{% else %}
+                			Turn on execovision
+                		{% endif %}
+                		</a>
+                	{% endspaceless %}
+                	</p>
+                {% endif %}
+           	{% endif %}
         </div>
     {% else %}
         <div class="toolbarheader bkgd">{% trans "Sign In" %}</div>
