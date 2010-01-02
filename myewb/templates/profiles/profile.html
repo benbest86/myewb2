@@ -16,9 +16,12 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% block body %}
 	<br/>
     <h1 style="text-align: center;">{{ other_user.visible_name }}</h1>
-    <div style="text-align: center; position: relative; top: -15px;">
-        <a href="mailto:{{other_user.email}}">{{other_user.email}}</a>
-    </div>
+
+    {% if is_me or is_friend or user.is_staff %}
+        <div style="text-align: center; position: relative; top: -15px;">
+            <a href="mailto:{{other_user.email}}">{{other_user.email}}</a>
+        </div>
+    {% endif %}
     
     <div id="profile_avatar" style="text-align: center;">
         {% avatar other_user 80 %}

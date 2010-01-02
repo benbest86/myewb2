@@ -93,7 +93,7 @@ def visible_name(self):
     elif self.last_name:
         return self.last_name
     elif self.email:
-        return self.email
+        return self.email.split('@')[0] + "@..."
     else:
         return "Unknown user (%s)" % self.username
         #return "Unknown user"
