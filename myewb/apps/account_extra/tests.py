@@ -42,35 +42,35 @@ class TestAccountExtra(TestCase):
         c = Client()
         response = c.post("/account/login/", {'login_name': 'bob', 'password': 'passw0rd'})
         u = User.objects.get(username="bob")
-        self.assertTrue(u.message_set.filter(user=u, message__icontains="Successfully logged in").count() > 0)
+        self.assertTrue(u.message_set.filter(user=u, message__icontains="Welcome").count() > 0)
         
     def test_verified_primary_email_login(self):
         """verify that we support login using verified, primary email address"""
         c = Client()
         response = c.post("/account/login/", {'login_name': 'bob@roberts.com', 'password': 'passw0rd'})
         u = User.objects.get(username="bob")
-        self.assertTrue(u.message_set.filter(user=u, message__icontains="Successfully logged in").count() > 0)
+        self.assertTrue(u.message_set.filter(user=u, message__icontains="Welcome").count() > 0)
         
     def test_verified_secondary_email_login(self):
         """verify that we support login using verified, non-primary email address"""
         c = Client()
         response = c.post("/account/login/", {'login_name': 'bob.roberts@gmail.com', 'password': 'passw0rd'})
         u = User.objects.get(username="bob")
-        self.assertTrue(u.message_set.filter(user=u, message__icontains="Successfully logged in").count() > 0)
+        self.assertTrue(u.message_set.filter(user=u, message__icontains="Welcome").count() > 0)
         
     def test_unverified_primary_email_login(self):
         """verify that we do not support login using non-verified, primary email address"""
         c = Client()
         response = c.post("/account/login/", {'login_name': 'joe@smith.com', 'password': 'passw0rd'})
         u = User.objects.get(username="joe")
-        self.assertFalse(u.message_set.filter(user=u, message__icontains="Successfully logged in").count() > 0)
+        self.assertFalse(u.message_set.filter(user=u, message__icontains="Welcome").count() > 0)
         
     def test_unverified_secondary_email_login(self):
         """verify that we do not support login using non-verified, non-primary email address"""
         c = Client()
         response = c.post("/account/login/", {'login_name': 'joe.smith@gmail.com', 'password': 'passw0rd'})
         u = User.objects.get(username="joe")
-        self.assertFalse(u.message_set.filter(user=u, message__icontains="Successfully logged in").count() > 0)
+        self.assertFalse(u.message_set.filter(user=u, message__icontains="Welcome").count() > 0)
         
     def test_unused_email_failure(self):
         """verify that we do not login a user not in the system"""
