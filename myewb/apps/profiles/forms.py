@@ -4,15 +4,17 @@ This file is part of myEWB
 Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
 
 Created on 2009-06-22
-Last modified on 2009-07-31
+Last modified on 2009-12-29
 @author Joshua Gorner, Francis Kung, Ben Best
 """
+from settings import STATIC_URL
 from datetime import date
 from django import forms
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext, Context, loader
+from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from profiles.models import MemberProfile, StudentRecord, WorkRecord
 from creditcard.forms import PaymentForm, PaymentFormPreview, ProductWidget
@@ -89,3 +91,56 @@ class MembershipFormPreview(PaymentFormPreview):
         	f.clean
         	context = {'form': f, 'stage_field': self.unused_name('stage'), 'state': self.state}
         	return render_to_response(self.form_template, context, context_instance=RequestContext(request))
+        	
+class UserSearchForm(forms.Form):
+    first_name = forms.CharField(required=False)
+    last_name = forms.CharField(required=False)
+    chapters = [('none', _('Any chapter'))]
+    chapter = forms.ChoiceField(choices=chapters, required=False)
+  
+    def __init__(self, *args, **kwargs):
+        chapterlist = kwargs.pop('chapters', None)
+        
+        self.base_fields['first_name'].initial = kwargs.pop('first_name', None)
+        self.base_fields['last_name'].initial = kwargs.pop('last_name', None)
+        
+        for chapter in chapterlist:
+            try:
+                i = self.base_fields['chapter'].choices.index((chapter.slug, chapter.chapter_info.chapter_name))
+            except ValueError:
+                self.base_fields['chapter'].choices.append((chapter.slug, chapter.chapter_info.chapter_name))
+        
+        self.base_fields['chapter'].initial = kwargs.pop('chapter', None)
+
+        super(UserSearchForm, self).__init__(*args, **kwargs)
+        
+class UserSelectionInput(forms.MultipleHiddenInput):
+    """
+    Used to select one or more users, which are shown as labels
+    corresponding to the users' real names, but stored as hidden
+    inputs (usernames) behind the scenes.
+    """
+    class Media:
+        css = {
+            "all": (STATIC_URL + 'css/user_selection.css',)
+        }
+        js = (STATIC_URL + 'js/user_selection.js',)
+
+    def render(self, name, value, attrs=None, choices=()):
+        if value is None: value = []        
+        users = []
+
+        for v in value:
+            u = User.objects.get(username=v)
+            users.append(u)
+        t = loader.get_template('profiles/user_selection_input.html')
+        c = Context({'users': users, 'field_name': name})
+        return mark_safe(t.render(c))
+        
+class UserField(forms.Field):
+    widget = UserSelectionInput
+        
+class SampleUserSearchForm(forms.Form):
+    to = UserField(required=False)
+    cc = UserField(required=False)
+    bcc = UserField(required=False)

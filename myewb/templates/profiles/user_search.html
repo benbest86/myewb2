@@ -1,0 +1,51 @@
+{% extends "profiles/base.html" %}
+
+{% comment %}
+This file is part of myEWB
+Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
+{% endcomment %}
+
+{% load i18n %}
+{% load extra_tagging_tags %}
+{% load profile_tags %}
+{% load uni_form %}
+
+{% block head_title %}{% blocktrans %}User Search{% endblocktrans %}{% endblock %}
+
+{% block subnav %}
+{% if user.is_authenticated %}
+    <ul class="subnav green">
+        <li><a href="{% url profile_detail user.username %} ">{% trans "Your Profile" %}</a></li>
+        <li><a href="{% url profile_list %} ">{% trans "All Profiles" %}</a></li>
+    </ul>
+{% endif %}
+{% endblock %}
+
+{% block body %}
+    <h2>User Search</h2>
+    <form class="uniForm" id="search-users" method="GET" action="{% url profile_user_search %}">
+    	<fieldset class="inlineLabels">  
+    		{{ form|as_uni_form }}
+    		<div class="form_block">
+            <input type="hidden" name="action" value="search" />
+            <input type="submit" value="{% trans "search" %}"/>
+            </div>
+    	</fieldset>
+    </form>
+    
+    {% if users %}
+    <h3>Results</h3>
+    <ul>
+        {% for result_user in users %}
+        <!-- FIXME: remove usernames once UI is such that we know users will have real name listed in profile -->
+        <li>
+            <a href="{% url profile_detail result_user.username %}">{{ result_user.first_name }} {{ result_user.last_name }} ({{ result_user.username }})</a>
+            {% if result_user.get_profile.chapters %}
+            <br/>
+            <small>({% for chapter in result_user.get_profile.chapters %}{{ chapter }}{% if not forloop.first %}, {% endif %}{% endfor %})</small>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+{% endblock %}

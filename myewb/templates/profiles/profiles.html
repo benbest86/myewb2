@@ -20,7 +20,19 @@
         <div class="profile clearfix" style="height: 45px;">
             {# @@@ factor out style into css file #}
             <div style="float: left;">{% avatar user 40 %}</div>
-            <div style="padding: 5px; margin-left: 50px;"><a href="{% url profile_detail user.username %}">{{ user.first_name }} {{ user.last_name }}</a></div>
+            <div style="padding: 5px; margin-left: 50px;">
+                <a href="{% url profile_detail user.username %}">{{ user.first_name }} {{ user.last_name }} ({{ user.username }})</a>
+                <br/>
+                <small>
+                    (
+                    {% for member_group in user.member_groups %}
+                        {% if member_group.group.is_chapter %}
+                            {{ member_group.group }}
+                        {% endif %}
+                    {% endfor %}
+                    )
+                </small>
+            </div>
         </div>
     {% endfor %}
     

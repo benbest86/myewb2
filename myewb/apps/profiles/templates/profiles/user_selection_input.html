@@ -1,0 +1,20 @@
+{% comment %}
+This file is part of myEWB
+Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
+{% endcomment %}
+
+{% load i18n %}
+{% load extra_tagging_tags %}
+{% load profile_tags %}
+
+{# ctrlHolder refers to the django-uni-form CSS class #}
+<div class="usi ctrlHolder" id="usi_{{ field_name }}">    
+    <label for="{{ field_name }}">{{ field_name }}:</label>
+    {% for sel_user in users %}
+        {% get_selected_user sel_user field_name %}
+    {% endfor %}
+    <span id="usi_add_{{ field_name }}"><a href="#" class="usi-add-link" id="usi_add_link_{{ field_name }}">+</a></span>
+    <div class="usi-search" id="usi_search_{{ field_name }}">
+        {% show_user_search field_name %}
+    </div>
+</div>

@@ -1,0 +1,23 @@
+.usi {
+    padding: 4px 0;
+}
+
+.usi-search {
+    border: solid 2px black; 
+    padding: 8px;
+    margin-top: 8px;
+}
+
+.selected-user {
+    padding: 2px; 
+    margin: 2px; 
+    -moz-border-radius: 5px; 
+    -webkit-border-radius: 5px; 
+    background-color: skyblue; 
+    border: solid 1px blue;
+}
+
+.usi-add-link {
+    text-decoration: none;
+    font-weight: bold;
+}

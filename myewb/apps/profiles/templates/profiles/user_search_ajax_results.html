@@ -1,0 +1,24 @@
+{% comment %}
+This file is part of myEWB
+Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
+{% endcomment %}
+
+{% load i18n %}
+{% load extra_tagging_tags %}
+{% load profile_tags %}
+{% load uni_form %}
+
+{% if users %}
+<ul>
+    {% for result_user in users %}
+    {# FIXME: remove usernames once UI is such that we know users will have real name listed in profile #}
+    <li>
+        <a href="{% url profile_detail result_user.username %}">{{ result_user.first_name }} {{ result_user.last_name }} ({{ result_user.username }})</a> - <a class="userSearchChoice" id="usr-{{ field }}-{{ result_user.username}}" href="#">Select</a>{# hyphens required for JS to work #}
+        {% if result_user.get_profile.chapters %}
+        <br/>
+        <small>({% for chapter in result_user.get_profile.chapters %}{% if not forloop.first %}, {% endif %}{{ chapter }}{% endfor %})</small>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>
+{% endif %}

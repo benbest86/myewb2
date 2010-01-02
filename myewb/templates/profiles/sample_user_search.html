@@ -1,0 +1,74 @@
+{% extends "profiles/base.html" %}
+
+{% comment %}
+This file is part of myEWB
+Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
+{% endcomment %}
+
+{% load i18n %}
+{% load extra_tagging_tags %}
+{% load profile_tags %}
+{% load uni_form %}
+{% block head_title %}{% blocktrans %}Sample Usage of AJAX User Search{% endblocktrans %}{% endblock %}
+
+{% block subnav %}
+{% if user.is_authenticated %}
+    <ul class="subnav green">
+        <li><a href="{% url profile_detail user.username %} ">{% trans "Your Profile" %}</a></li>
+        <li><a href="{% url profile_list %} ">{% trans "All Profiles" %}</a></li>
+    </ul>
+{% endif %}
+{% endblock %}
+
+{% block extra_head %}
+{{ form.media }}
+{% endblock %}
+
+{% block body %}
+    <h2>Sample Usage of AJAX User Search</h2>
+    
+    {% if results %}
+    <div id="selected_user_results" style="border: solid 2px black; padding: 8px;">
+        The following users were successfully selected on the previous page:<br/>
+        <b>To:</b>
+        <ul>
+        {% for sel_user in to_users %}
+            <li>{{ sel_user.first_name }} {{ sel_user.last_name }} ({{ sel_user.username }})</li>
+        {% endfor %}
+        </ul>
+        
+        <b>Cc:</b>
+        <ul>
+        {% for sel_user in cc_users %}
+            <li>{{ sel_user.first_name }} {{ sel_user.last_name }} ({{ sel_user.username }})</li>
+        {% endfor %}
+        </ul>
+        
+        <b>Bcc:</b>
+        <ul>
+        {% for sel_user in bcc_users %}
+            <li>{{ sel_user.first_name }} {{ sel_user.last_name }} ({{ sel_user.username }})</li>
+        {% endfor %}
+        </ul>
+    </div>
+    {% else %}
+    
+    <form class="uniForm" id="search-users" method="POST" action="{% url profile_sample_user_search %}">
+    	<fieldset class="inlineLabels">
+    	    {{ form|as_uni_form }}
+    	    
+    		<div class="form_block">
+            <input type="hidden" name="action" value="submit" />
+            <input type="submit" value="{% trans "submit" %}"/>
+            </div>
+    	</fieldset>
+    </form>
+    {% endif %}
+{% endblock %}
+
+{% block extra_body %}    
+    <script type="text/javascript">    
+        function getUserSelectionUrl() { return '{% url selected_user %}'; }
+        function getUserSearchUrl() { return '{% url profile_user_search %}'; }
+	</script>
+{% endblock %}
