@@ -284,9 +284,11 @@ td.right {
     text-align: right;
 }
 
+/*
 tr:nth-child(odd) {
     background: #eee;
 }
+*/
 
 div.right_panel {
 	float: right;
