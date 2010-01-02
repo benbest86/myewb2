@@ -12,7 +12,7 @@
 <br/>
 {% endif %}
 
-<div id="calendar" style="float: left;">
+<div id="calendar" style="float: left; border-width: 1px;" class="ui-corner-all">
 {% for event in events %}
   <p>{{event}}</p>
 {% endfor %}
@@ -24,7 +24,7 @@
 </div>
 
 <div id="loading" style="height: 1; width: 1; overflow: visible; position: relative; top: 0.8em; left: 2em; display: none;">loading...</div>
-<div id="detail" style="margin-left: 18.5em; padding: 0.2em; display: none;" class="ui-widget ui-widget-content ui-corner-all">
+<div id="detail" style="margin-left: 18.5em; padding: 0.2em; display: none; border-width: 1px;" class="ui-widget ui-widget-content ui-corner-all">
 <div id="detail-title" class="ui-widget-header ui-corner-all" style="padding: 0.2em;"></div>
 <div id="detail-content" style="padding-top: 0.5em;"></div>
 </div>

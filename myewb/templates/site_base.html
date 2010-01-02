@@ -43,8 +43,8 @@
         {% else %}
             <li id="tab_profile" class="green"><a href="{% url profile_list %}">{% trans "Profiles" %}</a></li>
         {% endif %}
-        <li id="tab_networks" class="yellow"><a href="{% url networks_index %}">{% trans "Chapters" %}</a></li>
-        <li id="tab_communities" class="orange"><a href="{% url communities_index %}">{% trans "Mailing Lists" %}</a></li>
+        <li id="tab_networks" class="yellow"><a href="{% url networks_index %}">{% trans "Networks" %}</a></li>
+        <li id="tab_communities" class="orange"><a href="{% url communities_index %}">{% trans "Communities" %}</a></li>
         <li id="tab_events" class="red"><a href="{% url events_all %}">{% trans "Events" %}</a></li>
         <li id="tab_volunteering" class="purple"><a href="{% url volunteering_index %}">{% trans "Volunteering" %}</a></li>
     {% endspaceless %}</ul>
