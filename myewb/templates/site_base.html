@@ -20,7 +20,7 @@
 	{% ifnotequal request.path "/account/login/" %}
 	<div class="login">
     {% if user.is_authenticated %}
-		Signed in as <a class="username" href="{% url acct_email %}"><strong>{{ user.email }}</strong></a>.
+		Signed in as <a class="username" href="{% url profile_detail user %}"><strong>{{ user.visible_name }}</strong></a>.
 		<a class="signout" href="{% url acct_logout %}">{% trans "sign out" %}</a>
     {% else %}
         <a href="{% url acct_login %}">{% trans "Login" %}</a>

@@ -15,9 +15,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 
 {% block body %}
 	<br/>
-	{% if other_user.get_profile.name %}
-        <h1 style="text-align: center;">{{ other_user.get_profile.name }}</h1>
-    {% endif %}
+    <h1 style="text-align: center;">{{ other_user.visible_name }}</h1>
     <div style="text-align: center; position: relative; top: -15px;">
         <a href="mailto:{{other_user.email}}">{{other_user.email}}</a>
     </div>
@@ -179,7 +177,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
                                     <div class="form_block">
                                         <input type="hidden" name="action" value="invite" />
                                         <input type="submit" value="{% trans "invite" %}"/>
-                                        {{ other_user.first_name }}{% blocktrans %} to be a friend.{%  endblocktrans %}
+                                        {{ other_user.visible_name }}{% blocktrans %} to be a friend.{%  endblocktrans %}
                                     </div>
                                 </fieldset>
                             </form>

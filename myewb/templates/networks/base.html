@@ -60,7 +60,7 @@
                     {% avatar admin.user 30 %}
                 </div>
                 <div style="margin-left: 35px; height: 35px;">
-                    <a href="{% url profile_detail admin.user.username %}">{{ admin.user.get_profile.name }}</a><br/>
+                    <a href="{% url profile_detail admin.user.username %}">{{ admin.user.visible_name }}</a><br/>
                     {{ admin.admin_title }} {% if member and member.is_admin %}<a href="{% url network_edit_member group.slug admin.user.username %}">(edit)</a>{% endif %}
                 </div>
             {% endfor %}

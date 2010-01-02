@@ -33,21 +33,21 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
         <b>To:</b>
         <ul>
         {% for sel_user in to_users %}
-            <li>{{ sel_user.first_name }} {{ sel_user.last_name }} ({{ sel_user.username }})</li>
+            <li>{{ sel_user.visible_name }}</li>
         {% endfor %}
         </ul>
         
         <b>Cc:</b>
         <ul>
         {% for sel_user in cc_users %}
-            <li>{{ sel_user.first_name }} {{ sel_user.last_name }} ({{ sel_user.username }})</li>
+            <li>{{ sel_user.visible_name }}</li>
         {% endfor %}
         </ul>
         
         <b>Bcc:</b>
         <ul>
         {% for sel_user in bcc_users %}
-            <li>{{ sel_user.first_name }} {{ sel_user.last_name }} ({{ sel_user.username }})</li>
+            <li>{{ sel_user.visible_name }}</li>
         {% endfor %}
         </ul>
     </div>

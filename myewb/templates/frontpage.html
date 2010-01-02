@@ -79,7 +79,7 @@
     <div class="toolbarheader bkgd">{% trans "Who's Online" %}</div>
     <div class="toolbarcontent">
         {% for online in online_users %}
-            <a href="{% url profile_detail online %}">{{ online.first_name }} {{ online.last_name }}</a><br/>
+            <a href="{% url profile_detail online %}">{{ online.visible_name }}</a><br/>
         {% endfor %} <br/>
         and {{ online_anon }} guests
     </div>

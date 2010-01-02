@@ -69,7 +69,7 @@
                         <td>{{ contact.email }}</td>
                         <td>
                             {% for other_user in contact.users.all %}
-                                <a href="{% url profile_detail other_user.username %}">{{ other_user }}</a>
+                                <a href="{% url profile_detail other_user.username %}">{{ other_user.visible_name }}</a>
                             {% endfor %}
                         </td>
                     </tr>

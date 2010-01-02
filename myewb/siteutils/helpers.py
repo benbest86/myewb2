@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
+from django.db.models.signals import post_init
 from django.http import HttpResponseForbidden, Http404
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -82,3 +83,19 @@ class SQLLogToConsoleMiddleware:
             t = Template("{% load sql_keyword_filters %}{% autoescape off %}{% if count %}{{ count }} quer{{ count|pluralize:\"y,ies\" }} in {{ time }} seconds:\n\n{% for sql in sqllog %}[{{ forloop.counter }}] {{ sql.time }}s: {{ sql.sql|safe|colorsql }}{% if not forloop.last %}\n\n{% endif %}{% endfor %}{% endif %}{% endautoescape %}")
             print t.render(Context({'sqllog':clean_queries,'count':len(clean_queries),'time':time}))                
         return response
+
+# Duckpunch to add the "visible_name" function to the User obejct
+def visible_name(self):
+    if self.first_name and self.last_name:
+        return "%s %s" % (self.first_name, self.last_name)
+    elif self.first_name:
+        return self.first_name
+    elif self.last_name:
+        return self.last_name
+    elif self.email:
+        return self.email
+    else:
+        return "Unknown user (%s)" % self.username
+        #return "Unknown user"
+User.add_to_class("visible_name", visible_name)
+

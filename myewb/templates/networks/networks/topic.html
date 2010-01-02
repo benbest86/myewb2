@@ -17,7 +17,7 @@
         <li class="odd thread-0 clearfix">
             <div class="meta">
                 <div class="avatar">{% avatar topic.creator 40 %}</div>
-                <div class="details"><a href="{% url profile_detail topic.creator.username %}">{{ topic.creator }}</a></div>
+                <div class="details"><a href="{% url profile_detail topic.creator.username %}">{{ topic.creator.visible_name }}</a></div>
                 {{ topic.created|date }}
             </div>
             <div class="bulk">

@@ -24,14 +24,14 @@
         <div class="postsubheader"> <!-- stat row -->
             <table width="100%" style="margin:0; padding: 0;">
             <tr>
-				<td>By <a href="{% url profile_detail response.user.username %}">{{ response.user.get_full_name }}</a>, {{ response.date_submitted|date }}</td>
+				<td>By <a href="{% url profile_detail response.user.username %}">{{ response.user.visible_name }}</a>, {{ response.date_submitted|date }}</td>
             </tr>
             </table>
         </div>
 
         <div class="postcontent" style="width: 98%;"> <!-- main row -->
     		<a href="{% url profile_detail response.user.username %}">
-    		    <img src="{% avatar_url response.user 40 %}" style="border: 1px solid #CCC; float:right; margin: 10px; margin-left:14px; padding:5px;" title="{{response.user.get_full_name}}" alt="{{response.user.get_full_name}}"/>
+    		    <img src="{% avatar_url response.user 40 %}" style="border: 1px solid #CCC; float:right; margin: 10px; margin-left:14px; padding:5px;" title="{{response.user.visible_name}}" alt="{{response.user.visible_name}}"/>
     		</a>
 
             {{ response.comment|safe }}

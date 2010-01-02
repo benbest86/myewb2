@@ -26,7 +26,7 @@
         {% endcomment %}
         <dl>
         {% for fwd in forwards %}
-            <dt>{{ fwd.user}}</dt>
+            <dt>{{ fwd.user.visible_name }} ({{fwd.user.email}})</dt>
 			<dd>
 				{{ fwd.address }}<br/>
 				<form action="{% url email_forwards_delete network.slug fwd.id %}" method="post">

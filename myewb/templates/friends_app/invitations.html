@@ -20,7 +20,7 @@
                             <ul class="errorlist">
                                 <li>{% trans "Someone with this email address has already joined:" %}
                                     {% for other_user in join_request_form.existing_users %}
-                                    <a href="{% url profile_detail other_user %}">{{ other_user }}</a>{% endfor %}
+                                    <a href="{% url profile_detail other_user %}">{{ other_user.visible_name }}</a>{% endfor %}
                                 </li>
                             </ul>
                         {% else %}
@@ -46,7 +46,7 @@
                 {% ifequal invitation.status "2" %}
                     <tr>
                         <td colspan="3" class="friendship_request">
-                            <p>From <a href="{% url profile_detail invitation.from_user.username %}">{{ invitation.from_user }}</a>
+                            <p>From <a href="{% url profile_detail invitation.from_user.username %}">{{ invitation.from_user.visible_name }}</a>
                                 ({{ invitation.sent }}):</p>
                             <p class="invitation_message">{{ invitation.message }}</p>
                             <form method="post" action="">
@@ -58,7 +58,7 @@
                     </tr>
                 {% else %}
                     <tr>
-                        <td><a href="{% url profile_detail invitation.from_user.username %}">{{ invitation.from_user }}</a></td>
+                        <td><a href="{% url profile_detail invitation.from_user.username %}">{{ invitation.from_user.visible_name }}</a></td>
                         <td>{{ invitation.sent }}</td>
                         <td class="invitation_{{ invitation.status }}">{{ invitation.get_status_display }}</td>
                     </tr>

@@ -21,17 +21,20 @@
             {# @@@ factor out style into css file #}
             <div style="float: left;">{% avatar user 40 %}</div>
             <div style="padding: 5px; margin-left: 50px;">
-                <a href="{% url profile_detail user.username %}">{{ user.first_name }} {{ user.last_name }} ({{ user.username }})</a>
+                <a href="{% url profile_detail user.username %}">{{ user.visible_name }}</a>
+                {% comment %}
+                this is buggy - crashes...
                 <br/>
                 <small>
                     (
-                    {% for member_group in user.member_groups %}
+                    {% for member_group in user.member_groups.all %}
                         {% if member_group.group.is_chapter %}
                             {{ member_group.group }}
                         {% endif %}
                     {% endfor %}
                     )
                 </small>
+                {% endcomment %}
             </div>
         </div>
     {% endfor %}

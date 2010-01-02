@@ -80,13 +80,9 @@ class EmailLoginForm(forms.Form):
             self.user.get_profile().save()
             
             # set message
-            if self.user.first_name and self.user.last_name:
-                login_message=ugettext(u"Successfully logged in. Welcome, %(first_name)s %(last_name)s.") % {
-                    'first_name': self.user.first_name,
-                    'last_name': self.user.last_name
-                }
-            else:
-                login_message=ugettext(u"Successfully logged in.")
+            login_message=ugettext(u"Welcome back, %(name)s") % {
+                'name': self.user.visible_name
+            }
             request.user.message_set.create(message=login_message)
             if self.cleaned_data['remember']:
                 request.session.set_expiry(60 * 60 * 24 * 7 * 3)

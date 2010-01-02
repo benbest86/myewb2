@@ -37,13 +37,9 @@ def signup(request, form_class=EmailSignupForm,
                 user = authenticate(username=username, password=password)
                 auth_login(request, user)
                 
-                if user.first_name and user.last_name:
-                    login_message=ugettext(u"Successfully logged in. Welcome, %(first_name)s %(last_name)s.") % {
-                        'first_name': user.first_name,
-                        'last_name': user.last_name
-                    }
-                else:
-                    login_message=ugettext(u"Successfully logged in.")
+                login_message=ugettext(u"Welcome back, %(name)s") % {
+                    'name': user.visible_name
+                }
                 request.user.message_set.create(message=login_message)
                 return HttpResponseRedirect(success_url)
     else:

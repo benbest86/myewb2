@@ -24,7 +24,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
             <div>{% avatar other_user 80 %}</div>
         </div>
         
-        <h1>{% if other_user.get_profile.name %}{{ other_user.get_profile.name }}{% else %}{{ other_user }}{% endif %}</h1>
+        <h1>{{ other_user.visible_name }}</h1>
 
         <form class="uniForm" id="edit-record" method="POST" action="">
             <fieldset class="inlineLabels">  

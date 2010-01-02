@@ -54,7 +54,7 @@
                 <td>
                     <a href="{% url community_member_detail group.slug, member.user.username %}">{{ member.user.username }}</a>
                 </td>
-                <td>{{ member.user.get_profile.name }}</td>
+                <td>{{ member.user.visible_name }}</td>
                 <td>{% if member.is_admin %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td>
                 <td>{% if member.is_admin %}{{ member.admin_title}}{% endif %}</td>
                 {% if is_admin %}
@@ -86,7 +86,7 @@
                         <td>
                             <a href="{% url profile_detail member.user.username %}">{{ member.user.username }}</a>
                         </td>
-                        <td>{{ member.user.get_profile.name }}</td>
+                        <td>{{ member.user.visible_name }}</td>
                         <td>{{ member.user.email }}</td>
                         <td>
                             {% if member.is_requested %}{% trans "Member request pending" %}{% endif %}

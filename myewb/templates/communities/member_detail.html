@@ -16,13 +16,7 @@
     <div style="width: 550px;">
         
 		<p><a href="{% url community_detail group.slug %}">{{ group.name }}</a> - <a href="{% url community_members_index group.slug %}">{% trans "Members" %}</a></p>
-        <h1>			
-			{% if member.user.get_profile.name %}
-				{{ member.user.get_profile.name }}
-			{% else %}
-				{{ member.user.username }}
-			{% endif %}
-		</h1>
+        <h1>{{ member.user.visible_name }}</h1>
 		
 		{% ifequal member.user, request.user %}
 		    <p>

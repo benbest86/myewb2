@@ -19,7 +19,7 @@
     
     <p>
         {% trans "Slug:" %} <tt>{{ group.slug }}</tt><br />
-        {% trans "Creator:" %} <a href="{% url profile_detail group.creator.username %}">{{ group.creator }}</a><br />
+        {% trans "Creator:" %} <a href="{% url profile_detail group.creator.username %}">{{ group.creator.visible_name }}</a><br />
         {% trans "Created:" %} {{ group.created|date }}
         <br />
         {% show_tags_for group %}

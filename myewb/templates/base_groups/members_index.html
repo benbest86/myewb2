@@ -41,7 +41,7 @@
         </p>
         <dl>
         {% for member in members %}
-            <dt><a href="{{ url member_detail group, member.user }}">{{ member.name }}</a></dt>
+            <dt><a href="{{ url member_detail group, member.user }}">{{ member.visible_name }}</a></dt>
 			<dd>
 				{% if member.admin_title %}{{ member.admin_title }}
 				<a href="{{ url edit_member group, member.user }}">{% trans "Edit details" %}</a>

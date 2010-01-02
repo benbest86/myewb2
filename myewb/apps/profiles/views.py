@@ -33,12 +33,12 @@ def profiles(request, template_name="profiles/profiles.html"):
     if search_terms:
         users = User.objects.filter(profile__name__icontains=search_terms) | \
                         User.objects.filter(username__icontains=search_terms)
-        users = users.order_by("profile__name")
     else:
-        users = User.objects.all().order_by("profile__name")
+        users = User.objects.all()
+    users = users.order_by("profile__name")
     
     return render_to_response(template_name, {
-        "users": users,        
+        "users": users,
         'search_terms': search_terms,
     }, context_instance=RequestContext(request))
 

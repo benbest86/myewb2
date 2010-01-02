@@ -9,7 +9,7 @@
 
 {% for response in responses %}
     <hr/>
-    <p>Reply by {{ response.user.get_full_name }}, {{ response.date_submitted|date }}</p>
+    <p>Reply by {{ response.user.visible_name }}, {{ response.date_submitted|date }}</p>
 
     <div class="postcontent"> <!-- main row -->
         {{ response.comment|safe }}

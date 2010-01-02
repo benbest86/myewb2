@@ -166,7 +166,7 @@
                     {% avatar member.user 15 %}
                 </div>
                 <div style="margin-left: 18px; height: 18px;">
-                    <a href="{% url profile_detail member.user.username %}">{{ member.user.get_profile.name }}</a>
+                    <a href="{% url profile_detail member.user.username %}">{{ member.user.visible_name }}</a>
                 </div>
             {% endfor %}
             
