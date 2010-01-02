@@ -141,8 +141,14 @@ def group_detail(request, group_slug, model=None, member_model=None,
     # get group
     group = get_object_or_404(model, slug=group_slug)
 
-    children = group.get_visible_children(request.user)
-
+    # membership status
+    if group.user_is_member(request.user):
+        member = group.members.get(user=request.user)
+    elif group.user_is_pending_member(request.user):
+        member = group.pending_members.get(user=request.user)
+    else:
+        member = None
+        
     # retrieve whiteboard (create if needed)
     if group.whiteboard == None:
         wb = Article(title="Whiteboard", content="")
@@ -156,7 +162,8 @@ def group_detail(request, group_slug, model=None, member_model=None,
         template_name,
         {
             'group': group,                
-            'children': children,
+            'children': group.get_visible_children(request.user),
+            'is_admin': group.user_is_admin(request.user)
         },
         context_instance=RequestContext(request)
     )

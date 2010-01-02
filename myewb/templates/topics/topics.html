@@ -47,6 +47,20 @@ The {% if group %} checks are left in just in case, and should be removed eventu
     		</a>
     	{% endspaceless %}
     	</p>
+   	{% else %}
+       	{% if can_execovision %}
+	        <p>
+       		{% spaceless %}
+       			<a href="{% url topic_adminovision %}">
+        		{% if adminovision %}
+        			Turn off execovision
+        		{% else %}
+        			Turn on execovision
+        		{% endif %}
+        		</a>
+        	{% endspaceless %}
+        	</p>
+        {% endif %}
    	{% endif %}
     
     {% if group %}

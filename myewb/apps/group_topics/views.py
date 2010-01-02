@@ -23,7 +23,7 @@ from groups import bridge
 
 from account_extra.forms import EmailLoginForm
 from base_groups.models import BaseGroup
-from base_groups.helpers import user_can_adminovision
+from base_groups.helpers import user_can_adminovision, user_can_execovision
 from group_topics.models import GroupTopic
 from group_topics.forms import GroupTopicForm
 from group_topics.feeds import TopicFeedAll, TopicFeedGroup
@@ -149,9 +149,11 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
 
     if request.user.is_authenticated():
         can_adminovision = user_can_adminovision(request.user)
+        can_execovision = user_can_execovision(request.user)
         adminovision = request.user.get_profile().adminovision
     else:
         can_adminovision = False
+        can_execovision = False
         adminovision = False
         
     return render_to_response(template_name, {
@@ -162,6 +164,7 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
         "is_member": is_member,
         "topics": topics,
         "can_adminovision": can_adminovision,
+        "can_execovision": can_execovision,
         "adminovision": adminovision,
         "login_form": EmailLoginForm(),                # for front-page toolbar
     }, context_instance=RequestContext(request))
@@ -261,7 +264,7 @@ def adminovision_toggle(request, group_slug=None):
     No effect if user is not an admin
     """
 
-    if user_can_adminovision(request.user):
+    if user_can_adminovision(request.user) | user_can_execovision(request.user):
         profile = request.user.get_profile()
     
         profile.adminovision = not profile.adminovision

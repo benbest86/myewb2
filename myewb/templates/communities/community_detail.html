@@ -27,9 +27,20 @@
         
     <p>{{ group.description }}</p>
 
+<<<<<<< HEAD:myewb/templates/communities/community_detail.html
 	{% if group.parent %}
 		<p>{% trans "Parent:" %} <a href="{{ group.parent.get_absolute_url }}">{{ group.parent.name }}</a></p>
 	{% endif %}
         
+=======
+        {% if is_admin %}
+			<p><a href="{% url edit_community group.slug %}">{% trans "Edit details" %}</a></p>           
+        {% endif %}
+
+        {% show_group_content group %}
+
+    </div>
+
+>>>>>>> permissions_framework:myewb/templates/communities/community_detail.html
 {% endblock %}
 

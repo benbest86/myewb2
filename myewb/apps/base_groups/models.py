@@ -33,12 +33,13 @@ class BaseGroup(Group):
     """
     
     model = models.CharField(_('group model'), max_length=500, null=True, blank=True)
-    parent = models.ForeignKey('self', related_name="children", verbose_name=_('parent'), null=True, blank=True)
+    parent = models.ForeignKey('self', related_name="children",
+                               verbose_name=_('parent'), null=True, blank=True)
     
     member_users = models.ManyToManyField(User, through="GroupMember", verbose_name=_('members'))
     
-    # private means members can only join if invited
-    private = models.BooleanField(_('private'), default=False)
+    # if true, members can only join if invited
+    invite_only = models.BooleanField(_('invite only'), default=False)
     
     VISIBILITY_CHOICES = (
         ('E', _("everyone")),
@@ -51,19 +52,31 @@ class BaseGroup(Group):
 
     def is_visible(self, user):
         visible = False
+        
+        # public groups are always visible
         if self.visibility == 'E':
             visible = True
+            
         elif user.is_authenticated():
+            # site-wide group admins can see everything
             if user.has_module_perms("base_groups"):
                 return True
+                
+            # admins of the parent group are automatically admins here
+            if self.parent and self.parent.user_is_admin(user):
+                return True
             
+            # members of the group can see the group...
             member_list = self.members.filter(user=user)
             if member_list.count() > 0:
                 visible = True
+                
+            # and the last option, members of the parent group can see this one
             elif self.visibility == 'P':
                 parent_member_list = self.parent.members.filter(user=user)
                 if parent_member_list.count() > 0:
                     visible = True
+                    
         return visible
     
     # setting admin_override = True means that admins will be considered group members
@@ -77,13 +90,21 @@ class BaseGroup(Group):
 
     def user_is_pending_member(self, user):
         return user.is_authenticated() and self.pending_members.filter(user=user).count() > 0
-            
+    
     def user_is_admin(self, user):
         if user.is_authenticated():
+            # site-wide group admins are admins here...
             if user.has_module_perms("base_groups"):
                 return True
+                
+            # admins of the parent group are admins here...
+            if self.parent and self.parent.user_is_admin(user):
+                return True
+            
+            # and check for regular admins
             if self.members.filter(user=user, is_admin=True).count() > 0:
                 return True
+        
         return False
 
     def get_absolute_url(self):
@@ -162,7 +183,7 @@ class BaseGroup(Group):
     def get_visible_children(self, user):
         if not user.is_authenticated():
             return self.children.filter(visibility='E')
-        elif user.has_module_perms("base_groups"):
+        elif user.has_module_perms("base_groups") | self.user_is_admin(user):
             return self.children.all()
         else:
             children = self.children.filter(visibility='E') | self.children.filter(member_users=user)

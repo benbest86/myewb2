@@ -2,7 +2,7 @@ from django.conf.urls.defaults import *
 from django.contrib.contenttypes.models import ContentType
 from django.utils.datastructures import SortedDict
 
-from base_groups.models import BaseGroup
+from base_groups.models import BaseGroup, GroupMember
 
 TOPIC_COUNT_SQL = """
 SELECT COUNT(*)
@@ -120,4 +120,17 @@ def user_can_adminovision(user):
         return True
     else:
         return False
-    
+
+def user_can_execovision(user):
+    """
+    Check if user is capable of exec-o-vision (but not whether it is currently enabled)
+    Or, basically, if they are the admin of any networks.
+    """
+    query = GroupMember.objects.filter(user=user,
+                                       is_admin=True,
+                                       group__model='Network')
+    if query.count():
+        return True
+    else:
+        return False
+

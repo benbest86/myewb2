@@ -1,9 +1,12 @@
 # git ignore file for myewb project
+
 # ignore python compiled files
 *.pyc
-# ignore vim swp files
+
+# ignore vim swp files and gedit temp files
 *.swp
 *.*~
+
 # ignore db files
 *.db
 *.sqlite
@@ -12,6 +15,7 @@
 myewb/local_settings.py
 myewb/site_media
 myewb/media/attachments
+myewb/media/avatars
 
 # ignore any diff/patch files
 *.diff

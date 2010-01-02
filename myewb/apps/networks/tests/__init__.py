@@ -70,7 +70,7 @@ class TestNetworkForm(TestCase):
             "name": "Carleton University Chapter",
             "description": "Ottawa, ON",
             "network_type": "U",
-            "private": "False"
+            "invite_only": "False"
         }
         form = NetworkForm(data)
         if not form.is_valid():

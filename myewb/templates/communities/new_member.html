@@ -29,8 +29,8 @@
 	            </fieldset>
 	        </form>
 		{% else %}
-		    {% if group.private %}
-		        <p>{% trans "This is a private community. Your request must be approved by community administrators." %}</p>
+		    {% if group.invite_only %}
+		        <p>{% trans "This is an invite-only community. Your request must be approved by community administrators." %}</p>
 		    {% else %}
 			    <p>{% trans "Please confirm that you wish to join the community." %}</p>
 			{% endif %}
@@ -38,7 +38,7 @@
 	            <fieldset class="inlineLabels">
 	                <div class="form_block">
 	                    <input type="hidden" name="user" value="{{ user.id }}" />
-	                    {% if group.private %}
+	                    {% if group.invite_only %}
 	                        <input type="submit" value="{% trans 'request' %}"/>
 	                    {% else %}
 	                        <input type="submit" value="{% trans 'add' %}"/>
