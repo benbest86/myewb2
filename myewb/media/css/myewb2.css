@@ -304,7 +304,7 @@ div.left_panel {
 div.roundtop {
     border-top: 0;
     margin: 0 auto;
-    padding: 1.8em 3px 3px 3px;
+    padding: 1.8em 2px 2px 2px;
     width: 500px;
     -webkit-border-top-right-radius: 10px;
     -webkit-border-top-left-radius: 10px;
@@ -341,7 +341,6 @@ div.message-close a {
     color: #ffffff;
     font-weight: bold;
     text-decoration: none;
-    border: 1px solid #e0e0e0;
     padding: 0 2px;
 }
 
