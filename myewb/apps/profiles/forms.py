@@ -136,7 +136,7 @@ class UserSelectionInput(forms.MultipleHiddenInput):
         
         for v in value:
         	if isinstance(v, User):
-        		users.append(u)
+        		users.append(v)
         	else:
         		try:
         			u = User.objects.get(username=v)
