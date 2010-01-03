@@ -491,13 +491,6 @@ def user_search(request):
                     'field': field
                 }, context_instance=RequestContext(request))
     
-def usernames_to_users(usernames):
-    users = []
-    for username in usernames:
-        cur_user = get_object_or_404(User, username=username)
-        users.append(cur_user)
-    return users
-
 def sample_user_search(request):
     form = SampleUserSearchForm(request.POST)
     

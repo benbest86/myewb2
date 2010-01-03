@@ -3,6 +3,11 @@
 {% load i18n %}
 {% load uni_form %}
 
+{% block extra_head %}
+	{{ block.super }}
+	{{ form.media }}
+{% endblock %}
+
 {% block li-compose %}current{% endblock %}
 
 {% block msgheader %}<h1>{% trans "New Message"%}</h1>{% endblock %}
@@ -10,7 +15,8 @@
 {% block msgbody %}
     <form action="" method="post" class="uniForm">
         <fieldset class="inlineLabels">
-            {{ form|as_uni_form }}
+            {{ form|as_uni_form }}  
+
             <div class="form_block">
                 <input type="submit" value="{% trans "Send" %} &raquo;"/>
             </div>
@@ -41,5 +47,8 @@
             });
             $("#id_recipient").focus()
         });
+        
+        function getUserSelectionUrl() { return '{% url selected_user %}'; }
+        function getUserSearchUrl() { return '{% url profile_user_search %}'; }
     </script>
 {% endblock %}

@@ -156,6 +156,7 @@ INSTALLED_APPS = (
     'friends',
     'mailer',
     'messages',
+    'messages_ext',
     'announcements',
     'oembed',
     'djangodblog',
