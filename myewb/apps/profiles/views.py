@@ -495,31 +495,28 @@ def sample_user_search(request):
     form = SampleUserSearchForm(request.POST)
     
     if request.method == 'POST':
-        to_usernames = request.POST.getlist('to')        
-        cc_usernames = request.POST.getlist('cc')        
-        bcc_usernames = request.POST.getlist('bcc')
+        if form.is_valid():
+
+            to_users = form.cleaned_data['to']
+            cc_users = form.cleaned_data['cc']
+            bcc_users = form.cleaned_data['bcc']
         
-        to_users = usernames_to_users(to_usernames)
-        cc_users = usernames_to_users(cc_usernames)
-        bcc_users = usernames_to_users(bcc_usernames)
-        
-        return render_to_response(
-                'profiles/sample_user_search.html', 
-                { 
-                    'form': form,
-                    'results': True,
-                    'to_users': to_users,
-                    'cc_users': cc_users,
-                    'bcc_users': bcc_users
-                }, 
-                context_instance=RequestContext(request))
-    else:
-        return render_to_response(
-                'profiles/sample_user_search.html', 
-                { 
-                    'form': form
-                }, 
-                context_instance=RequestContext(request))
+            return render_to_response(
+                    'profiles/sample_user_search.html', 
+                    { 
+                        'form': form,
+                        'results': True,
+                        'to_users': to_users,
+                        'cc_users': cc_users,
+                        'bcc_users': bcc_users
+                    }, 
+                    context_instance=RequestContext(request))
+    return render_to_response(
+            'profiles/sample_user_search.html', 
+            { 
+                'form': form
+            }, 
+            context_instance=RequestContext(request))
             
 def selected_user(request):
     if request.is_ajax() and request.method == 'POST':

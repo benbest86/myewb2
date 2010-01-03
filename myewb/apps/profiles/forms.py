@@ -152,8 +152,10 @@ class UserField(forms.Field):
 
     def clean(self, value):
     	if not value:
-            raise forms.ValidationError(_(u"Please select a recipient"))
-    		#return ''
+    		if self.required:
+    			raise forms.ValidationError(_(u"Please select a recipient"))
+    		else:
+    			return ''
         
         #if isinstance(value, (list, tuple)):
        # 	return value
