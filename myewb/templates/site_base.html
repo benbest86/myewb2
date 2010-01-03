@@ -22,6 +22,8 @@
     {% if user.is_authenticated %}
 		Signed in as <a class="username" href="{% url profile_detail user %}"><strong>{{ user.visible_name }}</strong></a>.
 		<a class="signout" href="{% url acct_logout %}">{% trans "sign out" %}</a>
+		<br/>
+		<a href="{% url messages_inbox %}">Messages</a>
     {% else %}
         <a href="{% url acct_login %}">{% trans "Login" %}</a>
 {% ifsetting ACCOUNT_OPEN_SIGNUP %}{% trans "or" %} <a href="{% url acct_signup %}"><strong>{% trans "Sign up" %}</strong></a>{% endifsetting %}
