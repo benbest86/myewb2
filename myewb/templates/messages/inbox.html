@@ -2,6 +2,7 @@
 
 {% load i18n %}
 {% load timezone_filters %}
+{% load pagination_tags %}
 
 {% block li-inbox %}current{% endblock %}
 
@@ -9,13 +10,15 @@
 
 {% block msgbody %}
     
+    {% autopaginate message_list 20 %}
+    
     <table class="messages">
         <thead>
             <tr><th>{% trans "Sender" %}</th><th>{% trans "Subject" %}</th><th>{% trans "Received" %}</th><th>{% trans "Action" %}</th></tr>
         </thead>
         <tbody>
             {% for message in message_list %}
-                <tr>
+                <tr class="{% cycle "" "bkgd-light" %}">
                     <td>{{ message.sender.visible_name }}</td>
                     <td>
                         {% if message.new %}<strong>{% endif %}
@@ -29,4 +32,7 @@
             {% endfor %}
         </tbody>
     </table>
+
+    {% paginate %}
+
 {% endblock %}

@@ -2,12 +2,15 @@
 
 {% load i18n %}
 {% load timezone_filters %}
+{% load pagination_tags %}
 
 {% block li-outbox %}current{% endblock %}
 
 {% block msgheader %}<h1>{% trans "Sent Messages" %}</h1>{% endblock %}
 
 {% block msgbody %}
+
+    {% autopaginate message_list 20 %}
     
     <table class="messages">
         <thead>
@@ -15,7 +18,7 @@
         </thead>
         <tbody>
             {% for message in message_list %}
-                <tr>
+                <tr class="{% cycle "" "bkgd-light" %}">
                     <td>{{ message.recipient.visible_name }}</td>
                     <td>
                         <a href="{{ message.get_absolute_url }}">{{ message.subject }}</a>
@@ -26,4 +29,7 @@
             {% endfor %}
         </tbody>
     </table>
+
+    {% paginate %}
+
 {% endblock %}
