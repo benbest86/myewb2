@@ -133,10 +133,17 @@ class UserSelectionInput(forms.MultipleHiddenInput):
     def render(self, name, value, attrs=None, choices=()):
         if value is None: value = []        
         users = []
-
+        
         for v in value:
-            u = User.objects.get(username=v)
-            users.append(u)
+        	if isinstance(v, User):
+        		users.append(u)
+        	else:
+        		try:
+        			u = User.objects.get(username=v)
+        			users.append(u)
+        		except User.DoesNotExist:
+        			pass
+        print users
         t = loader.get_template('profiles/user_selection_input.html')
         c = Context({'users': users, 'field_name': name})
         return mark_safe(t.render(c))
@@ -159,6 +166,11 @@ class UserField(forms.Field):
         
         #if isinstance(value, (list, tuple)):
        # 	return value
+        
+        try:
+        	value.remove('')
+        except:
+        	pass
         
         names = set(value)
         names_set = set([name.strip() for name in names])
