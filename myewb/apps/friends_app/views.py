@@ -22,7 +22,7 @@ def friends(request, form_class=JoinRequestForm,
                 invitation = FriendshipInvitation.objects.get(id=invitation_id)
                 if invitation.to_user == request.user:
                     invitation.accept()
-                    request.user.message_set.create(message=_("Accepted friendship request from %(from_user)s") % {'from_user': invitation.from_user})
+                    request.user.message_set.create(message=_("Accepted friendship request from %(from_user)s") % {'from_user': invitation.from_user.visible_name()})
             except FriendshipInvitation.DoesNotExist:
                 pass
             join_request_form = form_class()
@@ -36,7 +36,7 @@ def friends(request, form_class=JoinRequestForm,
                 invitation = FriendshipInvitation.objects.get(id=invitation_id)
                 if invitation.to_user == request.user:
                     invitation.decline()
-                    request.user.message_set.create(message=_("Declined friendship request from %(from_user)s") % {'from_user': invitation.from_user})
+                    request.user.message_set.create(message=_("Declined friendship request from %(from_user)s") % {'from_user': invitation.from_user.visible_name()})
             except FriendshipInvitation.DoesNotExist:
                 pass
             join_request_form = form_class()
@@ -126,3 +126,4 @@ def friends_objects(request, template_name, friends_objects_function, extra_cont
     
     return render_to_response(template_name, dictionary, context_instance=RequestContext(request))
 friends_objects = login_required(friends_objects)
+
