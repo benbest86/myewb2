@@ -62,7 +62,7 @@
      {% for member in members %}
         <tr>
             <td>
-                <a href="{% groupurl member_detail group username=member.user.username %}">{{ member.user.visible_name }}</a>
+                <a href="{% url profile_detail member.user.username %}">{{ member.user.visible_name }}</a>
             </td>
             <td>{% if member.is_admin %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td>
             <td>{% if member.is_admin %}{{ member.admin_title}}{% endif %}</td>
