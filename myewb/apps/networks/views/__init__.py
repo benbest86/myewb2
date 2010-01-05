@@ -25,7 +25,7 @@ from siteutils.helpers import get_email_user
 from base_groups.views import *
 from base_groups.views import members
 from base_groups.models import BaseGroup, GroupMember, GroupLocation
-from base_groups.forms import GroupMemberForm, GroupLocationForm
+from base_groups.forms import GroupMemberForm, EditGroupMemberForm, GroupLocationForm
 from base_groups.helpers import *
 from base_groups.decorators import group_admin_required
 
@@ -82,12 +82,12 @@ def new_member(request, group_slug, form_class=GroupMemberForm, template_name=ME
         index_template_name=MEM_INDEX_TEMPLATE):
     return members.new_member(request, group_slug, Network, form_class, template_name, index_template_name)
     
-def member_detail(request, group_slug, username, form_class=GroupMemberForm, template_name=MEM_DETAIL_TEMPLATE,
+def member_detail(request, group_slug, username, form_class=EditGroupMemberForm, template_name=MEM_DETAIL_TEMPLATE,
         edit_template_name=MEM_EDIT_TEMPLATE):
     return members.member_detail(request, group_slug, username, Network, form_class, template_name, edit_template_name)
 
 @login_required
-def edit_member(request, group_slug, username, form_class=GroupMemberForm, template_name=MEM_EDIT_TEMPLATE,
+def edit_member(request, group_slug, username, form_class=EditGroupMemberForm, template_name=MEM_EDIT_TEMPLATE,
         detail_template_name=MEM_DETAIL_TEMPLATE):
     return members.edit_member(request, group_slug, username, Network, form_class, template_name, detail_template_name)
 

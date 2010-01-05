@@ -50,6 +50,12 @@ class GroupMemberForm(forms.ModelForm):
         model = GroupMember        
         fields = ('user', 'is_admin', 'admin_title')
         
+class EditGroupMemberForm(forms.ModelForm):
+    
+    class Meta:
+        model = GroupMember        
+        fields = ('is_admin', 'admin_title')
+        
 class GroupLocationForm(forms.ModelForm):
     
     class Meta:

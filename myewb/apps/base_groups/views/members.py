@@ -20,7 +20,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from base_groups.models import BaseGroup, GroupMember 
-from base_groups.forms import GroupMemberForm
+from base_groups.forms import GroupMemberForm, EditGroupMemberForm
 from base_groups.decorators import own_member_object_required, group_admin_required, visibility_required
 
 @visibility_required()
