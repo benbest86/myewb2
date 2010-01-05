@@ -1,101 +1,12 @@
 {% extends "networks/base.html" %}
 
 {% load i18n %}
-{% load uni_form %}
-{% load humanize %}
-{% load pagination_tags %}
-{% load order_by %}
-{% load extra_tagging_tags %}
-{% load sorting_tags %}
-{% load base_groups_tags %}
 
 {% block head_title %}{% blocktrans %}Members of{% endblocktrans %} {{group.name}}{% endblock %}
 
 {% block body %}
-	<p><a href="{% url network_detail group.slug %}">{{ group.name }}</a></p>
-    <h1>{% trans "Members" %}</h1>
-    
-    {% if user.is_authenticated and is_admin %}
-        <p><a href="{% url network_new_member group.slug %}">Add</a> a member</p>
-    {% else %}
-        {% url acct_signup as signup_url %}
-        {% url acct_login as login_url %}
-        <p>{% blocktrans %}<a href="{{ signup_url }}">Sign up</a> and <a href="{{ login_url }}">log in </a> to become a member.{% endblocktrans %}</p>
-    {% endif %}
-    
-    <form method="GET" action="">
-        <input type="text" name="search" value="{{ search_terms }}" />
-        <input type="submit" value="Search" />
-        {% if search_terms %}
-            <a href="{% clear_search_url request %}">Clear Search Terms</a>
-        {% endif %}
-    </form>
-    {% autosort members %}
-    {% autopaginate members 20 %}
-    {% if members %}
-        {% comment %}
-        <p>{% trans "Order by:" %}
-            {% anchor name Name %}
-            {% anchor created Date %}
-        </p>
-        {% endcomment %}
-        <table id="membersList">
-            <tr>
-                <th>{% trans "Name" %}</th>
-                <th>{% trans "Admin?" %}</th>
-                <th>{% trans "Admin title" %}</th>
-                {% if is_admin %}
-                    <th>{% trans "Primary Email" %}</th>
-                    <th>{% trans "Status" %}</th>
-                    <th>{% trans "Edit" %}</th>
-                {% endif %}
-            </tr>
-         {% for member in members %}
-            <tr>
-                <td>
-                    <a href="{% url network_member_detail group.slug, member.user.username %}">{{ member.user.visible_name }}</a>
-                </td>
-                <td>{% if member.is_admin %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td>
-                <td>{% if member.is_admin %}{{ member.admin_title}}{% endif %}</td>
-                {% if is_admin %}
-                    <td>{{ member.user.email }}</td>
-                    <td>
-                        {% if member.is_accepted %}{% trans "Registered member" %}{% endif %}
-                        {% if member.is_bulk %}{% trans "Mailing list recipient only" %}{% endif %}
-                    </td>
-                    <td><a href="{% url network_edit_member group.slug, member.user.username %}">{% trans "Edit" %}</a></td>
-                {% endif %}
-    		</tr>
-         {% endfor %}
-        </table>
-        {% paginate %}
-    {% endif %}
-    {% if is_admin %}
-        {% with group.pending_members.all as pending_members %}
-            {% if pending_members.count %}
-                <table id="pendingMembersList">
-                    <tr>
-                        <th>{% trans "Name" %}</th>
-                        <th>{% trans "Primary Email" %}</th>
-                        <th>{% trans "Status" %}</th>
-                        <th>{% trans "Edit" %}</th>
-                    </tr>
-                 {% for member in pending_members %}
-                    <tr>
-                        <td>
-                            <a href="{% url profile_detail member.user.username %}">{{ member.user.visible_name }}</a>
-                        </td>
-                        <td>{{ member.user.email }}</td>
-                        <td>
-                            {% if member.is_requested %}{% trans "Member request pending" %}{% endif %}
-            			    {% if member.is_invited %}{% trans "Member invitation pending" %}{% endif %}
-                        </td>
-                        <td>TODO</td>
-            		</tr>
-                 {% endfor %}
-                </table>
-            {% endif %}
-        {% endwith %}
-    {% endif %}
-    
+
+    {% include "base_groups/members_index.html" %}
+
 {% endblock %}
+
