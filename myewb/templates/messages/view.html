@@ -22,8 +22,9 @@
         <dd>{{ message.recipient }}</dd>
     </dl>
     
-    <p>{% oembed %}{{ message.body|linebreaksbr }}{% endoembed %}</p>
+    <p>{% oembed %}{{ message.body|safe }}{% endoembed %}</p>
     
+    <hr/>
     {% ifequal message.recipient user %}
         <p><a href="{% url messages_reply message.id %}">{% trans "Reply" %}</a></p>
     {% endifequal %}

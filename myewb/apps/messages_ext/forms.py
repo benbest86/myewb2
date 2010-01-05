@@ -17,6 +17,7 @@ from django import forms
 from django.utils.translation import ugettext_lazy as _
 from profiles.forms import UserField, UserSelectionInput
 from messages.forms import ComposeForm as OriginalComposeForm
+from lxml.html.clean import clean_html, autolink_html
 
 class ComposeForm(OriginalComposeForm):
     """
@@ -24,9 +25,19 @@ class ComposeForm(OriginalComposeForm):
     """
 
     recipient = UserField(label=_(u"Recipient"))
+    body = forms.CharField(label=_(u"Body"),
+        widget=forms.Textarea(attrs={'rows': '12', 'cols':'55', 'class':'tinymce '}))
     
-    #recipient = forms.MultipleChoiceField(label=_(u"Recipient"),
-    #                                      widget=UserSelectionInput)
+    def clean_body(self):
+        body = self.cleaned_data.get('body', '')
+
+        # validate HTML content
+        # Additional options at http://codespeak.net/lxml/lxmlhtml.html#cleaning-up-html
+        body = clean_html(body)
+        body = autolink_html(body)
+    
+        self.cleaned_data['body'] = body
+        return self.cleaned_data['body']
     
     """
     #recipient = CommaSeparatedUserField(label=_(u"Recipient"))

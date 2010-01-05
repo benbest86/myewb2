@@ -1,5 +1,6 @@
 from django import forms
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from friends.models import *
@@ -55,7 +56,8 @@ class InviteFriendForm(UserForm):
             # TODO: templatize this
             # TODO: i18n this (trying to causes db errors right now)
             Message.objects.create(subject="Friendship request from %s" % self.user.visible_name(),
-                                   body="%s has requested to share contact information.<br/><br/>Click here to respond." % self.user.visible_name(),
+                                   body="%s has requested to share contact information.<br/><br/>" % self.user.visible_name() +
+                                   "<a href='%s'>click here to respond</a>" % reverse('profile_detail', kwargs={'username': self.user.username}),
                                    sender=self.user,
                                    recipient=to_user)
                                    # sent_at is set automatically?
