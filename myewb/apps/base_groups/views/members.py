@@ -195,17 +195,17 @@ def edit_member(request, group_slug, username, group_model=None, form_class=None
     user = request.user
     
     # saving the object
+    member = get_object_or_404(GroupMember, group=group, user=other_user)
     if request.method == 'POST':
         form = form_class(request.POST, instance=member)
 
         # if all's good, save and redirect
         if form.is_valid():
             member = form.save()
-            return HttpResponseRedirect(reverse('%s_member_detail' % group.model.lower(), kwargs={'group_slug': group_slug, 'username': username}))    
+            return HttpResponseRedirect(reverse('%s_members_index' % group.model.lower(), kwargs={'group_slug': group_slug}))    
 
     # just load up the info and put it in a new form
     else:
-        member = get_object_or_404(GroupMember, group=group, user=other_user)
         form = form_class(instance=member)
         
     return render_to_response(template_name,
