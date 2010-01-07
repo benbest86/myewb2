@@ -9,7 +9,7 @@ Last modified on 2009-07-29
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from base_groups.models import BaseGroup, GroupMember, GroupLocation
+from base_groups.models import BaseGroup, GroupMember, GroupLocation, InvitationToJoinGroup
 from base_groups.helpers import get_valid_parents
 
 class BaseGroupForm(forms.ModelForm):
@@ -44,8 +44,13 @@ class BaseGroupForm(forms.ModelForm):
     class Meta:
         abstract = True
 
+class GroupInviteForm(forms.ModelForm):
+    class Meta:
+        model = InvitationToJoinGroup
+        fields = ('user', 'message')
+        
 class GroupMemberForm(forms.ModelForm):
-    
+
     class Meta:
         model = GroupMember        
         fields = ('user', 'is_admin', 'admin_title')

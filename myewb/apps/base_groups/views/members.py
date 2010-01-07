@@ -148,6 +148,55 @@ def new_member(request, group_slug, group_model=None, form_class=None,
     return response
 
 @visibility_required()
+def invite_member(request, group_slug, group_model=None, form_class=None,
+               template_name=None, index_template_name=None):
+    
+    # handle generic call
+    # XX does this ever happen in practise???
+    if group_model is None and request.method == 'GET':
+        group = get_object_or_404(BaseGroup, slug=group_slug)
+        return HttpResponseRedirect(reverse('%s_invite_member' % group.model.lower(), kwargs={'group_slug': group_slug}))    
+        
+    # load up basic objects
+    group = get_object_or_404(group_model, slug=group_slug)
+    user = request.user
+    
+    # why do we exclude admins?
+    if group.user_is_member_or_pending(user) and not group.user_is_admin(user):
+        request.user.message_set.create(
+            message=_("You are already a member, or pending member, of this %(model)s - see below.") % {"model": group_model._meta.verbose_name,})
+        return HttpResponseRedirect(reverse('%s_member_detail' % group.model.lower(), kwargs={'group_slug': group_slug, 'username': user.username}))
+    
+    # we're on the save leg
+    if request.method == 'POST':
+        # load up form
+        form = form_class(request.POST)
+        if form.is_valid():
+            member = form.save(commit=False)
+            
+            existing_members = group.members.filter(user=member.user)
+
+            if existing_members.count() == 0:
+                member = InvitationToJoinGroup(user=member.user) # another user invited by a group / site admin         
+                member.group = group
+                member.save()
+                
+                return HttpResponseRedirect(reverse('%s_member_index' % group_model._meta.module_name, kwargs={'group_slug': group_slug}))
+            
+    else:
+        form = form_class()
+        
+    # either it's a new form, or there's some kind of validation error
+    response = render_to_response(template_name,
+                                  {'group': group,
+                                   'form': form,
+                                   'is_admin': group.user_is_admin(user),
+                                  },
+                                  context_instance=RequestContext(request),
+                                 )
+    return response
+
+@visibility_required()
 def member_detail(request, group_slug, username, group_model=None,
                   form_class=None, template_name=None, edit_template_name=None):
     # handle generic call
