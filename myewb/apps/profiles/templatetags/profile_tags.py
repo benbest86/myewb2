@@ -68,7 +68,7 @@ def show_user_search(field):
 register.inclusion_tag("profiles/user_search_ajax.html")(show_user_search)
 
 def get_selected_user(user, field):
-    return {"user": user, "field": field}
+    return {"sel_user": user, "field": field}
 register.inclusion_tag("profiles/selected_user.html")(get_selected_user)
 
 # These may be useful down the road, specifically if we have time to develop a means of dynamically

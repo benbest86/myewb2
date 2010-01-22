@@ -1,0 +1,26 @@
+{% extends "profiles/base.html" %}
+
+{% load i18n %}
+
+{% block extra_head %}
+{# TODO: move this into an appropriate CSS file #}
+<style type="text/css" media="all">
+    .msg-subsection { display: none; }
+</style>
+{% endblock %}
+
+{% block body %}
+	{% block msgheader %}
+	{% endblock %}
+
+    <ul class="segmented" id="messagesheader" style="float: none;">
+		<li id="li-msg-inbox" class="{% block li-inbox %}{% endblock %}"><a href="{% url messages_inbox %} ">{% trans "Inbox" %}</a></li>
+		<li id="li-msg-outbox" class="{% block li-outbox %}{% endblock %}"><a href="{% url messages_outbox %} ">{% trans "Sent Messages" %}</a></li>
+		<li id="li-msg-compose" class="{% block li-compose %}{% endblock %}"><a href="{% url messages_compose %} ">{% trans "New Message" %}</a></li>
+		<li id="li-msg-trash" class="{% block li-trash %}{% endblock %}"><a href="{% url messages_trash %} ">{% trans "Trash" %}</a></li>
+    </ul>
+    
+    {% block msgbody %}
+    {% endblock %}
+    
+{% endblock %}

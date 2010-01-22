@@ -18,6 +18,7 @@ from django.template import RequestContext, Context, loader
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext_lazy as _
 
 from siteutils.decorators import owner_required
 from profiles.models import MemberProfile, StudentRecord, WorkRecord
@@ -27,6 +28,7 @@ from networks.models import Network
 from base_groups.models import GroupMember
 from creditcard.forms import PaymentForm
 from creditcard.models import Payment, Product
+from friends_app.forms import InviteFriendForm
 
 def profiles(request, template_name="profiles/profiles.html"):
     search_terms = request.GET.get('search', '')
@@ -380,10 +382,93 @@ def profile(request, username, template_name="profiles/profile.html", extra_cont
         profile.membership_expiry < date.today() + timedelta(30):
         extra_context['renew'] = True  
 
-    if template_name == None:
-        return pinaxprofile(request, username, extra_context=extra_context)
+#    if template_name == None:
+#        return pinaxprofile(request, username, extra_context=extra_context)
+#    else:
+#        return pinaxprofile(request, username, template_name, extra_context)
+    if extra_context is None:
+        extra_context = {}
+    
+    other_user = get_object_or_404(User, username=username)
+    
+    if request.user.is_authenticated():
+        is_friend = Friendship.objects.are_friends(request.user, other_user)
+        is_following = Following.objects.is_following(request.user, other_user)
+        other_friends = Friendship.objects.friends_for_user(other_user)
+        if request.user == other_user:
+            is_me = True
+        else:
+            is_me = False
     else:
-        return pinaxprofile(request, username, template_name, extra_context)
+        other_friends = []
+        is_friend = False
+        is_me = False
+        is_following = False
+    
+    if is_friend:
+        invite_form = None
+        previous_invitations_to = None
+        previous_invitations_from = None
+        if request.method == "POST":
+            if request.POST.get("action") == "remove": # @@@ perhaps the form should just post to friends and be redirected here
+                Friendship.objects.remove(request.user, other_user)
+                request.user.message_set.create(message=_("You have removed %(from_user)s from friends") % {'from_user': other_user.visible_name()})
+                is_friend = False
+                invite_form = InviteFriendForm(request.user, {
+                    'to_user': username,
+                    'message': ugettext("Let's be friends!"),
+                })
+    
+    else:
+        if request.user.is_authenticated() and request.method == "POST":
+            if request.POST.get("action") == "invite": # @@@ perhaps the form should just post to friends and be redirected here
+                invite_form = InviteFriendForm(request.user, request.POST)
+                if invite_form.is_valid():
+                    invite_form.save()
+            else:
+                invite_form = InviteFriendForm(request.user, {
+                    'to_user': username,
+                    'message': ugettext("Let's be friends!"),
+                })
+                invitation_id = request.POST.get("invitation", None)
+                if request.POST.get("action") == "accept": # @@@ perhaps the form should just post to friends and be redirected here
+                    try:
+                        invitation = FriendshipInvitation.objects.get(id=invitation_id)
+                        if invitation.to_user == request.user:
+                            invitation.accept()
+                            request.user.message_set.create(message=_("You have accepted the friendship request from %(from_user)s") % {'from_user': invitation.from_user.visible_name()})
+                            is_friend = True
+                            other_friends = Friendship.objects.friends_for_user(other_user)
+                    except FriendshipInvitation.DoesNotExist:
+                        pass
+                elif request.POST.get("action") == "decline": # @@@ perhaps the form should just post to friends and be redirected here
+                    try:
+                        invitation = FriendshipInvitation.objects.get(id=invitation_id)
+                        if invitation.to_user == request.user:
+                            invitation.decline()
+                            request.user.message_set.create(message=_("You have declined the friendship request from %(from_user)s") % {'from_user': invitation.from_user.visible_name()})
+                            other_friends = Friendship.objects.friends_for_user(other_user)
+                    except FriendshipInvitation.DoesNotExist:
+                        pass
+        else:
+            invite_form = InviteFriendForm(request.user, {
+                'to_user': username,
+                'message': ugettext("Let's be friends!"),
+            })
+    
+    previous_invitations_to = FriendshipInvitation.objects.invitations(to_user=other_user, from_user=request.user)
+    previous_invitations_from = FriendshipInvitation.objects.invitations(to_user=request.user, from_user=other_user)
+    
+    return render_to_response(template_name, dict({
+        "is_me": is_me,
+        "is_friend": is_friend,
+        "is_following": is_following,
+        "other_user": other_user,
+        "other_friends": other_friends,
+        "invite_form": invite_form,
+        "previous_invitations_to": previous_invitations_to,
+        "previous_invitations_from": previous_invitations_from,
+    }, **extra_context), context_instance=RequestContext(request))
 
 def pay_membership(request, username):
     other_user = User.objects.get(username=username)
@@ -491,42 +576,32 @@ def user_search(request):
                     'field': field
                 }, context_instance=RequestContext(request))
     
-def usernames_to_users(usernames):
-    users = []
-    for username in usernames:
-        cur_user = get_object_or_404(User, username=username)
-        users.append(cur_user)
-    return users
-
 def sample_user_search(request):
     form = SampleUserSearchForm(request.POST)
     
     if request.method == 'POST':
-        to_usernames = request.POST.getlist('to')        
-        cc_usernames = request.POST.getlist('cc')        
-        bcc_usernames = request.POST.getlist('bcc')
+        if form.is_valid():
+
+            to_users = form.cleaned_data['to']
+            cc_users = form.cleaned_data['cc']
+            bcc_users = form.cleaned_data['bcc']
         
-        to_users = usernames_to_users(to_usernames)
-        cc_users = usernames_to_users(cc_usernames)
-        bcc_users = usernames_to_users(bcc_usernames)
-        
-        return render_to_response(
-                'profiles/sample_user_search.html', 
-                { 
-                    'form': form,
-                    'results': True,
-                    'to_users': to_users,
-                    'cc_users': cc_users,
-                    'bcc_users': bcc_users
-                }, 
-                context_instance=RequestContext(request))
-    else:
-        return render_to_response(
-                'profiles/sample_user_search.html', 
-                { 
-                    'form': form
-                }, 
-                context_instance=RequestContext(request))
+            return render_to_response(
+                    'profiles/sample_user_search.html', 
+                    { 
+                        'form': form,
+                        'results': True,
+                        'to_users': to_users,
+                        'cc_users': cc_users,
+                        'bcc_users': bcc_users
+                    }, 
+                    context_instance=RequestContext(request))
+    return render_to_response(
+            'profiles/sample_user_search.html', 
+            { 
+                'form': form
+            }, 
+            context_instance=RequestContext(request))
             
 def selected_user(request):
     if request.is_ajax() and request.method == 'POST':

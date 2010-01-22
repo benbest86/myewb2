@@ -10,6 +10,7 @@ Last modified on 2009-12-29
 from settings import STATIC_URL
 from datetime import date
 from django import forms
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
@@ -120,6 +121,9 @@ class UserSelectionInput(forms.MultipleHiddenInput):
     corresponding to the users' real names, but stored as hidden
     inputs (usernames) behind the scenes.
     """
+    
+    is_hidden = False
+    
     class Media:
         css = {
             "all": (STATIC_URL + 'css/user_selection.css',)
@@ -129,16 +133,62 @@ class UserSelectionInput(forms.MultipleHiddenInput):
     def render(self, name, value, attrs=None, choices=()):
         if value is None: value = []        
         users = []
-
+        
         for v in value:
-            u = User.objects.get(username=v)
-            users.append(u)
+        	if isinstance(v, User):
+        		users.append(v)
+        	else:
+        		try:
+        			u = User.objects.get(username=v)
+        			users.append(u)
+        		except User.DoesNotExist:
+        			pass
+        print users
         t = loader.get_template('profiles/user_selection_input.html')
         c = Context({'users': users, 'field_name': name})
         return mark_safe(t.render(c))
         
 class UserField(forms.Field):
+ 	# most of this is from messages.fields.CommaSeparatedUserField.clean
     widget = UserSelectionInput
+
+    def __init__(self, *args, **kwargs):
+        recipient_filter = kwargs.pop('recipient_filter', None)
+        self._recipient_filter = recipient_filter
+        super(UserField, self).__init__(*args, **kwargs)
+
+    def clean(self, value):
+    	if not value:
+    		if self.required:
+    			raise forms.ValidationError(_(u"Please select a recipient"))
+    		else:
+    			return ''
+        
+        #if isinstance(value, (list, tuple)):
+       # 	return value
+        
+        try:
+        	value.remove('')
+        except:
+        	pass
+        
+        names = set(value)
+        names_set = set([name.strip() for name in names])
+        users = list(User.objects.filter(username__in=names_set))
+        unknown_names = names_set ^ set([user.username for user in users])
+        
+        recipient_filter = self._recipient_filter
+        invalid_users = []
+        if recipient_filter is not None:
+        	for r in users:
+        		if recipient_filter(r) is False:
+        			users.remove(r)
+        			invalid_users.append(r.username)
+        			
+        if unknown_names or invalid_users:
+            raise forms.ValidationError(_(u"The following usernames are incorrect: %(users)s") % {'users': ', '.join(list(unknown_names)+invalid_users)})
+        	
+        return users
         
 class SampleUserSearchForm(forms.Form):
     to = UserField(required=False)

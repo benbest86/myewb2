@@ -1,0 +1,37 @@
+{% extends "messages/base.html" %}
+
+{% load i18n %}
+{% load timezone_filters %}
+{% load pagination_tags %}
+
+{% block li-trash %}current{% endblock %}
+
+{% block msgheader %}<h1>{% trans "Trash" %}</h1>{% endblock %}
+
+{% block msgbody %}
+    
+    {% autopaginate message_list 20 %}
+    
+    <table class="messages">
+        <thead>
+            <tr><th>{% trans "Sender" %}</th><th>{% trans "Subject" %}</th><th>{% trans "Date" %}</th><th>{% trans "Action" %}</th></tr>
+        </thead>
+        <tbody>
+            {% for message in message_list %}
+                <tr class="{% cycle "" "bkgd-light" %}">
+                    <td>{{ message.sender.visible_name }}</td>
+                    <td>
+                        {{ message.subject }}
+                    </td>
+                    <td>{{ message.sent_at|localtime:account.timezone|date:_("DATETIME_FORMAT") }}</td>
+                    <td><a href="{% url messages_undelete message.id %}">{% trans "undelete" %}</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% paginate %}
+
+    <br />
+    <p>{% trans "Deleted Messages are removed from the trash at irregular intervals, don't rely on this feature for long-time storage." %}</p>
+{% endblock %}

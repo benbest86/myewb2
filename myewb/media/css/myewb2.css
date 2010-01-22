@@ -73,10 +73,10 @@ div.login {
     -webkit-border-radius: 0.5em;
     -moz-border-radius: 0.5em;
     font-size: 0.7em;
-    width: 33em;
-    padding: 1em;
+/*    width: 33em;	*/
+    padding: 1em 3em 1em 5em;
     float: right;
-    text-align: center;
+    text-align: right;
 }
 
 div.login a {
