@@ -79,7 +79,7 @@
     {% endfor %}
     
     {% if user.is_staff or is_admin %}
-        <p><a href="{% url new_community %}">create a community</a></p>
+        <p><a href="{% url new_community %}?parent={{group.slug}}">create a community</a></p>
 	{% endif %}	    
 
 {% endblock %}

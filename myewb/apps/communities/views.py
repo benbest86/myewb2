@@ -48,7 +48,8 @@ def communities_index(request, form_class=CommunityForm, template_name=INDEX_TEM
 @login_required
 def new_community(request, form_class=CommunityForm, template_name=NEW_TEMPLATE, 
         index_template_name=INDEX_TEMPLATE):
-    return new_group(request, Community, GroupMember, form_class, template_name, index_template_name, DEFAULT_OPTIONS)
+    parent = request.GET.get('parent', None)
+    return new_group(request, Community, GroupMember, form_class, template_name, index_template_name, DEFAULT_OPTIONS, parent)
 
 def community_detail(request, group_slug, form_class=CommunityForm, template_name=DETAIL_TEMPLATE,
         edit_template_name=EDIT_TEMPLATE):
