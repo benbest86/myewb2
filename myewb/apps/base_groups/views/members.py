@@ -192,6 +192,7 @@ def edit_member(request, group_slug, username, group_model=None, form_class=None
     # grab basic objects
     group = get_object_or_404(group_model, slug=group_slug)
     other_user = get_object_or_404(User, username=username)
+    member = get_object_or_404(GroupMember, group=group, user=other_user)
     user = request.user
     
     # saving the object
@@ -205,7 +206,6 @@ def edit_member(request, group_slug, username, group_model=None, form_class=None
 
     # just load up the info and put it in a new form
     else:
-        member = get_object_or_404(GroupMember, group=group, user=other_user)
         form = form_class(instance=member)
         
     return render_to_response(template_name,
