@@ -111,7 +111,17 @@ def new_group(request, model=None, member_model=None, form_class=None,
 
     # create a new form
     else:
-        form = form_class(user=request.user,parent=parent)
+        parentgrp = None
+        if parent:
+            try:
+                parentgrp = BaseGroup.objects.get(slug=parent)
+            except:
+                pass
+
+        if parentgrp:
+            form = form_class(user=request.user, initial={'parent': parentgrp.pk})
+        else:
+            form = form_class(user=request.user)
         
     return render_to_response(template_name,
                               {'form': form},

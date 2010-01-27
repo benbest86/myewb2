@@ -39,29 +39,14 @@ class CommunityForm(BaseGroupForm):
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
-        parent = kwargs.pop('parent', None)
+        super(CommunityForm, self).__init__(*args, **kwargs)
 
+        # get the valid parents for a user if we have a user
         if user:
             group = kwargs.get('instance', None)
             valid_parents = get_valid_parents(user, group=group, model=Network)     # only networks may be parent to a community
-            kwargs['choices'] = valid_parents
+            self.fields['parent'].queryset = valid_parents
             
-        # if a parent is already specified, make it non-editable
-        if parent:
-            kwargs['initial'] = parent
-        
-        super(CommunityForm, self).__init__(*args, **kwargs)
-        
-        # get the valid parents for a user if we have a user
-#        if user:
-#            group = kwargs.get('instance', None)
-#            valid_parents = get_valid_parents(user, group=group, model=Network)     # only networks may be parent to a community
-#            self.fields['parent'].queryset = valid_parents
-            
-        # if a parent is already specified, make it non-editable
-#        if parent:
-#            self.fields['parent'].something
-
         # set the initial visibility state (since it's not a direct mapping to 
         # a model field, it isn't done automatically)        
         if self.instance.pk:
