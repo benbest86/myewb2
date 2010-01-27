@@ -36,11 +36,11 @@ class GroupTopicManager(models.Manager):
         if user is not None and not user.is_anonymous():
             
             # admins with admin-o-vision on automatically see everything
-            if user_can_adminovision(user) and user.get_profile().adminovision is True:
+            if user_can_adminovision(user) and user.get_profile().adminovision == 1:
                 return self.get_query_set()
             
             # and similar for exec-o-vision, except only for your own chapter's groups
-            if user_can_execovision(user) and user.get_profile().adminovision is True:
+            if user_can_execovision(user) and user.get_profile().adminovision == 1:
                 filter_q |= Q(parent_group__parent__members__user=user,
                               parent_group__parent__members__is_admin=True)
             
