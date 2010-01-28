@@ -35,6 +35,9 @@
             <div class="toolbarcontent">
 		        <a href="{% url network_new_member group.slug %}">{% trans "Add/invite users" %}</a><br/>
 	            <a href="{% url network_bulk_import group.slug %}">{% trans "Bulk-add email addresses" %}</a><br/>
+	            {% if group.is_chapter %}
+		            <a href="{% url email_forwards_index group.slug %}">{% trans "Manage chapter email addresses" %}</a><br/>
+	            {% endif %}
 	            <br/>
 	            
                 {% if perms.networks.change or is_admin %}
