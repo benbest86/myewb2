@@ -21,7 +21,7 @@ from base_groups.helpers import user_can_adminovision, user_can_execovision
 from topics.models import Topic
 from wiki.models import Article
 
-from lxml.html.clean import clean_html, autolink_html
+from lxml.html.clean import clean_html, autolink_html, Cleaner
 
 class GroupTopicManager(models.Manager):
 
@@ -129,7 +129,23 @@ class GroupTopic(Topic):
             return self.body
 
         # thanks http://stackoverflow.com/questions/250357/smart-truncate-in-python
-        return self.body[:600].rsplit(' ', 1)[0]+"..."
+        intro = self.body[:600].rsplit(' ', 1)[0]
+
+        intro = Cleaner(scripts=False,      # disable it all except page_structure
+                        javascript=False,   # as proper cleaning is done on save;
+                        comments=False,     # here we just want to fix any
+                        links=False,        # dangling tags caused by truncation
+                        meta=False,
+                        #page_stricture=True,
+                        embedded=False,
+                        frames=False,
+                        forms=False,
+                        annoying_tags=False,
+                        remove_unknown_tags=False,
+                        safe_attrs_only=False).clean_html(intro)
+        
+        intro += "..."
+        return intro
     
     def intro_has_more(self):
         return (len(self.body) >= 600)
