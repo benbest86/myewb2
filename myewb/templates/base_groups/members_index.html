@@ -48,7 +48,7 @@
     {% endif %}
     {% endcomment %}
     
-    <table id="membersList">
+    <table id="membersList" width="100%">
         <tr>
             <th>{% trans "Name" %}</th>
             <th>{% trans "Admin" %}</th>
@@ -83,12 +83,14 @@
 {% if is_admin %}
     {% with group.pending_members.all as pending_members %}
         {% if pending_members.count %}
-            <table id="pendingMembersList">
+        	<br/><br/>
+        	<h3>Invited members</h3>
+            <table id="pendingMembersList" width="100%">
                 <tr>
                     <th>{% trans "Name" %}</th>
                     <th>{% trans "Primary Email" %}</th>
                     <th>{% trans "Status" %}</th>
-                    <th>{% trans "Edit" %}</th>
+                    {# <th>{% trans "Edit" %}</th> #}
                 </tr>
              {% for member in pending_members %}
                 <tr>
@@ -100,7 +102,7 @@
                         {% if member.is_requested %}{% trans "Member request pending" %}{% endif %}
         			    {% if member.is_invited %}{% trans "Member invitation pending" %}{% endif %}
                     </td>
-                    <td>TODO</td>
+                    {# <td>TODO - approve/revoke?</td> #}
         		</tr>
              {% endfor %}
             </table>

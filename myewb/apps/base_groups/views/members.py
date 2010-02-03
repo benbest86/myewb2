@@ -178,6 +178,7 @@ def invite_member(request, group_slug, group_model=None, form_class=None,
             else:
                 #member = InvitationToJoinGroup(user=member.user) # another user invited by a group / site admin         
                 member.group = group
+                member.invited_by = request.user
                 member.save()
                 
                 #request.user.message_set.create(message=_("Invitation sent"))    # why's this choking?

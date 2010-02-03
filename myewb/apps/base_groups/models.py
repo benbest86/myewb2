@@ -18,6 +18,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models, connection
 from django.db.models.signals import post_save, pre_delete
 from django.core.mail import EmailMessage
+from django.conf import settings
 
 from emailconfirmation.models import EmailAddress
 
@@ -25,6 +26,12 @@ from siteutils.helpers import get_email_user
 from manager_extras.models import ExtraUserManager
 from groups.base import Group
 from wiki.models import Article
+from messages.models import Message
+
+if "notification" in settings.INSTALLED_APPS:
+    from notification import models as notification
+else:
+    notification = None
 
 class BaseGroup(Group):
     """Base group (from which networks, communities, projects, etc. derive).
@@ -325,7 +332,30 @@ class RequestToJoinGroup(PendingMember):
     pass
 
 class InvitationToJoinGroup(PendingMember):
-    pass
+    invited_by = models.ForeignKey(User, related_name='invitations_issued')
+
+def invitation_notify(sender, instance, created, **kwargs):
+    user = instance.user
+    group = instance.group
+    issuer = instance.invited_by
+    message = instance.message
+    
+    if notification and False:  # need to create the notice type for this to work
+        notification.send([user], "group_invite", {"invitation": instance})
+    else:
+        # TODO: templatize this
+        # TODO: i18n this (trying to causes db errors right now)
+        msgbody = "%s has invited you to join the \"%s\" group.<br/><br/>" % (issuer.visible_name(), group)
+        if message:
+            msgbody += message + "<br/><br/>"
+        msgbody += "<a href='%s'>click here to respond</a>" % group.get_absolute_url()
+        
+        Message.objects.create(subject="%s has invited you to join the \"%s\" group" % (issuer.visible_name(), group),
+                               body=msgbody,
+                               sender=issuer,
+                               recipient=user)
+
+post_save.connect(invitation_notify, sender=InvitationToJoinGroup)
     
 class GroupLocation(models.Model):
     group = models.ForeignKey(BaseGroup, related_name="locations", verbose_name=_('group'))
