@@ -19,7 +19,7 @@ from django.utils.datastructures import SortedDict
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
-from base_groups.models import BaseGroup, GroupMember, InvitationToJoinGroup
+from base_groups.models import BaseGroup, GroupMember, PendingMember, InvitationToJoinGroup
 from base_groups.forms import GroupMemberForm, EditGroupMemberForm
 from base_groups.decorators import own_member_object_required, group_admin_required, visibility_required
 
@@ -320,12 +320,13 @@ def accept_invitation(request, group_slug, username, group_model=BaseGroup):
         # load up basic objects
         group = get_object_or_404(group_model, slug=group_slug)
         other_user = get_object_or_404(User, username=username)
-        invitation = get_object_or_404(InvitationToJoinGroup, group=group, user=user)
+        invitation = get_object_or_404(InvitationToJoinGroup, group=group, user=other_user)
         
         if request.user.is_authenticated() and other_user == request.user:
             invitation.accept()
         
-        return HttpResponseRedirect(reverse('%s_member_detail' % group.model.lower(), kwargs={'group_slug': group_slug, 'username': username}))
+        request.user.message_set.create(message="Accepted invitation and joined \"%s\"" % group)
+        return HttpResponseRedirect(reverse('%s_detail' % group.model.lower(), kwargs={'group_slug': group_slug}))
     else:
         return HttpResponseNotFound()
         
