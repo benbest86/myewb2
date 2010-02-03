@@ -281,10 +281,10 @@ def delete_member(request, group_slug, username, group_model=None):
         # load up objects
         group = get_object_or_404(group_model, slug=group_slug)
         user = get_object_or_404(User, username=username)
-        if group.user_is_member(other_user):
-            member = get_object_or_404(GroupMember, group=group, user=other_user)
-        elif group.user_is_pending_member(other_user):
-            member = get_object_or_404(PendingMember, group=group, user=other_user)
+        if group.user_is_member(user):
+            member = get_object_or_404(GroupMember, group=group, user=user)
+        elif group.user_is_pending_member(user):
+            member = get_object_or_404(PendingMember, group=group, user=user)
         else:
             raise Http404
         
@@ -298,7 +298,8 @@ def delete_member(request, group_slug, username, group_model=None):
                                           context_instance=RequestContext(request),
                                          )
         else:
-            response =  HttpResponseRedirect(reverse('%s_members_index' % group.model.lower(), kwargs={'group_slug': group_slug,}))
+            request.user.message_set.create(message="Left group.")
+            response =  HttpResponseRedirect(reverse('%s_detail' % group.model.lower(), kwargs={'group_slug': group_slug,}))
             
     # these are both errors.  it's all in how we display it...
     else:
