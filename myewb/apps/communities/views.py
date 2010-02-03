@@ -24,6 +24,7 @@ from base_groups.views import members
 from base_groups.models import BaseGroup, GroupMember, GroupLocation
 from base_groups.forms import GroupMemberForm, GroupInviteForm, EditGroupMemberForm, GroupLocationForm
 from base_groups.helpers import *
+from base_groups.decorators import group_admin_required
 
 INDEX_TEMPLATE = 'communities/communities_index.html'
 NEW_TEMPLATE = 'communities/new_community.html'
@@ -48,18 +49,19 @@ def communities_index(request, form_class=CommunityForm, template_name=INDEX_TEM
 @login_required
 def new_community(request, form_class=CommunityForm, template_name=NEW_TEMPLATE, 
         index_template_name=INDEX_TEMPLATE):
-    return new_group(request, Community, GroupMember, form_class, template_name, index_template_name, DEFAULT_OPTIONS)
+    parent = request.GET.get('parent', None)
+    return new_group(request, Community, GroupMember, form_class, template_name, index_template_name, DEFAULT_OPTIONS, parent)
 
 def community_detail(request, group_slug, form_class=CommunityForm, template_name=DETAIL_TEMPLATE,
         edit_template_name=EDIT_TEMPLATE):
     return group_detail(request, group_slug, Community, GroupMember, form_class, template_name, edit_template_name, DEFAULT_OPTIONS)
 
-@login_required
+@group_admin_required()
 def edit_community(request, group_slug, form_class=CommunityForm, template_name=EDIT_TEMPLATE,
         detail_template_name=DETAIL_TEMPLATE):
     return edit_group(request, group_slug, Community, GroupMember, form_class, template_name, detail_template_name, DEFAULT_OPTIONS)
 
-@login_required
+@group_admin_required()
 def delete_community(request, group_slug, form_class=CommunityForm, detail_template_name=DETAIL_TEMPLATE):
     return delete_group(request, group_slug, Community, GroupMember, form_class, detail_template_name, DEFAULT_OPTIONS)
     

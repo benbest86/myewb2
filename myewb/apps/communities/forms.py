@@ -38,14 +38,15 @@ class CommunityForm(BaseGroupForm):
                                    widget=forms.HiddenInput)
 
     def __init__(self, *args, **kwargs):
-        # get the valid parents for a user if we have a user
         user = kwargs.pop('user', None)
         super(CommunityForm, self).__init__(*args, **kwargs)
+
+        # get the valid parents for a user if we have a user
         if user:
             group = kwargs.get('instance', None)
             valid_parents = get_valid_parents(user, group=group, model=Network)     # only networks may be parent to a community
             self.fields['parent'].queryset = valid_parents
-
+            
         # set the initial visibility state (since it's not a direct mapping to 
         # a model field, it isn't done automatically)        
         if self.instance.pk:

@@ -88,9 +88,14 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 				<br/>{{ address.email }}
 			{% endfor %}
 
-			{% if is_me or user.is_staff %}
+			{% if is_me %}
 			    <br/>
 	            (<a href="{% url acct_email %}">{% trans "edit emails" %}</a>)<br/>
+	        {% else %}
+	        	{% if user.is_staff %}
+				    <br/>
+		            (<a href="{% url acct_email_user other_user.username %}">{% trans "edit emails" %}</a>)<br/>
+	        	{% endif %}
 			{% endif %}
 		</div>
 		<br/>

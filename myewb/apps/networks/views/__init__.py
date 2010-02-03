@@ -60,7 +60,7 @@ def network_detail(request, group_slug, form_class=NetworkForm, template_name=DE
     network = get_object_or_404(Network, slug=group_slug)
     return group_detail(request, group_slug, Network, GroupMember, form_class, template_name, edit_template_name, DEFAULT_OPTIONS)
 
-@permission_required('networks.change')
+@group_admin_required()
 def edit_network(request, group_slug, form_class=NetworkForm, template_name=EDIT_TEMPLATE,
         detail_template_name=DETAIL_TEMPLATE):
     return edit_group(request, group_slug, Network, GroupMember, form_class, template_name, detail_template_name, DEFAULT_OPTIONS)
@@ -69,7 +69,7 @@ def edit_network(request, group_slug, form_class=NetworkForm, template_name=EDIT
 def delete_network(request, group_slug, form_class=NetworkForm, detail_template_name=DETAIL_TEMPLATE):
     return delete_group(request, group_slug, Network, GroupMember, form_class, detail_template_name, DEFAULT_OPTIONS)
             
-@permission_required('networks.change')
+@group_admin_required()
 def edit_network_location(request, group_slug, form_class=GroupLocationForm, template_name=LOCATION_TEMPLATE):
     return edit_group_location(request, group_slug, Network, form_class, template_name, DEFAULT_OPTIONS)
     

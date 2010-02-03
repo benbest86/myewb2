@@ -61,7 +61,8 @@ page.
 On Windows:
 # These instructions were last confirmed on Windows XP
 # # 2009-10-24 by BBEST and JBLIGHT
-#
+# On Windows 7
+# 2010-01-04 by BBEST
 
 1. install python from http://python.org
 
@@ -81,7 +82,7 @@ On Windows:
 
 6. Install the win32api package from http://sourceforge.net/projects/pywin32/
 
-7. Install the pycountry module by running easy_install pycountry in a command prompt
+7. Install the pycountry module by running easy_install pycountry in a command prompt NOTE: lxml 2.2.4 doesn't seem to be available as a binary for python2.6 on win32. If the pycountry easy_install fails, install lxml 2.2.2 from http://pypi.python.org/pypi/lxml/2.2.2
 
 8. Install the virtualenv module by running easy_install virtualenv in a command prompt
 
@@ -92,17 +93,28 @@ On Windows:
 11. run 
     >python scripts/pinax-boot.py C:\pinax
     Change the C:\pinax argument to wherever you wish to install your pinax virtual environment
+NOTE: on windows 7 (and Vista?) you will have to run the command prompt with administrative privileges in order for this operation to complete successfully.
 
 12. cd to C:\pinax and run 
     > Scripts/activate.bat
 
-13. cd to the myewb folder in the code trunk. Run 
+13. cd to the myewb folder in the code trunk. Add a file called 
+local_settings.py and add the following two lines:
+
+import os
+DATABASE_NAME = os.path.join(os.path.dirname(__file__), 'db_name.db')
+
+Substitue db_name with your preference.
+For some reason a fully qualified path is required here now.
+
+14.
+Run 
     > python manage.py syncdb
     enter a root user if you wish.
 
-14. run > python manage.py runserver
+15. run > python manage.py runserver
 
-15. navigate to http://localhost:8000/ in your browser (or http://127.0.0.1:8000/ in IE)
+16. navigate to http://localhost:8000/ in your browser (or http://127.0.0.1:8000/ in IE)
 
 NOTES: Please see the patches/ folder in this directory for any patches to the Pinax or Django
 code that need to be applied

@@ -125,4 +125,16 @@ class TestPostToNowhere(TestCase):
         c.post('/networks/net/posts/', {'title': 'a post with no parent', 'body': 'some text'})
         self.assertEquals(post_count, GroupTopic.objects.all().count())
 
+class DanglingTags(TestCase):
+    """
+    Regression tests for
+    https://office.ewb.ca/fastrac/myewb2/ticket/395
+    """
 
+    def setUp(self):
+        # if we decide to truncate over 600 chars, increase this test string!!
+        self.topic = GroupTopic(body="<div>this is the div that never ends... yes it goes on and on my friends... this is the div that never ends... yes it goes on and on my friends... this is the div that never ends... yes it goes on and on my friends... this is the div that never ends... yes it goes on and on my friends... this is the div that never ends... yes it goes on and on my friends... this is the div that never ends... yes it goes on and on my friends... this is the div that never ends... yes it goes on and on my friends... this is the div that never ends... yes it goes on and on my friends... this is the div that never ends... yes it goes on and on my friends...  </div>")
+
+    def test_dangling_tags(self):
+        self.assertEquals(self.topic.intro()[-9:], "</div>...")
+        

@@ -73,13 +73,14 @@
         <p>{{ group.description }}</p>
     {% endif %}
 
-    {% if children.count %}
-        <h2>{% trans "Communities" %}</h2>
-        
-	    {% for child in children %}
-            <a href="{{ child.get_absolute_url }}">{{ child.name }}</a><br/>
-	    {% endfor %}
-    {% endif %}
+    <h2>{% trans "Communities" %}</h2>
+    {% for child in children %}
+           <a href="{{ child.get_absolute_url }}">{{ child.name }}</a><br/>
+    {% endfor %}
+    
+    {% if user.is_staff or is_admin %}
+        <p><a href="{% url new_community %}?parent={{group.slug}}">create a community</a></p>
+	{% endif %}	    
 
 {% endblock %}
 

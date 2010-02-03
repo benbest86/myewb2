@@ -21,7 +21,7 @@ from base_groups.helpers import user_can_adminovision, user_can_execovision
 from topics.models import Topic
 from wiki.models import Article
 
-from lxml.html.clean import clean_html, autolink_html
+from lxml.html.clean import clean_html, autolink_html, Cleaner
 
 class GroupTopicManager(models.Manager):
 
@@ -36,11 +36,11 @@ class GroupTopicManager(models.Manager):
         if user is not None and not user.is_anonymous():
             
             # admins with admin-o-vision on automatically see everything
-            if user_can_adminovision(user) and user.get_profile().adminovision is True:
+            if user_can_adminovision(user) and user.get_profile().adminovision == 1:
                 return self.get_query_set()
             
             # and similar for exec-o-vision, except only for your own chapter's groups
-            if user_can_execovision(user) and user.get_profile().adminovision is True:
+            if user_can_execovision(user) and user.get_profile().adminovision == 1:
                 filter_q |= Q(parent_group__parent__members__user=user,
                               parent_group__parent__members__is_admin=True)
             
@@ -129,7 +129,23 @@ class GroupTopic(Topic):
             return self.body
 
         # thanks http://stackoverflow.com/questions/250357/smart-truncate-in-python
-        return self.body[:600].rsplit(' ', 1)[0]+"..."
+        intro = self.body[:600].rsplit(' ', 1)[0]
+
+        intro = Cleaner(scripts=False,      # disable it all except page_structure
+                        javascript=False,   # as proper cleaning is done on save;
+                        comments=False,     # here we just want to fix any
+                        links=False,        # dangling tags caused by truncation
+                        meta=False,
+                        #page_stricture=True,
+                        embedded=False,
+                        frames=False,
+                        forms=False,
+                        annoying_tags=False,
+                        remove_unknown_tags=False,
+                        safe_attrs_only=False).clean_html(intro)
+        
+        intro += "..."
+        return intro
     
     def intro_has_more(self):
         return (len(self.body) >= 600)

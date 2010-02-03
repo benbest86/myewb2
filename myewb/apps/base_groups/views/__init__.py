@@ -74,7 +74,8 @@ def groups_index(request, model=None, member_model=None, form_class=None,
 
 # no decorator - perms depend on type of group
 def new_group(request, model=None, member_model=None, form_class=None,
-              template_name=None, index_template_name=None, options=None):
+              template_name=None, index_template_name=None, options=None,
+              parent=None):
     """
     Create a new group
     """
@@ -110,7 +111,17 @@ def new_group(request, model=None, member_model=None, form_class=None,
 
     # create a new form
     else:
-        form = form_class(user=request.user)
+        parentgrp = None
+        if parent:
+            try:
+                parentgrp = BaseGroup.objects.get(slug=parent)
+            except:
+                pass
+
+        if parentgrp:
+            form = form_class(user=request.user, initial={'parent': parentgrp.pk})
+        else:
+            form = form_class(user=request.user)
         
     return render_to_response(template_name,
                               {'form': form},
