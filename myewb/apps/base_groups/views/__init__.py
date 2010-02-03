@@ -167,6 +167,13 @@ def group_detail(request, group_slug, model=None, member_model=None,
         wb.save()
         group.whiteboard = wb
         group.save()
+        
+    # see if any admin tasks are outstanding
+    # (should this only trigger for oustanding requets, instead of requests & invitations?)
+    requests_outstanding = False
+    if group.user_is_admin(request.user):
+        if group.num_pending_members() > 0:
+            requests_outstanding = True
     
     # render
     return render_to_response(
@@ -174,7 +181,8 @@ def group_detail(request, group_slug, model=None, member_model=None,
         {
             'group': group,                
             'children': group.get_visible_children(request.user),
-            'is_admin': group.user_is_admin(request.user)
+            'is_admin': group.user_is_admin(request.user),
+            'requests_outstanding': requests_outstanding
         },
         context_instance=RequestContext(request)
     )

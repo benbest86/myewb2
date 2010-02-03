@@ -84,13 +84,13 @@
     {% with group.pending_members.all as pending_members %}
         {% if pending_members.count %}
         	<br/><br/>
-        	<h3>Invited members</h3>
+        	<h3>{% trans "Pending members" %}</h3>
             <table id="pendingMembersList" width="100%">
                 <tr>
                     <th>{% trans "Name" %}</th>
                     <th>{% trans "Primary Email" %}</th>
                     <th>{% trans "Status" %}</th>
-                    {# <th>{% trans "Edit" %}</th> #}
+                    <th>{% trans "Edit" %}</th>
                 </tr>
              {% for member in pending_members %}
                 <tr>
@@ -102,7 +102,23 @@
                         {% if member.is_requested %}{% trans "Member request pending" %}{% endif %}
         			    {% if member.is_invited %}{% trans "Member invitation pending" %}{% endif %}
                     </td>
-                    {# <td>TODO - approve/revoke?</td> #}
+                    <td>
+                    	{% if member.is_requested %}
+                    		<form method="post" action="{% groupurl accept_request group username=member.user.username %}" style="float: left;">
+                    			<input type="submit" value="accept"/>
+                    		</form>
+                    		
+                    		<form method="post" action="{% groupurl delete_member group username=member.user.username %}">
+                    			&nbsp;&nbsp;&nbsp;<input type="submit" value="decline"/>
+                    		</form>
+                    	{% endif %}
+                    	
+                    	{% if member.is_invited %}
+                    		<form method="post" action="{% groupurl delete_member group username=member.user.username %}">
+                    			<input type="submit" value="revoke"/>
+                    		</form>
+                    	{% endif %}
+                    </td>
         		</tr>
              {% endfor %}
             </table>

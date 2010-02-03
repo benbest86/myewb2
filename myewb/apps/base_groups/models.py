@@ -206,6 +206,9 @@ class BaseGroup(Group):
         # is_bulk is set to True for bulk members
         return self.members.filter(user__is_bulk=False)
 
+    def num_pending_members(self):
+        return self.pending_members.all().count()
+    
 class BaseGroupMember(models.Model):
     is_admin = models.BooleanField(_('admin'), default=False)
     admin_title = models.CharField(_('admin title'), max_length=500, null=True, blank=True)

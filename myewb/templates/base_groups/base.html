@@ -70,7 +70,17 @@
 	{% if member and member.is_requested %}
 		<div class="bkgd-light" style="border: 1px; width: 75%; margin: 0 auto; padding: 5px;">
 			{% trans "You have requested membership in this group and your request is pending." %}
+			<form method="POST" action="{% groupurl delete_member group username=member.user.username %}">
+				&nbsp;&nbsp;&nbsp;<input type="submit" value="{% trans "cancel request" %}" />
+			</form>
 		</div>
+	{% endif %}
+	
+	{% if requests_outstanding %}
+		<div class="bkgd-light" style="border: 1px; width: 75%; margin: 0 auto; padding: 5px;">
+			{% trans "There are outstanding membership requests." %}
+			<a href="{% groupurl members_index group %}">{% trans "Click here to manage" %}</a>
+		</div>		
 	{% endif %}
 
     <div id="group-info" class="group-subsection" style="display: block;">

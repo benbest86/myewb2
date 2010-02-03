@@ -19,7 +19,7 @@ from django.utils.datastructures import SortedDict
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
-from base_groups.models import BaseGroup, GroupMember, PendingMember, InvitationToJoinGroup
+from base_groups.models import BaseGroup, GroupMember, PendingMember, InvitationToJoinGroup, RequestToJoinGroup
 from base_groups.forms import GroupMemberForm, EditGroupMemberForm
 from base_groups.decorators import own_member_object_required, group_admin_required, visibility_required
 
@@ -121,7 +121,7 @@ def new_member(request, group_slug, group_model=None, form_class=None,
                                                   context_instance=RequestContext(request),
                                                  )
                 else:
-                    response =  HttpResponseRedirect(reverse('%s_member_detail' % group_model._meta.module_name, kwargs={'group_slug': group_slug, 'username': member.user.username}))
+                    response =  HttpResponseRedirect(reverse('%s_detail' % group_model._meta.module_name, kwargs={'group_slug': group_slug}))
                 return response
             
     else:
@@ -282,10 +282,12 @@ def delete_member(request, group_slug, username, group_model=None):
         # load up objects
         group = get_object_or_404(group_model, slug=group_slug)
         user = get_object_or_404(User, username=username)
+        was_pending = False
         if group.user_is_member(user):
             member = get_object_or_404(GroupMember, group=group, user=user)
         elif group.user_is_pending_member(user):
             member = get_object_or_404(PendingMember, group=group, user=user)
+            was_pending = True
         else:
             raise Http404
         
@@ -299,7 +301,17 @@ def delete_member(request, group_slug, username, group_model=None):
                                           context_instance=RequestContext(request),
                                          )
         else:
-            request.user.message_set.create(message="Left group.")
+            if request.user == user:
+                if was_pending:
+                    request.user.message_set.create(message="Cancelled request")
+                else:
+                    request.user.message_set.create(message="Left group")
+            else:
+                if was_pending:
+                    request.user.message_set.create(message="Declined request")
+                else:
+                    request.user.message_set.create(message="Removed member")
+                
             response =  HttpResponseRedirect(reverse('%s_detail' % group.model.lower(), kwargs={'group_slug': group_slug,}))
             
     # these are both errors.  it's all in how we display it...
