@@ -19,7 +19,7 @@ from django.utils.datastructures import SortedDict
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
-from base_groups.models import BaseGroup, GroupMember 
+from base_groups.models import BaseGroup, GroupMember, InvitationToJoinGroup
 from base_groups.forms import GroupMemberForm, EditGroupMemberForm
 from base_groups.decorators import own_member_object_required, group_admin_required, visibility_required
 
@@ -105,11 +105,7 @@ def new_member(request, group_slug, group_model=None, form_class=None,
                 if user == member.user:
                     if group.invite_only and not user.is_staff:     # we ignore group admins since they must already be members
                         member = RequestToJoinGroup(user=member.user) # create a membership request instead
-                else:   
-                    add_type = request.POST["add_type"]
-                    if add_type != "auto":
-                        member = InvitationToJoinGroup(user=member.user) # another user invited by a group / site admin         
-                   
+
                 if isinstance(member, GroupMember) and not (user.is_staff or group.user_is_admin(user)):
                     # General users cannot make themselves admins
                     member.is_admin = False
@@ -176,12 +172,18 @@ def invite_member(request, group_slug, group_model=None, form_class=None,
             
             existing_members = group.members.filter(user=member.user)
 
-            if existing_members.count() == 0:
-                member = InvitationToJoinGroup(user=member.user) # another user invited by a group / site admin         
+            if existing_members.count() > 0:
+                request.user.message_set.create(message="They are already in the group!")
+
+            else:
+                #member = InvitationToJoinGroup(user=member.user) # another user invited by a group / site admin         
                 member.group = group
                 member.save()
                 
-                return HttpResponseRedirect(reverse('%s_member_index' % group_model._meta.module_name, kwargs={'group_slug': group_slug}))
+                #request.user.message_set.create(message=_("Invitation sent"))    # why's this choking?
+                request.user.message_set.create(message="Invitation sent")
+
+            return HttpResponseRedirect(reverse('%s_detail' % group_model._meta.module_name, kwargs={'group_slug': group_slug}))
             
     else:
         form = form_class()

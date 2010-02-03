@@ -13,33 +13,38 @@
 <h1>{% trans "Add Member" %}</h1>
 
 {% if user.is_authenticated %}
-    {% comment %} 
-    why doesn't this render properly? =(
-    <form class="uniForm" id="member_form" method="POST" action="">
-        <fieldset class="inlineLabels">
-            {{ form|as_uni_form }}
-            <div class="form_block">
-                <input type="hidden" name="action" value="add" />
-                <input type="submit" value="{% trans 'add' %}"/>
-            </div>
-        </fieldset>
-    </form>
-    {% endcomment %}
-    
-    <form class="uniForm" id="member_form" method="POST" action="">
-        <fieldset class="inlineLabels">
-            {{ form.as_p }}
-            <br/><br/><br/><br/><br/><br/>
-            <div class="form_block">
-                <input type="hidden" name="action" value="add" />
-                <input type="submit" value="{% trans 'add' %}"/>
-            </div>
-        </fieldset>
-    </form>
-
+	{% if user.is_staff or is_admin %}
+    	<form class="uniForm" id="member_form" method="POST" action="">
+        	<fieldset class="inlineLabels">
+            	{{ form|as_uni_form }}
+				<div class="form_block">
+					<input type="hidden" name="action" value="add" />
+					<input type="submit" value="{% trans 'add' %}"/>
+				</div>
+			</fieldset>
+		</form>
+	{% else %}
+		{% if group.invite_only %}
+			<p>{% trans "This is an invite-only group. Your request must be approved by a group administrator." %}</p>
+		{% else %}
+			<p>{% trans "Please confirm that you wish to join the group." %}</p>
+		{% endif %}
+		
+		<form class="uniForm" id="member_form" method="POST" action="">
+			<fieldset class="inlineLabels">
+				<div class="form_block">
+					<input type="hidden" name="user" value="{{ user.id }}" />
+					{% if group.invite_only %}
+						<input type="submit" value="{% trans 'request' %}"/>
+					{% else %}
+						<input type="submit" value="{% trans 'add' %}"/>
+					{% endif %}
+				</div>
+			</fieldset>
+		</form>
+	{% endif %}
 {% else %}
-    {% url acct_signup as signup_url %}
-    {% url acct_login as login_url %}
-    <p>{% blocktrans %}<a href="{{ signup_url }}">Sign up</a> and <a href="{{ login_url }}">log in </a> to join a group.{% endblocktrans %}</p>
+	{% url acct_signup as signup_url %}
+	{% url acct_login as login_url %}
+	<p>{% blocktrans %}<a href="{{ signup_url }}">Sign up</a> and <a href="{{ login_url }}">log in </a> to join a group.{% endblocktrans %}</p>
 {% endif %}
-    
