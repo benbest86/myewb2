@@ -53,7 +53,26 @@
         <li id="li-group-events"><a href="#group-events" id="show-group-events">Upcoming Events</a></li>
         <li id="li-group-whiteboard"><a href="#group-whiteboard" id="show-group-whiteboard">Whiteboard</a></li>
     </ul>
-    
+
+	{% get_membership group request.user as member %}
+	{% if member and member.is_invited %}
+		<div class="bkgd-light" style="border: 1px; width: 75%; margin: 0 auto; padding: 5px;">
+			{% trans "You have been invited to join this group." %}<br/>
+			<form method="POST" action="{% groupurl accept_invitation group username=member.user.username %}">
+				<input type="submit" value="{% trans "Join group" %}" style="float: left;"/>
+			</form>            			
+			<form method="POST" action="{% groupurl delete_member group username=member.user.username %}">
+				&nbsp;&nbsp;&nbsp;<input type="submit" value="{% trans "Decline" %}" />
+			</form>
+		</div>
+	{% endif %}
+	
+	{% if member and member.is_requested %}
+		<div class="bkgd-light" style="border: 1px; width: 75%; margin: 0 auto; padding: 5px;">
+			{% trans "You have requested membership in this group and your request is pending." %}
+		</div>
+	{% endif %}
+
     <div id="group-info" class="group-subsection" style="display: block;">
         {% block groupbody %}
             {# OVERRIDE ME! #}
@@ -130,13 +149,7 @@
                 {% endif %}
                 
                 {% if member.is_invited %}
-                    {% trans "You have been invited to join this group. Do you wish to join?" %}<br/>
-                    <form method="POST" action="{% groupurl accept_invitation group username=member.user.username %}">
-                    	<input type="submit" value="{% trans "Join group" %}" />
-        			</form>            			
-					<form method="POST" action="{% groupurl delete_member group username=member.user.username %}">
-                    	<input type="submit" value="{% trans "Decline" %}" />
-					</form><br/>
+                    {% trans "You have been invited to join this group." %}<br/>
                 {% endif %}
                 
                 {% if member.is_requested %}
