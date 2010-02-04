@@ -8,6 +8,11 @@
 {% load extra_tagging_tags %}
 {% load base_groups_tags %}
 
+{% block extra_head %}
+	{{ block.super }}
+	{{ form.media }}
+{% endblock %}
+
 {% block head_title %}{% blocktrans %}Invite Member{% endblocktrans %}{% endblock %}
 
 <h1>{{group}}</h1>
@@ -24,3 +29,10 @@
 </form>
 
 
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+        function getUserSelectionUrl() { return '{% url selected_user %}'; }
+        function getUserSearchUrl() { return '{% url profile_user_search %}'; }
+    </script>
+{% endblock %}

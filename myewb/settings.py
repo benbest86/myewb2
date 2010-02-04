@@ -213,6 +213,7 @@ INSTALLED_APPS = (
     'volunteering',
     'siteutils',
     'manager_extras',
+    'user_search',
 
     # our own third-party libs
     'contrib.django_evolution',

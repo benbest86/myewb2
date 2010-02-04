@@ -15,7 +15,7 @@ from messages.fields import CommaSeparatedUserField
 """
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from profiles.forms import UserField, UserSelectionInput
+from user_search.forms import UserField, UserSelectionInput
 from messages.forms import ComposeForm as OriginalComposeForm
 from lxml.html.clean import clean_html, autolink_html
 

@@ -8,6 +8,11 @@
 {% load extra_tagging_tags %}
 {% load base_groups_tags %}
 
+{% block extra_head %}
+	{{ block.super }}
+	{{ form.media }}
+{% endblock %}
+
 {% block head_title %}{% blocktrans %}Add Member{% endblocktrans %}{% endblock %}
 
 <h1>{% trans "Add Member" %}</h1>
@@ -48,3 +53,12 @@
 	{% url acct_login as login_url %}
 	<p>{% blocktrans %}<a href="{{ signup_url }}">Sign up</a> and <a href="{{ login_url }}">log in </a> to join a group.{% endblocktrans %}</p>
 {% endif %}
+
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+        function getUserSelectionUrl() { return '{% url selected_user %}'; }
+        function getUserSearchUrl() { return '{% url profile_user_search %}'; }
+    </script>
+{% endblock %}

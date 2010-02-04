@@ -45,11 +45,16 @@ class BaseGroupForm(forms.ModelForm):
         abstract = True
 
 class GroupInviteForm(forms.ModelForm):
+    from user_search.forms import UserField
+    user = UserField(label=_("User"))
+    
     class Meta:
         model = InvitationToJoinGroup
         fields = ('user', 'message')
         
 class GroupMemberForm(forms.ModelForm):
+    from user_search.forms import UserField
+    user = UserField(label=_("User"))
 
     class Meta:
         model = GroupMember        
