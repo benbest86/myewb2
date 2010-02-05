@@ -68,7 +68,7 @@ class UserSelectionInput(forms.MultipleHiddenInput):
         		except User.DoesNotExist:
         			pass
         print users
-        t = loader.get_template('profiles/user_selection_input.html')
+        t = loader.get_template('user_search/user_selection_input.html')
         c = Context({'users': users, 'field_name': name})
         return mark_safe(t.render(c))
         

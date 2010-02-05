@@ -4,7 +4,7 @@ This file is part of myEWB
 Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
 """
 
-from django.shortcuts import get_object_or_404
+from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext, Context, loader
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -32,7 +32,7 @@ def user_search(request):
         
     if request.is_ajax():
         return render_to_response(
-                'profiles/user_search_ajax_results.html', 
+                'user_search/user_search_ajax_results.html', 
                 {
                     'users': users,
                     'field': field
@@ -49,7 +49,7 @@ def sample_user_search(request):
             bcc_users = form.cleaned_data['bcc']
         
             return render_to_response(
-                    'profiles/sample_user_search.html', 
+                    'user_search/sample_user_search.html', 
                     { 
                         'form': form,
                         'results': True,
@@ -59,7 +59,7 @@ def sample_user_search(request):
                     }, 
                     context_instance=RequestContext(request))
     return render_to_response(
-            'profiles/sample_user_search.html', 
+            'user_search/sample_user_search.html', 
             { 
                 'form': form
             }, 
@@ -71,7 +71,7 @@ def selected_user(request):
         field = request.POST.get('field', '')
         sel_user = User.objects.get(username=username)
         return render_to_response(
-                'profiles/selected_user.html', 
+                'user_search/selected_user.html', 
                 {
                     'sel_user': sel_user,
                     'field': field
