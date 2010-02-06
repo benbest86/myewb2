@@ -94,35 +94,43 @@ def new_member(request, group_slug, group_model=None, form_class=None,
         # load up form
         form = form_class(request.POST)
         if form.is_valid():
-            member = form.save(commit=False)
+            for singleuser in form.cleaned_data['user']:
+                existing_members = group.members.filter(user=singleuser)
             
-            existing_members = group.members.filter(user=member.user)
-            
-            # General users can only add themselves as members
-            # Users cannot have multiple memberships in the same group
-            # TODO: split out invitations/requests into a different process & object
-            if existing_members.count() == 0 and (user == member.user or user.is_staff or group.user_is_admin(user)):
-                if user == member.user:
-                    if group.invite_only and not user.is_staff:     # we ignore group admins since they must already be members
-                        member = RequestToJoinGroup(user=member.user) # create a membership request instead
+                # General users can only add themselves as members
+                # Users cannot have multiple memberships in the same group
+                # TODO: split out invitations/requests into a different process & object
+                if existing_members.count() == 0 and (user == singleuser or user.is_staff or group.user_is_admin(user)):
+                    member = None
+                    if user == singleuser:
+                        if group.invite_only and not user.is_staff:     # we ignore group admins since they must already be members
+                            member = RequestToJoinGroup() # create a membership request instead
+                    
+                    if member == None:
+                        member = GroupMember()
 
-                if isinstance(member, GroupMember) and not (user.is_staff or group.user_is_admin(user)):
-                    # General users cannot make themselves admins
-                    member.is_admin = False
-                    member.admin_title = ""
+                    member.group = group
+                    member.user = singleuser
+                    
+                    if isinstance(member, GroupMember) and not (user.is_staff or group.user_is_admin(user)):
+                        # General users cannot make themselves admins
+                        member.is_admin = False
+                        member.admin_title = ""
+                    else:
+                        member.is_admin = form.cleaned_data['is_admin']
+                        member.admin_title = form.cleaned_data['admin_title']
                 
-                member.group = group
-                member.save()
+                    member.save()
                 
-                # different returns if it's an ajax call...
-                if request.is_ajax():
-                    response = render_to_response("base_groups/ajax-join.html",
-                                                  {'group': group},
-                                                  context_instance=RequestContext(request),
-                                                 )
-                else:
-                    response =  HttpResponseRedirect(reverse('%s_detail' % group_model._meta.module_name, kwargs={'group_slug': group_slug}))
-                return response
+            # different returns if it's an ajax call...
+            if request.is_ajax():
+                response = render_to_response("base_groups/ajax-join.html",
+                                              {'group': group},
+                                              context_instance=RequestContext(request),
+                                             )
+            else:
+                response =  HttpResponseRedirect(reverse('%s_detail' % group_model._meta.module_name, kwargs={'group_slug': group_slug}))
+            return response
             
     else:
         form = form_class()
@@ -168,21 +176,22 @@ def invite_member(request, group_slug, group_model=None, form_class=None,
         # load up form
         form = form_class(request.POST)
         if form.is_valid():
-            member = form.save(commit=False)
-            
-            existing_members = group.members.filter(user=member.user)
+            for singleuser in form.cleaned_data['user']:
+                existing_members = group.members.filter(user=singleuser)
 
-            if existing_members.count() > 0:
-                request.user.message_set.create(message="They are already in the group!")
+                if existing_members.count() > 0:
+                    request.user.message_set.create(message="%s is already in the group!" % singleuser.visible_name())
 
-            else:
-                #member = InvitationToJoinGroup(user=member.user) # another user invited by a group / site admin         
-                member.group = group
-                member.invited_by = request.user
-                member.save()
+                else:
+                    member = InvitationToJoinGroup() # another user invited by a group / site admin         
+                    member.group = group
+                    member.invited_by = request.user
+                    member.user = singleuser
+                    member.message = form.cleaned_data['message']
+                    member.save()
                 
-                #request.user.message_set.create(message=_("Invitation sent"))    # why's this choking?
-                request.user.message_set.create(message="Invitation sent")
+                    #request.user.message_set.create(message=_("Invitation sent"))    # why's this choking?
+                    request.user.message_set.create(message="Invitation sent to %s" % singleuser.visible_name())
 
             return HttpResponseRedirect(reverse('%s_detail' % group_model._meta.module_name, kwargs={'group_slug': group_slug}))
             

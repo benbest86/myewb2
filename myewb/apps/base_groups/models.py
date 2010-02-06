@@ -335,7 +335,7 @@ class RequestToJoinGroup(PendingMember):
     pass
 
 class InvitationToJoinGroup(PendingMember):
-    invited_by = models.ForeignKey(User, related_name='invitations_issued')
+    invited_by = models.ForeignKey(User, related_name='invitations_issued', default=0)
 
 def invitation_notify(sender, instance, created, **kwargs):
     user = instance.user
