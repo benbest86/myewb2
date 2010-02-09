@@ -66,6 +66,7 @@ urlpatterns = patterns('',
     (r'^posts/', include('group_topics.urls')),
     (r'^creditcard/', include('creditcard.urls')),
     (r'^usersearch/', include('user_search.urls')),
+    (r'^permissions/', include('permissions.urls')),
     
     url(r'^unsubscribe/$', 'networks.views.unsubscribe', name='network_unsubscribe',),
     

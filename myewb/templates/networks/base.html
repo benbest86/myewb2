@@ -30,7 +30,7 @@
     {{ block.super }}
 
     {% if group %}
-	    {% if user.is_staff or is_admin %}
+	    {% if is_admin %}
             <div class="toolbarheader bkgd">{% trans "Admin Options" %}</div>
             <div class="toolbarcontent">
 		        <a href="{% url network_new_member group.slug %}">{% trans "Add users" %}</a><br/>
@@ -41,11 +41,9 @@
 	            {% endif %}
 	            <br/>
 	            
-                {% if perms.networks.change or is_admin %}
-        			<a href="{% url edit_network group.slug %}">{% trans "Edit network details" %}</a><br/><br/>
-                {% endif %}
+       			<a href="{% url edit_network group.slug %}">{% trans "Edit network details" %}</a><br/><br/>
                 
-                {% if user.is_staff and not group.is_chapter %}
+                {% if perms.base_groups and not group.is_chapter %}
                     <a href="{% url new_chapter %}?network={{ group.slug }}">{% trans "Convert to chapter" %}</a><br/>
                 {% endif %}      
             </div>
@@ -65,7 +63,7 @@
                 </div>
                 <div style="margin-left: 35px; height: 35px;">
                     <a href="{% url profile_detail admin.user.username %}">{{ admin.user.visible_name }}</a><br/>
-                    {{ admin.admin_title }} {% if user.is_staff or is_admin %}<a href="{% url network_edit_member group.slug admin.user.username %}">(edit)</a>{% endif %}
+                    {{ admin.admin_title }} {% if is_admin %}<a href="{% url network_edit_member group.slug admin.user.username %}">(edit)</a>{% endif %}
                 </div>
             {% endfor %}
         </div>

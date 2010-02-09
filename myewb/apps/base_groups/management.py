@@ -11,11 +11,12 @@ Last modified on 2009-07-29
 from django.conf import settings
 from django.db.models import signals
 from django.utils.translation import ugettext_noop as _
-from django.contrib.auth.models import Group, Permission
+from django.contrib.auth.models import Permission, Group
 from django.contrib.contenttypes.models import ContentType
 
 from base_groups.models import BaseGroup
 from base_groups import models as bg
+from permissions.models import PermissionGroup
 
 if "notification" in settings.INSTALLED_APPS:
     from notification import models as notification
@@ -30,7 +31,15 @@ else:
     print "Skipping creation of NoticeTypes as notification app not found"
 
 def create_perm_group(sender, **kwargs):
-    group, created = Group.objects.get_or_create(name="Groups admin")
+    # delete the old super class if it exists (so in-place db upgrades will work)
+    try:
+        group = Group.objects.get(name="Groups admin")
+        group.delete()
+    except:
+        pass
+
+    group, created = PermissionGroup.objects.get_or_create(name="Groups admin",
+                                                           description="Full control over groups (chapters and mailing lists)")
     if created:
         # print 'creating base_groups permission group'
     

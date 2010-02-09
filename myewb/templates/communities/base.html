@@ -17,16 +17,14 @@
     {{ block.super }}
 
     {% if group %}
-	    {% if user.is_staff or is_admin %}
+	    {% if is_admin %}
             <div class="toolbarheader bkgd">{% trans "Admin Options" %}</div>
             <div class="toolbarcontent">
 		        <a href="{% url community_new_member group.slug %}">{% trans "Add users" %}</a><br/>
 		        <a href="{% url community_invite_member group.slug %}">{% trans "Invite users" %}</a><br/>
 	            <br/>
 	            
-                {% if perms.communities.change or is_admin %}
-        			<a href="{% url edit_community group.slug %}">{% trans "Edit community details" %}</a><br/><br/>
-                {% endif %}
+       			<a href="{% url edit_community group.slug %}">{% trans "Edit community details" %}</a><br/><br/>
             </div>
         {% endif %}
 	{% endif %}

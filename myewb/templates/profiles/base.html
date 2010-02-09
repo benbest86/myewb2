@@ -25,6 +25,10 @@ This file derived from Pinax 0.7.1 (http://pinaxproject.com/), licensed under th
     {% endif %}
     
     <li><a href="{% url profiles_index %}">{% trans "Search members" %}</a></li>
+    
+    {% if user.is_staff %}
+	    <li><a href="{% url permissions_index %}">{% trans "Permissions" %}</a></li>
+    {% endif %}
 </ul>
 {% endblock %}
 

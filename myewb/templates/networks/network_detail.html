@@ -78,7 +78,7 @@
            <a href="{{ child.get_absolute_url }}">{{ child.name }}</a><br/>
     {% endfor %}
     
-    {% if user.is_staff or is_admin %}
+    {% if is_admin %}
         <p><a href="{% url new_community %}?parent={{group.slug}}">create a community</a></p>
 	{% endif %}	    
 

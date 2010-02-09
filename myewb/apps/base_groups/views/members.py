@@ -100,10 +100,10 @@ def new_member(request, group_slug, group_model=None, form_class=None,
                 # General users can only add themselves as members
                 # Users cannot have multiple memberships in the same group
                 # TODO: split out invitations/requests into a different process & object
-                if existing_members.count() == 0 and (user == singleuser or user.is_staff or group.user_is_admin(user)):
+                if existing_members.count() == 0 and (user == singleuser or group.user_is_admin(user)):
                     member = None
                     if user == singleuser:
-                        if group.invite_only and not user.is_staff:     # we ignore group admins since they must already be members
+                        if group.invite_only and not group.user_is_admin(user):     # we ignore group admins since they must already be members
                             member = RequestToJoinGroup() # create a membership request instead
                     
                     if member == None:
@@ -112,7 +112,7 @@ def new_member(request, group_slug, group_model=None, form_class=None,
                     member.group = group
                     member.user = singleuser
                     
-                    if isinstance(member, GroupMember) and not (user.is_staff or group.user_is_admin(user)):
+                    if isinstance(member, GroupMember) and not group.user_is_admin(user):
                         # General users cannot make themselves admins
                         member.is_admin = False
                         member.admin_title = ""

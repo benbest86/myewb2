@@ -487,7 +487,7 @@ def pay_membership(request, username):
             )
          
     # Admins / chapter execs (TODO) can upgrade anyone's membership
-    elif request.user.is_superuser:
+    elif request.user.has_module_perms("profiles"):
         other_user.get_profile().pay_membership()
         message = loader.get_template("profiles/member_upgraded.html")
         c = Context({'user': other_user})
@@ -543,7 +543,7 @@ def pay_membership2(request, username):
         # what kind of error to throw...?
          
     # Admins / chapter execs (TODO) can upgrade anyone's membership
-    elif request.user.is_superuser:
+    elif request.user.has_module_perms("profiles"):
         other_user.get_profile().pay_membership()
         message = loader.get_template("profiles/member_upgraded.html")
         c = Context({'user': other_user})

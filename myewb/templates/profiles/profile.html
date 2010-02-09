@@ -17,7 +17,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 	<br/>
     <h1 style="text-align: center;">{{ other_user.visible_name }}</h1>
 
-    {% if is_me or is_friend or user.is_staff %}
+    {% if is_me or is_friend or perms.profiles %}
         <div style="text-align: center; position: relative; top: -15px;">
             <a href="mailto:{{other_user.email}}">{{other_user.email}}</a>
         </div>
@@ -54,8 +54,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
         </p>
     {% endif %}
         
-    {# TODO: don't use user.is_staff #}
-	{% if is_me or is_friend or user.is_staff %}
+	{% if is_me or is_friend or perms.profiles %}
 		{% if regular %}regular member, expiring on {{ other_user.get_profile.membership_expiry }}{% endif %}
 		
         <h2>{% trans "Contact Information" %}</h2>
@@ -92,7 +91,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 			    <br/>
 	            (<a href="{% url acct_email %}">{% trans "edit emails" %}</a>)<br/>
 	        {% else %}
-	        	{% if user.is_staff %}
+	        	{% if perms.profiles %}
 				    <br/>
 		            (<a href="{% url acct_email_user other_user.username %}">{% trans "edit emails" %}</a>)<br/>
 	        	{% endif %}
@@ -222,7 +221,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 	    {% endif %} {# is_friend #}
 	{% endif %}  {# not is_me #}
     
-    {% if user.is_staff %}
+    {% if perms.profiles %}
         <h2>{% trans "myEWB History" %}</h2>
         we'll add a neat-o search &amp; sort feature and stuff soon
         <table id="user-history">
@@ -294,7 +293,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
                 </tbody>
             </table>
         {% endif %}
-    {% endif %}{# end of user.is_staff blockfor user history#}
+    {% endif %}{# end of perms.profiles block for user history#}
         
 {% endblock %}
 
@@ -313,7 +312,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 	        {% endif %}
         </div>
     {% else %}
-        {% if user.is_staff %}
+        {% if perms.profiles %}
             <div class="toolbarheader bkgd">{% trans "Actions" %}</div>
             <div class="toolbarcontent">
             	{# TODO: is chapter exec?? #}

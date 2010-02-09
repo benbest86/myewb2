@@ -60,7 +60,7 @@ def email(request, form_class=AddEmailForm, template_name="account/email.html",
           username=None):
     
     if username:
-        if request.user.is_staff == False or not request.user.has_module_perms("account"):
+        if not request.user.has_module_perms("profiles"):
             return HttpResponseForbidden()
         else:
             user = get_object_or_404(User, username=username)

@@ -19,7 +19,7 @@
 <h1>{% trans "Add Member" %}</h1>
 
 {% if user.is_authenticated %}
-	{% if user.is_staff or is_admin %}
+	{% if is_admin %}
     	<form class="uniForm" id="member_form" method="POST" action="">
         	<fieldset class="inlineLabels">
             	{{ form|as_uni_form }}
