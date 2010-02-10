@@ -720,7 +720,7 @@
             "creator": 2, 
             "created": "2009-11-14 19:59:43", 
             "invite_only": true, 
-            "visibility": "E", 
+            "visibility": "M", 
             "model": "Community", 
             "slug": "prochaptersexec", 
             "name": "Professional Chapter Exec"
@@ -735,8 +735,8 @@
             "parent": null, 
             "creator": 2, 
             "created": "2009-11-14 20:01:04", 
-            "invite_only": false, 
-            "visibility": "E", 
+            "invite_only": true, 
+            "visibility": "M", 
             "model": "Community", 
             "slug": "presidents", 
             "name": "Student Chapter Presidents"
@@ -751,8 +751,8 @@
             "parent": null, 
             "creator": 2, 
             "created": "2009-11-14 20:01:29", 
-            "invite_only": false, 
-            "visibility": "E", 
+            "invite_only": true, 
+            "visibility": "M", 
             "model": "Community", 
             "slug": "finance", 
             "name": "Finance National Reps"
@@ -768,7 +768,7 @@
             "creator": 2, 
             "created": "2009-11-14 20:01:50", 
             "invite_only": false, 
-            "visibility": "E", 
+            "visibility": "M", 
             "model": "Community", 
             "slug": "memberlearning", 
             "name": "Member Learning National Reps"
@@ -784,7 +784,7 @@
             "creator": 2, 
             "created": "2009-11-14 20:02:13", 
             "invite_only": false, 
-            "visibility": "E", 
+            "visibility": "M", 
             "model": "Community", 
             "slug": "learningpartnerships", 
             "name": "Learning Partnerships National Reps"
@@ -800,7 +800,7 @@
             "creator": 2, 
             "created": "2009-11-14 20:02:35", 
             "invite_only": false, 
-            "visibility": "E", 
+            "visibility": "M", 
             "model": "Community", 
             "slug": "schooloutreach", 
             "name": "School Outreach National Reps"
@@ -816,7 +816,7 @@
             "creator": 2, 
             "created": "2009-11-14 20:02:59", 
             "invite_only": false, 
-            "visibility": "E", 
+            "visibility": "M", 
             "model": "Community", 
             "slug": "curriculumenhancement", 
             "name": "Curriculum Enhancement National Reps"
@@ -832,7 +832,7 @@
             "creator": 2, 
             "created": "2009-11-14 20:03:29", 
             "invite_only": false, 
-            "visibility": "E", 
+            "visibility": "M", 
             "model": "Community", 
             "slug": "publicoutreach", 
             "name": "Public Outreach National Reps"
@@ -848,7 +848,7 @@
             "creator": 2, 
             "created": "2009-11-14 20:03:56", 
             "invite_only": false, 
-            "visibility": "E", 
+            "visibility": "M", 
             "model": "Community", 
             "slug": "webmaster", 
             "name": "Webmaster Contacts"
@@ -864,7 +864,7 @@
             "creator": 2, 
             "created": "2009-11-14 20:04:16", 
             "invite_only": false, 
-            "visibility": "E", 
+            "visibility": "M", 
             "model": "Community", 
             "slug": "communications", 
             "name": "Communications Contacts"
@@ -880,7 +880,7 @@
             "creator": 2, 
             "created": "2009-11-14 20:04:36", 
             "invite_only": false, 
-            "visibility": "E", 
+            "visibility": "M", 
             "model": "Community", 
             "slug": "prochapterpres", 
             "name": "Professional Chapter Presidents"
@@ -896,7 +896,7 @@
             "creator": 2, 
             "created": "2009-11-14 20:04:59", 
             "invite_only": false, 
-            "visibility": "E", 
+            "visibility": "M", 
             "model": "Community", 
             "slug": "workplaceoutreach", 
             "name": "Workplace Outreach National Reps"
@@ -912,7 +912,7 @@
             "creator": 2, 
             "created": "2009-11-14 20:05:31", 
             "invite_only": false, 
-            "visibility": "E", 
+            "visibility": "M", 
             "model": "Community", 
             "slug": "fundraising", 
             "name": "Fundraising National Reps"

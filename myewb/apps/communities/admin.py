@@ -8,9 +8,11 @@ Created on 2009-07-30
 """
 
 from django.contrib import admin
-from communities.models import Community
+from communities.models import Community, NationalRepList
 
 class CommunityAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug', 'creator', 'created')
 
 admin.site.register(Community, CommunityAdmin)
+
+admin.site.register(NationalRepList)
