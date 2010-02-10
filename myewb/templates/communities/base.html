@@ -9,7 +9,7 @@
         {% if group %}
         <li><a href="{% url community_detail group.slug %}">{{ group.name }}</a></li>
         {% endif %}
-        <li><a href="{% url communities_index %}">{% trans "All Communities" %}</a></li>
+        <li><a href="{% url communities_index %}">{% trans "All Mailing Lists" %}</a></li>
     </ul>
 {% endblock %}
 
@@ -24,7 +24,7 @@
 		        <a href="{% url community_invite_member group.slug %}">{% trans "Invite users" %}</a><br/>
 	            <br/>
 	            
-       			<a href="{% url edit_community group.slug %}">{% trans "Edit community details" %}</a><br/><br/>
+       			<a href="{% url edit_community group.slug %}">{% trans "Edit list details" %}</a><br/><br/>
             </div>
         {% endif %}
 	{% endif %}

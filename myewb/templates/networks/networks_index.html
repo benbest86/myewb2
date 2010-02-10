@@ -10,10 +10,10 @@
 {% load base_groups_tags %}
 {% load sorting_tags %}
 
-{% block head_title %}{% blocktrans %}Networks{% endblocktrans %}{% endblock %}
+{% block head_title %}{% blocktrans %}Chapters{% endblocktrans %}{% endblock %}
 
 {% block body %}
-    <h1>{% trans "Networks" %}</h1>
+    <h1>{% trans "Chapters" %}</h1>
     
     {% if user.is_authenticated %}
 		{% if perms.chapters.create %}

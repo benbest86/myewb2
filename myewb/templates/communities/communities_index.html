@@ -10,13 +10,13 @@
 {% load base_groups_tags %}
 {% load sorting_tags %}
 
-{% block head_title %}{% blocktrans %}Communities{% endblocktrans %}{% endblock %}
+{% block head_title %}{% blocktrans %}Mailing Lists{% endblocktrans %}{% endblock %}
 
 {% block body %}
-    <h1>{% trans "Communities" %}</h1>
+    <h1>{% trans "Mailing Lists" %}</h1>
     
     {% if user.is_authenticated %}
-        <p><a href="{% url new_community %}">Create</a> a community</p>
+        <p><a href="{% url new_community %}">Create</a> a list</p>
     {% else %}
         {% url acct_signup as signup_url %}
         {% url acct_login as login_url %}
