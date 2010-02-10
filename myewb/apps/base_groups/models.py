@@ -126,7 +126,16 @@ class BaseGroup(Group):
         Adds a member to a group.
         Retained for backwards compatibility with request_status days.
         """
-        return GroupMember.objects.create(user=user, group=self)
+        member = GroupMember.objects.filter(user=user, group=self)
+        if member.count() > 0:
+            return member[0]
+        else:
+            return GroupMember.objects.create(user=user, group=self)
+    
+    def remove_member(self, user):
+        member = GroupMember.objects.filter(user=user, group=self)
+        for m in member:
+            m.delete()
 
     def send_mail_to_members(self, subject, body, html=True, fail_silently=False):
         """

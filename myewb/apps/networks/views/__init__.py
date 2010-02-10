@@ -19,7 +19,7 @@ from django.utils.translation import ugettext as _
 from emailconfirmation.models import EmailAddress
 
 from networks.models import Network
-from networks.forms import NetworkForm, NetworkBulkImportForm, NetworkUnsubscribeForm
+from networks.forms import NetworkForm, NetworkBulkImportForm, NetworkUnsubscribeForm, NetworkMemberForm, EditNetworkMemberForm
 from siteutils.helpers import get_email_user
 
 from base_groups.views import *
@@ -28,6 +28,7 @@ from base_groups.models import BaseGroup, GroupMember, GroupLocation
 from base_groups.forms import GroupMemberForm, GroupInviteForm, EditGroupMemberForm, GroupLocationForm
 from base_groups.helpers import *
 from base_groups.decorators import group_admin_required
+from communities.models import NationalRepList
 
 INDEX_TEMPLATE = 'networks/networks_index.html'
 NEW_TEMPLATE = 'networks/new_network.html'
@@ -79,7 +80,7 @@ def members_index(request, group_slug, form_class=GroupMemberForm, template_name
     return members.members_index(request, group_slug, Network, form_class, template_name, new_template_name)
     
 @login_required
-def new_member(request, group_slug, form_class=GroupMemberForm, template_name=MEM_NEW_TEMPLATE,
+def new_member(request, group_slug, form_class=NetworkMemberForm, template_name=MEM_NEW_TEMPLATE,
         index_template_name=MEM_INDEX_TEMPLATE):
     return members.new_member(request, group_slug, Network, form_class, template_name, index_template_name)
     
@@ -93,8 +94,35 @@ def member_detail(request, group_slug, username, form_class=EditGroupMemberForm,
     return members.member_detail(request, group_slug, username, Network, form_class, template_name, edit_template_name)
 
 @login_required
-def edit_member(request, group_slug, username, form_class=EditGroupMemberForm, template_name=MEM_EDIT_TEMPLATE,
+def edit_member(request, group_slug, username, form_class=EditNetworkMemberForm, template_name=MEM_EDIT_TEMPLATE,
         detail_template_name=MEM_DETAIL_TEMPLATE):
+
+    if request.method == 'POST':
+        # grab basic objects
+        group = get_object_or_404(Network, slug=group_slug)
+        other_user = get_object_or_404(User, username=username)
+        member = get_object_or_404(GroupMember, group=group, user=other_user)
+        user = request.user
+        
+        # saving the object
+        form = form_class(request.POST, instance=member)
+        if form.is_valid():
+            # build list of Natl Rep objects that user should be in
+            currentlists = NationalRepList.objects.filter(member_users=other_user)
+            newlists = []
+            for listslug in form.cleaned_data['replists']:
+                list = get_object_or_404(NationalRepList, slug=listslug)
+                newlists.append(list)
+                
+                # add to list if not already on it
+                if list not in currentlists:
+                    obj = list.add_member(other_user)
+                
+            # get current lists, remove from rep lists as needed
+            for list in currentlists:
+                if list not in newlists:
+                    list.remove_member(other_user)
+        
     return members.edit_member(request, group_slug, username, Network, form_class, template_name, detail_template_name)
 
 @login_required    

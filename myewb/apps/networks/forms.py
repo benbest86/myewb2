@@ -16,8 +16,9 @@ from django.forms.fields import email_re
 from django.contrib.localflavor.ca import forms as caforms
 
 from base_groups.models import BaseGroup
-from base_groups.forms import BaseGroupForm
+from base_groups.forms import BaseGroupForm, GroupMemberForm, EditGroupMemberForm
 from networks.models import Network, ChapterInfo, EmailForward
+from communities.models import NationalRepList
         
 class NetworkForm(BaseGroupForm):
 
@@ -38,7 +39,41 @@ class NetworkBulkImportForm(forms.Form):
             raise forms.ValidationError('\n'.join(['%s is not a valid email.' % bad_email for bad_email in bad_emails]))
         return data
 
-    
+class NetworkMemberForm(GroupMemberForm):
+    # build list of national rep lists...
+    lists = NationalRepList.objects.all()
+    list_choices = []
+    for list in lists:
+        list_choices.append((list.slug, list.name))
+        
+    replists = forms.MultipleChoiceField(label=_('National Rep Lists'),
+                                         choices=list_choices,
+                                         required=False,
+                                         widget=forms.CheckboxSelectMultiple)
+
+class EditNetworkMemberForm(EditGroupMemberForm):
+    # build list of national rep lists...
+    lists = NationalRepList.objects.all()
+    list_choices = []
+    for list in lists:
+        list_choices.append((list.slug, list.name))
+
+    replists = forms.MultipleChoiceField(label=_('National Rep Lists'),
+                                         choices=list_choices,
+                                         required=False,
+                                         widget=forms.CheckboxSelectMultiple)
+
+    def __init__(self, *args, **kwargs):
+        super(EditNetworkMemberForm, self).__init__(*args, **kwargs)
+            
+        # build list of defaults (NR groups you're already in)
+        defaults = []
+        mylists = NationalRepList.objects.filter(member_users=self.instance.user)
+        for list in mylists:
+            defaults.append(list.slug)
+            
+        self.fields['replists'].initial = defaults
+
 class NetworkUnsubscribeForm(forms.Form):
     email = forms.CharField()
         
