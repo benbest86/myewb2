@@ -54,6 +54,8 @@ class ChapterInfo(models.Model):
     phone = models.CharField(_('telephone number'), max_length=40, null=True, blank=True)
     fax = models.CharField(_('fax number'), max_length=40, null=True, blank=True)
     
+    student = models.BooleanField(_('student chapter?'), default=True)
+    
 def create_network_location(sender, instance=None, **kwargs):
     """Automatically creates a GroupLocation for a new Network."""
     if instance is None:

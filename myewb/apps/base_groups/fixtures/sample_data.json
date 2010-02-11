@@ -919,6 +919,38 @@
         }
     },
     {
+        "pk": 58, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Student chapters' executive mailing list (all chapters).", 
+            "parent": null, 
+            "creator": 2, 
+            "created": "2009-11-14 19:59:43", 
+            "invite_only": true, 
+            "visibility": "M", 
+            "model": "Community", 
+            "slug": "unichaptersexec", 
+            "name": "Student Chapter Exec"
+        }
+    }, 
+    {
+        "pk": 59, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "All chapters executive mailing list (student and pro).", 
+            "parent": null, 
+            "creator": 2, 
+            "created": "2009-11-14 19:59:43", 
+            "invite_only": true, 
+            "visibility": "M", 
+            "model": "Community", 
+            "slug": "exec", 
+            "name": "Chapter Executives"
+        }
+    }, 
+    {
         "pk": 1, 
         "model": "base_groups.grouplocation", 
         "fields": {

@@ -28,7 +28,7 @@ from base_groups.models import BaseGroup, GroupMember, GroupLocation
 from base_groups.forms import GroupMemberForm, GroupInviteForm, EditGroupMemberForm, GroupLocationForm
 from base_groups.helpers import *
 from base_groups.decorators import group_admin_required
-from communities.models import NationalRepList
+from communities.models import NationalRepList, ExecList
 
 INDEX_TEMPLATE = 'networks/networks_index.html'
 NEW_TEMPLATE = 'networks/new_network.html'
@@ -82,6 +82,9 @@ def members_index(request, group_slug, form_class=GroupMemberForm, template_name
 @login_required
 def new_member(request, group_slug, form_class=NetworkMemberForm, template_name=MEM_NEW_TEMPLATE,
         index_template_name=MEM_INDEX_TEMPLATE):
+
+    update_magic_lists(request, group_slug, None, form_class)
+        
     return members.new_member(request, group_slug, Network, form_class, template_name, index_template_name)
     
 @login_required
@@ -96,32 +99,8 @@ def member_detail(request, group_slug, username, form_class=EditGroupMemberForm,
 @login_required
 def edit_member(request, group_slug, username, form_class=EditNetworkMemberForm, template_name=MEM_EDIT_TEMPLATE,
         detail_template_name=MEM_DETAIL_TEMPLATE):
-
-    if request.method == 'POST':
-        # grab basic objects
-        group = get_object_or_404(Network, slug=group_slug)
-        other_user = get_object_or_404(User, username=username)
-        member = get_object_or_404(GroupMember, group=group, user=other_user)
-        user = request.user
-        
-        # saving the object
-        form = form_class(request.POST, instance=member)
-        if form.is_valid():
-            # build list of Natl Rep objects that user should be in
-            currentlists = NationalRepList.objects.filter(member_users=other_user)
-            newlists = []
-            for listslug in form.cleaned_data['replists']:
-                list = get_object_or_404(NationalRepList, slug=listslug)
-                newlists.append(list)
-                
-                # add to list if not already on it
-                if list not in currentlists:
-                    obj = list.add_member(other_user)
-                
-            # get current lists, remove from rep lists as needed
-            for list in currentlists:
-                if list not in newlists:
-                    list.remove_member(other_user)
+    
+    update_magic_lists(request, group_slug, username, form_class)
         
     return members.edit_member(request, group_slug, username, Network, form_class, template_name, detail_template_name)
 
@@ -192,3 +171,73 @@ def unsubscribe(request, form_class=NetworkUnsubscribeForm, template_name='netwo
         "form": form,
         "message": message,
     }, context_instance=RequestContext(request))
+
+def update_magic_lists(request, group_slug, username, form_class):
+
+    if request.method == 'POST':
+        # grab basic objects
+        group = get_object_or_404(Network, slug=group_slug)
+        user = request.user
+
+        if username:
+            other_user = get_object_or_404(User, username=username)
+            member = get_object_or_404(GroupMember, group=group, user=other_user)
+            users = [other_user]
+            form = form_class(request.POST, instance=member)
+        else:
+            users = None
+            form = form_class(request.POST)
+
+        # saving the object
+        if form.is_valid():
+            if not users:
+                users = form.cleaned_data['user']
+                
+            for other_user in users:
+                # build list of Natl Rep objects that user should be in
+                currentlists = NationalRepList.objects.filter(member_users=other_user)
+                newlists = []
+                for listslug in form.cleaned_data['replists']:
+                    list = get_object_or_404(NationalRepList, slug=listslug)
+                    newlists.append(list)
+                    
+                    # add to list if not already on it
+                    if list not in currentlists:
+                        obj = list.add_member(other_user)
+                    
+                # get current lists, remove from rep lists as needed
+                for list in currentlists:
+                    if list not in newlists:
+                        list.remove_member(other_user)
+                        
+                # and do exec lists too
+                if form.cleaned_data['is_admin'] == True:
+                    if group.is_chapter():
+                        # TODO: don't hard-code slug?
+                        try:
+                            allexec = ExecList.objects.get(slug='exec')
+                            allexec.add_member(other_user)
+                        except:
+                            pass
+                        
+                        try:
+                            chapterexec = ExecList.objects.get(parent=other_group)
+                            chapterexec.add_member(other_user)
+                        except:
+                            pass
+                        
+                    if group.is_chapter() and group.chapter_info.student:
+                        # TODO: don't hard-code slug?
+                        try:
+                            stuexec = ExecList.objects.get(slug='unichaptersexec')
+                            stuexec.add_member(other_user)
+                        except:
+                            pass
+                    if group.is_chapter() and not group.chapter_info.student:
+                        # TODO: don't hard-code slug?
+                        try:
+                            proexec = ExecList.objects.get(slug='prochaptersexec')
+                            proexec.add_member(other_user)
+                        except:
+                            pass
+    

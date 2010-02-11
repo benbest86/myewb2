@@ -33,3 +33,9 @@ class NationalRepList(Community):
     invite_only = models.BooleanField(_('invite only'), default=True,
                                       editable=False)
     
+class ExecList(Community):
+    visibility = models.CharField(_('visibility'), max_length=1,
+                                  choices=BaseGroup.VISIBILITY_CHOICES,
+                                  default='M', editable=False)
+    invite_only = models.BooleanField(_('invite only'), default=True,
+                                      editable=False)
