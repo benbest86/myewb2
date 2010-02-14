@@ -8,7 +8,7 @@ Created on 2009-07-30
 """
 
 from django.contrib import admin
-from communities.models import Community, NationalRepList
+from communities.models import Community, NationalRepList, ExecList
 
 class CommunityAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug', 'creator', 'created')
@@ -16,3 +16,4 @@ class CommunityAdmin(admin.ModelAdmin):
 admin.site.register(Community, CommunityAdmin)
 
 admin.site.register(NationalRepList)
+admin.site.register(ExecList)
