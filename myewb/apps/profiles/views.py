@@ -17,9 +17,12 @@ from pinax.apps.profiles.views import profile as pinaxprofile
 from django.template import RequestContext, Context, loader
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
+from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.translation import ugettext_lazy as _
 
+from siteutils import online_middleware
 from siteutils.decorators import owner_required
 from profiles.models import MemberProfile, StudentRecord, WorkRecord
 from profiles.forms import StudentRecordForm, WorkRecordForm, MembershipForm
@@ -553,3 +556,17 @@ def pay_membership2(request, username):
     # should not happen.. duh duh duh!
     else:
         return render_to_response('denied.html', context_instance=RequestContext(request))
+        
+@staff_member_required   
+def impersonate (request, username):
+    user = get_object_or_404(User, username=username)
+
+    logout(request)
+    online_middleware.remove_user(request)
+    user.backend = "django.contrib.auth.backends.ModelBackend"
+    login(request, user)
+    
+    request.user.message_set.create(message="Welcome, %s impersonator!" % user.visible_name())
+
+    return HttpResponseRedirect(reverse(settings.LOGIN_REDIRECT_URLNAME))
+

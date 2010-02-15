@@ -319,6 +319,13 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
             	{% if renew %}
     			    <a href="{% url profile_pay_membership other_user %}">Make regular member</a><br/>
     			    (only click if they have paid their fee in cash)
+    			    <br/><br/>
+            	{% endif %}
+            	
+            	{% if user.is_staff %}
+            	    {# intentional use of is_staff... #}
+            	    <a href="{% url profile_impersonate other_user %}">Impersonate</a>
+            	    <br/><br/>
             	{% endif %}
             </div>
         {% endif %}
