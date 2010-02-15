@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import permission_required
 
 from base_groups.models import GroupMember
 from base_groups.decorators import group_admin_required
+from communities.models import ExecList
 from networks.models import Network, ChapterInfo, EmailForward
 from networks.forms import ChapterInfoForm, EmailForwardForm
 from networks import emailforwards
@@ -25,6 +26,15 @@ def chapters_index(request):
         form = ChapterInfoForm(request.POST)
         if form.is_valid():
             chapter = form.save()
+            
+            # also create exec list
+            execlist = ExecList(name="%s Executive" % chapter.chapter_name,
+                                description="%s Executive List" % chapter.chapter_name,
+                                parent=chapter.network,
+                                creator=request.user,
+                                slug="%s-exec" % chapter.network.slug)
+            execlist.save()
+            
             return HttpResponseRedirect(reverse('chapter_detail', kwargs={'group_slug': chapter.network.slug}))
         else:
             return render_to_response(

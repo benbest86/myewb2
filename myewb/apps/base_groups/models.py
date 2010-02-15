@@ -181,7 +181,8 @@ class BaseGroup(Group):
             
             # check if slug is in use; increment until we find a good one.
             # (is there anything better than numerical incrementing?)
-            temp_groups = BaseGroup.objects.filter(slug__contains=slug, model=self.model)
+            temp_groups = BaseGroup.objects.filter(slug__contains=slug)
+            #temp_groups = BaseGroup.objects.filter(slug__contains=slug, model=self.model)
 
             if (temp_groups.count() != 0):
                 slugs = [n.slug for n in temp_groups]
@@ -190,6 +191,7 @@ class BaseGroup(Group):
                 while slug in slugs:
                     i = i + 1
                     slug = old_slug + "%d" % (i, )
+                
             self.slug = slug
         super(BaseGroup, self).save(force_insert=force_insert, force_update=force_update)
 

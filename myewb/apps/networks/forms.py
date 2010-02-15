@@ -85,7 +85,7 @@ class ChapterInfoForm(forms.ModelForm):
     
     class Meta:
         model = ChapterInfo
-        fields = ('chapter_name', 'network', 'street_address', 'street_address_two', 'city', 'province', 'postal_code', 'phone', 'fax')
+        fields = ('chapter_name', 'network', 'street_address', 'street_address_two', 'city', 'province', 'postal_code', 'phone', 'fax', 'is_student')
 
 class PartialEmailField(forms.EmailField):
     def clean(self, value):
