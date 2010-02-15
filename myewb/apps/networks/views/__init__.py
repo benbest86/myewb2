@@ -214,30 +214,30 @@ def update_magic_lists(request, group_slug, username, form_class):
                 if form.cleaned_data['is_admin'] == True:
                     if group.is_chapter():
                         # TODO: don't hard-code slug?
-                        try:
+                        try:    # all execs
                             allexec = ExecList.objects.get(slug='exec')
                             allexec.add_member(other_user)
                         except:
                             pass
                         
-                        try:
-                            chapterexec = ExecList.objects.get(parent=other_group)
+                        try:    # chapter-specific execs
+                            chapterexec = ExecList.objects.get(parent=group)
                             chapterexec.add_member(other_user)
                         except:
                             pass
                         
-                    if group.is_chapter() and group.chapter_info.student:
-                        # TODO: don't hard-code slug?
-                        try:
-                            stuexec = ExecList.objects.get(slug='unichaptersexec')
-                            stuexec.add_member(other_user)
-                        except:
-                            pass
-                    if group.is_chapter() and not group.chapter_info.student:
-                        # TODO: don't hard-code slug?
-                        try:
-                            proexec = ExecList.objects.get(slug='prochaptersexec')
-                            proexec.add_member(other_user)
-                        except:
-                            pass
-    
+                        if group.chapter_info.student:
+                            # TODO: don't hard-code slug?
+                            try:
+                                stuexec = ExecList.objects.get(slug='unichaptersexec')
+                                stuexec.add_member(other_user)
+                            except:
+                                pass
+                        else:
+                            # TODO: don't hard-code slug?
+                            try:
+                                proexec = ExecList.objects.get(slug='prochaptersexec')
+                                proexec.add_member(other_user)
+                            except:
+                                pass
+
