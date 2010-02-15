@@ -197,7 +197,15 @@ def update_magic_lists(request, group_slug, username, form_class):
                 # build list of Natl Rep objects that user should be in
                 currentlists = NationalRepList.objects.filter(member_users=other_user)
                 newlists = []
-                for listslug in form.cleaned_data['replists']:
+                
+                if form.cleaned_data['is_admin'] == True:
+                    selected_lists = form.cleaned_data['replists']
+                else:
+                    selected_lists = []
+                    #FIXME: allow people to be de-admin'ed without losing
+                    # list settings...
+
+                for listslug in selected_lists:
                     list = get_object_or_404(NationalRepList, slug=listslug)
                     newlists.append(list)
                     
