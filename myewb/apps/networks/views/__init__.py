@@ -241,3 +241,9 @@ def update_magic_lists(request, group_slug, username, form_class):
                             except:
                                 pass
 
+                # remove from exec lists if no longer exec                                
+                else:
+                    execlists = ExecList.objects.filter(member_users=other_user)
+                    for list in execlists:
+                        list.remove_member(other_user)
+

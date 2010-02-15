@@ -6,6 +6,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 Last modified on 2009-07-29
 @author Joshua Gorner
 """
+from settings import STATIC_URL
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
@@ -60,12 +61,18 @@ class GroupMemberForm(forms.ModelForm):
         model = GroupMember        
         fields = ('user', 'is_admin', 'admin_title')
         
+    class Media:
+        js = (STATIC_URL + 'js/base_groups/member.js',)
+
 class EditGroupMemberForm(forms.ModelForm):
     
     class Meta:
         model = GroupMember        
         fields = ('is_admin', 'admin_title')
         
+    class Media:
+        js = (STATIC_URL + 'js/base_groups/member.js',)
+
 class GroupLocationForm(forms.ModelForm):
     
     class Meta:

@@ -4,6 +4,11 @@
 
 {% block head_title %}{% blocktrans %}{{ group }} members{% endblocktrans %}{% endblock %}
 
+{% block extra_head %}
+	{{ block.super }}
+	{{ form.media }}
+{% endblock %}
+
 {% block body %}
     
     {% include "base_groups/edit_member.html" %}
