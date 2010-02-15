@@ -154,7 +154,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
             </div>
 		{% endcomment %}
 		                
-	{% if not is_me %}
+	{% if not is_me and user.is_authenticated %}
 		{# is there a better section heading than "sharing"? =) #}
 		<h2>{% trans "Sharing" %}</h2>
 	    {% if is_friend %}
