@@ -17,7 +17,11 @@ from base_groups.helpers import group_url_patterns
 #bridge = ContentBridge(Network, 'networks')
 bridge = ContentBridge(Network, Network._meta.verbose_name)
 
-urlpatterns = group_url_patterns(Network, url(r'^ajax/(?P<network_type>[-\w]+)/$', 'ajax_search', name='ajax_search_network',))
+urlpatterns = patterns('networks.views', 
+    url(r'^national/$', 'national_office', name='national_office'),
+)
+
+urlpatterns += group_url_patterns(Network, url(r'^ajax/(?P<network_type>[-\w]+)/$', 'ajax_search', name='ajax_search_network',))
 
 urlpatterns += patterns('networks.views', 
     url(r'^(?P<group_slug>[-\w]+)/new/$', 'new_member', name='new_network_member'),

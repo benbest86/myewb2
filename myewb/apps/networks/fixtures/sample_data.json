@@ -259,6 +259,13 @@
         }
     }, 
     {
+        "pk": 97, 
+        "model": "networks.network", 
+        "fields": {
+            "network_type": "C"
+        }
+    }, 
+    {
         "pk": 1, 
         "model": "networks.chapterinfo", 
         "fields": {

@@ -1506,6 +1506,21 @@
         }
     }, 
     {
+        "pk": 97, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "National Office Staff", 
+            "parent": null, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Network", 
+            "slug": "natloffice", 
+            "name": "National Office"
+        }
+    }, 
+    {
         "pk": 1, 
         "model": "base_groups.grouplocation", 
         "fields": {

@@ -192,6 +192,22 @@ def unsubscribe(request, form_class=NetworkUnsubscribeForm, template_name='netwo
         "form": form,
         "message": message,
     }, context_instance=RequestContext(request))
+    
+# bit of a hack to display a national office listing... basically, all admins
+# of a hard-coded network.
+def national_office(request):
+    # could probably do this with a template shortcut instead?
+    
+    try:
+        group = Network.objects.get(slug="natloffice")
+    except:
+        group = None
+    
+    return render_to_response("networks/national_office.html", {
+        "group": group
+    }, context_instance=RequestContext(request))
+    
+    
 
 def update_magic_lists(request, group_slug, username, form_class):
 
