@@ -137,31 +137,34 @@ class BaseGroup(Group):
         for m in member:
             m.delete()
 
-    def send_mail_to_members(self, subject, body, html=True, fail_silently=False):
+    def send_mail_to_members(self, subject, body, html=True,
+                             fail_silently=False, sender=None):
         """
         Creates and sends an email to all members of a network using Django's
         EmailMessage.
         Takes in a a subject and a message and an optional fail_silently flag.
         Automatically sets:
-        from_email: group_name <group_slug@ewb.ca>
+        from_email: the sender param, or group_name <group_slug@ewb.ca>
+                (note, NO validation is done on "sender" - it is assumed clean!!)
         to: list-group_slug@ewb.ca
         bcc: list of member emails
         """
+        
+        if sender == None:
+            sender = '%s <%s@ewb.ca>' % (self.name, self.slug)
+
         msg = EmailMessage(
                 subject=subject, 
                 body=body, 
-                from_email='%s <%s@ewb.ca>' % (self.name, self.slug), 
+                from_email=sender, 
                 to=['list-%s@ewb.ca' % self.slug],
                 bcc=self.get_member_emails(),
                 )
         if html:
             msg.content_subtype = "html"
-            
+         
         msg.send(fail_silently=fail_silently)
     
-    # TODO:
-    # list of members (NOT CSV)
-
     def save(self, force_insert=False, force_update=False):
         # if we are updating a group, don't change the slug (for consistency)
         if not self.id:

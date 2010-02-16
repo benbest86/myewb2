@@ -103,7 +103,7 @@ class GroupTopic(Topic):
         super(GroupTopic, self).save(force_insert, force_update)
         post_save.send(sender=Topic, instance=GroupTopic.objects.get(id=self.id))
     
-    def send_email(self):
+    def send_email(self, sender=None):
         if self.send_as_email:
             attachments = Attachment.objects.attachments_for_object(self)
             
@@ -116,7 +116,7 @@ class GroupTopic(Topic):
                          })
             message = tmpl.render(c)
     
-            self.group.send_mail_to_members(self.title, message)
+            self.group.send_mail_to_members(self.title, message, sender=sender)
         
     def num_whiteboard_edits(self):
         if self.whiteboard:

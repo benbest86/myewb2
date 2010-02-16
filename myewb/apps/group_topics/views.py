@@ -122,7 +122,13 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
                 for af in attach_forms:
                     attachment = af.save(request, base_topic)
 
-                topic.send_email()
+                sender = None
+                if topic_form.cleaned_data['sender'] == "user":
+                    sender = request.user.email
+                # TODO: better handling of generic group addresses?
+                    
+                request.user.message_set.create(message="sending as %s" % sender)
+                topic.send_email(sender=sender)
                     
                 # redirect out.
                 request.user.message_set.create(message=_("You have started the topic %(topic_title)s") % {"topic_title": topic.title})
@@ -133,7 +139,7 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
             topic_form = form_class(instance=GroupTopic())                
             attach_forms = [attach_form_class(prefix=str(x), instance=Attachment()) for x in range(0,attach_count)]
     else:
-        topic_form = form_class(instance=GroupTopic())
+        topic_form = form_class(instance=GroupTopic(), user=request.user)
         attach_forms = []
     
     # if it's a listing by group, check group visibility

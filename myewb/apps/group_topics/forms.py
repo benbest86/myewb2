@@ -10,6 +10,7 @@ Created on: 2009-08-13
 
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.translation import ugettext_lazy as _
 
 from group_topics.models import GroupTopic
 from tag_app.models import TagAlias
@@ -17,11 +18,33 @@ from tag_app.models import TagAlias
 class GroupTopicForm(forms.ModelForm):
     
     body = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
+    sender = forms.ChoiceField(label=_('Sender'),
+                               choices=(('generic', "info@ewb.ca"),  #FIXME
+                                        ('user', "your email address")))
 
     class Meta:
         model = GroupTopic
         fields = ('title', 'body', 'tags', 'send_as_email')
         
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        super(GroupTopicForm, self).__init__(*args, **kwargs)
+        
+        # build list of potential "from" addresses
+        if user:
+            emaillist = user.get_profile().email_addresses()
+            emails = []
+            for email in emaillist:
+                emails.append((email, email))
+                
+            if self.instance.parent_group.user_is_admin(user):
+                emails.append((self.instance.parent_group.name,
+                               "%s@my.ewb.ca" % self.instance.parent_group.slug))
+        else:
+            emails = (('generic', "info@ewb.ca"),  #FIXME
+                      ('user', "your email address"))
+        self.fields['sender'].choices = emails
+            
     # Check tag aliases: see tag_app.TagAlias
     # (should we delegate this to tag_app? seems to fit better there...)
     def clean_tags(self):
