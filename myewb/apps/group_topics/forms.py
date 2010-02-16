@@ -28,23 +28,25 @@ class GroupTopicForm(forms.ModelForm):
         
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
+        group = kwargs.pop('group', None)
         super(GroupTopicForm, self).__init__(*args, **kwargs)
-        
+
         # build list of potential "from" addresses
-        if user:
+        if user and group:
             emaillist = user.get_profile().email_addresses()
             emails = []
             for email in emaillist:
-                emails.append((email, email))
+                emails.append((email.email, email.email))
                 
-            if self.instance.parent_group.user_is_admin(user):
-                emails.append((self.instance.parent_group.name,
-                               "%s@my.ewb.ca" % self.instance.parent_group.slug))
+            if group.user_is_admin(user):
+                emails.append(("%s@my.ewb.ca" % group.slug,
+                               "%s@my.ewb.ca" % group.slug))
         else:
             emails = (('generic', "info@ewb.ca"),  #FIXME
                       ('user', "your email address"))
         self.fields['sender'].choices = emails
-            
+        #self.fields['parent_group'].initial = group
+        
     # Check tag aliases: see tag_app.TagAlias
     # (should we delegate this to tag_app? seems to fit better there...)
     def clean_tags(self):

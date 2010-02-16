@@ -18,6 +18,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.db.models import Q
+from emailconfirmation.models import EmailAddress
 
 from groups import bridge
 
@@ -98,7 +99,7 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
             attach_count = 0
             
         if is_member:
-            topic_form = form_class(request.POST)
+            topic_form = form_class(request.POST, user=request.user, group=group)
             attach_forms = [attach_form_class(request.POST, request.FILES, prefix=str(x), instance=Attachment()) for x in range(0,attach_count)]
             
             # do not take blank attachment forms into account
@@ -122,13 +123,19 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
                 for af in attach_forms:
                     attachment = af.save(request, base_topic)
 
-                sender = None
-                if topic_form.cleaned_data['sender'] == "user":
-                    sender = request.user.email
-                # TODO: better handling of generic group addresses?
-                    
-                request.user.message_set.create(message="sending as %s" % sender)
-                topic.send_email(sender=sender)
+                # extra security check that sender isn't forged.
+                # can't hurt...
+                sender_valid = False
+                if group.user_is_admin(request.user):
+                    if topic_form.cleaned_data['sender'] == "%s@my.ewb.ca" % group.slug:
+                        sender_valid = True
+                    elif get_object_or_404(EmailAddress, email=topic_form.cleaned_data['sender']) in request.user.get_profile().email_addresses():
+                        sender_valid = True
+                        
+                if sender_valid:
+                    topic.send_email(sender=sender)
+                else:
+                    request.user.message_set.create(message="Unable to send email.")
                     
                 # redirect out.
                 request.user.message_set.create(message=_("You have started the topic %(topic_title)s") % {"topic_title": topic.title})
@@ -139,7 +146,8 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
             topic_form = form_class(instance=GroupTopic())                
             attach_forms = [attach_form_class(prefix=str(x), instance=Attachment()) for x in range(0,attach_count)]
     else:
-        topic_form = form_class(instance=GroupTopic(), user=request.user)
+        topic_form = form_class(instance=GroupTopic(), user=request.user, group=group)
+        
         attach_forms = []
     
     # if it's a listing by group, check group visibility
