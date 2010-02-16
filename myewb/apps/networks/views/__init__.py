@@ -151,7 +151,28 @@ def bulk_import(request, group_slug, form_class=NetworkBulkImportForm, template_
         "group": group,
         "form": form,
     }, context_instance=RequestContext(request))
-
+    
+@group_admin_required()
+def bulk_remove(request, group_slug, form_class=NetworkBulkImportForm, template_name='networks/bulk_remove.html'):
+    group = get_object_or_404(Network, slug=group_slug)
+    if request.method == 'POST':
+        form = form_class(request.POST)
+        if form.is_valid():
+            raw_emails = form.cleaned_data['emails']
+            emails = raw_emails.split()   # splits by whitespace characters
+            
+            for email in emails:
+                email_user = get_email_user(email)
+                if email_user is not None:
+                    group.remove_member(email_user)
+            return HttpResponseRedirect(reverse('network_detail', kwargs={'group_slug': group.slug}))
+    else:
+        form = form_class()
+    return render_to_response(template_name, {
+        "group": group,
+        "form": form,
+    }, context_instance=RequestContext(request))
+    
 def unsubscribe(request, form_class=NetworkUnsubscribeForm, template_name='networks/unsubscribe.html'):
     if request.method == 'POST':
         form = form_class(request.POST)

@@ -23,7 +23,8 @@ urlpatterns += patterns('networks.views',
     url(r'^(?P<group_slug>[-\w]+)/new/$', 'new_member', name='new_network_member'),
     url(r'^(?P<group_slug>[-\w]+)/(?P<username>\w+)/delete/$', 'delete_member', name='delete_network_member'),
     url(r'^(?P<group_slug>[-\w]+)/location/$', 'edit_network_location', name='edit_network_location',),
-    url(r'^(?P<group_slug>[-\w]+)/bulk/$', 'bulk_import', name='network_bulk_import',),
+    url(r'^(?P<group_slug>[-\w]+)/bulkimport/$', 'bulk_import', name='network_bulk_import',),
+    url(r'^(?P<group_slug>[-\w]+)/bulkremove/$', 'bulk_remove', name='network_bulk_remove',),
 )
     
 urlpatterns += bridge.include_urls('group_topics.urls.groups', r'^(?P<group_slug>[-\w]+)/posts/')
