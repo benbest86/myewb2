@@ -30,7 +30,7 @@ class ProfileForm(forms.ModelForm):
 		model = MemberProfile
 		exclude = ('name', 'location', 'user', 'blogrss', 'timezone', 'language',
 			'twitter_user', 'twitter_password', 'current_login', 'last_login', 'login_count',
-			'address_updated', 'membership_expiry', 'contact_info')
+			'address_updated', 'membership_expiry', 'contact_info', 'sending_groups')
 			
 class StudentRecordForm(forms.ModelForm):
 	"""Add/edit form for the StudentRecord class."""
