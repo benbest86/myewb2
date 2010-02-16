@@ -127,10 +127,14 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
                 # can't hurt...
                 sender_valid = False
                 if group.user_is_admin(request.user):
-                    if topic_form.cleaned_data['sender'] == "%s@my.ewb.ca" % group.slug:
+                    if topic_form.cleaned_data['sender'] == group.from_email:
                         sender_valid = True
+                        sender = '"%s" <%s>' % (group.from_name, group.from_email)
                     elif get_object_or_404(EmailAddress, email=topic_form.cleaned_data['sender']) in request.user.get_profile().email_addresses():
                         sender_valid = True
+                        sender = '"%s %s" <%s>' % (request.user.get_profile().first_name,
+                                                   request.user.get_profile().last_name,
+                                                   topic_form.cleaned_data['sender'])
                         
                 if sender_valid:
                     topic.send_email(sender=sender)

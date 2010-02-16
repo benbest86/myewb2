@@ -36,12 +36,14 @@ class GroupTopicForm(forms.ModelForm):
             emaillist = user.get_profile().email_addresses()
             emails = []
             for email in emaillist:
-                emails.append((email.email, email.email))
+                emails.append((email.email, "%s %s <%s>" % (user.get_profile().first_name,
+                                                            user.get_profile().last_name, 
+                                                            email.email)))
                 
             if group.user_is_admin(user):
-                emails.append(("%s@my.ewb.ca" % group.slug,
-                               "%s@my.ewb.ca" % group.slug))
-        else:
+                emails.append((group.from_email,
+                               "%s <%s@my.ewb.ca>" % (group.from_name, group.from_email)))
+        else:       # shouldn't happen...!
             emails = (('generic', "info@ewb.ca"),  #FIXME
                       ('user', "your email address"))
         self.fields['sender'].choices = emails

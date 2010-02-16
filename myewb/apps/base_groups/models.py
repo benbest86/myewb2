@@ -56,6 +56,11 @@ class BaseGroup(Group):
     visibility = models.CharField(_('visibility'), max_length=1, choices=VISIBILITY_CHOICES, default='E')
     
     whiteboard = models.ForeignKey(Article, related_name="group", verbose_name=_('whiteboard'), null=True)
+    
+    from_name = models.CharField(_('From name'), max_length=255, blank=True,
+                                 help_text='"From" name when sending emails to group members')
+    from_email = models.CharField(_('From email'), max_length=255, blank=True,
+                                  help_text='"From" email address when sending emails to group members')
 
     def is_visible(self, user):
         visible = False
@@ -196,6 +201,13 @@ class BaseGroup(Group):
                     slug = old_slug + "%d" % (i, )
                 
             self.slug = slug
+            
+        # also give from_name and from_email reasonable defaults if needed
+        if not self.from_name:
+            self.from_name = self.name
+        if not self.from_email:
+            self.from_email = "%s@my.ewb.ca" % self.slug
+        
         super(BaseGroup, self).save(force_insert=force_insert, force_update=force_update)
 
     def get_url_kwargs(self):
