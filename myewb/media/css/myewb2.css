@@ -13,6 +13,7 @@
 .orange div { border: 0px solid #ff7900; }
 .red div    { border: 0px solid #b71818; }
 .purple div { border: 0px solid #8b00cc; }
+div { border: 0px solid #000000; }
 
 /* Light colours (ie for subnav, subheader background) */
 .blue .bkgd-light   { background: #c2d1ff; }
@@ -119,11 +120,9 @@ div#tabhead {
 
 ul.tabs {
     padding: 0;
-    margin-left: auto;
-    margin-right: auto;
+    margin: 0.5em auto 0 auto;
     width: 100%;
     text-align: center;
-    margin-bottom: 0;
 }
 
 ul.tabs li {
@@ -131,7 +130,7 @@ ul.tabs li {
     display: inline-block;
     text-align: center;
     padding: 0.2em 1em;
-    margin: 0 0.5em;
+    margin: 0.1em 0.5em 0 0.5em;
     width: 8em;
     -webkit-border-top-right-radius: 0.5em;
     -webkit-border-top-left-radius: 0.5em;
@@ -146,6 +145,7 @@ ul.tabs li {
 /* increase padding by 0.1em */
 ul.tabs li:hover {
     padding-top: 0.3em;
+    margin-top: 0em;
 }
 
 ul.tabs li a { 
@@ -175,6 +175,14 @@ ul.tabs .purple { border: 1px solid #3F0074; border-bottom: 0; }
     -moz-border-radius-topleft: 0.8em;
     
     padding: 0.6em 1.2em 0.2em;
+    margin-top: 0;
+}
+
+div#subnav {
+    -webkit-border-top-right-radius: 0.3em;
+    -webkit-border-top-left-radius: 0.3em;
+    -moz-border-radius-topright: 0.3em;
+    -moz-border-radius-topleft: 0.3em;
 }
 
 ul.subnav {
@@ -361,6 +369,7 @@ input, select, option, textarea
 
 /* FIXME: this probably doesn't work in 50% of browsers... */
 input[type="submit"],
+input[type="button"],
 input[type="reset"]
 {
         border: 1px solid black;

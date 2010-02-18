@@ -24,7 +24,9 @@
 		        {% url acct_signup as signup_url %}
 		        <input type="button" opclick="window.location='{{ signup_url }}'" value="{% trans "Create account" %}" />
 		        {% endifsetting %}
+		    </p>
 
+			<p><label for="forgotten_password"></label>
 				<a href="{% url acct_passwd_reset %}">{% trans "Forgot password?" %}</a>
 			</p>
 
