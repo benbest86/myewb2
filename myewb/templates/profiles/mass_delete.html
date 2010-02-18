@@ -1,0 +1,23 @@
+{% extends "networks/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+
+{% block head_title %}{% trans "Mass Delete Users" %}{% endblock %}
+
+{% block body %}
+    <h1>{% trans "Mass Delete Users" %}</h1>
+    <p>{% trans "Please enter each address you wish to remove on a single line. Do not use commas or other delimiters to separate addresses."%}</p>
+    
+    <p>{% trans "This is normally used to delete accounts that are bouncing, and it will only work for accounts that have never been logged in." %}</p>
+
+    <form class="uniForm" id="remove_form" method="POST" action="">
+        <fieldset class="inlineLabels">
+            {{ form|as_uni_form }}
+            <div class="form_block">
+                <input type="hidden" name="action" value="remove" />
+                <input type="submit" value="{% trans 'remove' %}"/>
+            </div>
+        </fieldset>
+    </form>
+{% endblock %}

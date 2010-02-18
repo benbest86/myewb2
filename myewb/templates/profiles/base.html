@@ -29,6 +29,11 @@ This file derived from Pinax 0.7.1 (http://pinaxproject.com/), licensed under th
     {% if user.is_staff %}
 	    <li><a href="{% url permissions_index %}">{% trans "Permissions" %}</a></li>
     {% endif %}
+    
+    {% if perms.profiles %}
+	    <li><a href="{% url mass_delete %}">{% trans "Mass Delete Users" %}</a></li>
+    {% endif %}
+    
 </ul>
 {% endblock %}
 

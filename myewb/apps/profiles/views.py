@@ -19,15 +19,18 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import permission_required
 from django.contrib.admin.views.decorators import staff_member_required
 from django.utils.translation import ugettext_lazy as _
 
 from siteutils import online_middleware
+from siteutils.helpers import get_email_user
 from siteutils.decorators import owner_required
 from profiles.models import MemberProfile, StudentRecord, WorkRecord
 from profiles.forms import StudentRecordForm, WorkRecordForm, MembershipForm
 
 from networks.models import Network
+from networks.forms import NetworkBulkImportForm
 from base_groups.models import GroupMember
 from creditcard.forms import PaymentForm
 from creditcard.models import Payment, Product
@@ -570,3 +573,29 @@ def impersonate (request, username):
 
     return HttpResponseRedirect(reverse(settings.LOGIN_REDIRECT_URLNAME))
 
+# is there a decorator that uses user.has_module_perms instead of user.has_perms ?
+@permission_required('profiles.admin')
+def mass_delete(request):
+    if request.method == 'POST':
+        # re-use NetworkBulkImportForm because it does all we need
+        # (TODO: genericize that =) )
+        form = NetworkBulkImportForm(request.POST)
+        if form.is_valid():
+            raw_emails = form.cleaned_data['emails']
+            emails = raw_emails.split()   # splits by whitespace characters
+            success = 0
+            
+            for email in emails:
+                email_user = get_email_user(email)
+                if email_user is not None and email_user.is_bulk:
+                    email_user.is_active = False
+                    success += 1
+                
+            request.user.message_set.create(message="Deleted %d of %d" % (success, len(emails)))
+            return HttpResponseRedirect(reverse('home'))
+    else:
+        form = NetworkBulkImportForm()
+    return render_to_response("profiles/mass_delete.html", {
+        "form": form,
+    }, context_instance=RequestContext(request))
+    
