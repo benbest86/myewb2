@@ -19,8 +19,7 @@ class GroupTopicForm(forms.ModelForm):
     
     body = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
     sender = forms.ChoiceField(label=_('Sender'),
-                               choices=(('generic', "info@ewb.ca"),  #FIXME
-                                        ('user', "your email address")))
+                               choices=())
 
     class Meta:
         model = GroupTopic
@@ -32,7 +31,7 @@ class GroupTopicForm(forms.ModelForm):
         super(GroupTopicForm, self).__init__(*args, **kwargs)
 
         # build list of potential "from" addresses
-        if user and group:
+        if user and group and group.user_is_admin(user):
             emaillist = user.get_profile().email_addresses()
             emails = []
             for email in emaillist:
@@ -48,10 +47,13 @@ class GroupTopicForm(forms.ModelForm):
                 emails.append(("info@ewb.ca",
                                "EWB-ISF Canada <info@ewb.ca>"))
             
-        else:       # shouldn't happen...!
-            emails = (('generic', "info@ewb.ca"),  #FIXME
-                      ('user', "your email address"))
-        self.fields['sender'].choices = emails
+            self.fields['sender'].choices = emails
+            
+        # these people don't have permission to send email...
+        else:
+            del self.fields['send_as_email']
+            del self.fields['sender']
+
         #self.fields['parent_group'].initial = group
         
     # Check tag aliases: see tag_app.TagAlias
