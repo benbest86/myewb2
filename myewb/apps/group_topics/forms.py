@@ -43,6 +43,11 @@ class GroupTopicForm(forms.ModelForm):
             if group.user_is_admin(user):
                 emails.append((group.from_email,
                                "%s <%s>" % (group.from_name, group.from_email)))
+            
+            if user.is_staff:
+                emails.append(("info@ewb.ca",
+                               "EWB-ISF Canada <info@ewb.ca>"))
+            
         else:       # shouldn't happen...!
             emails = (('generic', "info@ewb.ca"),  #FIXME
                       ('user', "your email address"))

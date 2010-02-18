@@ -11,6 +11,7 @@ Last modified: 2009-12-02
 
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.utils.translation import ugettext as _
+from django.utils.html import escape
 from django.contrib.auth.models import User
 from django.contrib.syndication import feeds
 from django.shortcuts import get_object_or_404, render_to_response
@@ -30,6 +31,7 @@ from group_topics.forms import GroupTopicForm
 from group_topics.feeds import TopicFeedAll, TopicFeedGroup
 from threadedcomments.models import ThreadedComment
 from profiles.models import MemberProfile
+from siteutils.shortcuts import get_object_or_none
 
 from attachments.forms import AttachmentForm
 from attachments.models import Attachment
@@ -130,13 +132,19 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
                     if topic_form.cleaned_data['sender'] == group.from_email:
                         sender_valid = True
                         sender = '"%s" <%s>' % (group.from_name, group.from_email)
-                    elif get_object_or_404(EmailAddress, email=topic_form.cleaned_data['sender']) in request.user.get_profile().email_addresses():
+                        
+                    elif get_object_or_none(EmailAddress, email=topic_form.cleaned_data['sender']) in request.user.get_profile().email_addresses():
                         sender_valid = True
                         sender = '"%s %s" <%s>' % (request.user.get_profile().first_name,
                                                    request.user.get_profile().last_name,
                                                    topic_form.cleaned_data['sender'])
                         
+                    elif request.user.is_staff and topic_form.cleaned_data['sender'] == "info@ewb.ca":
+                        sender_valid = True
+                        sender = '"EWB-ISF Canada" <info@ewb.ca>'
+                        
                 if sender_valid:
+                    request.user.message_set.create(message=escape("Sent as %s" % sender))
                     topic.send_email(sender=sender)
                 else:
                     request.user.message_set.create(message="Unable to send email.")
