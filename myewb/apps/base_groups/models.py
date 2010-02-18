@@ -61,6 +61,9 @@ class BaseGroup(Group):
                                  help_text='"From" name when sending emails to group members')
     from_email = models.CharField(_('From email'), max_length=255, blank=True,
                                   help_text='"From" email address when sending emails to group members')
+    
+    welcome_email = models.TextField(_('Welcome email'), blank=True,
+                                     help_text='Welcome email to send when someone joins or is added to this group (leave blank for none)')
 
     def is_visible(self, user):
         visible = False
@@ -319,6 +322,32 @@ def group_member_snapshot(sender, instance, **kwargs):
     record = GroupMemberRecord(instance=instance)
     record.save()
 post_save.connect(group_member_snapshot, sender=GroupMember, dispatch_uid='groupmembersnapshot')
+
+def send_welcome_email(sender, instance, created, **kwargs):
+    """
+    Sends a welcome email to new members of a group
+    """
+    group = instance.group
+
+    if created and group.welcome_email:
+        user = instance.user
+        
+        sender = '"%s" <%s>' % (group.from_name, group.from_email)
+
+        # TODO: template-ize
+        msg = EmailMessage(
+                subject="Welcome to '%s'" % group.name, 
+                body="""You have been added to the %s group on myEWB, the Engineers Without Borders online community.
+
+"%s"
+""" % (group.name, group.welcome_email),
+                from_email=sender, 
+                to=[user.email]
+                )
+         
+        msg.send(fail_silently=True)
+post_save.connect(send_welcome_email, sender=GroupMember, dispatch_uid='groupmemberwelcomeemail')
+        
 
 def end_group_member_snapshot(sender, instance, **kwargs):
     """

@@ -42,6 +42,10 @@ class BaseGroupForm(forms.ModelForm):
                 raise forms.ValidationError(_("A group (network, community or project) already exists with that name."))
         return self.cleaned_data["name"]
     
+    def clean_welcome_email(self):
+        self.cleaned_data['welcome_email'] = self.cleaned_data['welcome_email'].strip()
+        return self.cleaned_data['welcome_email']
+    
     class Meta:
         abstract = True
 

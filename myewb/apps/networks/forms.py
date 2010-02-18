@@ -25,7 +25,7 @@ class NetworkForm(BaseGroupForm):
     class Meta:
         model = Network
         fields = ('name', 'slug', 'network_type', 'description',
-                  'from_name', 'from_email')
+                  'from_name', 'from_email', 'welcome_email')
 
 class NetworkBulkImportForm(forms.Form):
     emails = forms.CharField(widget = forms.Textarea)
