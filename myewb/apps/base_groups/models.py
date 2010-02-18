@@ -451,15 +451,3 @@ def add_creator_to_group(sender, instance, created, **kwargs):
         except:
             pass
 post_save.connect(add_creator_to_group, sender=BaseGroup)
-
-# some duck punches to the User class and extras Manager
-
-# add an is_bulk boolean directly to the User model
-User.add_to_class('is_bulk', models.BooleanField(default=False))
-
-def create_bulk_user_method(self, *args, **kwargs):
-    new_user = self.create_user(*args, **kwargs)
-    new_user.is_bulk = True
-    new_user.save()
-    return new_user
-ExtraUserManager.create_bulk_user = create_bulk_user_method

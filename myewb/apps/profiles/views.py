@@ -589,6 +589,7 @@ def mass_delete(request):
                 email_user = get_email_user(email)
                 if email_user is not None and email_user.is_bulk:
                     email_user.is_active = False
+                    email_user.softdelete()
                     success += 1
                 
             request.user.message_set.create(message="Deleted %d of %d" % (success, len(emails)))
