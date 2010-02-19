@@ -45,8 +45,9 @@ def softdelete(self, *args, **kwargs):
         avatar.delete()
     
     self.get_profile().delete()
-    self.email = None
-    self.username = None
+    self.email = ""
+    for email in self.emailaddress_set.all():
+        email.delete()
     # do we need to do this (ie for privacy law? FIXME )
     #self.first_name = "deleted"
     #self.last_name = "user"

@@ -306,6 +306,9 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
             change password<br/>
             <a href="{% url avatar_change %}">update picture</a><br/>
             <br/>
+            <br/>
+            <a href="{% url account_delete other_user %}">delete my account</a><br/>
+            <br/>
             
 	        {% if renew %}
 	            <a href="{% url profile_pay_membership other_user %}">Pay my membership fee</a><br/>

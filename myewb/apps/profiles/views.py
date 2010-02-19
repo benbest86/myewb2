@@ -15,7 +15,7 @@ from django.shortcuts import get_object_or_404
 from pinax.apps.profiles.views import *
 from pinax.apps.profiles.views import profile as pinaxprofile
 from django.template import RequestContext, Context, loader
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.core.urlresolvers import reverse
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
@@ -600,3 +600,14 @@ def mass_delete(request):
         "form": form,
     }, context_instance=RequestContext(request))
     
+def softdelete(request, username):
+    user = get_object_or_404(User, username=username)
+    
+    if request.user == user or request.user.has_module_perms("profiles"):
+        logout(request)
+        online_middleware.remove_user(request)
+        user.softdelete()
+        
+        return HttpResponseRedirect(reverse('home'))
+    else:
+        return HttpResponseForbidden()
