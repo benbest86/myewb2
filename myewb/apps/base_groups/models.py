@@ -133,6 +133,7 @@ class BaseGroup(Group):
         """
         Adds a member to a group.
         Retained for backwards compatibility with request_status days.
+        Wait, should I not be actively using this?  Because it's a very useful function =)
         """
         member = GroupMember.objects.filter(user=user, group=self)
         if member.count() > 0:
@@ -140,11 +141,24 @@ class BaseGroup(Group):
         else:
             return GroupMember.objects.create(user=user, group=self)
     
+    def add_email(self, email):
+        """
+        Adds an email address to the group, creating the new bulk user if needed
+        """
+        email_user = get_email_user(email)
+        if email_user is None:
+            username = User.objects.make_random_password()     # not a password per se, just a random string
+            while User.objects.filter(username=username).count() > 0:   # ensure uniqueness
+                username = User.objects.make_random_password()
+            email_user = User.extras.create_bulk_user(username, email)      # sets "unusable" password
+        
+        self.add_member(email_user)
+    
     def remove_member(self, user):
         member = GroupMember.objects.filter(user=user, group=self)
         for m in member:
             m.delete()
-
+            
     def send_mail_to_members(self, subject, body, html=True,
                              fail_silently=False, sender=None):
         """
