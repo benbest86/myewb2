@@ -1,0 +1,16 @@
+{% extends "profiles/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+
+{% block head_title %}{% trans "Delete User" %}{% endblock %}
+
+{% block body %}
+    <h1>{% trans "Delete User" %}</h1>
+    
+    <p>{% trans "Are you sure you want to delete" %} {{ other_user.visible_name }}?</p>
+
+    <form method="POST" action="">
+    	<input type="submit" value="{% trans 'delete' %}"/>
+    </form>
+{% endblock %}

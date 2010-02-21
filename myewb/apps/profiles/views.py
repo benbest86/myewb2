@@ -588,7 +588,6 @@ def mass_delete(request):
             for email in emails:
                 email_user = get_email_user(email)
                 if email_user is not None and email_user.is_bulk:
-                    email_user.is_active = False
                     email_user.softdelete()
                     success += 1
                 
@@ -602,12 +601,17 @@ def mass_delete(request):
     
 def softdelete(request, username):
     user = get_object_or_404(User, username=username)
-    
+
     if request.user == user or request.user.has_module_perms("profiles"):
-        logout(request)
-        online_middleware.remove_user(request)
-        user.softdelete()
+        if request.method == 'POST':
+            logout(request)
+            online_middleware.remove_user(request)
+            user.softdelete()
         
-        return HttpResponseRedirect(reverse('home'))
+            return HttpResponseRedirect(reverse('home'))
+        else:
+            return render_to_response("profiles/delete_confirm.html", {
+                "other_user": user,
+            }, context_instance=RequestContext(request))
     else:
         return HttpResponseForbidden()
