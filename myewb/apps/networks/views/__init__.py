@@ -166,20 +166,25 @@ def bulk_remove(request, group_slug, form_class=NetworkBulkImportForm, template_
     }, context_instance=RequestContext(request))
     
 def unsubscribe(request, form_class=NetworkUnsubscribeForm, template_name='networks/unsubscribe.html'):
+    message = None
+
     if request.method == 'POST':
         form = form_class(request.POST)
-        message = None
         if form.is_valid():
             email = form.cleaned_data['email']            
             email_user = get_email_user(email)
             
-            if email_user and not email_user.has_usable_password():
-                email_user.delete()
-                message = _("The email address has been successfully removed from our mailing lists.")
+            if email_user:
+                if email_user.is_bulk:
+                    email_user.softdelete()
+                    message = _("The email address has been successfully removed from our mailing lists.")
+                else:
+                    message = _("The email address is associated with a myEWB account - you must sign in to delete your account..")
             else:
                 message = _("The email address you entered is not listed in our records as a mailing list recipient. Please ensure you entered the address correctly, or enter another email address.")
-    
-    form = form_class()
+    else:
+        form = form_class()
+        
     return render_to_response(template_name, {
         "form": form,
         "message": message,
