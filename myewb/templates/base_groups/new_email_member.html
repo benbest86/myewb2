@@ -1,0 +1,33 @@
+{% extends "site_base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+{% load humanize %}
+{% load pagination_tags %}
+{% load order_by %}
+{% load extra_tagging_tags %}
+{% load base_groups_tags %}
+{% load user_search_tags %}
+
+{% block extra_head %}
+	{{ block.super }}
+	{{ form.media }}
+{% endblock %}
+
+{% block head_title %}{% blocktrans %}Subscribe to mailing list{% endblocktrans %}{% endblock %}
+
+{% block body %}
+<h1>{% trans "Subscribe to mailing list" %}</h1>
+
+<h2>{{ group.name }}</h2>
+
+<form class="uniForm" method="POST" action="">
+	<fieldset class="inlineLabels">
+		{{ form|as_uni_form }}
+		<div class="form_block">
+			<input type="submit" value="{% trans 'subscribe' %}"/>
+		</div>
+	</fieldset>
+</form>
+
+{% endblock %}

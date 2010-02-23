@@ -20,7 +20,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
 from base_groups.models import BaseGroup, GroupMember, PendingMember, InvitationToJoinGroup, RequestToJoinGroup
-from base_groups.forms import GroupMemberForm, EditGroupMemberForm
+from base_groups.forms import GroupMemberForm, EditGroupMemberForm, GroupAddEmailForm
 from base_groups.decorators import own_member_object_required, group_admin_required, visibility_required
 
 @visibility_required()
@@ -151,6 +151,28 @@ def new_member(request, group_slug, group_model=None, form_class=None,
                                      )
     return response
 
+@visibility_required()
+def new_email_member(request, group_slug):
+    group = get_object_or_404(BaseGroup, slug=group_slug)
+    if request.method == 'POST':
+        form = GroupAddEmailForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            group.add_email(email)
+
+            # redirect to network home page on success
+            # TODO: display success message
+            # request.user.message_set.create(message="Success")
+            # won't work until we hit django 1.2
+            return HttpResponseRedirect(group.get_absolute_url())
+    
+    return render_to_response("base_groups/new_email_member.html",
+                              {'group': group,
+                               'form': form,
+                              },
+                              context_instance=RequestContext(request),
+                             )
+    
 @visibility_required()
 def invite_member(request, group_slug, group_model=None, form_class=None,
                template_name=None, index_template_name=None):

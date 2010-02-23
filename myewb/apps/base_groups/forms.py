@@ -83,6 +83,6 @@ class GroupLocationForm(forms.ModelForm):
         model = GroupLocation
         fields = ('place', 'latitude', 'longitude')
 
-class GroupAddEmailForm(forms.ModelForm):
-    email = forms.EmailFiel(label=_(''),
-                            required=True)
+class GroupAddEmailForm(forms.Form):
+    email = forms.EmailField(label='', required=True,
+                             initial='(your email address)')

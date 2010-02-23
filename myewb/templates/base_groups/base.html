@@ -65,6 +65,13 @@
 				&nbsp;&nbsp;&nbsp;<input type="submit" value="{% trans "Decline" %}" />
 			</form>
 		</div>
+	{% else %}
+		{% if not user.is_authenticated %}
+			<form method="post" action="{% url new_email_member group.slug %}">
+				{{ joinform }}
+				<input type="submit" value="subscribe to the mailing list"/>
+			</form>
+		{% endif %}
 	{% endif %}
 	
 	{% if member and member.is_requested %}

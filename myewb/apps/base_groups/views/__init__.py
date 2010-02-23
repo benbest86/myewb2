@@ -19,7 +19,7 @@ from django.utils.datastructures import SortedDict
 
 from base_groups.models import BaseGroup
 from base_groups.helpers import group_search_filter, get_counts, enforce_visibility 
-from base_groups.forms import GroupLocationForm
+from base_groups.forms import GroupLocationForm, GroupAddEmailForm
 from base_groups.decorators import group_admin_required, visibility_required
 
 from django.conf import settings
@@ -147,7 +147,7 @@ def group_detail(request, group_slug, model=None, member_model=None,
         return edit_group(request, group_slug, model=model,
                           member_model=member_model, form_class=form_class,
                           template_name=edit_template_name,
-                          detail_template_name=template_Name, options=options)
+                          detail_template_name=template_name, options=options)
 
     # get group
     group = get_object_or_404(model, slug=group_slug)
@@ -182,7 +182,8 @@ def group_detail(request, group_slug, model=None, member_model=None,
             'group': group,                
             'children': group.get_visible_children(request.user),
             'is_admin': group.user_is_admin(request.user),
-            'requests_outstanding': requests_outstanding
+            'requests_outstanding': requests_outstanding,
+            'joinform': GroupAddEmailForm()
         },
         context_instance=RequestContext(request)
     )
