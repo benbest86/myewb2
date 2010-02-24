@@ -12,6 +12,7 @@ from django.db import models
 from django.db.models import Q
 from django.db.models.signals import post_save
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.template import Context, loader
 
@@ -65,7 +66,16 @@ class GroupTopicManager(models.Manager):
         if qs == None:
             qs = self.get_query_set()
         return qs.filter(creator=user)
-
+    
+    def get_for_watchlist(self, watchlist, qs=None):
+        """
+        Returns all posts contained in a given watchlist.  If passed the optional 
+        qs parameter, it will filter that queryset instead of creating a new one.
+        """
+        if qs == None:
+            qs = self.get_query_set()
+        return qs.filter(watchlists=watchlist)
+    
 class GroupTopic(Topic):
     """
     a discussion topic for a BaseGroup.
@@ -153,3 +163,29 @@ class GroupTopic(Topic):
     class Meta:
         ordering = ('-modified', )
         
+class Watchlist(models.Model):
+    name = models.CharField(_('name'), max_length=255)
+    owner = models.ForeignKey(User, related_name="watchlists", verbose_name=_('owner'))
+
+    subscribers = models.ManyToManyField(User,
+                                         related_name="watchlists_subscribed",
+                                         blank=True)
+    posts = models.ManyToManyField(GroupTopic,
+                                   related_name="watchlists",
+                                   blank=True)
+    
+    def user_can_control(self, user):
+        return user == self.owner
+    
+    def add_post(self, post):
+        self.posts.add(post)
+        
+    def remove_post(self, post):
+        self.posts.remove(post)
+
+    def post_on_list(self, post):
+        qs = self.posts.filter(pk=post.pk)
+        if qs.count() > 0:
+            return True
+        else:
+            return False

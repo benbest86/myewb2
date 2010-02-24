@@ -19,7 +19,8 @@ class GroupTopicForm(forms.ModelForm):
     
     body = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
     sender = forms.ChoiceField(label=_('Sender'),
-                               choices=())
+                               choices=(),
+                               required=False)
 
     class Meta:
         model = GroupTopic

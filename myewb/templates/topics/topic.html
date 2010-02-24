@@ -7,6 +7,7 @@
 {% load attachablecomments_tags %}
 {% load avatar_tags %}
 {% load group_tags %}
+{% load group_topics_tags %}
 {% load attachments_tags %}
 {% load whiteboard_tags %}
 {% load icon_tags %}
@@ -97,6 +98,18 @@
                 {# <p><a href="{{ request.path }}edit/">Edit Post</a></p> #}
                 
                 {% endif %}
+                
+				{% if user.is_authenticated %}
+					{% topic_on_watchlist user topic as on_list %}
+					<br/>
+					<span id="add_to_watchlist_container">
+					{% if on_list %}
+	    				remove from list
+	    			{% else %}
+	    				<a href="#" id="add_to_watchlist" class="more">[add to watch-list]</a>
+	    			{% endif %}
+    				</span>
+				{% endif %}
 			</td>
     		</tr>
 
@@ -135,4 +148,13 @@
             });
     </script>	
 	{% endif %}	
+	
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$('#add_to_watchlist').click(function() {
+				$('#add_to_watchlist_container').html("adding...");
+				$('#add_to_watchlist_container').load('{% url topic_watchlist_add user.pk topic.pk %}');
+			});
+		});
+	</script>
 {% endblock %}

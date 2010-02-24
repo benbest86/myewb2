@@ -26,7 +26,7 @@ from groups import bridge
 from account_extra.forms import EmailLoginForm
 from base_groups.models import BaseGroup
 from base_groups.helpers import user_can_adminovision, user_can_execovision
-from group_topics.models import GroupTopic
+from group_topics.models import GroupTopic, Watchlist
 from group_topics.forms import GroupTopicForm
 from group_topics.feeds import TopicFeedAll, TopicFeedGroup
 from threadedcomments.models import ThreadedComment
@@ -143,11 +143,12 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
                         sender_valid = True
                         sender = '"EWB-ISF Canada" <info@ewb.ca>'
                         
-                if sender_valid:
-                    request.user.message_set.create(message=escape("Sent as %s" % sender))
-                    topic.send_email(sender=sender)
-                else:
-                    request.user.message_set.create(message="Unable to send email.")
+                if topic.send_as_email:
+                    if sender_valid:
+                        request.user.message_set.create(message=escape("Sent as %s" % sender))
+                        topic.send_email(sender=sender)
+                    else:
+                        request.user.message_set.create(message="Unable to send email.")
                     
                 # redirect out.
                 request.user.message_set.create(message=_("You have started the topic %(topic_title)s") % {"topic_title": topic.title})
@@ -299,4 +300,46 @@ def adminovision_toggle(request, group_slug=None):
     # this redirect should be OK, since the adminovision link is only visible from reverse('home')
     return HttpResponseRedirect(reverse('home'))
 
+def watchlist(request, list_id):
+    """
+    Displays post listing in the given watchlist
+    """
+    list = get_object_or_404(Watchlist, pk=list_id)
+
+    topics = GroupTopic.objects.get_for_watchlist(list)
+            
+    return render_to_response("topics/topics.html",
+                              {"topics": topics},
+                              context_instance=RequestContext(request)
+                             )
+    
+def watchlist_index(request):
+    """
+    Displays list of watchlists belonging to user
+    """
+    
+    # TODO: this will all change when we allow multiple lists per user...
+    list, created = Watchlist.objects.get_or_create(owner=request.user,
+                                                    defaults={'name': 'watchlist'})
+    return watchlist(request, list.pk)
+
+#def add_to_watchlist(request, list_id, topic_id):
+def add_to_watchlist(request, user_id, topic_id):
+    """
+    Adds the specified topic to the watchlist.
+    Meant to be an AJAX call.
+    """
+    #list = get_object_or_404(Watchlist, pk=list_id)
+    user = get_object_or_404(User, pk=user_id)
+    list, created = Watchlist.objects.get_or_create(owner=user,
+                                                    defaults={'name': 'watchlist'})
+    topic = get_object_or_404(GroupTopic, pk=topic_id)
+    
+    if list.user_can_control(request.user):
+        list.add_post(topic)
+        
+        # TODO: do I want to templatize?
+        return HttpResponse("added")
+    else:
+        return HttpResponse("error! =(")
     

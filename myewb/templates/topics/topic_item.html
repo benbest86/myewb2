@@ -3,6 +3,7 @@
 {% load threadedcommentstags %}
 {% load extra_tagging_tags %}
 {% load group_tags %}
+{% load group_topics_tags %}
 {% load attachments_tags %}
 {% load helpers %}
 
@@ -101,18 +102,18 @@
     		<tr>
 		    <td valign="top" style="padding-left: 15px; font-size: 10px;">
 				
-				{% comment %}
-				### TODO: implement watch-lists...
-            		#if(!$isGuest)
-    			#if($user.hasFlagged($post))
-    				<a href="#" onclick="return togglePostFlag('$base/actions/UnFlagPost/$post.id', this, '$base/home/FlaggedPosts', 'removed from watch list')"  class="more">[remove from watch-list]</a>
-    			#else
-    				<a href="#" onclick="return togglePostFlag('$base/actions/FlagPost/$post.id', this, '$base/home/FlaggedPosts', 'added to watch list')"  class="more">[add to watch-list]</a>
-    			#end
-        			#end
-			
-			    {% endcomment %}
-
+				{% if user.is_authenticated %}
+					{% topic_on_watchlist user topic as on_list %}
+					<br/>
+					<span id="add_to_watchlist_container-{{ topic.pk }}">
+					{% if on_list %}
+	    				remove from list
+	    			{% else %}
+	    				<a href="#" id="add_to_watchlist-{{ topic.pk }}" class="more">[add to watch-list]</a>
+	    			{% endif %}
+    				</span>
+				{% endif %}
+				
                 {% show_tags_for topic %}
 		    </td>
 
@@ -128,3 +129,12 @@
 
 </div>
 
+{# TODO: uses classes too, and put this once in extra_body instead of for each topic... #}
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('#add_to_watchlist-{{ topic.pk }}').click(function() {
+			$('#add_to_watchlist_container-{{ topic.pk }}').html("adding...");
+			$('#add_to_watchlist_container-{{ topic.pk }}').load('{% url topic_watchlist_add user.pk topic.pk %}');
+		});
+	});
+</script>
