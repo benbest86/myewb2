@@ -25,4 +25,5 @@ urlpatterns = patterns('',
     url(r'^lists/$', 'group_topics.views.watchlist_index', name="topic_watchlists"),
     #url(r'^list/(?P<list_id>\d+)/add/(?P<topic_id>\d+)/$', 'group_topics.views.add_to_watchlist', name="topic_watchlist_add"),
     url(r'^list/(?P<user_id>\d+)/add/(?P<topic_id>\d+)/$', 'group_topics.views.add_to_watchlist', name="topic_watchlist_add"),
+    url(r'^list/(?P<user_id>\d+)/remove/(?P<topic_id>\d+)/$', 'group_topics.views.remove_from_watchlist', name="topic_watchlist_remove"),
 )

@@ -105,11 +105,11 @@
 				{% if user.is_authenticated %}
 					{% topic_on_watchlist user topic as on_list %}
 					<br/>
-					<span id="add_to_watchlist_container-{{ topic.pk }}">
+					<span id="toggle_watchlist_container-{{ topic.pk }}">
 					{% if on_list %}
-	    				remove from list
+	    				<a href="#" id="toggle_watchlist-{{ topic.pk }}" class="more">[remove from watch-list]</a>
 	    			{% else %}
-	    				<a href="#" id="add_to_watchlist-{{ topic.pk }}" class="more">[add to watch-list]</a>
+	    				<a href="#" id="toggle_watchlist-{{ topic.pk }}" class="more">[add to watch-list]</a>
 	    			{% endif %}
     				</span>
 				{% endif %}
@@ -132,9 +132,15 @@
 {# TODO: uses classes too, and put this once in extra_body instead of for each topic... #}
 <script type="text/javascript">
 	$(document).ready(function() {
-		$('#add_to_watchlist-{{ topic.pk }}').click(function() {
-			$('#add_to_watchlist_container-{{ topic.pk }}').html("adding...");
-			$('#add_to_watchlist_container-{{ topic.pk }}').load('{% url topic_watchlist_add user.pk topic.pk %}');
+		$('#toggle_watchlist-{{ topic.pk }}').click(function() {
+			{% if on_list %}
+				$('#toggle_watchlist_container-{{ topic.pk }}').html("adding...");
+				$('#toggle_watchlist_container-{{ topic.pk }}').load('{% url topic_watchlist_remove user.pk topic.pk %}');
+			{% else %}
+				$('#toggle_watchlist_container-{{ topic.pk }}').html("adding...");
+				$('#toggle_watchlist_container-{{ topic.pk }}').load('{% url topic_watchlist_add user.pk topic.pk %}');
+			{% endif %}
+			return false;
 		});
 	});
 </script>

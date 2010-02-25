@@ -102,9 +102,9 @@
 				{% if user.is_authenticated %}
 					{% topic_on_watchlist user topic as on_list %}
 					<br/>
-					<span id="add_to_watchlist_container">
+					<span id="toggle_watchlist_container">
 					{% if on_list %}
-	    				remove from list
+	    				<a href="#" id="remove_from_watchlist" class="more">[remove from watch-list]</a>
 	    			{% else %}
 	    				<a href="#" id="add_to_watchlist" class="more">[add to watch-list]</a>
 	    			{% endif %}
@@ -152,8 +152,14 @@
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$('#add_to_watchlist').click(function() {
-				$('#add_to_watchlist_container').html("adding...");
-				$('#add_to_watchlist_container').load('{% url topic_watchlist_add user.pk topic.pk %}');
+				$('#toggle_watchlist_container').html("adding...");
+				$('#toggle_watchlist_container').load('{% url topic_watchlist_add user.pk topic.pk %}');
+				return false;
+			});
+			$('#remove_from_watchlist').click(function() {
+				$('#toggle_watchlist_container').html("removing...");
+				$('#toggle_watchlist_container').load('{% url topic_watchlist_remove user.pk topic.pk %}');
+				return false;
 			});
 		});
 	</script>

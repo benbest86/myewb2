@@ -342,4 +342,22 @@ def add_to_watchlist(request, user_id, topic_id):
         return HttpResponse("added")
     else:
         return HttpResponse("error! =(")
+
+def remove_from_watchlist(request, user_id, topic_id):
+    """
+    Removes the specified topic from the watchlist.
+    Meant to be an AJAX call.
+    """
+    #list = get_object_or_404(Watchlist, pk=list_id)
+    user = get_object_or_404(User, pk=user_id)
+    list = get_object_or_404(Watchlist, owner=user)
+    topic = get_object_or_404(GroupTopic, pk=topic_id)
+    
+    if list.user_can_control(request.user):
+        list.remove_post(topic)
+        
+        # TODO: do I want to templatize?
+        return HttpResponse("removed")
+    else:
+        return HttpResponse("error! =(")
     
