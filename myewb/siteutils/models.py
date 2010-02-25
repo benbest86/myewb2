@@ -71,11 +71,11 @@ class Address(models.Model):
   
   # FIXME -- have a smarter fallback name for the 
   def __unicode__(self):
-    if self.content_type == "member profile":
-      owner = self.content_object.name
-    elif self.content_type == "service provider":
-      owner = self.content_object
+    if self.content_type.name == "member profile":
+      owner = self.content_type.name
+    elif self.content_type.name == "service provider":
+      owner = self.content_type.name
     else:
       owner = "<orphan>"
-    return "%s: %s: %s, %s" % (owner, self.label, self.city, self.province)
+    return u"%s: %s: %s, %s" % (owner, self.label, self.city, self.province)
 

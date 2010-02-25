@@ -1,0 +1,16 @@
+{% comment %}
+This file is part of myEWB
+Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
+{% endcomment %}
+
+{% load uni_form i18n %}
+
+<form class="uniForm edit-address" id="edit-address-{{ address.label }}" method="POST" action="" onsubmit="return false;">
+    <fieldset class="inlineLabels">  
+        {{ form|as_uni_form }}
+        <div class="form_block">
+        <input type="hidden" name="action" value="update" />
+        <input type="submit" class="editAddressSubmit" value="{% trans "update" %}"/>
+        </div>
+    </fieldset>
+</form>

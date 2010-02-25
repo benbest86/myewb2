@@ -1,0 +1,11 @@
+{% comment %}
+This file is part of myEWB
+Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
+{% endcomment %}
+
+<a style="float: right;" href="{% url profile_edit_address other_user.username address.label %}">Edit</a>
+
+<div class="address-line">{{ address.street }}</div>
+<div class="address-line">{{ address.city }}, {{ address.province }}</div>
+<div class="address-line">{{ address.postal_code }}</div>
+<div class="address-line">{{ address.country }}</div>

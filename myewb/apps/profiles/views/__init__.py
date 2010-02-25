@@ -2,10 +2,10 @@
 Functions used to display additional (or replacement) profile-related views not provided by Pinax's profiles app.
 
 This file is part of myEWB
-Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
+Copyright 2009-2010 Engineers Without Borders (Canada) Organisation and/or volunteer contributors
 
 Created on: 2009-06-22
-Last modified: 2009-08-02
+Last modified: 2010-01-04
 @author: Joshua Gorner, Francis Kung, Ben Best
 """
 
