@@ -17,7 +17,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 <script type="text/javascript" src="{{STATIC_URL}}js/jquery-ui.js"></script>
 
 {# TEMPORARY CSS - WE WANT TO REPLACE IT #}
-<link type="text/css" href="http://jqueryui.com/latest/themes/base/ui.all.css" rel="stylesheet" />
+<link type="text/css" href="http://jqueryui.com/themes/base/ui.all.css" rel="stylesheet" />
 
 {% endblock %}
 
@@ -382,7 +382,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
                     
                     $('.editAddressSubmit').click(function() {
                         var form = $(this).parents('form').get(0);
-                        var label = $('#id_label').value
+                        var label = $('#id_label').value;
                         editUrl = '{% url profile_edit_address other_user.username "label" %}';
                         editUrl = editUrl.replace("label", label);                
                         $.ajax({
