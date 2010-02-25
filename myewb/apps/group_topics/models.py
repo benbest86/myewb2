@@ -13,6 +13,7 @@ from django.db.models import Q
 from django.db.models.signals import post_save
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
+from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
 from django.template import Context, loader
 
@@ -114,19 +115,31 @@ class GroupTopic(Topic):
         post_save.send(sender=Topic, instance=GroupTopic.objects.get(id=self.id))
     
     def send_email(self, sender=None):
-        if self.send_as_email:
-            attachments = Attachment.objects.attachments_for_object(self)
-            
-            tmpl = loader.get_template("email_template.html")
-            c = Context({'group': self.group,
-                         'title': self.title,
-                         'body': self.body,
-                         'topic_id': self.pk,
-                         'attachments': attachments
-                         })
-            message = tmpl.render(c)
+        attachments = Attachment.objects.attachments_for_object(self)
+        
+        tmpl = loader.get_template("email_template.html")
+        c = Context({'group': self.group,
+                     'title': self.title,
+                     'body': self.body,
+                     'topic_id': self.pk,
+                     'attachments': attachments
+                     })
+        message = tmpl.render(c)
     
+        if self.send_as_email:
             self.group.send_mail_to_members(self.title, message, sender=sender)
+        
+        for list in self.watchlists:
+            user = list.owner
+            # TODO: for user in list.subscribers blah blah
+            sender = 'myEWB <notices@my.ewb.ca>'
+    
+            msg = EmailMessage(subject=self.title,
+                               body=message,
+                               from_email=sender, 
+                               to=user.email
+                              )
+            msg.send(fail_silently=False)
         
     def num_whiteboard_edits(self):
         if self.whiteboard:

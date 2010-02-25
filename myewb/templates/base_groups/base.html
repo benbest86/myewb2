@@ -7,6 +7,7 @@
 {% load base_groups_tags %}
 {% load group_tags %}
 {% load topics_tags %}
+{% load group_topics_tags %}
 {% load whiteboard_tags %}
 {% load events_tags %}
 {% load avatar_tags %}
@@ -103,7 +104,7 @@
         {% with topic_queryset|slice:":5" as topics %}
             {% if topics %}
                 {% for topic in topics|slice:":5" %}
-                    {% show_topic topic %}
+                    {% show_topic_with_user topic %}
                     <br/>
                 {% endfor %}
                 <p><a href="{% groupurl topic_list group %}">{% trans "more..." %}</a></p>

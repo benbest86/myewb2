@@ -31,10 +31,10 @@ class WatchlistNode(template.Node):
         
         try:
             list = Watchlist.objects.get(owner=user)
+            context[self.context_name] = list.post_on_list(topic)
         except:
             context[self.context_name] = False
         
-        context[self.context_name] = list.post_on_list(topic)
         return u''
 
 def topic_on_watchlist(parser, token):
@@ -51,3 +51,11 @@ def topic_on_watchlist(parser, token):
     return WatchlistNode(user_name, topic_name, context_name)
 
 register.tag('topic_on_watchlist', topic_on_watchlist)
+
+def show_topic_with_user(context, topic):
+    return {
+        "topic": topic,
+        "group": context.get("group"),
+        "user": context.get("user")
+    }
+register.inclusion_tag("topics/topic_item.html", takes_context=True)(show_topic_with_user)
