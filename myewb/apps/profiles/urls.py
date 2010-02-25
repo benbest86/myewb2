@@ -15,14 +15,14 @@ urlpatterns = patterns('profiles.views',
     url(r'^$', 'profiles', name='profiles_index'),    
     url(r'^$', 'profiles', name='profile_list'),    
     url(r'^edit/$', 'profile_edit', name='profile_edit'),
-    url(r'^search/$', 'user_search', name='profile_user_search'),
-    url(r'^selectuser/$', 'selected_user', name='selected_user'),
-    url(r'^samplesearch/$', 'sample_user_search', name='profile_sample_user_search'),
-
+    url(r'^mass_delete/$', 'mass_delete', name='mass_delete'),
     url(r'^(?P<username>[\w\._-]+)/$', 'profile', name='profile_detail'),
     url(r'^(?P<username>[\w\._-]+)/membership/$', 'pay_membership', name='profile_pay_membership'),
     url(r'^(?P<username>[\w\._-]+)/membership2/$', 'pay_membership2', name='profile_pay_membership2'),
     url(r'^(?P<username>[\w\._-]+)/membership/preview/$', MembershipFormPreview(PaymentForm), name='profile_pay_preview'),
+
+    url(r'^(?P<username>[\w\._-]+)/impersonate/$', 'impersonate', name='profile_impersonate'),
+    url(r'^(?P<username>[\w\._-]+)/delete/$', 'softdelete', name='account_delete'),
 
     url(r'^(?P<username>[\w\._-]+)/student/(?P<student_record_id>\d+)/$', 'student_record_detail', name='profile_student_record'),
     url(r'^(?P<username>[\w\._-]+)/student/(?P<student_record_id>\d+)/$', 'student_record_detail', name='student_record_detail'),

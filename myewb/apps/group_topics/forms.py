@@ -10,6 +10,7 @@ Created on: 2009-08-13
 
 from django import forms
 from django.core.exceptions import ObjectDoesNotExist
+from django.utils.translation import ugettext_lazy as _
 
 from group_topics.models import GroupTopic
 from tag_app.models import TagAlias
@@ -17,10 +18,44 @@ from tag_app.models import TagAlias
 class GroupTopicForm(forms.ModelForm):
     
     body = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
+    sender = forms.ChoiceField(label=_('Sender'),
+                               choices=(),
+                               required=False)
 
     class Meta:
         model = GroupTopic
         fields = ('title', 'body', 'tags', 'send_as_email')
+        
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        group = kwargs.pop('group', None)
+        super(GroupTopicForm, self).__init__(*args, **kwargs)
+
+        # build list of potential "from" addresses
+        if user and group and group.user_is_admin(user):
+            emaillist = user.get_profile().email_addresses()
+            emails = []
+            for email in emaillist:
+                emails.append((email.email, "%s %s <%s>" % (user.get_profile().first_name,
+                                                            user.get_profile().last_name, 
+                                                            email.email)))
+                
+            if group.user_is_admin(user):
+                emails.append((group.from_email,
+                               "%s <%s>" % (group.from_name, group.from_email)))
+            
+            if user.is_staff:
+                emails.append(("info@ewb.ca",
+                               "EWB-ISF Canada <info@ewb.ca>"))
+            
+            self.fields['sender'].choices = emails
+            
+        # these people don't have permission to send email...
+        else:
+            del self.fields['send_as_email']
+            del self.fields['sender']
+
+        #self.fields['parent_group'].initial = group
         
     # Check tag aliases: see tag_app.TagAlias
     # (should we delegate this to tag_app? seems to fit better there...)

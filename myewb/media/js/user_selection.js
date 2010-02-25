@@ -40,7 +40,7 @@ function onSearchSubmit(event) {
 	last_name = $( '#id_' + field + '-last_name' ).val();
     chapter = $( '#id_' + field + '-chapter' ).val();
     
-    results_div = $(form).children('.usi-search-results' )[0]
+    results_div = $(form).children('.usi-search-results' )[0];
 	$(results_div).html( '&nbsp;' ).load(
         getUserSearchUrl(), {
             'first_name': first_name, 

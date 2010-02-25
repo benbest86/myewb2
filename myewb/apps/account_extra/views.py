@@ -1,9 +1,11 @@
 from django.conf import settings
-from django.shortcuts import render_to_response
-from django.http import HttpResponseRedirect
+from django.shortcuts import render_to_response, get_object_or_404
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.views import logout as pinaxlogout
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
 from django.template import RequestContext
 from django.utils.translation import ugettext, ugettext_lazy as _
 
@@ -12,6 +14,7 @@ from account.utils import get_default_redirect
 from account_extra.forms import EmailLoginForm, EmailSignupForm
 from account.views import login as pinaxlogin
 from account.views import signup as pinaxsignup
+from account.forms import AddEmailForm
 
 from siteutils import online_middleware
 
@@ -51,3 +54,66 @@ def signup(request, form_class=EmailSignupForm,
 def logout(request):
     online_middleware.remove_user(request)
     return pinaxlogout(request, template_name="account/logout.html")
+
+@login_required
+def email(request, form_class=AddEmailForm, template_name="account/email.html",
+          username=None):
+    
+    if username:
+        if not request.user.has_module_perms("profiles"):
+            return HttpResponseForbidden()
+        else:
+            user = get_object_or_404(User, username=username)
+    else:
+        user = request.user
+    
+    if request.method == "POST" and request.user.is_authenticated():
+        if request.POST["action"] == "add":
+            add_email_form = form_class(user, request.POST)
+            if add_email_form.is_valid():
+                add_email_form.save()
+                add_email_form = form_class() # @@@
+        else:
+            add_email_form = form_class(user)
+            if request.POST["action"] == "send":
+                email = request.POST["email"]
+                try:
+                    email_address = EmailAddress.objects.get(
+                        user=user,
+                        email=email,
+                    )
+                    request.user.message_set.create(
+                        message=_("Confirmation email sent to %(email)s") % {
+                            'email': email,
+                        })
+                    EmailConfirmation.objects.send_confirmation(email_address)
+                except EmailAddress.DoesNotExist:
+                    pass
+            elif request.POST["action"] == "remove":
+                email = request.POST["email"]
+                try:
+                    email_address = EmailAddress.objects.get(
+                        user=user,
+                        email=email
+                    )
+                    email_address.delete()
+                    request.user.message_set.create(
+                        message=_("Removed email address %(email)s") % {
+                            'email': email,
+                        })
+                except EmailAddress.DoesNotExist:
+                    pass
+            elif request.POST["action"] == "primary":
+                email = request.POST["email"]
+                email_address = EmailAddress.objects.get(
+                    user=user,
+                    email=email,
+                )
+                email_address.set_as_primary()
+    else:
+        add_email_form = form_class()
+    return render_to_response(template_name, {
+        "add_email_form": add_email_form,
+        "user": user,
+    }, context_instance=RequestContext(request))
+

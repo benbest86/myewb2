@@ -25,7 +25,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 	<br/>
     <h1 style="text-align: center;">{{ other_user.visible_name }}</h1>
 
-    {% if is_me or is_friend or user.is_staff %}
+    {% if is_me or is_friend or perms.profiles %}
         <div style="text-align: center; position: relative; top: -15px;">
             <a href="mailto:{{other_user.email}}">{{other_user.email}}</a>
         </div>
@@ -35,6 +35,13 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
         {% avatar other_user 80 %}
     </div>
     <br/>
+    
+    {% if not is_me %}
+	    <div style="text-align: center;">
+			<a href="{% url messages_compose_to other_user.username %}">Send a message to {{ other_user.visible_name}}</a>
+		</div>
+		<br/>
+    {% endif %}
     
     <p class="profile_info" style="text-align: center;">
 	    Account created {{ other_user.date_joined|timesince }} ago
@@ -55,8 +62,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
         </p>
     {% endif %}
         
-    {# TODO: don't use user.is_staff #}
-	{% if is_me or is_friend or user.is_staff %}
+	{% if is_me or is_friend or perms.profiles %}
 		{% if regular %}regular member, expiring on {{ other_user.get_profile.membership_expiry }}{% endif %}
 		
 		<h2>{% trans "Addresses" %}</h2>
@@ -109,9 +115,14 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 				<br/>{{ address.email }}
 			{% endfor %}
 
-			{% if is_me or user.is_staff %}
+			{% if is_me %}
 			    <br/>
 	            (<a href="{% url acct_email %}">{% trans "edit emails" %}</a>)<br/>
+	        {% else %}
+	        	{% if perms.profiles %}
+				    <br/>
+		            (<a href="{% url acct_email_user other_user.username %}">{% trans "edit emails" %}</a>)<br/>
+	        	{% endif %}
 			{% endif %}
 		</div>
 		<br/>
@@ -169,58 +180,76 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
                     {% endif %}
                 </form>
             </div>
-                
-                {# @@@ this should be an inclusion tag #}
-                {% if is_friend %}
-                    <p>{% blocktrans %}You are friends with {{ other_user }}.{% endblocktrans %} <a href="{% url messages_compose %}{{ other_user }}/">{% trans "Send a message" %}</a>.</p>
-                    <div>
-                        <form method="POST" action="">
-                            <input type="hidden" name="action" value="remove" /><input type="submit" value="{% trans "remove from friends" %}"/>
-                        </form>
-                    </div>
-                {% else %}
-                    {% if previous_invitations_from %}
-                        <p>{% blocktrans %}{{ other_user }} has requested friendship.{% endblocktrans %}</p>
-                        {% for invitation in previous_invitations_from %}
-                            <div class="friendship_request">
-                                <p>From <a href="{% url profile_detail invitation.from_user.username %}">{{ invitation.from_user }}</a> ({{ invitation.sent }}):</p>
-                                <p class="invitation_message">{{ invitation.message }}</p>
-                                <form method="post" action="">
-                                    <input type="hidden" name="invitation" value="{{ invitation.id }}"/>
-                                    <input type="hidden" name="action" value="accept"/>
-                                    <input type="submit" value="{% trans 'accept' %}" />
-                                </form>
-                                <form method="post" action="">
-                                    <input type="hidden" name="invitation" value="{{ invitation.id }}"/>
-                                    <input type="hidden" name="action" value="decline"/>
-                                    <input type="submit" value="{% trans 'decline' %}" />
-                                </form>
-                            </div>
-                        {% endfor %}
-                    {% else %}
-                        {% if previous_invitations_to %}
-                            <p>{% trans "Friendship request sent." %}</p>
-                        {% else %}
-                            <h2>{% trans "Add As Friend" %}</h2>
-                            <form class="uniForm" method="POST" action="">
-                                <fieldset class="inlineLabels">  
-                                    {{ invite_form|as_uni_form }}
-                                    <div class="form_block">
-                                        <input type="hidden" name="action" value="invite" />
-                                        <input type="submit" value="{% trans "invite" %}"/>
-                                        {{ other_user.visible_name }}{% blocktrans %} to be a friend.{%  endblocktrans %}
-                                    </div>
-                                </fieldset>
-                            </form>
-                        {% endif %} {# previous_invitations_to #}
-                    {% endif %} {# previous_invitations_from #}
-                {% endif %} {# is_friend #}
-                
-            {% endif %} {# if not is_me #}
-        {% endcomment %}
+		{% endcomment %}
+		                
+	{% if not is_me and user.is_authenticated %}
+		{# is there a better section heading than "sharing"? =) #}
+		<h2>{% trans "Sharing" %}</h2>
+	    {% if is_friend %}
+	        <p>
+	        	{% blocktrans %}You are sharing contact information with{% endblocktrans %} {{ other_user.visible_name }}.
+	            <form method="POST" action="">
+	                <input type="hidden" name="action" value="remove" /><input type="submit" value="{% trans "stop sharing" %}"/>
+	            </form>
+	        </p>
+	    {% else %}
+	        {% if previous_invitations_from %}
+	            <p>{{ other_user.visible_name }} {% blocktrans %}has requested to share contact information with you.{% endblocktrans %}</p>
+	            {% for invitation in previous_invitations_from %}
+	            	{% comment %}
+	            	I've disabled the message on the request form, so no need to display it here either.
+	            	We can bring it back when we've had time to plan out the UI.
+	            	
+	                <div class="friendship_request">
+	                    <p>From <a href="{% url profile_detail invitation.from_user.username %}">{{ invitation.from_user }}</a> ({{ invitation.sent }}):</p>
+	                    <p class="invitation_message">{{ invitation.message }}</p>
+	                    <form method="post" action="">
+	                        <input type="hidden" name="invitation" value="{{ invitation.id }}"/>
+	                        <input type="hidden" name="action" value="accept"/>
+	                        <input type="submit" value="{% trans 'accept' %}" />
+	                    </form>
+	                    <form method="post" action="">
+	                        <input type="hidden" name="invitation" value="{{ invitation.id }}"/>
+	                        <input type="hidden" name="action" value="decline"/>
+	                        <input type="submit" value="{% trans 'decline' %}" />
+	                    </form>
+	                </div>
+	                {% endcomment %}
 
-            
-    {% if user.is_staff %}
+                    <form method="post" action="" style="float: left;">
+                        <input type="hidden" name="invitation" value="{{ invitation.id }}"/>
+                        <input type="hidden" name="action" value="accept"/>
+                        <input type="submit" value="{% trans 'accept' %}" />
+                    </form>
+                    <form method="post" action="">
+                        <input type="hidden" name="invitation" value="{{ invitation.id }}"/>
+                        <input type="hidden" name="action" value="decline"/>
+                        <input type="submit" value="{% trans 'decline' %}" style="margin-left: 10px;"/>
+                    </form>
+
+	            {% endfor %}
+	        {% else %}
+	            {% if previous_invitations_to %}
+	                <p>{% trans "You have requested to share contact information." %}</p>
+	            {% else %}
+	                <form class="uniForm" method="POST" action="">
+	                    <fieldset class="inlineLabels">  
+	                        {#{{ invite_form|as_uni_form }} #}
+	                        <div class="form_block">
+	                            You can request to share contact information.  If {{ other_user.visible_name }} agrees,
+	                            you will be able to see each others' full profiles (email address, phone number, etc).<br/>
+	                            <input type="hidden" name="to_user" value="{{other_user.username}}" />
+	                            <input type="hidden" name="action" value="invite" />
+	                            <input type="submit" value="{% trans "send request" %}"/>
+	                        </div>
+	                    </fieldset>
+	                </form>
+	            {% endif %} {# previous_invitations_to #}
+	        {% endif %} {# previous_invitations_from #}
+	    {% endif %} {# is_friend #}
+	{% endif %}  {# not is_me #}
+    
+    {% if perms.profiles %}
         <h2>{% trans "myEWB History" %}</h2>
         we'll add a neat-o search &amp; sort feature and stuff soon
         <table id="user-history">
@@ -292,7 +321,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
                 </tbody>
             </table>
         {% endif %}
-    {% endif %}{# end of user.is_staff blockfor user history#}
+    {% endif %}{# end of perms.profiles block for user history#}
         
 {% endblock %}
 
@@ -305,19 +334,30 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
             change password<br/>
             <a href="{% url avatar_change %}">update picture</a><br/>
             <br/>
+            <a href="{% url account_delete other_user %}">delete my account</a><br/>
+            <br/>
             
 	        {% if renew %}
 	            <a href="{% url profile_pay_membership other_user %}">Pay my membership fee</a><br/>
 	        {% endif %}
         </div>
     {% else %}
-        {% if user.is_staff %}
+        {% if perms.profiles %}
             <div class="toolbarheader bkgd">{% trans "Actions" %}</div>
             <div class="toolbarcontent">
             	{# TODO: is chapter exec?? #}
             	{% if renew %}
     			    <a href="{% url profile_pay_membership other_user %}">Make regular member</a><br/>
     			    (only click if they have paid their fee in cash)
+    			    <br/><br/>
+            	{% endif %}
+            	
+            	{% if user.is_staff %}
+            	    {# intentional use of is_staff... #}
+            	    <a href="{% url profile_impersonate other_user %}">Impersonate</a>
+            	    <br/><br/>
+		            <a href="{% url account_delete other_user %}">delete</a><br/>
+		            <br/>
             	{% endif %}
             </div>
         {% endif %}
@@ -326,10 +366,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% endblock %}
 
 {% block toolbar_right %}
-    <div class="toolbarheader bkgd">{% trans "Right Toolbar" %}</div>
-    <div class="toolbarcontent">
-        {% include "profiles/profile_right_panel.html" %}
-    </div>
+	{% include "profiles/profile_right_panel.html" %}
 {% endblock %}
 
 {% block extra_body %}

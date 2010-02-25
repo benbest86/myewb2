@@ -54,6 +54,9 @@ def group_url_patterns(model, *args):
         # GET - new member form
         # POST - create member (redirects to 'members_index'
         url(r'^(?P<group_slug>[-\w]+)/members/new/$', 'new_member', name='%s_new_member' % name,),
+        # GET - invite member form
+        # POST - invite member (redirects to 'members_index'
+        url(r'^(?P<group_slug>[-\w]+)/members/invite/$', 'invite_member', name='%s_invite_member' % name,),
 
         # GET - retrieve member detail
         # POST - update member

@@ -7,6 +7,7 @@
 {% load base_groups_tags %}
 {% load group_tags %}
 {% load topics_tags %}
+{% load group_topics_tags %}
 {% load whiteboard_tags %}
 {% load events_tags %}
 {% load avatar_tags %}
@@ -53,7 +54,43 @@
         <li id="li-group-events"><a href="#group-events" id="show-group-events">Upcoming Events</a></li>
         <li id="li-group-whiteboard"><a href="#group-whiteboard" id="show-group-whiteboard">Whiteboard</a></li>
     </ul>
-    
+
+	{% get_membership group request.user as member %}
+	{% if member and member.is_invited %}
+		<div class="bkgd-light" style="border: 1px; width: 75%; margin: 0 auto; padding: 5px;">
+			{% trans "You have been invited to join this group." %}<br/>
+			<form method="POST" action="{% groupurl accept_invitation group username=member.user.username %}">
+				<input type="submit" value="{% trans "Join group" %}" style="float: left;"/>
+			</form>            			
+			<form method="POST" action="{% groupurl delete_member group username=member.user.username %}">
+				&nbsp;&nbsp;&nbsp;<input type="submit" value="{% trans "Decline" %}" />
+			</form>
+		</div>
+	{% else %}
+		{% if not user.is_authenticated %}
+			<form method="post" action="{% url new_email_member group.slug %}">
+				{{ joinform }}
+				<input type="submit" value="subscribe to the mailing list"/>
+			</form>
+		{% endif %}
+	{% endif %}
+	
+	{% if member and member.is_requested %}
+		<div class="bkgd-light" style="border: 1px; width: 75%; margin: 0 auto; padding: 5px;">
+			{% trans "You have requested membership in this group and your request is pending." %}
+			<form method="POST" action="{% groupurl delete_member group username=member.user.username %}">
+				&nbsp;&nbsp;&nbsp;<input type="submit" value="{% trans "cancel request" %}" />
+			</form>
+		</div>
+	{% endif %}
+	
+	{% if requests_outstanding %}
+		<div class="bkgd-light" style="border: 1px; width: 75%; margin: 0 auto; padding: 5px;">
+			{% trans "There are outstanding membership requests." %}
+			<a href="{% groupurl members_index group %}">{% trans "Click here to manage" %}</a>
+		</div>		
+	{% endif %}
+
     <div id="group-info" class="group-subsection" style="display: block;">
         {% block groupbody %}
             {# OVERRIDE ME! #}
@@ -67,7 +104,7 @@
         {% with topic_queryset|slice:":5" as topics %}
             {% if topics %}
                 {% for topic in topics|slice:":5" %}
-                    {% show_topic topic %}
+                    {% show_topic_with_user topic %}
                     <br/>
                 {% endfor %}
                 <p><a href="{% groupurl topic_list group %}">{% trans "more..." %}</a></p>
@@ -130,13 +167,7 @@
                 {% endif %}
                 
                 {% if member.is_invited %}
-                    {% trans "You have been invited to join this group. Do you wish to join?" %}<br/>
-                    <form method="POST" action="{% groupurl accept_invitation group username=member.user.username %}">
-                    	<input type="submit" value="{% trans "Join group" %}" />
-        			</form>            			
-					<form method="POST" action="{% groupurl delete_member group username=member.user.username %}">
-                    	<input type="submit" value="{% trans "Decline" %}" />
-					</form><br/>
+                    {% trans "You have been invited to join this group." %}<br/>
                 {% endif %}
                 
                 {% if member.is_requested %}

@@ -1,0 +1,35 @@
+{% extends "messages/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+{% load user_search_tags %}
+
+{% block extra_head %}
+	{{ block.super }}
+	{{ form.media }}
+{% endblock %}
+
+{% block li-compose %}current{% endblock %}
+
+{% block msgheader %}<h1>{% trans "New Message"%}</h1>{% endblock %}
+
+{% block msgbody %}
+    <form action="" method="post" class="uniForm">
+        <fieldset class="inlineLabels">
+            {{ form|as_uni_form }}  
+
+            <div class="form_block">
+                <input type="submit" value="{% trans "Send" %} &raquo;"/>
+            </div>
+    </form>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+        function getUserSelectionUrl() { return '{% url selected_user %}'; }
+        function getUserSearchUrl() { return '{% url profile_user_search %}'; }
+    </script>
+
+	{% include "tinymce.html" %}
+{% endblock %}

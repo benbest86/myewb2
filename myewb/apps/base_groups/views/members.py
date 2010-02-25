@@ -19,8 +19,8 @@ from django.utils.datastructures import SortedDict
 from django.utils.translation import ugettext_lazy as _
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 
-from base_groups.models import BaseGroup, GroupMember 
-from base_groups.forms import GroupMemberForm
+from base_groups.models import BaseGroup, GroupMember, PendingMember, InvitationToJoinGroup, RequestToJoinGroup
+from base_groups.forms import GroupMemberForm, EditGroupMemberForm, GroupAddEmailForm
 from base_groups.decorators import own_member_object_required, group_admin_required, visibility_required
 
 @visibility_required()
@@ -94,39 +94,43 @@ def new_member(request, group_slug, group_model=None, form_class=None,
         # load up form
         form = form_class(request.POST)
         if form.is_valid():
-            member = form.save(commit=False)
+            for singleuser in form.cleaned_data['user']:
+                existing_members = group.members.filter(user=singleuser)
             
-            existing_members = group.members.filter(user=member.user)
-            
-            # General users can only add themselves as members
-            # Users cannot have multiple memberships in the same group
-            # TODO: split out invitations/requests into a different process & object
-            if existing_members.count() == 0 and (user == member.user or user.is_staff or group.user_is_admin(user)):
-                if user == member.user:
-                    if group.invite_only and not user.is_staff:     # we ignore group admins since they must already be members
-                        member = RequestToJoinGroup(user=member.user) # create a membership request instead
-                else:   
-                    add_type = request.POST["add_type"]
-                    if add_type != "auto":
-                        member = InvitationToJoinGroup(user=member.user) # another user invited by a group / site admin         
-                   
-                if isinstance(member, GroupMember) and not (user.is_staff or group.user_is_admin(user)):
-                    # General users cannot make themselves admins
-                    member.is_admin = False
-                    member.admin_title = ""
+                # General users can only add themselves as members
+                # Users cannot have multiple memberships in the same group
+                # TODO: split out invitations/requests into a different process & object
+                if existing_members.count() == 0 and (user == singleuser or group.user_is_admin(user)):
+                    member = None
+                    if user == singleuser:
+                        if group.invite_only and not group.user_is_admin(user):     # we ignore group admins since they must already be members
+                            member = RequestToJoinGroup() # create a membership request instead
+                    
+                    if member == None:
+                        member = GroupMember()
+
+                    member.group = group
+                    member.user = singleuser
+                    
+                    if isinstance(member, GroupMember) and not group.user_is_admin(user):
+                        # General users cannot make themselves admins
+                        member.is_admin = False
+                        member.admin_title = ""
+                    else:
+                        member.is_admin = form.cleaned_data['is_admin']
+                        member.admin_title = form.cleaned_data['admin_title']
                 
-                member.group = group
-                member.save()
+                    member.save()
                 
-                # different returns if it's an ajax call...
-                if request.is_ajax():
-                    response = render_to_response("base_groups/ajax-join.html",
-                                                  {'group': group},
-                                                  context_instance=RequestContext(request),
-                                                 )
-                else:
-                    response =  HttpResponseRedirect(reverse('%s_member_detail' % group_model._meta.module_name, kwargs={'group_slug': group_slug, 'username': member.user.username}))
-                return response
+            # different returns if it's an ajax call...
+            if request.is_ajax():
+                response = render_to_response("base_groups/ajax-join.html",
+                                              {'group': group},
+                                              context_instance=RequestContext(request),
+                                             )
+            else:
+                response =  HttpResponseRedirect(reverse('%s_detail' % group_model._meta.module_name, kwargs={'group_slug': group_slug}))
+            return response
             
     else:
         form = form_class()
@@ -145,6 +149,85 @@ def new_member(request, group_slug, group_model=None, form_class=None,
                                       },
                                       context_instance=RequestContext(request),
                                      )
+    return response
+
+@visibility_required()
+def new_email_member(request, group_slug):
+    group = get_object_or_404(BaseGroup, slug=group_slug)
+    if request.method == 'POST':
+        form = GroupAddEmailForm(request.POST)
+        if form.is_valid():
+            email = form.cleaned_data['email']
+            group.add_email(email)
+
+            # redirect to network home page on success
+            # TODO: display success message
+            # request.user.message_set.create(message="Success")
+            # won't work until we hit django 1.2
+            return HttpResponseRedirect(group.get_absolute_url())
+    
+    return render_to_response("base_groups/new_email_member.html",
+                              {'group': group,
+                               'form': form,
+                              },
+                              context_instance=RequestContext(request),
+                             )
+    
+@visibility_required()
+def invite_member(request, group_slug, group_model=None, form_class=None,
+               template_name=None, index_template_name=None):
+    
+    # handle generic call
+    # XX does this ever happen in practise???
+    if group_model is None and request.method == 'GET':
+        group = get_object_or_404(BaseGroup, slug=group_slug)
+        return HttpResponseRedirect(reverse('%s_invite_member' % group.model.lower(), kwargs={'group_slug': group_slug}))    
+        
+    # load up basic objects
+    group = get_object_or_404(group_model, slug=group_slug)
+    user = request.user
+    
+    # why do we exclude admins?
+    if group.user_is_member_or_pending(user) and not group.user_is_admin(user):
+        request.user.message_set.create(
+            message=_("You are already a member, or pending member, of this %(model)s - see below.") % {"model": group_model._meta.verbose_name,})
+        return HttpResponseRedirect(reverse('%s_member_detail' % group.model.lower(), kwargs={'group_slug': group_slug, 'username': user.username}))
+    
+    # we're on the save leg
+    if request.method == 'POST':
+        # load up form
+        form = form_class(request.POST)
+        if form.is_valid():
+            for singleuser in form.cleaned_data['user']:
+                existing_members = group.members.filter(user=singleuser)
+
+                if existing_members.count() > 0:
+                    request.user.message_set.create(message="%s is already in the group!" % singleuser.visible_name())
+
+                else:
+                    member = InvitationToJoinGroup() # another user invited by a group / site admin         
+                    member.group = group
+                    member.invited_by = request.user
+                    member.user = singleuser
+                    member.message = form.cleaned_data['message']
+                    member.save()
+                
+                    #request.user.message_set.create(message=_("Invitation sent"))    # why's this choking?
+                    request.user.message_set.create(message="Invitation sent to %s" % singleuser.visible_name())
+
+            return HttpResponseRedirect(reverse('%s_detail' % group_model._meta.module_name, kwargs={'group_slug': group_slug}))
+            
+    else:
+        form = form_class()
+        
+    # either it's a new form, or there's some kind of validation error
+    response = render_to_response(template_name,
+                                  {'group': group,
+                                   'form': form,
+                                   'is_admin': group.user_is_admin(user),
+                                  },
+                                  context_instance=RequestContext(request),
+                                 )
     return response
 
 @visibility_required()
@@ -192,20 +275,21 @@ def edit_member(request, group_slug, username, group_model=None, form_class=None
     # grab basic objects
     group = get_object_or_404(group_model, slug=group_slug)
     other_user = get_object_or_404(User, username=username)
+    member = get_object_or_404(GroupMember, group=group, user=other_user)
     user = request.user
     
     # saving the object
+    member = get_object_or_404(GroupMember, group=group, user=other_user)
     if request.method == 'POST':
         form = form_class(request.POST, instance=member)
 
         # if all's good, save and redirect
         if form.is_valid():
             member = form.save()
-            return HttpResponseRedirect(reverse('%s_member_detail' % group.model.lower(), kwargs={'group_slug': group_slug, 'username': username}))    
+            return HttpResponseRedirect(reverse('%s_members_index' % group.model.lower(), kwargs={'group_slug': group_slug}))    
 
     # just load up the info and put it in a new form
     else:
-        member = get_object_or_404(GroupMember, group=group, user=other_user)
         form = form_class(instance=member)
         
     return render_to_response(template_name,
@@ -229,10 +313,12 @@ def delete_member(request, group_slug, username, group_model=None):
         # load up objects
         group = get_object_or_404(group_model, slug=group_slug)
         user = get_object_or_404(User, username=username)
-        if group.user_is_member(other_user):
-            member = get_object_or_404(GroupMember, group=group, user=other_user)
-        elif group.user_is_pending_member(other_user):
-            member = get_object_or_404(PendingMember, group=group, user=other_user)
+        was_pending = False
+        if group.user_is_member(user):
+            member = get_object_or_404(GroupMember, group=group, user=user)
+        elif group.user_is_pending_member(user):
+            member = get_object_or_404(PendingMember, group=group, user=user)
+            was_pending = True
         else:
             raise Http404
         
@@ -246,7 +332,18 @@ def delete_member(request, group_slug, username, group_model=None):
                                           context_instance=RequestContext(request),
                                          )
         else:
-            response =  HttpResponseRedirect(reverse('%s_members_index' % group.model.lower(), kwargs={'group_slug': group_slug,}))
+            if request.user == user:
+                if was_pending:
+                    request.user.message_set.create(message="Cancelled request")
+                else:
+                    request.user.message_set.create(message="Left group")
+            else:
+                if was_pending:
+                    request.user.message_set.create(message="Declined request")
+                else:
+                    request.user.message_set.create(message="Removed member")
+                
+            response =  HttpResponseRedirect(reverse('%s_detail' % group.model.lower(), kwargs={'group_slug': group_slug,}))
             
     # these are both errors.  it's all in how we display it...
     else:
@@ -266,12 +363,13 @@ def accept_invitation(request, group_slug, username, group_model=BaseGroup):
         # load up basic objects
         group = get_object_or_404(group_model, slug=group_slug)
         other_user = get_object_or_404(User, username=username)
-        invitation = get_object_or_404(InvitationToJoinGroup, group=group, user=user)
+        invitation = get_object_or_404(InvitationToJoinGroup, group=group, user=other_user)
         
         if request.user.is_authenticated() and other_user == request.user:
             invitation.accept()
         
-        return HttpResponseRedirect(reverse('%s_member_detail' % group.model.lower(), kwargs={'group_slug': group_slug, 'username': username}))
+        request.user.message_set.create(message="Accepted invitation and joined \"%s\"" % group)
+        return HttpResponseRedirect(reverse('%s_detail' % group.model.lower(), kwargs={'group_slug': group_slug}))
     else:
         return HttpResponseNotFound()
         

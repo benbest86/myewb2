@@ -1,4 +1,4 @@
-{% extends "base_groups/base.html" %}
+{# {% extends "networks/base.html" %}#}
 
 {% load i18n %}
 {% load uni_form %}
@@ -7,48 +7,122 @@
 {% load order_by %}
 {% load extra_tagging_tags %}
 {% load sorting_tags %}
+{% load group_tags %}
+{% load base_groups_tags %}
 
-{% block head_title %}{% blocktrans %}Members of{% endblocktrans %} {{group.name}}{% endblock %}
+<p><a href="{% groupurl detail group %}">{{ group.name }}</a></p>
 
-{% block body %}
-    <h1>{% trans "Members" %}</h1>
-    
-    {% if user.is_authenticated and user.is_superuser %}
-        <p><a href="{% url network_new_member group.slug %}">Add</a> a member</p>
-    {% else %}
-    	{% if not user.is_authenticated %}
-        	{% url acct_signup as signup_url %}
-        	{% url acct_login as login_url %}
-        	<p>{% blocktrans %}<a href="{{ signup_url }}">Sign up</a> and <a href="{{ login_url }}">log in </a> to become a member.{% endblocktrans %}</p>
-        	
-        {# would be nice to offer an "else", join/leave depending on current status #}
-        {% endif %}
+<h1>{% trans "Members" %}</h1>
+
+{% if user.is_authenticated and is_admin %}
+    {# <p><a href="{% groupurl new_member group %}">Add</a> a member</p> #}
+{% else %}
+    {% url acct_signup as signup_url %}
+    {% url acct_login as login_url %}
+    <p>{% blocktrans %}<a href="{{ signup_url }}">Sign up</a> and <a href="{{ login_url }}">log in </a> to become a member.{% endblocktrans %}</p>
+{% endif %}
+
+<form method="GET" action="">
+    <input type="text" name="search" value="{{ search_terms }}" />
+    <input type="submit" value="Search" />
+    {% if search_terms %}
+        <a href="{% clear_search_url request %}">Clear Search Terms</a>
     {% endif %}
-    
-    <form method="GET" action="">
-        <input type="text" name="search" value="{{ search_terms }}" />
-        <input type="submit" value="Search" />
-        {% if search_terms %}
-            <a href="{% clear_search_url request %}">Clear Search Terms</a>
-        {% endif %}
-    </form>
-    {% autosort members %}
-    {% autopaginate members 10 %}
-    {% if members %}
+</form>
+<br/>
+
+{% autosort members %}
+{% autopaginate members 20 %}
+
+{% if members %}
+    {% comment %}
+    Don't think this works across JOINs?
+    {% if is_admin %}
         <p>{% trans "Order by:" %}
-            {% anchor name Name %}
-            {% anchor created Date %}
+            {% anchor user.visible_name Name %}
+            {# FIXME: is this the right syntax for Admin? #}
+            {% anchor admin Admin %}
+            {% anchor email Email %}
+            {% anchor joined Joined %}
         </p>
-        <dl>
-        {% for member in members %}
-            <dt><a href="{{ url member_detail group, member.user }}">{{ member.visible_name }}</a></dt>
-			<dd>
-				{% if member.admin_title %}{{ member.admin_title }}
-				<a href="{{ url edit_member group, member.user }}">{% trans "Edit details" %}</a>
-			</dd>
-        {% endfor %}
-        </dl>
-        {% paginate %}
     {% endif %}
+    {% endcomment %}
     
-{% endblock %}
+    <table id="membersList" width="100%">
+        <tr>
+            <th>{% trans "Name" %}</th>
+            <th>{% trans "Admin" %}</th>
+            <th>{% trans "Admin title" %}</th>
+            {% if is_admin %}
+                <th>{% trans "Email" %}</th>
+                <th>{% trans "Joined" %}</th>
+                <th>&nbsp;</th>
+            {% endif %}
+        </tr>
+     {% for member in members %}
+        <tr>
+            <td>
+                <a href="{% url profile_detail member.user.username %}">{{ member.user.visible_name }}</a>
+            </td>
+            <td>{% if member.is_admin %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td>
+            <td>{% if member.is_admin %}{{ member.admin_title}}{% endif %}</td>
+            {% if is_admin %}
+                <td>{{ member.user.email }}</td>
+                <td>{{ member.joined|date }}</td>
+                {% if member.is_admin %}
+                    <td><a href="{% groupurl edit_member group username=member.user.username %}">{% trans "De-admin" %}</a></td>
+                {% else %}
+                    <td><a href="{% groupurl edit_member group username=member.user.username %}">{% trans "Make admin" %}</a></td>
+                {% endif %}
+            {% endif %}
+		</tr>
+     {% endfor %}
+    </table>
+    {% paginate %}
+{% endif %}
+{% if is_admin %}
+    {% with group.pending_members.all as pending_members %}
+        {% if pending_members.count %}
+        	<br/><br/>
+        	<h3>{% trans "Pending members" %}</h3>
+            <table id="pendingMembersList" width="100%">
+                <tr>
+                    <th>{% trans "Name" %}</th>
+                    <th>{% trans "Primary Email" %}</th>
+                    <th>{% trans "Status" %}</th>
+                    <th>{% trans "Edit" %}</th>
+                </tr>
+             {% for member in pending_members %}
+                <tr>
+                    <td>
+                        <a href="{% url profile_detail member.user.username %}">{{ member.user.visible_name }}</a>
+                    </td>
+                    <td>{{ member.user.email }}</td>
+                    <td>
+                        {% if member.is_requested %}{% trans "Member request pending" %}{% endif %}
+        			    {% if member.is_invited %}{% trans "Member invitation pending" %}{% endif %}
+                    </td>
+                    <td>
+                    	{% if member.is_requested %}
+                    		<form method="post" action="{% groupurl accept_request group username=member.user.username %}" style="float: left;">
+                    			<input type="submit" value="accept"/>
+                    		</form>
+                    		
+                    		<form method="post" action="{% groupurl delete_member group username=member.user.username %}">
+                    			&nbsp;&nbsp;&nbsp;<input type="submit" value="decline"/>
+                    		</form>
+                    	{% endif %}
+                    	
+                    	{% if member.is_invited %}
+                    		<form method="post" action="{% groupurl delete_member group username=member.user.username %}">
+                    			<input type="submit" value="revoke"/>
+                    		</form>
+                    	{% endif %}
+                    </td>
+        		</tr>
+             {% endfor %}
+            </table>
+        {% endif %}
+    {% endwith %}
+{% endif %}
+

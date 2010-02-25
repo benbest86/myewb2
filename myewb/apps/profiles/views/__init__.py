@@ -15,18 +15,26 @@ from django.shortcuts import get_object_or_404
 from pinax.apps.profiles.views import *
 from pinax.apps.profiles.views import profile as pinaxprofile
 from django.template import RequestContext, Context, loader
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.core.urlresolvers import reverse
+from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import permission_required
+from django.contrib.admin.views.decorators import staff_member_required
+from django.utils.translation import ugettext_lazy as _
 
+from siteutils import online_middleware
+from siteutils.helpers import get_email_user
 from siteutils.decorators import owner_required
 from profiles.models import MemberProfile, StudentRecord, WorkRecord
-from profiles.forms import StudentRecordForm, WorkRecordForm, MembershipForm, UserSearchForm, SampleUserSearchForm
+from profiles.forms import StudentRecordForm, WorkRecordForm, MembershipForm
 
 from networks.models import Network
+from networks.forms import NetworkBulkImportForm
 from base_groups.models import GroupMember
 from creditcard.forms import PaymentForm
 from creditcard.models import Payment, Product
+from friends_app.forms import InviteFriendForm
 
 def profiles(request, template_name="profiles/profiles.html"):
     search_terms = request.GET.get('search', '')
@@ -380,10 +388,93 @@ def profile(request, username, template_name="profiles/profile.html", extra_cont
         profile.membership_expiry < date.today() + timedelta(30):
         extra_context['renew'] = True  
 
-    if template_name == None:
-        return pinaxprofile(request, username, extra_context=extra_context)
+#    if template_name == None:
+#        return pinaxprofile(request, username, extra_context=extra_context)
+#    else:
+#        return pinaxprofile(request, username, template_name, extra_context)
+    if extra_context is None:
+        extra_context = {}
+    
+    other_user = get_object_or_404(User, username=username)
+    
+    if request.user.is_authenticated():
+        is_friend = Friendship.objects.are_friends(request.user, other_user)
+        is_following = Following.objects.is_following(request.user, other_user)
+        other_friends = Friendship.objects.friends_for_user(other_user)
+        if request.user == other_user:
+            is_me = True
+        else:
+            is_me = False
     else:
-        return pinaxprofile(request, username, template_name, extra_context)
+        other_friends = []
+        is_friend = False
+        is_me = False
+        is_following = False
+    
+    if is_friend:
+        invite_form = None
+        previous_invitations_to = None
+        previous_invitations_from = None
+        if request.method == "POST":
+            if request.POST.get("action") == "remove": # @@@ perhaps the form should just post to friends and be redirected here
+                Friendship.objects.remove(request.user, other_user)
+                request.user.message_set.create(message=_("You have removed %(from_user)s from friends") % {'from_user': other_user.visible_name()})
+                is_friend = False
+                invite_form = InviteFriendForm(request.user, {
+                    'to_user': username,
+                    'message': ugettext("Let's be friends!"),
+                })
+    
+    else:
+        if request.user.is_authenticated() and request.method == "POST":
+            if request.POST.get("action") == "invite": # @@@ perhaps the form should just post to friends and be redirected here
+                invite_form = InviteFriendForm(request.user, request.POST)
+                if invite_form.is_valid():
+                    invite_form.save()
+            else:
+                invite_form = InviteFriendForm(request.user, {
+                    'to_user': username,
+                    'message': ugettext("Let's be friends!"),
+                })
+                invitation_id = request.POST.get("invitation", None)
+                if request.POST.get("action") == "accept": # @@@ perhaps the form should just post to friends and be redirected here
+                    try:
+                        invitation = FriendshipInvitation.objects.get(id=invitation_id)
+                        if invitation.to_user == request.user:
+                            invitation.accept()
+                            request.user.message_set.create(message=_("You have accepted the friendship request from %(from_user)s") % {'from_user': invitation.from_user.visible_name()})
+                            is_friend = True
+                            other_friends = Friendship.objects.friends_for_user(other_user)
+                    except FriendshipInvitation.DoesNotExist:
+                        pass
+                elif request.POST.get("action") == "decline": # @@@ perhaps the form should just post to friends and be redirected here
+                    try:
+                        invitation = FriendshipInvitation.objects.get(id=invitation_id)
+                        if invitation.to_user == request.user:
+                            invitation.decline()
+                            request.user.message_set.create(message=_("You have declined the friendship request from %(from_user)s") % {'from_user': invitation.from_user.visible_name()})
+                            other_friends = Friendship.objects.friends_for_user(other_user)
+                    except FriendshipInvitation.DoesNotExist:
+                        pass
+        else:
+            invite_form = InviteFriendForm(request.user, {
+                'to_user': username,
+                'message': ugettext("Let's be friends!"),
+            })
+    
+    previous_invitations_to = FriendshipInvitation.objects.invitations(to_user=other_user, from_user=request.user)
+    previous_invitations_from = FriendshipInvitation.objects.invitations(to_user=request.user, from_user=other_user)
+    
+    return render_to_response(template_name, dict({
+        "is_me": is_me,
+        "is_friend": is_friend,
+        "is_following": is_following,
+        "other_user": other_user,
+        "other_friends": other_friends,
+        "invite_form": invite_form,
+        "previous_invitations_to": previous_invitations_to,
+        "previous_invitations_from": previous_invitations_from,
+    }, **extra_context), context_instance=RequestContext(request))
 
 def pay_membership(request, username):
     other_user = User.objects.get(username=username)
@@ -402,7 +493,7 @@ def pay_membership(request, username):
             )
          
     # Admins / chapter execs (TODO) can upgrade anyone's membership
-    elif request.user.is_superuser:
+    elif request.user.has_module_perms("profiles"):
         other_user.get_profile().pay_membership()
         message = loader.get_template("profiles/member_upgraded.html")
         c = Context({'user': other_user})
@@ -458,7 +549,7 @@ def pay_membership2(request, username):
         # what kind of error to throw...?
          
     # Admins / chapter execs (TODO) can upgrade anyone's membership
-    elif request.user.is_superuser:
+    elif request.user.has_module_perms("profiles"):
         other_user.get_profile().pay_membership()
         message = loader.get_template("profiles/member_upgraded.html")
         c = Context({'user': other_user})
@@ -468,74 +559,59 @@ def pay_membership2(request, username):
     # should not happen.. duh duh duh!
     else:
         return render_to_response('denied.html', context_instance=RequestContext(request))
-
-def user_search(request):
-    field = request.POST.get('field', '')
-    first_name = request.POST.get('first_name', '')
-    last_name = request.POST.get('last_name', '')
-    chapter = request.POST.get('chapter', '')
-    chapters = Network.objects.filter(chapter_info__isnull=False)
-    
-    if first_name or last_name or chapter:
-        users = User.objects.filter(first_name__icontains=first_name, last_name__icontains=last_name)
-        if not chapter == 'none':
-            users = users.filter(member_groups__group__slug=chapter)
-    else:
-        users = None
         
-    if request.is_ajax():
-        return render_to_response(
-                'profiles/user_search_ajax_results.html', 
-                {
-                    'users': users,
-                    'field': field
-                }, context_instance=RequestContext(request))
-    
-def usernames_to_users(usernames):
-    users = []
-    for username in usernames:
-        cur_user = get_object_or_404(User, username=username)
-        users.append(cur_user)
-    return users
+@staff_member_required   
+def impersonate (request, username):
+    user = get_object_or_404(User, username=username)
 
-def sample_user_search(request):
-    form = SampleUserSearchForm(request.POST)
+    logout(request)
+    online_middleware.remove_user(request)
+    user.backend = "django.contrib.auth.backends.ModelBackend"
+    login(request, user)
     
+    request.user.message_set.create(message="Welcome, %s impersonator!" % user.visible_name())
+
+    return HttpResponseRedirect(reverse(settings.LOGIN_REDIRECT_URLNAME))
+
+# is there a decorator that uses user.has_module_perms instead of user.has_perms ?
+@permission_required('profiles.admin')
+def mass_delete(request):
     if request.method == 'POST':
-        to_usernames = request.POST.getlist('to')        
-        cc_usernames = request.POST.getlist('cc')        
-        bcc_usernames = request.POST.getlist('bcc')
-        
-        to_users = usernames_to_users(to_usernames)
-        cc_users = usernames_to_users(cc_usernames)
-        bcc_users = usernames_to_users(bcc_usernames)
-        
-        return render_to_response(
-                'profiles/sample_user_search.html', 
-                { 
-                    'form': form,
-                    'results': True,
-                    'to_users': to_users,
-                    'cc_users': cc_users,
-                    'bcc_users': bcc_users
-                }, 
-                context_instance=RequestContext(request))
-    else:
-        return render_to_response(
-                'profiles/sample_user_search.html', 
-                { 
-                    'form': form
-                }, 
-                context_instance=RequestContext(request))
+        # re-use NetworkBulkImportForm because it does all we need
+        # (TODO: genericize that =) )
+        form = NetworkBulkImportForm(request.POST)
+        if form.is_valid():
+            raw_emails = form.cleaned_data['emails']
+            emails = raw_emails.split()   # splits by whitespace characters
+            success = 0
             
-def selected_user(request):
-    if request.is_ajax() and request.method == 'POST':
-        username = request.POST.get('username', '')
-        field = request.POST.get('field', '')
-        sel_user = User.objects.get(username=username)
-        return render_to_response(
-                'profiles/selected_user.html', 
-                {
-                    'sel_user': sel_user,
-                    'field': field
-                }, context_instance=RequestContext(request))
+            for email in emails:
+                email_user = get_email_user(email)
+                if email_user is not None and email_user.is_bulk:
+                    email_user.softdelete()
+                    success += 1
+                
+            request.user.message_set.create(message="Deleted %d of %d" % (success, len(emails)))
+            return HttpResponseRedirect(reverse('home'))
+    else:
+        form = NetworkBulkImportForm()
+    return render_to_response("profiles/mass_delete.html", {
+        "form": form,
+    }, context_instance=RequestContext(request))
+    
+def softdelete(request, username):
+    user = get_object_or_404(User, username=username)
+
+    if request.user == user or request.user.has_module_perms("profiles"):
+        if request.method == 'POST':
+            logout(request)
+            online_middleware.remove_user(request)
+            user.softdelete()
+        
+            return HttpResponseRedirect(reverse('home'))
+        else:
+            return render_to_response("profiles/delete_confirm.html", {
+                "other_user": user,
+            }, context_instance=RequestContext(request))
+    else:
+        return HttpResponseForbidden()

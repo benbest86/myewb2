@@ -1,0 +1,18 @@
+{% extends "profiles/base.html" %}
+
+{% load i18n %}
+
+{% block body %}
+	{% for group in groups %}
+		<h2>{{ group }}</h2>
+		({{ group.user_set.count }} users)
+		--
+		<a href="{% url permissions_detail group.pk %}">edit</a>
+		
+		<br/>
+		{{ group.description }}
+		
+		<hr/>
+	{% endfor %}
+{% endblock %}
+

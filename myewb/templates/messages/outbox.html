@@ -1,0 +1,35 @@
+{% extends "messages/base.html" %}
+
+{% load i18n %}
+{% load timezone_filters %}
+{% load pagination_tags %}
+
+{% block li-outbox %}current{% endblock %}
+
+{% block msgheader %}<h1>{% trans "Sent Messages" %}</h1>{% endblock %}
+
+{% block msgbody %}
+
+    {% autopaginate message_list 20 %}
+    
+    <table class="messages">
+        <thead>
+            <tr><th>{% trans "Recipient" %}</th><th>{% trans "Subject" %}</th><th>{% trans "Sent" %}</th><th>{% trans "Action" %}</th></tr>
+        </thead>
+        <tbody>
+            {% for message in message_list %}
+                <tr class="{% cycle "" "bkgd-light" %}">
+                    <td>{{ message.recipient.visible_name }}</td>
+                    <td>
+                        <a href="{{ message.get_absolute_url }}">{{ message.subject }}</a>
+                    </td>
+                    <td>{{ message.sent_at|localtime:account.timezone|date:_("DATETIME_FORMAT") }}</td>
+                    <td><a href="{% url messages_delete message.id %}?next={% url messages_outbox %}">{% trans "delete" %}</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% paginate %}
+
+{% endblock %}

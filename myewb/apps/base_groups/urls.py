@@ -46,6 +46,8 @@ urlpatterns += patterns('base_groups.views.members',
     # POST - create member (redirects to 'members_index'
     url(r'^(?P<group_slug>[-\w]+)/members/new/$', 'new_member', name='new_member',),
 
+    url(r'^(?P<group_slug>[-\w]+)/members/new/email$', 'new_email_member', name='new_email_member',),
+
     # GET - retrieve member detail
     # POST - update member
     url(r'^(?P<group_slug>[-\w]+)/members/(?P<username>[\w\._-]+)/$', 'member_detail', name='member_detail',),

@@ -9,9 +9,10 @@ Created on: 2009-08-13
 """
 
 from django.contrib import admin
-from group_topics.models import GroupTopic
+from group_topics.models import GroupTopic, Watchlist
 
 class GroupTopicAdmin(admin.ModelAdmin):
     list_display = ('title', )
 
 admin.site.register(GroupTopic, GroupTopicAdmin)
+admin.site.register(Watchlist)

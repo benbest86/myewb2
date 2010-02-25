@@ -720,7 +720,7 @@
             "creator": 2, 
             "created": "2009-11-14 19:59:43", 
             "invite_only": true, 
-            "visibility": "E", 
+            "visibility": "M", 
             "model": "Community", 
             "slug": "prochaptersexec", 
             "name": "Professional Chapter Exec"
@@ -735,8 +735,8 @@
             "parent": null, 
             "creator": 2, 
             "created": "2009-11-14 20:01:04", 
-            "invite_only": false, 
-            "visibility": "E", 
+            "invite_only": true, 
+            "visibility": "M", 
             "model": "Community", 
             "slug": "presidents", 
             "name": "Student Chapter Presidents"
@@ -751,8 +751,8 @@
             "parent": null, 
             "creator": 2, 
             "created": "2009-11-14 20:01:29", 
-            "invite_only": false, 
-            "visibility": "E", 
+            "invite_only": true, 
+            "visibility": "M", 
             "model": "Community", 
             "slug": "finance", 
             "name": "Finance National Reps"
@@ -768,7 +768,7 @@
             "creator": 2, 
             "created": "2009-11-14 20:01:50", 
             "invite_only": false, 
-            "visibility": "E", 
+            "visibility": "M", 
             "model": "Community", 
             "slug": "memberlearning", 
             "name": "Member Learning National Reps"
@@ -784,7 +784,7 @@
             "creator": 2, 
             "created": "2009-11-14 20:02:13", 
             "invite_only": false, 
-            "visibility": "E", 
+            "visibility": "M", 
             "model": "Community", 
             "slug": "learningpartnerships", 
             "name": "Learning Partnerships National Reps"
@@ -800,7 +800,7 @@
             "creator": 2, 
             "created": "2009-11-14 20:02:35", 
             "invite_only": false, 
-            "visibility": "E", 
+            "visibility": "M", 
             "model": "Community", 
             "slug": "schooloutreach", 
             "name": "School Outreach National Reps"
@@ -816,7 +816,7 @@
             "creator": 2, 
             "created": "2009-11-14 20:02:59", 
             "invite_only": false, 
-            "visibility": "E", 
+            "visibility": "M", 
             "model": "Community", 
             "slug": "curriculumenhancement", 
             "name": "Curriculum Enhancement National Reps"
@@ -832,7 +832,7 @@
             "creator": 2, 
             "created": "2009-11-14 20:03:29", 
             "invite_only": false, 
-            "visibility": "E", 
+            "visibility": "M", 
             "model": "Community", 
             "slug": "publicoutreach", 
             "name": "Public Outreach National Reps"
@@ -848,7 +848,7 @@
             "creator": 2, 
             "created": "2009-11-14 20:03:56", 
             "invite_only": false, 
-            "visibility": "E", 
+            "visibility": "M", 
             "model": "Community", 
             "slug": "webmaster", 
             "name": "Webmaster Contacts"
@@ -864,7 +864,7 @@
             "creator": 2, 
             "created": "2009-11-14 20:04:16", 
             "invite_only": false, 
-            "visibility": "E", 
+            "visibility": "M", 
             "model": "Community", 
             "slug": "communications", 
             "name": "Communications Contacts"
@@ -880,7 +880,7 @@
             "creator": 2, 
             "created": "2009-11-14 20:04:36", 
             "invite_only": false, 
-            "visibility": "E", 
+            "visibility": "M", 
             "model": "Community", 
             "slug": "prochapterpres", 
             "name": "Professional Chapter Presidents"
@@ -896,7 +896,7 @@
             "creator": 2, 
             "created": "2009-11-14 20:04:59", 
             "invite_only": false, 
-            "visibility": "E", 
+            "visibility": "M", 
             "model": "Community", 
             "slug": "workplaceoutreach", 
             "name": "Workplace Outreach National Reps"
@@ -912,12 +912,614 @@
             "creator": 2, 
             "created": "2009-11-14 20:05:31", 
             "invite_only": false, 
-            "visibility": "E", 
+            "visibility": "M", 
             "model": "Community", 
             "slug": "fundraising", 
             "name": "Fundraising National Reps"
         }
     },
+    {
+        "pk": 58, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Student chapters' executive mailing list (all chapters).", 
+            "parent": null, 
+            "creator": 2, 
+            "created": "2009-11-14 19:59:43", 
+            "invite_only": true, 
+            "visibility": "M", 
+            "model": "Community", 
+            "slug": "unichaptersexec", 
+            "name": "Student Chapter Exec"
+        }
+    }, 
+    {
+        "pk": 59, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "All chapters executive mailing list (student and pro).", 
+            "parent": null, 
+            "creator": 2, 
+            "created": "2009-11-14 19:59:43", 
+            "invite_only": true, 
+            "visibility": "M", 
+            "model": "Community", 
+            "slug": "exec", 
+            "name": "Chapter Executives"
+        }
+    }, 
+    {
+        "pk": 60, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "Simon Fraser University Executive List", 
+            "parent": 1, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "sfu-exec", 
+            "name": "Simon Fraser University Executive"
+        }
+    }, 
+    {
+        "pk": 61, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "University of British Columbia Executive List", 
+            "parent": 2, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "ubc-exec", 
+            "name": "University of British Columbia Executive"
+        }
+    }, 
+    {
+        "pk": 62, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "University of Victoria Executive List", 
+            "parent": 3, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "uvic-exec", 
+            "name": "University of Victoria Executive"
+        }
+    }, 
+    {
+        "pk": 63, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "Vancouver, BC Executive List", 
+            "parent": 4, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "vancouver-exec", 
+            "name": "Vancouver, BC Executive"
+        }
+    }, 
+    {
+        "pk": 64, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "Calgary, AB Executive List", 
+            "parent": 5, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "calgary-exec", 
+            "name": "Calgary, AB Executive"
+        }
+    }, 
+    {
+        "pk": 65, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "Edmonton, AB Executive List", 
+            "parent": 6, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "edmonton-exec", 
+            "name": "Edmonton, AB Executive"
+        }
+    }, 
+    {
+        "pk": 66, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "University of Alberta Executive List", 
+            "parent": 7, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "ualberta-exec", 
+            "name": "University of Alberta Executive"
+        }
+    }, 
+    {
+        "pk": 67, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "University of Calgary Executive List", 
+            "parent": 8, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "ucalgary-exec", 
+            "name": "University of Calgary Executive"
+        }
+    }, 
+    {
+        "pk": 68, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "Saskatoon, SK Executive List", 
+            "parent": 9, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "saskatoon-exec", 
+            "name": "Saskatoon, SK Executive"
+        }
+    }, 
+    {
+        "pk": 69, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "University of Regina Executive List", 
+            "parent": 10, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "uregina-exec", 
+            "name": "University of Regina Executive"
+        }
+    }, 
+    {
+        "pk": 70, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "University of Saskatchewan Executive List", 
+            "parent": 11, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "usask-exec", 
+            "name": "University of Saskatchewan Executive"
+        }
+    }, 
+    {
+        "pk": 71, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "University of Manitoba Executive List", 
+            "parent": 12, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "umanitoba-exec", 
+            "name": "University of Manitoba Executive"
+        }
+    }, 
+    {
+        "pk": 72, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "Winnipeg, MB Executive List", 
+            "parent": 13, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "winnipeg-exec", 
+            "name": "Winnipeg, MB Executive"
+        }
+    }, 
+    {
+        "pk": 73, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "Carleton University Executive List", 
+            "parent": 14, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "carleton-exec", 
+            "name": "Carleton University Executive"
+        }
+    }, 
+    {
+        "pk": 74, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "Kitchener, ON Executive List", 
+            "parent": 15, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "grandriver-exec", 
+            "name": "Kitchener, ON Executive"
+        }
+    }, 
+    {
+        "pk": 75, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "McMaster University Executive List", 
+            "parent": 16, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "mcmaster-exec", 
+            "name": "McMaster University Executive"
+        }
+    }, 
+    {
+        "pk": 76, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "Ottawa, ON Executive List", 
+            "parent": 17, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "ottawa-exec", 
+            "name": "Ottawa, ON Executive"
+        }
+    }, 
+    {
+        "pk": 77, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "Queen's University Executive List", 
+            "parent": 18, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "queensu-exec", 
+            "name": "Queen's University Executive"
+        }
+    }, 
+    {
+        "pk": 78, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "Ryerson University Executive List", 
+            "parent": 19, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "ryerson-exec", 
+            "name": "Ryerson University Executive"
+        }
+    }, 
+    {
+        "pk": 79, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "Toronto, ON Executive List", 
+            "parent": 20, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "toronto-exec", 
+            "name": "Toronto, ON Executive"
+        }
+    }, 
+    {
+        "pk": 80, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "University of Guelph Executive List", 
+            "parent": 21, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "uoguelph-exec", 
+            "name": "University of Guelph Executive"
+        }
+    }, 
+    {
+        "pk": 81, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "University of Ontario Institute of Technology Executive List", 
+            "parent": 22, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "uoit-exec", 
+            "name": "University of Ontario Institute of Technology Executive"
+        }
+    }, 
+    {
+        "pk": 82, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "University of Ottawa Executive List", 
+            "parent": 23, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "uottawa-exec", 
+            "name": "University of Ottawa Executive"
+        }
+    }, 
+    {
+        "pk": 83, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "University of Toronto Executive List", 
+            "parent": 24, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "utoronto-exec", 
+            "name": "University of Toronto Executive"
+        }
+    }, 
+    {
+        "pk": 84, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "University of Waterloo Executive List", 
+            "parent": 25, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "uwaterloo-exec", 
+            "name": "University of Waterloo Executive"
+        }
+    }, 
+    {
+        "pk": 85, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "University of Western Ontario Executive List", 
+            "parent": 26, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "uwo-exec", 
+            "name": "University of Western Ontario Executive"
+        }
+    }, 
+    {
+        "pk": 86, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "University of Windsor Executive List", 
+            "parent": 27, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "uwindsor-exec", 
+            "name": "University of Windsor Executive"
+        }
+    }, 
+    {
+        "pk": 87, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "York University Executive List", 
+            "parent": 28, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "yorku-exec", 
+            "name": "York University Executive"
+        }
+    }, 
+    {
+        "pk": 88, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "Concordia University Executive List", 
+            "parent": 29, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "concordia-exec", 
+            "name": "Concordia University Executive"
+        }
+    }, 
+    {
+        "pk": 89, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "McGill University Executive List", 
+            "parent": 30, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "mcgill-exec", 
+            "name": "McGill University Executive"
+        }
+    }, 
+    {
+        "pk": 90, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "\u00c9cole Polytechnique Montr\u00e9al Executive List", 
+            "parent": 31, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "polymtl-exec", 
+            "name": "\u00c9cole Polytechnique Montr\u00e9al Executive"
+        }
+    }, 
+    {
+        "pk": 91, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "Montreal, QC Executive List", 
+            "parent": 32, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "montreal-exec", 
+            "name": "Montreal, QC Executive"
+        }
+    }, 
+    {
+        "pk": 92, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "Universit\u00e9 de Sherbrooke Executive List", 
+            "parent": 33, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "usherbrooke-exec", 
+            "name": "Universit\u00e9 de Sherbrooke Executive"
+        }
+    }, 
+    {
+        "pk": 93, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "Universit\u00e9 Laval Executive List", 
+            "parent": 34, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "ulaval-exec", 
+            "name": "Universit\u00e9 Laval Executive"
+        }
+    }, 
+    {
+        "pk": 94, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "University of New Brunswick Executive List", 
+            "parent": 35, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "unb-exec", 
+            "name": "University of New Brunswick Executive"
+        }
+    }, 
+    {
+        "pk": 95, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "Dalhousie University Executive List", 
+            "parent": 36, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "dal-exec", 
+            "name": "Dalhousie University Executive"
+        }
+    }, 
+    {
+        "pk": 96, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "Memorial University of Newfoundland Executive List", 
+            "parent": 37, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Community", 
+            "slug": "mun-exec", 
+            "name": "Memorial University of Newfoundland Executive"
+        }
+    }, 
+    {
+        "pk": 97, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "National Office Staff", 
+            "parent": null, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "Network", 
+            "slug": "natloffice", 
+            "name": "National Office"
+        }
+    }, 
     {
         "pk": 1, 
         "model": "base_groups.grouplocation", 

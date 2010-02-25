@@ -1,0 +1,39 @@
+{# {% extends "base_groups/base.html" %} #}
+
+{% load i18n %}
+{% load uni_form %}
+{% load humanize %}
+{% load pagination_tags %}
+{% load order_by %}
+{% load extra_tagging_tags %}
+{% load base_groups_tags %}
+{% load user_search_tags %}
+
+{% block extra_head %}
+	{{ block.super }}
+	{{ form.media }}
+{% endblock %}
+
+{% block head_title %}{% blocktrans %}Invite Member{% endblocktrans %}{% endblock %}
+
+<h1>{{group}}</h1>
+<h2>{% trans "Invite Member" %}</h2>
+
+<form class="uniForm" id="member_form" method="POST" action="">
+    <fieldset class="inlineLabels">
+        {{ form|as_uni_form }}
+        <div class="form_block">
+            <input type="hidden" name="action" value="add" />
+            <input type="submit" value="{% trans 'add' %}"/>
+        </div>
+    </fieldset>
+</form>
+
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+        function getUserSelectionUrl() { return '{% url selected_user %}'; }
+        function getUserSearchUrl() { return '{% url profile_user_search %}'; }
+    </script>
+{% endblock %}

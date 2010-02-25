@@ -8,7 +8,9 @@ Created on 2009-07-30
 @author Joshua Gorner, Benjamin Best
 """
 from django.core.urlresolvers import reverse
+from django.db import models
 from django.db.models.signals import post_save
+from django.utils.translation import ugettext_lazy as _
 from base_groups.models import BaseGroup, GroupMember, add_creator_to_group
 
 class Community(BaseGroup):
@@ -23,3 +25,17 @@ class Community(BaseGroup):
         verbose_name_plural = "communities"
 # use same add_creator_to_group from base_groups
 post_save.connect(add_creator_to_group, sender=Community)
+
+class NationalRepList(Community):
+    visibility = models.CharField(_('visibility'), max_length=1,
+                                  choices=BaseGroup.VISIBILITY_CHOICES,
+                                  default='M', editable=False)
+    invite_only = models.BooleanField(_('invite only'), default=True,
+                                      editable=False)
+    
+class ExecList(Community):
+    visibility = models.CharField(_('visibility'), max_length=1,
+                                  choices=BaseGroup.VISIBILITY_CHOICES,
+                                  default='M', editable=False)
+    invite_only = models.BooleanField(_('invite only'), default=True,
+                                      editable=False)

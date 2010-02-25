@@ -13,8 +13,9 @@
         {% if group %}
             <li><a href="{% url network_detail group.slug %}">{{ group.name }}</a></li>
         {% endif %}
-        <li><a href="{% url networks_index %}">{% trans "All Networks" %}</a></li>
+{#        <li><a href="{% url networks_index %}">{% trans "All Networks" %}</a></li> #}
         <li><a href="{% url chapters_index %}">{% trans "All Chapters" %}</a></li>
+        <li><a href="{% url national_office %}">{% trans "National Office" %}</a></li>
     </ul>
 {% endblock %}
 
@@ -30,18 +31,22 @@
     {{ block.super }}
 
     {% if group %}
-	    {% if user.is_staff or member.is_admin %}
+	    {% if is_admin %}
             <div class="toolbarheader bkgd">{% trans "Admin Options" %}</div>
             <div class="toolbarcontent">
-		        <a href="{% url network_new_member group.slug %}">{% trans "Add/invite users" %}</a><br/>
+		        <a href="{% url network_new_member group.slug %}">{% trans "Add users" %}</a><br/>
+		        <a href="{% url network_invite_member group.slug %}">{% trans "Invite users" %}</a><br/>
 	            <a href="{% url network_bulk_import group.slug %}">{% trans "Bulk-add email addresses" %}</a><br/>
+	            <a href="{% url network_bulk_remove group.slug %}">{% trans "Bulk-remove email addresses" %}</a><br/>
+	            {% if group.is_chapter %}
+		            <a href="{% url email_forwards_index group.slug %}">{% trans "Manage chapter email addresses" %}</a><br/>
+	            {% endif %}
 	            <br/>
 	            
-                {% if perms.networks.change %}
-        			<a href="{% url edit_network group.slug %}">{% trans "Edit network details" %}</a><br/><br/>
-                {% endif %}
+{#       			<a href="{% url edit_network group.slug %}">{% trans "Edit network details" %}</a><br/><br/> #}
+       			<a href="{% url edit_network group.slug %}">{% trans "Edit chapter details" %}</a><br/><br/> 
                 
-                {% if user.is_staff and not group.is_chapter %}
+                {% if perms.base_groups and not group.is_chapter %}
                     <a href="{% url new_chapter %}?network={{ group.slug }}">{% trans "Convert to chapter" %}</a><br/>
                 {% endif %}      
             </div>
@@ -61,7 +66,7 @@
                 </div>
                 <div style="margin-left: 35px; height: 35px;">
                     <a href="{% url profile_detail admin.user.username %}">{{ admin.user.visible_name }}</a><br/>
-                    {{ admin.admin_title }} {% if member and member.is_admin %}<a href="{% url network_edit_member group.slug admin.user.username %}">(edit)</a>{% endif %}
+                    {{ admin.admin_title }} {% if is_admin %}<a href="{% url network_edit_member group.slug admin.user.username %}">(edit)</a>{% endif %}
                 </div>
             {% endfor %}
         </div>

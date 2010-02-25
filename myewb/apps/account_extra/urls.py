@@ -3,7 +3,8 @@ from account.forms import *
 from account_extra.forms import *
 
 urlpatterns = patterns('',
-    url(r'^email/$', 'account.views.email', name="acct_email"),
+    url(r'^email/$', 'account_extra.views.email', name="acct_email"),
+    url(r'^email/(?P<username>[\w\._-]+)/$', 'account_extra.views.email', name="acct_email_user"),
     url(r'^signup/$', 'account_extra.views.signup', name="acct_signup"),
     url(r'^login/$', 'account_extra.views.login', name="acct_login"),
     url(r'^login/openid/$', 'account_extra.views.login', {'associate_openid': True},

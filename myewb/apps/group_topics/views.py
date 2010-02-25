@@ -11,6 +11,7 @@ Last modified: 2009-12-02
 
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.utils.translation import ugettext as _
+from django.utils.html import escape
 from django.contrib.auth.models import User
 from django.contrib.syndication import feeds
 from django.shortcuts import get_object_or_404, render_to_response
@@ -18,17 +19,19 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.db.models import Q
+from emailconfirmation.models import EmailAddress
 
 from groups import bridge
 
 from account_extra.forms import EmailLoginForm
 from base_groups.models import BaseGroup
 from base_groups.helpers import user_can_adminovision, user_can_execovision
-from group_topics.models import GroupTopic
+from group_topics.models import GroupTopic, Watchlist
 from group_topics.forms import GroupTopicForm
 from group_topics.feeds import TopicFeedAll, TopicFeedGroup
 from threadedcomments.models import ThreadedComment
 from profiles.models import MemberProfile
+from siteutils.shortcuts import get_object_or_none
 
 from attachments.forms import AttachmentForm
 from attachments.models import Attachment
@@ -98,7 +101,7 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
             attach_count = 0
             
         if is_member:
-            topic_form = form_class(request.POST)
+            topic_form = form_class(request.POST, user=request.user, group=group)
             attach_forms = [attach_form_class(request.POST, request.FILES, prefix=str(x), instance=Attachment()) for x in range(0,attach_count)]
             
             # do not take blank attachment forms into account
@@ -122,7 +125,30 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
                 for af in attach_forms:
                     attachment = af.save(request, base_topic)
 
-                topic.send_email()
+                # extra security check that sender isn't forged.
+                # can't hurt...
+                sender_valid = False
+                if group.user_is_admin(request.user):
+                    if topic_form.cleaned_data['sender'] == group.from_email:
+                        sender_valid = True
+                        sender = '"%s" <%s>' % (group.from_name, group.from_email)
+                        
+                    elif get_object_or_none(EmailAddress, email=topic_form.cleaned_data['sender']) in request.user.get_profile().email_addresses():
+                        sender_valid = True
+                        sender = '"%s %s" <%s>' % (request.user.get_profile().first_name,
+                                                   request.user.get_profile().last_name,
+                                                   topic_form.cleaned_data['sender'])
+                        
+                    elif request.user.is_staff and topic_form.cleaned_data['sender'] == "info@ewb.ca":
+                        sender_valid = True
+                        sender = '"EWB-ISF Canada" <info@ewb.ca>'
+                        
+                if topic.send_as_email:
+                    if sender_valid:
+                        request.user.message_set.create(message=escape("Sent as %s" % sender))
+                        topic.send_email(sender=sender)
+                    else:
+                        request.user.message_set.create(message="Unable to send email.")
                     
                 # redirect out.
                 request.user.message_set.create(message=_("You have started the topic %(topic_title)s") % {"topic_title": topic.title})
@@ -133,7 +159,8 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
             topic_form = form_class(instance=GroupTopic())                
             attach_forms = [attach_form_class(prefix=str(x), instance=Attachment()) for x in range(0,attach_count)]
     else:
-        topic_form = form_class(instance=GroupTopic())
+        topic_form = form_class(instance=GroupTopic(), user=request.user, group=group)
+        
         attach_forms = []
     
     # if it's a listing by group, check group visibility
@@ -273,4 +300,64 @@ def adminovision_toggle(request, group_slug=None):
     # this redirect should be OK, since the adminovision link is only visible from reverse('home')
     return HttpResponseRedirect(reverse('home'))
 
+def watchlist(request, list_id):
+    """
+    Displays post listing in the given watchlist
+    """
+    list = get_object_or_404(Watchlist, pk=list_id)
+
+    topics = GroupTopic.objects.get_for_watchlist(list)
+            
+    return render_to_response("topics/topics.html",
+                              {"topics": topics},
+                              context_instance=RequestContext(request)
+                             )
+    
+def watchlist_index(request):
+    """
+    Displays list of watchlists belonging to user
+    """
+    
+    # TODO: this will all change when we allow multiple lists per user...
+    list, created = Watchlist.objects.get_or_create(owner=request.user,
+                                                    defaults={'name': 'watchlist'})
+    return watchlist(request, list.pk)
+
+#def add_to_watchlist(request, list_id, topic_id):
+def add_to_watchlist(request, user_id, topic_id):
+    """
+    Adds the specified topic to the watchlist.
+    Meant to be an AJAX call.
+    """
+    #list = get_object_or_404(Watchlist, pk=list_id)
+    user = get_object_or_404(User, pk=user_id)
+    list, created = Watchlist.objects.get_or_create(owner=user,
+                                                    defaults={'name': 'watchlist'})
+    topic = get_object_or_404(GroupTopic, pk=topic_id)
+    
+    if list.user_can_control(request.user):
+        list.add_post(topic)
+        
+        # TODO: do I want to templatize?
+        return HttpResponse("added")
+    else:
+        return HttpResponse("error! =(")
+
+def remove_from_watchlist(request, user_id, topic_id):
+    """
+    Removes the specified topic from the watchlist.
+    Meant to be an AJAX call.
+    """
+    #list = get_object_or_404(Watchlist, pk=list_id)
+    user = get_object_or_404(User, pk=user_id)
+    list = get_object_or_404(Watchlist, owner=user)
+    topic = get_object_or_404(GroupTopic, pk=topic_id)
+    
+    if list.user_can_control(request.user):
+        list.remove_post(topic)
+        
+        # TODO: do I want to templatize?
+        return HttpResponse("removed")
+    else:
+        return HttpResponse("error! =(")
     

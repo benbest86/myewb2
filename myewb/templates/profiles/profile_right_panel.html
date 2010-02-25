@@ -8,52 +8,40 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% load profile_tags %}
 
 {# should probably pull this CSS stuff out into the css file... #}
-<div style="padding-bottom: 15px;">
-	<strong>{% trans "Find other people" %}</strong><br/>
+<div class="toolbarheader bkgd">{% trans "Find Users" %}</div>
+<div class="toolbarcontent">
 	{% show_profile_search "" %}
 </div>
 
-{% if is_me or is_friend or user.is_staff %}
+{% if is_me or is_friend or perms.profiles %}
     {% if other_user.basegroup_set.all %}
-    	<div class="groups">
+		<div class="toolbarheader bkgd">
     	    {% if is_me %}
-                <strong>{% trans "My Groups" %}</strong>
+                {% trans "My Groups" %}
             {% else %}
-    	        <strong>{% blocktrans %}{{ other_user }}'s Groups{% endblocktrans %}</strong>
+    	        {% trans "Groups" %}
             {% endif %}
-            <br/>
-                        
+        </div>
+		<div class="toolbarcontent">
             {% for group in other_user.basegroup_set.all %}
                 <a href="{% url group_detail group.slug %}">{{ group.name }}</a><br/>
             {% endfor %}
         </div>
     {% endif %}
     
-    {% comment %}
-    ehh.... leave this out until we figure out this whole friending thing/
-    
     {% if other_friends %}
-        <div class="friends">
-            {% if is_me %}
-                <h2>{% trans "Your Friends" %}</h2>
-            {% else %}
-    	        <h2>{% blocktrans %}{{ other_user }}'s Friends{% endblocktrans %}</h2>
-            {% endif %}
-                
-            <table width="100%">
-                {% for friendship in other_friends %}
-                {% if forloop.counter0|divisibleby:"3" %}<tr>{% endif %}
-                    <td>
-                        <div class="avatar">{% avatar friendship.friend 40 %}</div>
-                        <div class="details"><a href="{% url profile_detail friendship.friend.username %}" title="{{ friendship.friend.username }}">{{ friendship.friend.username }}</a></div>
-                    </td>
-                {% if forloop.counter0|add:"1"|divisibleby:"3" %}</tr>{% endif %}
-                {% endfor %}
-                {% if other_friends|length|divisibleby:"3" %}{% else %}</tr>{% endif %}
-            </table>
-        </div>
+		<div class="toolbarheader bkgd">{% trans "Friends" %}</div>
+		<div class="toolbarcontent">
+			{# TODO: limit number shown here, maybe add a "see more" page #}
+	        {% for friendship in other_friends %}
+	         <div style="float: left; width: 15px; height: 15px;">
+	             {% avatar friendship.friend 15 %}
+	         </div>
+	         <div style="margin-left: 18px; height: 18px;">
+	             <a href="{% url profile_detail friendship.friend.username %}">{{ friendship.friend.visible_name }}</a>
+	         </div>
+	        {% endfor %}
+	    </div>
     {% endif %}
-    {% endcomment %}
-    
 {% endif %}
 

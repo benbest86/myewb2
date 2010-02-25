@@ -18,6 +18,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.db import models, connection
 from django.db.models.signals import post_save, pre_delete
 from django.core.mail import EmailMessage
+from django.conf import settings
 
 from emailconfirmation.models import EmailAddress
 
@@ -25,6 +26,12 @@ from siteutils.helpers import get_email_user
 from manager_extras.models import ExtraUserManager
 from groups.base import Group
 from wiki.models import Article
+from messages.models import Message
+
+if "notification" in settings.INSTALLED_APPS:
+    from notification import models as notification
+else:
+    notification = None
 
 class BaseGroup(Group):
     """Base group (from which networks, communities, projects, etc. derive).
@@ -49,6 +56,14 @@ class BaseGroup(Group):
     visibility = models.CharField(_('visibility'), max_length=1, choices=VISIBILITY_CHOICES, default='E')
     
     whiteboard = models.ForeignKey(Article, related_name="group", verbose_name=_('whiteboard'), null=True)
+    
+    from_name = models.CharField(_('From name'), max_length=255, blank=True,
+                                 help_text='"From" name when sending emails to group members')
+    from_email = models.CharField(_('From email'), max_length=255, blank=True,
+                                  help_text='"From" email address when sending emails to group members')
+    
+    welcome_email = models.TextField(_('Welcome email'), blank=True,
+                                     help_text='Welcome email to send when someone joins or is added to this group (leave blank for none)')
 
     def is_visible(self, user):
         visible = False
@@ -118,34 +133,60 @@ class BaseGroup(Group):
         """
         Adds a member to a group.
         Retained for backwards compatibility with request_status days.
+        Wait, should I not be actively using this?  Because it's a very useful function =)
         """
-        return GroupMember.objects.create(user=user, group=self)
-
-    def send_mail_to_members(self, subject, body, html=True, fail_silently=False):
+        member = GroupMember.objects.filter(user=user, group=self)
+        if member.count() > 0:
+            return member[0]
+        else:
+            return GroupMember.objects.create(user=user, group=self)
+    
+    def add_email(self, email):
+        """
+        Adds an email address to the group, creating the new bulk user if needed
+        """
+        email_user = get_email_user(email)
+        if email_user is None:
+            username = User.objects.make_random_password()     # not a password per se, just a random string
+            while User.objects.filter(username=username).count() > 0:   # ensure uniqueness
+                username = User.objects.make_random_password()
+            email_user = User.extras.create_bulk_user(username, email)      # sets "unusable" password
+        
+        self.add_member(email_user)
+    
+    def remove_member(self, user):
+        member = GroupMember.objects.filter(user=user, group=self)
+        for m in member:
+            m.delete()
+            
+    def send_mail_to_members(self, subject, body, html=True,
+                             fail_silently=False, sender=None):
         """
         Creates and sends an email to all members of a network using Django's
         EmailMessage.
         Takes in a a subject and a message and an optional fail_silently flag.
         Automatically sets:
-        from_email: group_name <group_slug@ewb.ca>
+        from_email: the sender param, or group_name <group_slug@ewb.ca>
+                (note, NO validation is done on "sender" - it is assumed clean!!)
         to: list-group_slug@ewb.ca
         bcc: list of member emails
         """
+        
+        if sender == None:
+            sender = '%s <%s@ewb.ca>' % (self.name, self.slug)
+
         msg = EmailMessage(
                 subject=subject, 
                 body=body, 
-                from_email='%s <%s@ewb.ca>' % (self.name, self.slug), 
+                from_email=sender, 
                 to=['list-%s@ewb.ca' % self.slug],
                 bcc=self.get_member_emails(),
                 )
         if html:
             msg.content_subtype = "html"
-            
+         
         msg.send(fail_silently=fail_silently)
     
-    # TODO:
-    # list of members (NOT CSV)
-
     def save(self, force_insert=False, force_update=False):
         # if we are updating a group, don't change the slug (for consistency)
         if not self.id:
@@ -165,7 +206,8 @@ class BaseGroup(Group):
             
             # check if slug is in use; increment until we find a good one.
             # (is there anything better than numerical incrementing?)
-            temp_groups = BaseGroup.objects.filter(slug__contains=slug, model=self.model)
+            temp_groups = BaseGroup.objects.filter(slug__contains=slug)
+            #temp_groups = BaseGroup.objects.filter(slug__contains=slug, model=self.model)
 
             if (temp_groups.count() != 0):
                 slugs = [n.slug for n in temp_groups]
@@ -174,7 +216,15 @@ class BaseGroup(Group):
                 while slug in slugs:
                     i = i + 1
                     slug = old_slug + "%d" % (i, )
+                
             self.slug = slug
+            
+        # also give from_name and from_email reasonable defaults if needed
+        if not self.from_name:
+            self.from_name = self.name
+        if not self.from_email:
+            self.from_email = "%s@my.ewb.ca" % self.slug
+        
         super(BaseGroup, self).save(force_insert=force_insert, force_update=force_update)
 
     def get_url_kwargs(self):
@@ -199,6 +249,9 @@ class BaseGroup(Group):
         # is_bulk is set to True for bulk members
         return self.members.filter(user__is_bulk=False)
 
+    def num_pending_members(self):
+        return self.pending_members.all().count()
+    
 class BaseGroupMember(models.Model):
     is_admin = models.BooleanField(_('admin'), default=False)
     admin_title = models.CharField(_('admin title'), max_length=500, null=True, blank=True)
@@ -284,6 +337,32 @@ def group_member_snapshot(sender, instance, **kwargs):
     record.save()
 post_save.connect(group_member_snapshot, sender=GroupMember, dispatch_uid='groupmembersnapshot')
 
+def send_welcome_email(sender, instance, created, **kwargs):
+    """
+    Sends a welcome email to new members of a group
+    """
+    group = instance.group
+
+    if created and group.welcome_email:
+        user = instance.user
+        
+        sender = '"%s" <%s>' % (group.from_name, group.from_email)
+
+        # TODO: template-ize
+        msg = EmailMessage(
+                subject="Welcome to '%s'" % group.name, 
+                body="""You have been added to the %s group on myEWB, the Engineers Without Borders online community.
+
+"%s"
+""" % (group.name, group.welcome_email),
+                from_email=sender, 
+                to=[user.email]
+                )
+         
+        msg.send(fail_silently=True)
+post_save.connect(send_welcome_email, sender=GroupMember, dispatch_uid='groupmemberwelcomeemail')
+        
+
 def end_group_member_snapshot(sender, instance, **kwargs):
     """
     Takes the final snapshot of a group member as it is deleted.
@@ -325,7 +404,30 @@ class RequestToJoinGroup(PendingMember):
     pass
 
 class InvitationToJoinGroup(PendingMember):
-    pass
+    invited_by = models.ForeignKey(User, related_name='invitations_issued', default=0)
+
+def invitation_notify(sender, instance, created, **kwargs):
+    user = instance.user
+    group = instance.group
+    issuer = instance.invited_by
+    message = instance.message
+    
+    if notification and False:  # need to create the notice type for this to work
+        notification.send([user], "group_invite", {"invitation": instance})
+    else:
+        # TODO: templatize this
+        # TODO: i18n this (trying to causes db errors right now)
+        msgbody = "%s has invited you to join the \"%s\" group.<br/><br/>" % (issuer.visible_name(), group)
+        if message:
+            msgbody += message + "<br/><br/>"
+        msgbody += "<a href='%s'>click here to respond</a>" % group.get_absolute_url()
+        
+        Message.objects.create(subject="%s has invited you to join the \"%s\" group" % (issuer.visible_name(), group),
+                               body=msgbody,
+                               sender=issuer,
+                               recipient=user)
+
+post_save.connect(invitation_notify, sender=InvitationToJoinGroup)
     
 class GroupLocation(models.Model):
     group = models.ForeignKey(BaseGroup, related_name="locations", verbose_name=_('group'))
@@ -363,15 +465,3 @@ def add_creator_to_group(sender, instance, created, **kwargs):
         except:
             pass
 post_save.connect(add_creator_to_group, sender=BaseGroup)
-
-# some duck punches to the User class and extras Manager
-
-# add an is_bulk boolean directly to the User model
-User.add_to_class('is_bulk', models.BooleanField(default=False))
-
-def create_bulk_user_method(self, *args, **kwargs):
-    new_user = self.create_user(*args, **kwargs)
-    new_user.is_bulk = True
-    new_user.save()
-    return new_user
-ExtraUserManager.create_bulk_user = create_bulk_user_method

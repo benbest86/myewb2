@@ -1,0 +1,41 @@
+{% extends "networks/base.html" %}
+
+{% load i18n %}
+{% load humanize %}
+{% load order_by %}
+{% load group_tags %}
+{% load base_groups_tags %}
+{% load avatar_tags %}
+
+{% block head_title %}{% blocktrans %}National Office{% endblocktrans %}{% endblock %}
+
+{% block body %}
+    <h1>{% trans "National Office" %}</h1>
+    
+    {% get_admins group as admins %}
+    <table border="0" width="100%">
+    {% for admin in admins %}
+    	{% cycle "<tr><td>" "<td>" "<td>" %}
+    		<br/>
+            {% avatar admin.user 120 %}<br/>
+            <a href="{% url profile_detail admin.user.username %}">{{ admin.user.visible_name }}</a><br/>
+            {{ admin.admin_title }}
+        {% cycle "</td>" "</td>" "</td></tr>" %}
+    {% endfor %}
+    </table>
+    
+    {% if user.is_staff %}
+    <br/><br/><br/>
+    <div>
+		<a href="{% groupurl members_index group %}">{% trans "edit office members and titles" %}</a>
+    </div>
+    {% endif %}
+	    
+{% endblock %}
+
+{# don't inherit the standard group toolbars... #}
+{% block toolbar_left %}
+{% endblock %}
+
+{% block toolbar_right %}
+{% endblock %}

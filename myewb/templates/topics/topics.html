@@ -84,5 +84,16 @@ The {% if group %} checks are left in just in case, and should be removed eventu
                 multiple: true,
                 multipleSeparator: ", ",
             });
+            
+    $('#id_send_as_email').click(function() {
+    	$('#div_id_sender').slideToggle();
+    });
+    
+    $(document).ready(function() {
+    	if ($('#id_send_as_email').val())
+    		$('#div_id_sender').show();
+    	else
+    		$('#div_id_sender').hide();
+    });
     </script>	
 {% endblock %}

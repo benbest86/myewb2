@@ -1,5 +1,3 @@
-{% extends "base_groups/base.html" %}
-
 {% load i18n %}
 {% load uni_form %}
 {% load wiki_tags %}
@@ -10,29 +8,18 @@
 {% load group_tags %}
 {% load topics_tags %}
 
-{% block head_title %}{{ member.user.name }}{% endblock %}
+<h1>{{ group }}</h1>    
+<h2>{{ member.user.visible_name }}</h2>
 
-{% block body %}
-    
-    <div style="width: 550px;">
-        
-        <h1>{{ member.user.name }}</h1>
-        
-        <p>{{ group.description }}</p>
-        <div class="form-toggle">
-            <p><span id="edit-member-toggle">{% trans "Edit details" %}</span></p>
-            
-            <form class="uniForm" id="edit-member" method="POST" action="">
-                <fieldset class="inlineLabels">
-                    {{ form|as_uni_form }}
-                    <div class="form_block">
-                        <input type="hidden" name="action" value="update" />
-                        <input type="submit" value="{% trans "updated" %}"/>
-                    </div>
-                </fieldset>
-            </form>
+
+<form class="uniForm" id="edit-member" method="POST" action="">
+    <fieldset class="inlineLabels">
+        {{ form|as_uni_form }}
+        <div class="form_block">
+            <input type="hidden" name="action" value="update" />
+            <input type="submit" value="{% trans "update" %}"/>
         </div>
+    </fieldset>
+</form>
 
-	</div>
 
-{% endblock %}

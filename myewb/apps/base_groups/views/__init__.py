@@ -19,7 +19,7 @@ from django.utils.datastructures import SortedDict
 
 from base_groups.models import BaseGroup
 from base_groups.helpers import group_search_filter, get_counts, enforce_visibility 
-from base_groups.forms import GroupLocationForm
+from base_groups.forms import GroupLocationForm, GroupAddEmailForm
 from base_groups.decorators import group_admin_required, visibility_required
 
 from django.conf import settings
@@ -74,7 +74,8 @@ def groups_index(request, model=None, member_model=None, form_class=None,
 
 # no decorator - perms depend on type of group
 def new_group(request, model=None, member_model=None, form_class=None,
-              template_name=None, index_template_name=None, options=None):
+              template_name=None, index_template_name=None, options=None,
+              parent=None):
     """
     Create a new group
     """
@@ -110,7 +111,17 @@ def new_group(request, model=None, member_model=None, form_class=None,
 
     # create a new form
     else:
-        form = form_class(user=request.user)
+        parentgrp = None
+        if parent:
+            try:
+                parentgrp = BaseGroup.objects.get(slug=parent)
+            except:
+                pass
+
+        if parentgrp:
+            form = form_class(user=request.user, initial={'parent': parentgrp.pk})
+        else:
+            form = form_class(user=request.user)
         
     return render_to_response(template_name,
                               {'form': form},
@@ -136,7 +147,7 @@ def group_detail(request, group_slug, model=None, member_model=None,
         return edit_group(request, group_slug, model=model,
                           member_model=member_model, form_class=form_class,
                           template_name=edit_template_name,
-                          detail_template_name=template_Name, options=options)
+                          detail_template_name=template_name, options=options)
 
     # get group
     group = get_object_or_404(model, slug=group_slug)
@@ -156,6 +167,13 @@ def group_detail(request, group_slug, model=None, member_model=None,
         wb.save()
         group.whiteboard = wb
         group.save()
+        
+    # see if any admin tasks are outstanding
+    # (should this only trigger for oustanding requets, instead of requests & invitations?)
+    requests_outstanding = False
+    if group.user_is_admin(request.user):
+        if group.num_pending_members() > 0:
+            requests_outstanding = True
     
     # render
     return render_to_response(
@@ -163,7 +181,9 @@ def group_detail(request, group_slug, model=None, member_model=None,
         {
             'group': group,                
             'children': group.get_visible_children(request.user),
-            'is_admin': group.user_is_admin(request.user)
+            'is_admin': group.user_is_admin(request.user),
+            'requests_outstanding': requests_outstanding,
+            'joinform': GroupAddEmailForm()
         },
         context_instance=RequestContext(request)
     )

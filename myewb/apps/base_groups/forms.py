@@ -6,10 +6,11 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 Last modified on 2009-07-29
 @author Joshua Gorner
 """
+from settings import STATIC_URL
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 
-from base_groups.models import BaseGroup, GroupMember, GroupLocation
+from base_groups.models import BaseGroup, GroupMember, GroupLocation, InvitationToJoinGroup
 from base_groups.helpers import get_valid_parents
 
 class BaseGroupForm(forms.ModelForm):
@@ -41,17 +42,47 @@ class BaseGroupForm(forms.ModelForm):
                 raise forms.ValidationError(_("A group (network, community or project) already exists with that name."))
         return self.cleaned_data["name"]
     
+    def clean_welcome_email(self):
+        self.cleaned_data['welcome_email'] = self.cleaned_data['welcome_email'].strip()
+        return self.cleaned_data['welcome_email']
+    
     class Meta:
         abstract = True
 
-class GroupMemberForm(forms.ModelForm):
+class GroupInviteForm(forms.ModelForm):
+    from user_search.forms import UserField
+    user = UserField(label=_("User"))
     
+    class Meta:
+        model = InvitationToJoinGroup
+        fields = ('user', 'message')
+        
+class GroupMemberForm(forms.ModelForm):
+    from user_search.forms import UserField
+    user = UserField(label=_("User"))
+
     class Meta:
         model = GroupMember        
         fields = ('user', 'is_admin', 'admin_title')
         
+    class Media:
+        js = (STATIC_URL + 'js/base_groups/member.js',)
+
+class EditGroupMemberForm(forms.ModelForm):
+    
+    class Meta:
+        model = GroupMember        
+        fields = ('is_admin', 'admin_title')
+        
+    class Media:
+        js = (STATIC_URL + 'js/base_groups/member.js',)
+
 class GroupLocationForm(forms.ModelForm):
     
     class Meta:
         model = GroupLocation
         fields = ('place', 'latitude', 'longitude')
+
+class GroupAddEmailForm(forms.Form):
+    email = forms.EmailField(label='', required=True,
+                             initial='(your email address)')

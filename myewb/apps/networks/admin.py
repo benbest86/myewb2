@@ -8,7 +8,7 @@ Last modified on 2009-07-29
 """
 
 from django.contrib import admin
-from networks.models import Network, EmailForward
+from networks.models import Network, EmailForward, ChapterInfo
 
 class NetworkAdmin(admin.ModelAdmin):
     list_display = ('name', 'slug', 'creator', 'created')
@@ -18,3 +18,5 @@ class EmailForwardAdmin(admin.ModelAdmin):
 
 admin.site.register(Network, NetworkAdmin)
 admin.site.register(EmailForward, EmailForwardAdmin)
+admin.site.register(ChapterInfo)
+
