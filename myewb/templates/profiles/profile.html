@@ -16,8 +16,8 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% block extra_head %}
 <script type="text/javascript" src="{{STATIC_URL}}js/jquery-ui.js"></script>
 
-{# TEMPORARY CSS - WE WANT TO REPLACE IT #}
-<link type="text/css" href="http://jqueryui.com/themes/base/ui.all.css" rel="stylesheet" />
+{# TEMPORARY CSS - WE WANT TO STYLIZE IT BETTER #}
+<link type="text/css" href="{{STATIC_URL}}css/jquery-ui.css" rel="stylesheet" />
 
 {% endblock %}
 
@@ -378,30 +378,29 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
         var $addressTabs = $("#addresses").tabs({
             load: function(event, ui) {
                 $('a', ui.panel).click(function() {
-                    $(ui.panel).load(this.href);
-                    
-                    $('.editAddressSubmit').click(function() {
-                        var form = $(this).parents('form').get(0);
-                        var label = $('#id_label').value;
-                        editUrl = '{% url profile_edit_address other_user.username "label" %}';
-                        editUrl = editUrl.replace("label", label);                
-                        $.ajax({
-                          type: 'POST',
-                          url: editUrl,
-                          data: $('.edit-address').serialize(),
-                          success: function(data) {
-                              if(data.created == true) {
-                                  viewUrl = '{% url profile_address_detail other_user.username "label" %}';
-                                  viewUrl = viewUrl.replace("label", data.label);
-                                  $(ui.panel).load(viewUrl);
-                              } else {
-                                  $(ui.panel).html(data.rendered_form);
-                              }
-                          },
-                          dataType: "json"
+                    $(ui.panel).load(this.href, function() {
+                        $('.editAddressSubmit').click(function(e) {
+                            var label = $('.id_label').value;
+                            editUrl = '{% url profile_edit_address other_user.username "label" %}';
+                            editUrl = editUrl.replace("label", label);                
+                            $.ajax({
+                              type: 'POST',
+                              url: editUrl,
+                              data: $('.edit-address').serialize(),
+                              success: function(data) {
+                                  if(data.created == true) {
+                                      viewUrl = '{% url profile_address_detail other_user.username "label" %}';
+                                      viewUrl = viewUrl.replace("label", data.label);
+                                      $(ui.panel).load(viewUrl);
+                                  } else {
+                                      $(ui.panel).html(data.rendered_form);
+                                  }
+                              },
+                              dataType: "json"
+                            });
+                            return false;
                         });
                     });
-                    
                     return false;
                 });
                 
@@ -414,7 +413,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
                       success: function(data) {
                           if(data.created == true) {
                               var length = $addressTabs.tabs('length');
-                              tempUrl = '{% url profile_address_detail other_user.username "label" %}';
+                              var tempUrl = '{% url profile_address_detail other_user.username "label" %}';
                               tempUrl = tempUrl.replace("label", data.label);
                               $addressTabs.tabs('add', tempUrl, data.label, length - 1);
                           } else {
