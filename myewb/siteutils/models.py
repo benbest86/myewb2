@@ -62,7 +62,7 @@ class Address(models.Model):
   object_id = models.PositiveIntegerField()
   content_object = generic.GenericForeignKey()
   
-  label = models.CharField(blank=True, max_length=100)
+  label = models.CharField(max_length=100, null=False, blank=False)
   street = models.CharField(_('street address'), max_length=200, null=True, blank=True)
   city = models.CharField(_('city'), max_length=100, null=True, blank=True)
   province = models.CharField(_('province / state (abbreviation)'), max_length=10, null=True, blank=True)

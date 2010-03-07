@@ -15,6 +15,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 
 {% block extra_head %}
 <script type="text/javascript" src="{{STATIC_URL}}js/jquery-ui.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}js/address_tabs.js"></script>
 
 {# TEMPORARY CSS - WE WANT TO STYLIZE IT BETTER #}
 <link type="text/css" href="{{STATIC_URL}}css/jquery-ui.css" rel="stylesheet" />
@@ -75,12 +76,14 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 		            </a>
 		        </li>
 		    {% endfor %}
+		    {% if is_me %}
     		    <li>
     		        <a href="{% url profile_new_address other_user.username %}">
     		            <span><b>+</b></span>
     		        </a>
     		    </li>
-		    </ul>
+		    </ul>		    
+		    {% endif %}
 		</div>
 		
 		{% comment %}
@@ -373,64 +376,15 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 	{% show_student_records_js other_user is_me %}
 	{% show_work_records_js other_user is_me %}
 	
-	<script type="text/javascript">
-	$(document).ready(function(){
-        var $addressTabs = $("#addresses").tabs({
-            load: function(event, ui) {
-                $('a', ui.panel).click(function() {
-                    $(ui.panel).load(this.href, function() {
-                        $('.editAddressSubmit').click(function(e) {
-                            var label = $('.id_label').value;
-                            editUrl = '{% url profile_edit_address other_user.username "label" %}';
-                            editUrl = editUrl.replace("label", label);                
-                            $.ajax({
-                              type: 'POST',
-                              url: editUrl,
-                              data: $('.edit-address').serialize(),
-                              success: function(data) {
-                                  if(data.created == true) {
-                                      viewUrl = '{% url profile_address_detail other_user.username "label" %}';
-                                      viewUrl = viewUrl.replace("label", data.label);
-                                      $(ui.panel).load(viewUrl);
-                                  } else {
-                                      $(ui.panel).html(data.rendered_form);
-                                  }
-                              },
-                              dataType: "json"
-                            });
-                            return false;
-                        });
-                    });
-                    return false;
-                });
-                
-                $('.newAddressSubmit').click(function() {                    
-                    // submit address
-                    $.ajax({
-                      type: 'POST',
-                      url: "{% url profile_new_address other_user.username %}",
-                      data: $('#new-address').serialize(),
-                      success: function(data) {
-                          if(data.created == true) {
-                              var length = $addressTabs.tabs('length');
-                              var tempUrl = '{% url profile_address_detail other_user.username "label" %}';
-                              tempUrl = tempUrl.replace("label", data.label);
-                              $addressTabs.tabs('add', tempUrl, data.label, length - 1);
-                          } else {
-                              $(ui.panel).html(data.rendered_form);
-                          }
-                      },
-                      dataType: "json"
-                    });                    
-                    return false;
-                });
-            },
-            
-            add: function(event, ui) {
-                $addressTabs.tabs('select', '#' + ui.panel.id);
-            }        
-        });
-    });
+	<script type="text/javascript">	
+    function getBaseAddressUrl() { 
+        // We can't pre-generate URLs for specific addresses
+        // There are also possible issues if we simply try to replace an arbitrary string
+        // in the auto-generated URL
+        return "/profiles/{{other_user.username}}/address/"; 
+    }
+    function getNewAddressUrl() { return "{% url profile_new_address other_user.username %}"; }
+    function getLabelDuplicationError() { return '{% trans "Error: Label is already used" %}'; }
 	</script>
 
 	{% if messages %}

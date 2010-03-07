@@ -5,12 +5,14 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 
 {% load uni_form i18n %}
 
+<div id="newAddressErrors"></div>
+
 <form class="uniForm" id="new-address" method="POST" action="{% url profile_new_address other_user.username %}">
     <fieldset class="inlineLabels">  
         {{ form|as_uni_form }}
         <div class="form_block">
         <input type="hidden" name="action" value="add" />
-        <input type="submit" class="newAddressSubmit" value="{% trans "add" %}"/>
+        <input type="submit" class="newAddressSubmit" id="new-address-submit" value="{% trans "add" %}"/>
         </div>
     </fieldset>
 </form>
