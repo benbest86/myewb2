@@ -130,6 +130,7 @@
 </div>
 
 {# TODO: uses classes too, and put this once in extra_body instead of for each topic... #}
+{% if user.is_authenticated %}
 <script type="text/javascript">
 	$(document).ready(function() {
 		$('#toggle_watchlist-{{ topic.pk }}').click(function() {
@@ -144,3 +145,5 @@
 		});
 	});
 </script>
+{% endif %}
+
