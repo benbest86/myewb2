@@ -129,6 +129,7 @@
 
 </div>
 
+{% if user.is_authenticated %}
 {# TODO: uses classes too, and put this once in extra_body instead of for each topic... #}
 <script type="text/javascript">
 	$(document).ready(function() {
@@ -144,3 +145,4 @@
 		});
 	});
 </script>
+{% endif %}
