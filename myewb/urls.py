@@ -74,6 +74,8 @@ urlpatterns = patterns('',
 #    (r'^feeds/posts/(.*)/$', 'django.contrib.syndication.views.feed', blogs_feed_dict),
 #    (r'^feeds/bookmarks/(.*)/?$', 'django.contrib.syndication.views.feed', bookmarks_feed_dict),
     url(r'^feeds/posts/(?P<group_slug>[-\w]+)/$', 'group_topics.views.feed', name="topic_feed"),
+    
+    url(r'^search/', include('haystack.urls')),
 )
 
 ## @@@ for now, we'll use friends_app to glue this stuff together
