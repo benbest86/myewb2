@@ -35,7 +35,7 @@
     
 	            {% for result in page.object_list %}
 	            	{# is there a better way? #}
-	            	{% ifequal result.verbose_name "Group topic" %}
+	            	{% ifequal result.model_name "grouptopic" %}
 					    {% with result.object as topic %}
 					        {% include "topics/topic_item.html" %}
 					    {% endwith %}
