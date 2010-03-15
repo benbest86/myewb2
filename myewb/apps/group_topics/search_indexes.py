@@ -5,7 +5,7 @@ from group_topics.models import GroupTopic
 
 
 class GroupTopicIndex(SearchIndex):
-    text = CharField(document=True, use_template=True, model_attr='body')
+    text = CharField(document=True, use_template=True)
     author = CharField(model_attr='creator')
     pub_date = DateTimeField(model_attr='created')
 

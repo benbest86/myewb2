@@ -298,13 +298,6 @@ LDAP_HOST = 'ldap://127.0.0.1'
 LDAP_BIND_DN = 'cn=myewb,ou=accra,ou=services,dc=ewb,dc=ca'
 LDAP_BIND_PW = ''
 
-# local_settings.py can be used to override environment-specific settings
-# like database and email that differ between development and production.
-try:
-    from local_settings import *
-except ImportError:
-    pass
-
 # debug login
 LOGGING_OUTPUT_ENABLED = True
 LOGGING_LOG_SQL = True
@@ -315,3 +308,10 @@ HAYSTACK_SITECONF = 'myewb.search_sites'
 HAYSTACK_SEARCH_ENGINE = 'dummy'
 #HAYSTACK_SEARCH_ENGINE = 'whoosh'    # use this once you've installed the dependency
 HAYSTACK_WHOOSH_PATH = 'myewb_index'
+
+# local_settings.py can be used to override environment-specific settings
+# like database and email that differ between development and production.
+try:
+    from local_settings import *
+except ImportError:
+    pass
