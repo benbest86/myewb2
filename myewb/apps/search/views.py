@@ -8,6 +8,7 @@ from haystack.query import RelatedSearchQuerySet
 
 from group_topics.models import GroupTopic
 from whiteboard.models import Whiteboard
+from events.models import Event
 
 RESULTS_PER_PAGE = getattr(settings, 'HAYSTACK_SEARCH_RESULTS_PER_PAGE', 20)
 
@@ -20,6 +21,7 @@ def create_queryset(user):
 
     qs = RelatedSearchQuerySet().load_all_queryset(GroupTopic, GroupTopic.objects.visible(user))
     qs = qs.load_all_queryset(Whiteboard, Whiteboard.objects.visible(user))
+    qs = qs.load_all_queryset(Event, Event.objects.visible(user))
     return qs
 
 def search(request):

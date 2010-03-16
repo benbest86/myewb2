@@ -46,9 +46,18 @@
 					        {% get_membership result.object.parent_group request.user as member %}
 					        {% show_whiteboard_force result.object result.object.parent_group member %}
 						{% else %}
-		                <p>
-		                    <a href="{{ result.object.get_absolute_url }}">{{ result.object.title }}</a>
-		                </p>
+							{% ifequal result.model_name "event" %}
+								{# I so wish they had elif in django templates... #}
+									<div style="border: solid 1px; padding: 15px; margin: 15px;">
+										<strong>Event</strong>: 
+										<a href="{{ result.object.get_absolute_url }}">{{ result.object.title }}</a><br/>
+										{{ result.object.start|date:"D, M j \a\t P" }}
+									</div>
+							{% else %}
+				                <p>
+				                    <a href="{{ result.object.get_absolute_url }}">{{ result.object.title }}</a>
+				                </p>
+				            {% endifequal %}
 		                {% endifequal %}
 		            {% endifequal %}
 	            {% endfor %}
