@@ -1,3 +1,13 @@
+{% load threadedcommentstags %}
+
 {{ object.title }}
 {{ object.creator.get_full_name }}
 {{ object.body }}
+
+{% get_threaded_comment_tree for object as responses %}
+{% for response in responses %}
+    -----
+    {{ response.user.visible_name }}
+    {{ response.comment }}
+
+{% endfor %}
