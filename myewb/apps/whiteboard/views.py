@@ -8,13 +8,15 @@ from django.utils.translation import ugettext_lazy as _
 from django.views.generic.simple import redirect_to
 
 from base_groups.decorators import group_membership_required, visibility_required
+from whiteboard.models import Whiteboard
 from whiteboard.forms import WhiteboardForm
-from wiki.models import Article
 from wiki.utils import get_ct, login_required
 from wiki.views import *
 from wiki.views import edit_article as wiki_edit_article
 from wiki.views import view_changeset as wiki_view_changeset
 from wiki.views import article_history as wiki_article_history
+
+ALL_WHITEBOARDS = Whiteboard.non_removed_objects.all()
 
 # mostly copied from wiki.views
 # but modified so the redirect on successful edit goes to the group's homepage,
@@ -22,8 +24,8 @@ from wiki.views import article_history as wiki_article_history
 #@group_membership_required
 def edit_article(request, title,
                  group_slug=None, bridge=None,
-                 article_qs=ALL_ARTICLES,
-                 ArticleClass=Article, # to get the DoesNotExist exception
+                 article_qs=ALL_WHITEBOARDS,
+                 ArticleClass=Whiteboard, # to get the DoesNotExist exception
                  ArticleFormClass=WhiteboardForm,
                  template_name='edit_whiteboard.html',
                  template_dir='whiteboard',
@@ -32,7 +34,7 @@ def edit_article(request, title,
                  is_member=None,
                  is_private=None,
                  *args, **kw):
-
+    
     if group_slug is not None:
         try:
             group = bridge.get_group(group_slug)
@@ -94,7 +96,7 @@ def edit_article(request, title,
 #@group_membership_required
 def revert_to_revision(request, title,
                        group_slug=None, bridge=None,
-                       article_qs=ALL_ARTICLES,
+                       article_qs=ALL_WHITEBOARDS,
                        extra_context=None,
                        is_member=None,
                        is_private=None,
@@ -142,7 +144,7 @@ def revert_to_revision(request, title,
 #@visibility_required
 def view_changeset(request, title, revision,
                    group_slug=None, bridge=None,
-                   article_qs=ALL_ARTICLES,
+                   article_qs=ALL_WHITEBOARDS,
                    changes_qs=ALL_CHANGES,
                    template_name='whiteboard_changeset.html',
                    template_dir='whiteboard',
@@ -176,7 +178,7 @@ def view_changeset(request, title, revision,
 #@visibility_required
 def article_history(request, title,
                     group_slug=None, bridge=None,
-                    article_qs=ALL_ARTICLES,
+                    article_qs=ALL_WHITEBOARDS,
                     template_name='whiteboard_history.html',
                     template_dir='whiteboard',
                     extra_context=None,

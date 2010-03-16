@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from lxml.html.clean import clean_html, autolink_html
 
-from wiki.models import Article
+from whiteboard.models import Whiteboard
 from wiki.utils import get_ct
 
 # hmm,why can't I extend wiki.forms.ArticleForm ? =(
@@ -29,10 +29,10 @@ class WhiteboardForm(forms.ModelForm):
     action = forms.CharField(widget=forms.HiddenInput)
 
     class Meta:
-        model = Article
+        model = Whiteboard
         exclude = ('creator', 'creator_ip', 'removed',
                    'group', 'created_at', 'last_update',
-                   'summary', 'title', 'markup', 'tags')
+                   'summary', 'title', 'markup', 'tags', 'parent_group')
 
     def clean_content(self):
         """ Do our usual HTML cleanup.
@@ -68,7 +68,7 @@ class WhiteboardForm(forms.ModelForm):
             except KeyError:
                 pass # some error in this fields
             else:
-                if Article.objects.filter(**kw).count():
+                if Whiteboard.objects.filter(**kw).count():
                     raise forms.ValidationError(
                         _("An article with this title already exists."))
 

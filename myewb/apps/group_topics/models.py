@@ -21,7 +21,7 @@ from attachments.models import Attachment
 from base_groups.models import BaseGroup
 from base_groups.helpers import user_can_adminovision, user_can_execovision
 from topics.models import Topic
-from wiki.models import Article
+from whiteboard.models import Whiteboard
 
 from lxml.html.clean import clean_html, autolink_html, Cleaner
 
@@ -84,7 +84,7 @@ class GroupTopic(Topic):
     
     parent_group = models.ForeignKey(BaseGroup, related_name="topics", verbose_name=_('parent'))
     send_as_email = models.BooleanField(_('send as email'), default=False)
-    whiteboard = models.ForeignKey(Article, related_name="topic", verbose_name=_('whiteboard'), null=True)
+    whiteboard = models.ForeignKey(Whiteboard, related_name="topic", verbose_name=_('whiteboard'), null=True)
     
     objects = GroupTopicManager()
     
