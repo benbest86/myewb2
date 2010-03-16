@@ -5,10 +5,8 @@ Copyright 2009 Engineers Without Borders Canada
 """
 
 from django.db import models
-#from django.db.models import Q
-#from django.db.models.signals import post_save
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
-#from django.contrib.auth.models import User
 
 from base_groups.models import BaseGroup
 from base_groups.helpers import user_can_adminovision, user_can_execovision
