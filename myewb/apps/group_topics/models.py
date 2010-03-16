@@ -85,7 +85,7 @@ class GroupTopic(Topic):
     parent_group = models.ForeignKey(BaseGroup, related_name="topics", verbose_name=_('parent'))
     send_as_email = models.BooleanField(_('send as email'), default=False)
     whiteboard = models.ForeignKey(Article, related_name="topic", verbose_name=_('whiteboard'), null=True)
-
+    
     objects = GroupTopicManager()
     
     def get_absolute_url(self, group=None):
@@ -175,6 +175,7 @@ class GroupTopic(Topic):
 
     class Meta:
         ordering = ('-modified', )
+        verbose_name = "post"
         
 class Watchlist(models.Model):
     name = models.CharField(_('name'), max_length=255)

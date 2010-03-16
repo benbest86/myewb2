@@ -9,8 +9,8 @@ class GroupTopicIndex(SearchIndex):
     author = CharField(model_attr='creator')
     pub_date = DateTimeField(model_attr='created')
 
-    def load_all_queryset(self):
-        """Used when the entire index for model is updated."""
-        return GroupTopic.objects.visible()
+# not currently used; see apps/search/view.py, create_queryset()
+#    def load_all_queryset(self):
+#        return GroupTopic.objects.visible()
 
 site.register(GroupTopic, GroupTopicIndex)
