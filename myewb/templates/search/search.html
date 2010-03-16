@@ -3,7 +3,9 @@
 {% load i18n %}
 {% load uni_form %}
 {% load pagination_tags %}
+{% load base_groups_tags %}
 {% load group_tags %}
+{% load whiteboard_tags %}
 
 {% block extra_head %}
     {{ block.super }}
@@ -40,9 +42,14 @@
 					        {% include "topics/topic_item.html" %}
 					    {% endwith %}
 					{% else %}
+						{% ifequal result.model_name "whiteboard" %}
+					        {% get_membership result.object.parent_group request.user as member %}
+					        {% show_whiteboard_force result.object result.object.parent_group member %}
+						{% else %}
 		                <p>
 		                    <a href="{{ result.object.get_absolute_url }}">{{ result.object.title }}</a>
 		                </p>
+		                {% endifequal %}
 		            {% endifequal %}
 	            {% endfor %}
 
