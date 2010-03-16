@@ -28,7 +28,7 @@ if "notification" in settings.INSTALLED_APPS:
 else:
     notification = None
     
-from wiki.models import Article
+from whiteboard.models import Whiteboard
 
 def groups_index(request, model=None, member_model=None, form_class=None,
                  template_name='base_groups/groups_index.html',
@@ -162,7 +162,7 @@ def group_detail(request, group_slug, model=None, member_model=None,
         
     # retrieve whiteboard (create if needed)
     if group.whiteboard == None:
-        wb = Article(title="Whiteboard", content="")
+        wb = Whiteboard(title="Whiteboard", content="")
         group.associate(wb, commit=False)
         wb.save()
         group.whiteboard = wb

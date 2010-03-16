@@ -39,6 +39,14 @@ urlpatterns = patterns('profiles.views',
     url(r'^(?P<username>[\w\._-]+)/work/(?P<work_record_id>\d+)/edit/$', 'edit_work_record', name='edit_work_record'),
 )
 
+urlpatterns += patterns('profiles.views.address',
+    url(r'^(?P<username>[\w\._-]+)/address/$', 'address_index', name='profile_address_index'),
+    url(r'^(?P<username>[\w\._-]+)/address/new/$', 'new_address', name='profile_new_address'),
+    url(r'^(?P<username>[\w\._-]+)/address/(?P<label>[\w\._-]+)/$', 'address_detail', name='profile_address_detail'),
+    url(r'^(?P<username>[\w\._-]+)/address/(?P<label>[\w\._-]+)/delete/$', 'delete_address', name='profile_delete_address'),
+    url(r'^(?P<username>[\w\._-]+)/address/(?P<label>[\w\._-]+)/edit/$', 'edit_address', name='profile_edit_address'),
+)
+
 urlpatterns = urlpatterns + patterns('pinax.apps.autocomplete_app.views',
     url(r'^username_autocomplete/$', 'username_autocomplete_friends', name='profile_username_autocomplete'),
 )

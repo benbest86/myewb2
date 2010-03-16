@@ -25,7 +25,7 @@ from emailconfirmation.models import EmailAddress
 from siteutils.helpers import get_email_user
 from manager_extras.models import ExtraUserManager
 from groups.base import Group
-from wiki.models import Article
+#from whiteboard.models import Whiteboard
 from messages.models import Message
 
 if "notification" in settings.INSTALLED_APPS:
@@ -55,7 +55,7 @@ class BaseGroup(Group):
     )
     visibility = models.CharField(_('visibility'), max_length=1, choices=VISIBILITY_CHOICES, default='E')
     
-    whiteboard = models.ForeignKey(Article, related_name="group", verbose_name=_('whiteboard'), null=True)
+    whiteboard = models.ForeignKey('whiteboard.Whiteboard', related_name="group", verbose_name=_('whiteboard'), null=True)
     
     from_name = models.CharField(_('From name'), max_length=255, blank=True,
                                  help_text='"From" name when sending emails to group members')

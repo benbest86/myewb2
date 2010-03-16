@@ -2,7 +2,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
-from profiles.models import Profile
+#from profiles.models import Profile
 from siteutils.countries import CountryField
 
 class ServiceProvider(models.Model):
@@ -62,7 +62,7 @@ class Address(models.Model):
   object_id = models.PositiveIntegerField()
   content_object = generic.GenericForeignKey()
   
-  label = models.CharField(blank=True, max_length=100)
+  label = models.CharField(max_length=100, null=False, blank=False)
   street = models.CharField(_('street address'), max_length=200, null=True, blank=True)
   city = models.CharField(_('city'), max_length=100, null=True, blank=True)
   province = models.CharField(_('province / state (abbreviation)'), max_length=10, null=True, blank=True)
@@ -71,11 +71,11 @@ class Address(models.Model):
   
   # FIXME -- have a smarter fallback name for the 
   def __unicode__(self):
-    if self.content_type == "member profile":
-      owner = self.content_object.name
-    elif self.content_type == "service provider":
-      owner = self.content_object
+    if self.content_type.name == "member profile":
+      owner = self.content_type.name
+    elif self.content_type.name == "service provider":
+      owner = self.content_type.name
     else:
       owner = "<orphan>"
-    return "%s: %s: %s, %s" % (owner, self.label, self.city, self.province)
+    return u"%s: %s: %s, %s" % (owner, self.label, self.city, self.province)
 

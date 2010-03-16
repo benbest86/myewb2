@@ -22,6 +22,7 @@ from creditcard.forms import PaymentForm, PaymentFormPreview, ProductWidget
 from creditcard.models import Product
 from uni_form.helpers import FormHelper, Submit, Reset
 from uni_form.helpers import Layout, Fieldset, Row, HTML
+from siteutils.models import Address
 
 class ProfileForm(forms.ModelForm):
 	"""Add/edit form for the MemberProfile class."""
@@ -44,6 +45,11 @@ class WorkRecordForm(forms.ModelForm):
 	class Meta:
 		model = WorkRecord
 		exclude = ('user', 'network')
+		
+class AddressForm(forms.ModelForm):
+    class Meta:
+        model = Address
+        exclude = ('content_type', 'object_id')
 
 MEMBERSHIP_TYPES = (('studues', _("Student ($20)")),
 				    ('produes', _("Professional ($40)")))

@@ -35,7 +35,19 @@
         
         {% block body_outer %}
         <div id="body">
-	        <div id="subnav" class="clearfix bkgd-light">{% block subnav_base %}{% block subnav %}&nbsp;{% endblock %}{% endblock %}</div>
+	        <div id="subnav" class="clearfix bkgd-light">
+	        	{% block subnav_base %}
+	        	
+				<div style="float: right; width: 150px; padding: 0.2em 1em 0.2em 0">
+					<form method="get" action="{% url search %}">
+						<input type="text" value="search" style="width: 150px; color: #a0a0a0;" id="global_search_box" name="q"/>
+					</form>
+				</div>
+
+	        	{% block subnav %}&nbsp;{% endblock %}
+	        	
+	        	{% endblock %}
+	        </div>
 	
 			<div id="content">
 	
@@ -105,5 +117,22 @@
         {% block extra_body_base %}
             {% block extra_body %}{% endblock %}
         {% endblock %}
+        
+        <script type="text/javascript">
+        	$('#global_search_box').focus(function() {
+        		if ($(this).val() == "search")
+        		{
+        			$(this).css("color", "#000000");
+        			$(this).val("")
+        		}
+        	});
+        	$('#global_search_box').blur(function() {
+        		if ($(this).val() == "")
+        		{
+        			$(this).css("color", "#a0a0a0");
+        			$(this).val("search")
+        		}
+        	});
+        </script>
     </body>
 </html>

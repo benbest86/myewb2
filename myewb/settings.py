@@ -119,7 +119,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
     "pinax.core.context_processors.pinax_settings",
 
-#    "notification.context_processors.notification",
+    "notification.context_processors.notification",
     "announcements.context_processors.site_wide_announcements",
 #    "account.context_processors.openid",
     "account.context_processors.account",
@@ -132,7 +132,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 COMBINED_INBOX_COUNT_SOURCES = (
     "messages.context_processors.inbox",
     "friends_app.context_processors.invitations",
-#    "notification.context_processors.notification",
+    "notification.context_processors.notification",
 )
 
 INSTALLED_APPS = (
@@ -147,7 +147,7 @@ INSTALLED_APPS = (
     'pinax.templatetags',
     
     # external
-#    'notification', # must be first
+    'notification', # must be first
 #    'django_openid',
     'emailconfirmation',
     'django_extensions',
@@ -218,6 +218,7 @@ INSTALLED_APPS = (
 
     # our own third-party libs
     'contrib.django_evolution',
+    'contrib.haystack'
 )
 
 ABSOLUTE_URL_OVERRIDES = {
@@ -297,14 +298,20 @@ LDAP_HOST = 'ldap://127.0.0.1'
 LDAP_BIND_DN = 'cn=myewb,ou=accra,ou=services,dc=ewb,dc=ca'
 LDAP_BIND_PW = ''
 
+# debug login
+LOGGING_OUTPUT_ENABLED = True
+LOGGING_LOG_SQL = True
+LOGGING_OUTPUT_ENABLED = False
+
+# django-haystack searching
+HAYSTACK_SITECONF = 'myewb.search_sites'
+HAYSTACK_SEARCH_ENGINE = 'dummy'
+#HAYSTACK_SEARCH_ENGINE = 'whoosh'    # use this once you've installed the dependency
+HAYSTACK_WHOOSH_PATH = 'myewb_index'
+
 # local_settings.py can be used to override environment-specific settings
 # like database and email that differ between development and production.
 try:
     from local_settings import *
 except ImportError:
     pass
-
-# debug login
-LOGGING_OUTPUT_ENABLED = True
-LOGGING_LOG_SQL = True
-LOGGING_OUTPUT_ENABLED = False

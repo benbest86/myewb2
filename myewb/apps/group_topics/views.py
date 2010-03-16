@@ -36,7 +36,7 @@ from siteutils.shortcuts import get_object_or_none
 from attachments.forms import AttachmentForm
 from attachments.models import Attachment
 from topics.models import Topic
-from wiki.models import Article
+from whiteboard.models import Whiteboard
 
 def topic(request, topic_id, group_slug=None, edit=False, template_name="topics/topic.html", bridge=None):
 
@@ -60,7 +60,7 @@ def topic(request, topic_id, group_slug=None, edit=False, template_name="topics/
     # retrieve whiteboard (create if needed)
     if topic.whiteboard == None:
         # group_slug should always be valid - group never null!
-        wb = Article(title="Post%d" % (topic.id), content="")
+        wb = Whiteboard(title="Post%d" % (topic.id), content="")
         if topic.group:
             topic.group.associate(wb, commit=False)
         wb.save()

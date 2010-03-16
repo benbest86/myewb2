@@ -58,7 +58,7 @@ class ChapterInfo(models.Model):
     
 def create_network_location(sender, instance=None, **kwargs):
     """Automatically creates a GroupLocation for a new Network."""
-    if instance is None:
+    if instance is None or instance.id is None:
         return
     location, created = GroupLocation.objects.get_or_create(group=instance)
 
