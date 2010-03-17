@@ -1,10 +1,15 @@
 import datetime
+import settings
 from haystack.indexes import *
 from haystack import site
 from group_topics.models import GroupTopic
 
+if settings.REALTIME_SEARCH:
+    index_class = RealTimeSearchIndex
+else:
+    index_class = SearchIndex
 
-class GroupTopicIndex(SearchIndex):
+class GroupTopicIndex(index_class):
     text = CharField(document=True, use_template=True)
     author = CharField(model_attr='creator')
     pub_date = DateTimeField(model_attr='created')
