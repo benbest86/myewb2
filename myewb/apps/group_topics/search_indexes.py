@@ -8,6 +8,9 @@ class GroupTopicIndex(SearchIndex):
     text = CharField(document=True, use_template=True)
     author = CharField(model_attr='creator')
     pub_date = DateTimeField(model_attr='created')
+    
+    def prepare_author(self, obj):
+        return obj.creator.visible_name()
 
 # not currently used; see apps/search/view.py, create_queryset()
 #    def load_all_queryset(self):

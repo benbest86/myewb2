@@ -1,7 +1,7 @@
 {% load threadedcommentstags %}
 
 {{ object.title }}
-{{ object.creator.get_full_name }}
+{{ object.creator.visible_name }}
 {{ object.body }}
 
 {% get_threaded_comment_tree for object as responses %}
