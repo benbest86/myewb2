@@ -309,6 +309,8 @@ HAYSTACK_SEARCH_ENGINE = 'dummy'
 #HAYSTACK_SEARCH_ENGINE = 'whoosh'    # use this once you've installed the dependency
 HAYSTACK_WHOOSH_PATH = 'myewb_index'
 
+REALTIME_SEARCH = True
+
 # local_settings.py can be used to override environment-specific settings
 # like database and email that differ between development and production.
 try:

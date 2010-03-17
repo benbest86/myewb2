@@ -1,10 +1,15 @@
 import datetime
+import settings
 from haystack.indexes import *
 from haystack import site
 from events.models import Event
 
+if settings.REALTIME_SEARCH:
+    index_class = RealTimeSearchIndex
+else:
+    index_class = SearchIndex
 
-class EventIndex(SearchIndex):
+class EventIndex(index_class):
     text = CharField(document=True, use_template=True)
     author = CharField(model_attr='owner')
     pub_date = DateTimeField(model_attr='start')

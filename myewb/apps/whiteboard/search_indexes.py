@@ -1,10 +1,15 @@
 import datetime
+import settings
 from haystack.indexes import *
 from haystack import site
 from whiteboard.models import Whiteboard
 
+if settings.REALTIME_SEARCH:
+    index_class = RealTimeSearchIndex
+else:
+    index_class = SearchIndex
 
-class WhiteboardIndex(SearchIndex):
+class WhiteboardIndex(index_class):
     text = CharField(document=True, model_attr='content')
 
 # not currently used; see apps/search/view.py, create_queryset()
