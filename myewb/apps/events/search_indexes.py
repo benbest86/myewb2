@@ -9,6 +9,9 @@ class EventIndex(SearchIndex):
     author = CharField(model_attr='owner')
     pub_date = DateTimeField(model_attr='start')
 
+    def prepare_author(self, obj):
+        return obj.owner.visible_name()
+
 # not currently used; see apps/search/view.py, create_queryset()
 #    def load_all_queryset(self):
 #        return GroupTopic.objects.visible()

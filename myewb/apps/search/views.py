@@ -1,14 +1,23 @@
+"""myEWB searching views
+
+This file is part of myEWB
+Copyright 2010 Engineers Without Borders Canada
+
+Created on: 2010-03-17
+@author: Francis Kung
+"""
+
 from django.conf import settings
 from django.core.paginator import Paginator, InvalidPage
 from django.http import Http404
 from django.shortcuts import render_to_response
 from django.template import RequestContext
-from haystack.forms import ModelSearchForm
 from haystack.query import RelatedSearchQuerySet
 
 from group_topics.models import GroupTopic
 from whiteboard.models import Whiteboard
 from events.models import Event
+from search.forms import DateAuthorSearchForm
 
 RESULTS_PER_PAGE = getattr(settings, 'HAYSTACK_SEARCH_RESULTS_PER_PAGE', 20)
 
@@ -50,7 +59,7 @@ def search(request):
     qs = create_queryset(request.user)
     
     if request.GET.get('q'):
-        form = ModelSearchForm(request.GET,
+        form = DateAuthorSearchForm(request.GET,
                                searchqueryset=qs,
                                load_all=True)
         
@@ -58,7 +67,7 @@ def search(request):
             query = form.cleaned_data['q']
             results = form.search()
     else:
-        form = ModelSearchForm(searchqueryset=qs,
+        form = DateAuthorSearchForm(searchqueryset=qs,
                                load_all=True)
         
     
