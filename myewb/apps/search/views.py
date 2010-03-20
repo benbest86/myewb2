@@ -19,8 +19,6 @@ from whiteboard.models import Whiteboard
 from events.models import Event
 from search.forms import DateAuthorSearchForm
 
-RESULTS_PER_PAGE = getattr(settings, 'HAYSTACK_SEARCH_RESULTS_PER_PAGE', 20)
-
 def create_queryset(user):
     # ideally we'd do it this way, and not mention specific models here
     # (instead doing visibility checking in their respective search_index.py files),
@@ -65,17 +63,9 @@ def search(request):
     if form.is_valid():
         results = form.search()
     
-    paginator = Paginator(results, RESULTS_PER_PAGE)
-    
-    try:
-        page = paginator.page(int(request.GET.get('page', 1)))
-    except InvalidPage:
-        raise Http404("No such page of results!")
-    
     context = {
         'form': form,
-        'page': page,
-        'paginator': paginator
+        'results': results,
     }
     
     return render_to_response("search/search.html", context, context_instance=RequestContext(request))

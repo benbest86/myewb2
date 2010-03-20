@@ -33,10 +33,12 @@
         </table>
 
         <h3>Results</h3>
-		{% if page.object_list %}
-		    {% autopaginate page.object_list 20 %}
+        
+        
+		{% if results %}
+		    {% autopaginate results 10 %}
  
-	        {% for result in page.object_list %}
+	        {% for result in results %}
 	          	{# is there a better way? #}
 	          	{% ifequal result.model_name "grouptopic" %}
 				    {% with result.object as topic %}
@@ -61,13 +63,14 @@
 			            {% endifequal %}
 	                {% endifequal %}
 			    {% endifequal %}
-          {% endfor %}
+            {% endfor %}
 
-	      {% paginate %}
+	        {% paginate %}
 
-      {% else %}
-      	<p>No results found.</p>
-      {% endif %}
+        {% else %}
+      	  <p>No results found.</p>
+        {% endif %}
+
     </form>
 {% endblock %}
 
