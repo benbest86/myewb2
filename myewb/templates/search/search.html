@@ -32,46 +32,45 @@
             </tr>
         </table>
 
-        {% if query %}
-            <h3>Results</h3>
-			{% if page.object_list %}
-			    {% autopaginate page.object_list 10 %}
-    
-	            {% for result in page.object_list %}
-	            	{# is there a better way? #}
-	            	{% ifequal result.model_name "grouptopic" %}
-					    {% with result.object as topic %}
-					        {% include "topics/topic_item.html" %}
-					    {% endwith %}
+        <h3>Results</h3>
+        
+        
+		{% if results %}
+		    {% autopaginate results 10 %}
+ 
+	        {% for result in results %}
+	          	{# is there a better way? #}
+	          	{% ifequal result.model_name "grouptopic" %}
+				    {% with result.object as topic %}
+				        {% include "topics/topic_item.html" %}
+				    {% endwith %}
+				{% else %}
+					{% ifequal result.model_name "whiteboard" %}
+				        {% get_membership result.object.parent_group request.user as member %}
+				        {% show_whiteboard_force result.object result.object.parent_group member %}
 					{% else %}
-						{% ifequal result.model_name "whiteboard" %}
-					        {% get_membership result.object.parent_group request.user as member %}
-					        {% show_whiteboard_force result.object result.object.parent_group member %}
+						{% ifequal result.model_name "event" %}
+							{# I so wish they had elif in django templates... #}
+							<div style="border: solid 1px; padding: 15px; margin: 15px;">
+								<strong>Event</strong>: 
+								<a href="{{ result.object.get_absolute_url }}">{{ result.object.title }}</a><br/>
+								{{ result.object.start|date:"D, M j \a\t P" }}
+							</div>
 						{% else %}
-							{% ifequal result.model_name "event" %}
-								{# I so wish they had elif in django templates... #}
-									<div style="border: solid 1px; padding: 15px; margin: 15px;">
-										<strong>Event</strong>: 
-										<a href="{{ result.object.get_absolute_url }}">{{ result.object.title }}</a><br/>
-										{{ result.object.start|date:"D, M j \a\t P" }}
-									</div>
-							{% else %}
-				                <p>
-				                    <a href="{{ result.object.get_absolute_url }}">{{ result.object.title }}</a>
-				                </p>
-				            {% endifequal %}
-		                {% endifequal %}
-		            {% endifequal %}
-	            {% endfor %}
+		                <p>
+		                    <a href="{{ result.object.get_absolute_url }}">{{ result.object.title }}</a>
+		                </p>
+			            {% endifequal %}
+	                {% endifequal %}
+			    {% endifequal %}
+            {% endfor %}
 
-			    {% paginate %}
+	        {% paginate %}
 
-            {% else %}
-                <p>No results found.</p>
-            {% endif %}
         {% else %}
-            {# Show some example queries to run, maybe query syntax, something else? #}
+      	  <p>No results found.</p>
         {% endif %}
+
     </form>
 {% endblock %}
 

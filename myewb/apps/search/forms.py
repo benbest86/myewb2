@@ -8,10 +8,12 @@ Created on: 2010-03-17
 """
 
 from django import forms
+from django.utils.translation import ugettext_lazy as _
 from haystack.forms import ModelSearchForm
 
 
 class DateAuthorSearchForm(ModelSearchForm):
+    q = forms.CharField(required=False, label=_('Keyword'))
     start_date = forms.DateField(required=False)
     end_date = forms.DateField(required=False)
     author = forms.CharField(required=False, max_length=255)
