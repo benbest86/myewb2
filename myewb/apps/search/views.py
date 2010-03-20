@@ -58,18 +58,12 @@ def search(request):
     results = []
     qs = create_queryset(request.user)
     
-    if request.GET.get('q'):
-        form = DateAuthorSearchForm(request.GET,
-                               searchqueryset=qs,
-                               load_all=True)
-        
-        if form.is_valid():
-            query = form.cleaned_data['q']
-            results = form.search()
-    else:
-        form = DateAuthorSearchForm(searchqueryset=qs,
-                               load_all=True)
-        
+    form = DateAuthorSearchForm(request.GET,
+                           searchqueryset=qs,
+                           load_all=True)
+    
+    if form.is_valid():
+        results = form.search()
     
     paginator = Paginator(results, RESULTS_PER_PAGE)
     
@@ -81,8 +75,7 @@ def search(request):
     context = {
         'form': form,
         'page': page,
-        'paginator': paginator,
-        'query': query,
+        'paginator': paginator
     }
     
     return render_to_response("search/search.html", context, context_instance=RequestContext(request))
