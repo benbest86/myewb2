@@ -1,0 +1,37 @@
+{% extends "topics/base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Delete Post" %}{% endblock %}
+
+{% block body %}
+    <h1>{% trans "Delete Post" %}</h1>
+
+	<p>
+	Are you sure you want to delete the post
+	<em>{{ topic.title }}</em> ?
+	</p>
+	
+	<p>
+    <form class="uniForm" method="POST" action="{{ request.path }}confirm/">
+        <fieldset class="inlineLabels">
+            <div class="form_block">
+                <input type="submit" value="{% trans "Yes, delete the post" %}" />
+                <input type="hidden" name="next" value="{{ next }}" />
+            </div>
+        </fieldset>
+    </form>
+    </p>
+    
+    <p>
+    <form class="uniForm" method="POST" action="{{ topic.get_absolute_url }}">
+        <fieldset class="inlineLabels">
+            <div class="form_block">
+                <input type="submit" value="{% trans "No, do not delete" %}" />
+            </div>
+        </fieldset>
+    </form>
+    </p>
+	
+{% endblock %}    
+

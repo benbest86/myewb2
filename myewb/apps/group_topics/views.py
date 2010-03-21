@@ -229,8 +229,7 @@ def get_attachment_form(request, template_name="topics/attachment_form.html", fo
         )
         return response
 
-
-def topic_delete(request, topic_id, group_slug=None, bridge=None):
+def topic_delete(request, topic_id, group_slug=None, bridge=None, confirm=False):
     """
     Another copy-pasta from pinax.apps.topics.views.
     Again need to update to match our GroupTopic stuff.
@@ -255,10 +254,19 @@ def topic_delete(request, topic_id, group_slug=None, bridge=None):
     topic = get_object_or_404(topics, id=topic_id)
     
     if (request.method == "POST" and (request.user == topic.creator or topic.group.user_is_admin(request.user))):
-        ThreadedComment.objects.all_for_object(topic).delete()
-        topic.delete()
-    
-    return HttpResponseRedirect(request.POST["next"])
+        if confirm:
+            ThreadedComment.objects.all_for_object(topic).delete()
+            topic.delete()
+        
+            return HttpResponseRedirect(request.POST["next"])
+        else:
+            return render_to_response("topics/topic_delete.html",
+                                      {"topic": topic,
+                                       "next": request.POST["next"]},
+                                      context_instance=RequestContext(request)
+                                     )
+    else:
+        return HttpResponseForbidden()
 
 def topics_by_user(request, username):
     """
