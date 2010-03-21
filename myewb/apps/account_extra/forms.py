@@ -81,7 +81,7 @@ class EmailLoginForm(forms.Form):
             
             # set message
             login_message=ugettext(u"Welcome back, %(name)s") % {
-                'name': self.user.visible_name
+                'name': self.user.visible_name()
             }
             request.user.message_set.create(message=login_message)
             if self.cleaned_data['remember']:
