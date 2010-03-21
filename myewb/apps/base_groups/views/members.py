@@ -69,9 +69,35 @@ def members_index(request, group_slug, group_model=None, form_class=None,
         context_instance=RequestContext(request),
     )
 
+def single_new_member(group, myself, other_user, is_admin=False, admin_title=""):
+    existing_members = group.members.filter(user=other_user)
+    
+    # General users can only add themselves as members
+    # Users cannot have multiple memberships in the same group
+    # TODO: split out invitations/requests into a different process & object
+    if existing_members.count() == 0 and (myself == other_user or group.user_is_admin(myself)):
+        member = None
+        if myself == other_user:
+            if group.invite_only and not group.user_is_admin(myself):     # we ignore group admins since they must already be members
+                member = RequestToJoinGroup() # create a membership request instead
+    
+        if member == None:
+            member = GroupMember()
+    
+        member.group = group
+        member.user = other_user
+    
+        member.is_admin = is_admin
+        member.admin_title = admin_title
+    
+        member.save()
+        return member
+    else:
+        return None
+
 @visibility_required()
 def new_member(request, group_slug, group_model=None, form_class=None,
-               template_name=None, index_template_name=None):
+               template_name=None, index_template_name=None, force_join=False):
     
     # handle generic call
     # XX does this ever happen in practise???
@@ -82,6 +108,7 @@ def new_member(request, group_slug, group_model=None, form_class=None,
     # load up basic objects
     group = get_object_or_404(group_model, slug=group_slug)
     user = request.user
+    response = None
     
     # why do we exclude admins?
     if group.user_is_member_or_pending(user) and not group.user_is_admin(user):
@@ -95,57 +122,40 @@ def new_member(request, group_slug, group_model=None, form_class=None,
         form = form_class(request.POST)
         if form.is_valid():
             for singleuser in form.cleaned_data['user']:
-                existing_members = group.members.filter(user=singleuser)
-            
-                # General users can only add themselves as members
-                # Users cannot have multiple memberships in the same group
-                # TODO: split out invitations/requests into a different process & object
-                if existing_members.count() == 0 and (user == singleuser or group.user_is_admin(user)):
-                    member = None
-                    if user == singleuser:
-                        if group.invite_only and not group.user_is_admin(user):     # we ignore group admins since they must already be members
-                            member = RequestToJoinGroup() # create a membership request instead
-                    
-                    if member == None:
-                        member = GroupMember()
-
-                    member.group = group
-                    member.user = singleuser
-                    
-                    if isinstance(member, GroupMember) and not group.user_is_admin(user):
-                        # General users cannot make themselves admins
-                        member.is_admin = False
-                        member.admin_title = ""
-                    else:
-                        member.is_admin = form.cleaned_data['is_admin']
-                        member.admin_title = form.cleaned_data['admin_title']
-                
-                    member.save()
+                if group.user_is_admin(user):
+                    print form.cleaned_data['is_admin']
+                    print form.cleaned_data['admin_title']
+                    single_new_member(group, user, singleuser,
+                                      is_admin=form.cleaned_data['is_admin'],
+                                      admin_title=form.cleaned_data['admin_title'])
+                else:
+                    single_new_member(group, user, singleuser)
                 
             # different returns if it's an ajax call...
-            if request.is_ajax():
-                response = render_to_response("base_groups/ajax-join.html",
-                                              {'group': group},
-                                              context_instance=RequestContext(request),
-                                             )
-            else:
+            if not request.is_ajax():
                 response =  HttpResponseRedirect(reverse('%s_detail' % group_model._meta.module_name, kwargs={'group_slug': group_slug}))
-            return response
-            
+        
+        elif force_join or not group.user_is_admin(user):
+            single_new_member(group, user, user)
+            if not request.is_ajax():
+                request.user.message_set.create(message=_("Joined the %(name)s %(model)s.") % {"name": group.name, "model": group_model._meta.verbose_name,})
+                response =  HttpResponseRedirect(reverse('%s_detail' % group_model._meta.module_name, kwargs={'group_slug': group_slug}))
+
     else:
         form = form_class()
         
     # either it's a new form, or there's some kind of validation error
-    if request.is_ajax():
+    if response == None and request.is_ajax():
         response = render_to_response("base_groups/ajax-join.html",
-                                      {'group': None},
+                                      {'group': group},
                                       context_instance=RequestContext(request),
                                      )
-    else:
+    elif response == None:
         response = render_to_response(template_name,
                                       {'group': group,
                                        'form': form,
                                        'is_admin': group.user_is_admin(user),
+                                       'is_member': group.user_is_member_or_pending(user)
                                       },
                                       context_instance=RequestContext(request),
                                      )

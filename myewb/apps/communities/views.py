@@ -72,8 +72,8 @@ def members_index(request, group_slug, form_class=GroupMemberForm, template_name
     
 @login_required
 def new_member(request, group_slug, form_class=GroupMemberForm, template_name=MEM_NEW_TEMPLATE,
-        index_template_name=MEM_INDEX_TEMPLATE):
-    return members.new_member(request, group_slug, Community, form_class, template_name, index_template_name)
+        index_template_name=MEM_INDEX_TEMPLATE, force_join=False):
+    return members.new_member(request, group_slug, Community, form_class, template_name, index_template_name, force_join)
     
 @login_required
 def invite_member(request, group_slug, form_class=GroupInviteForm, template_name=MEM_INVITE_TEMPLATE,

@@ -14,12 +14,29 @@
 	{{ form.media }}
 {% endblock %}
 
-{% block head_title %}{% blocktrans %}Add Member{% endblocktrans %}{% endblock %}
+{# {% block head_title %}{% blocktrans %}Add Member{% endblocktrans %}{% endblock %}  #}
 
 <h1>{% trans "Add Member" %}</h1>
 
 {% if user.is_authenticated %}
 	{% if is_admin %}
+		{% if not is_member %}
+			<p>
+			Do you want to join this group yourself?<br/>
+			<form class="uniForm" id="member_form" method="POST" action="{{request.path}}join/">
+				<fieldset class="inlineLabels">
+					<div class="form_block">
+						<input type="hidden" name="user" value="{{ user.id }}" />
+						<input type="submit" value="{% trans 'join' %}"/>
+					</div>
+				</fieldset>
+			</form>
+			</p>
+			<hr/>
+		{% endif %}
+		
+		<p>
+		Or add someone else?<br/>
     	<form class="uniForm" id="member_form" method="POST" action="">
         	<fieldset class="inlineLabels">
             	{{ form|as_uni_form }}
@@ -29,6 +46,7 @@
 				</div>
 			</fieldset>
 		</form>
+		</p>
 	{% else %}
 		{% if group.invite_only %}
 			<p>{% trans "This is an invite-only group. Your request must be approved by a group administrator." %}</p>

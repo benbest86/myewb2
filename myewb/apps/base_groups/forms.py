@@ -12,6 +12,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from base_groups.models import BaseGroup, GroupMember, GroupLocation, InvitationToJoinGroup
 from base_groups.helpers import get_valid_parents
+from user_search.forms import UserField
 
 class BaseGroupForm(forms.ModelForm):
     
@@ -50,7 +51,6 @@ class BaseGroupForm(forms.ModelForm):
         abstract = True
 
 class GroupInviteForm(forms.ModelForm):
-    from user_search.forms import UserField
     user = UserField(label=_("User"))
     
     class Meta:
@@ -58,7 +58,6 @@ class GroupInviteForm(forms.ModelForm):
         fields = ('user', 'message')
         
 class GroupMemberForm(forms.ModelForm):
-    from user_search.forms import UserField
     user = UserField(label=_("User"))
 
     class Meta:

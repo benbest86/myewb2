@@ -45,6 +45,7 @@ urlpatterns += patterns('base_groups.views.members',
     # GET - new member form
     # POST - create member (redirects to 'members_index'
     url(r'^(?P<group_slug>[-\w]+)/members/new/$', 'new_member', name='new_member',),
+    url(r'^(?P<group_slug>[-\w]+)/members/new/join/$', 'new_member', kwargs={'force_join': True}, name='new_member',),
 
     url(r'^(?P<group_slug>[-\w]+)/members/new/email$', 'new_email_member', name='new_email_member',),
 
