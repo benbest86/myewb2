@@ -38,16 +38,17 @@ def send_to_watchlist(sender, instance, **kwargs):
                  })
     message = tmpl.render(c)
 
+    sender = 'myEWB <notices@my.ewb.ca>'
     for list in topic.watchlists.all():
         user = list.owner
         # TODO: for user in list.subscribers blah blah
-        sender = 'myEWB <notices@my.ewb.ca>'
 
-        msg = EmailMessage(subject=topic.title,
-                           body=message,
-                           from_email=sender, 
-                           to=[user.email]
-                          )
-        msg.send(fail_silently=False)
+        if user.get_profile().replies_as_emails:
+            msg = EmailMessage(subject=topic.title,
+                               body=message,
+                               from_email=sender, 
+                               to=[user.email]
+                              )
+            msg.send(fail_silently=False)
      
 post_save.connect(send_to_watchlist, sender=ThreadedComment, dispatch_uid='sendreplytowatchlist')
