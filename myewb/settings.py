@@ -120,7 +120,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "pinax.core.context_processors.pinax_settings",
 
     "notification.context_processors.notification",
-    "announcements.context_processors.site_wide_announcements",
+    "group_announcements.context_processors.site_wide_announcements",
 #    "account.context_processors.openid",
     "account.context_processors.account",
     "messages.context_processors.inbox",
@@ -157,7 +157,7 @@ INSTALLED_APPS = (
     'mailer',
     'messages',
     'messages_ext',
-    'announcements',
+    'group_announcements',
     'oembed',
     'djangodblog',
     'pagination',
