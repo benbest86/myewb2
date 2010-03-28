@@ -17,6 +17,11 @@
 <li><a href="{% url topic_cloud %}">Tag Cloud</a></li>
 <li><a href="{% url topic_watchlists %}">Watchlist</a></li>
 {# <li><a href="#">Hot Posts</a></li> #}
+
+{% if user.is_staff %}
+	<li><a href="{% url announcement_home %}">{% trans "Announcements" %}</a></li>
+{% endif %}
+
 <li><a href="{% url about %}">About</a></li>
 {# <li><a href="{% url aboutmyewb %}">Help</a></li> #}
 </ul>

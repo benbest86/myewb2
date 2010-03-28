@@ -35,3 +35,8 @@ class AnnouncementAdminForm(forms.ModelForm):
                     "announcement": announcement,
                 }, on_site=False, queue=True)
         return announcement
+
+class AnnouncementForm(forms.ModelForm):
+    class Meta:
+        model = Announcement
+        fields = ('title', 'content', 'parent_group')

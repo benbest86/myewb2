@@ -1,19 +1,14 @@
 
 from django.conf.urls.defaults import *
-from django.views.generic import list_detail
 
 from group_announcements.models import Announcement
 from group_announcements.views import *
 
 
-announcement_detail_info = {
-    "queryset": Announcement.objects.all(),
-}
-
 urlpatterns = patterns("",
-    url(r"^(?P<object_id>\d+)/$", list_detail.object_detail,
-        announcement_detail_info, name="announcement_detail"),
-    url(r"^(?P<object_id>\d+)/hide/$", announcement_hide,
-        name="announcement_hide"),
+    url(r"^(?P<object_id>\d+)/$", announcement_detail, name="announcement_detail"),
+    url(r"^new/$", announcement_create, name="announcement_create"),
+    url(r"^(?P<object_id>\d+)/hide/$", announcement_hide, name="announcement_hide"),
+    url(r"^(?P<object_id>\d+)/delete/$", announcement_delete, name="announcement_delete"),
     url(r"^$", announcement_list, name="announcement_home"),
 )

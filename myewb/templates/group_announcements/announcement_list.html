@@ -1,0 +1,42 @@
+{% extends "topics/base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Announcements" %}{% endblock %}
+
+{% block body %}
+    <h1>{% trans "Announcements" %}</h1>
+    
+    <p>
+    <a href="{% url announcement_create %}">Create a new announcement</a>
+{#    <a href="#">Create a new announcement</a> #}
+    </p>
+    
+    {% if object_list %}
+    <table border="1" width="100%">
+    	<tr>
+    		<th>Announcement</th>
+    		<th>Created on</th>
+    		<th>Created by</th>
+    		<th>Visible to</th>
+    		<th>&nbsp;</th>
+    	</tr>
+    	
+        {% for announcement in object_list %}
+        <tr style="background: {% cycle '#ffffff' '#e0e0e0' %}">
+        	<td><a href="{{ announcement.get_absolute_url }}">{{ announcement }}</a></td>
+        	<td>{{announcement.creation_date}}</td>
+        	<td>{{announcement.creator.visible_name}}</td>
+        	<td>{{announcement.parent_group|default_if_none:"everyone"}}</td>
+        	<td>
+        		<form action="{% url announcement_delete announcement.pk %}" method="post">
+        			<input type="submit" value="delete"/>
+        		</form>
+        	</td>
+        </tr>
+        {% endfor %}
+    </table>
+    {% else %}
+        <strong>{% trans "There are no announcements." %}</strong>
+    {% endif %}
+{% endblock %}
