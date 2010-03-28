@@ -37,6 +37,8 @@ class AnnouncementAdminForm(forms.ModelForm):
         return announcement
 
 class AnnouncementForm(forms.ModelForm):
+    content = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
+    
     class Meta:
         model = Announcement
         fields = ('title', 'content', 'parent_group')
