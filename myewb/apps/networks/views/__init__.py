@@ -213,7 +213,6 @@ def national_office(request):
     }, context_instance=RequestContext(request))
     
     
-
 def update_magic_lists(request, group_slug, username, form_class):
 
     if request.method == 'POST':
@@ -236,14 +235,26 @@ def update_magic_lists(request, group_slug, username, form_class):
                 users = form.cleaned_data['user']
                 
             for other_user in users:
-                # exec lists too
+                # find the current membership status with this group
+                try:
+                    member = GroupMember.objects.get(group=group, user=other_user)
+                except GroupMember.DoesNotExist:
+                    member = None
+                
+                # Start with exec lists...
                 if form.cleaned_data['is_admin'] == True:
                     if group.is_chapter():
-                        # important work-around: if they're already on a different
-                        # exec list, do NOT let them be added again!
+                        # see if they are on a different chapter's exec list:
+                        # parent__isnull=False ensures it's a chapter list (not a global list)
+                        # member_users=other_user membership check
+                        # and the exclusion ensures it's a different chapter's list
                         otherexec = ExecList.objects.filter(parent__isnull=False,
                                                             member_users=other_user)
+                        otherexec = otherexec.exclude(parent=group)
+                        
                         if otherexec.count() > 0:
+                            # if they are on a different chapter's list,
+                            # don't let them be added here!!!
                             return False
                         
                         
@@ -276,7 +287,10 @@ def update_magic_lists(request, group_slug, username, form_class):
                                 pass
 
                 # remove from exec lists if no longer exec                                
-                else:
+                # the check for member and member.is_admin ensures that this
+                # code is only run if they have been downgraded from this
+                # chapter's exec (not being added to a different chapter's regular list)
+                elif member and member.is_admin:
                     execlists = ExecList.objects.filter(member_users=other_user)
                     for list in execlists:
                         list.remove_member(other_user)
@@ -287,22 +301,24 @@ def update_magic_lists(request, group_slug, username, form_class):
                 
                 if form.cleaned_data['is_admin'] == True:
                     selected_lists = form.cleaned_data['replists']
-                else:
+                elif member and member.is_admin:
+                    # same check as earlier
                     selected_lists = []
-                    #FIXME: allow people to be de-admin'ed without losing
-                    # list settings...
-
-                for listslug in selected_lists:
-                    list = get_object_or_404(NationalRepList, slug=listslug)
-                    newlists.append(list)
+                else:
+                    selected_lists = None
                     
-                    # add to list if not already on it
-                    if list not in currentlists:
-                        obj = list.add_member(other_user)
+                if selected_lists is not None:
+                    for listslug in selected_lists:
+                        list = get_object_or_404(NationalRepList, slug=listslug)
+                        newlists.append(list)
                     
-                # get current lists, remove from rep lists as needed
-                for list in currentlists:
-                    if list not in newlists:
-                        list.remove_member(other_user)
+                        # add to list if not already on it
+                        if list not in currentlists:
+                            obj = list.add_member(other_user)
+                    
+                    # get current lists, remove from rep lists as needed
+                    for list in currentlists:
+                        if list not in newlists:
+                            list.remove_member(other_user)
                         
     return True
