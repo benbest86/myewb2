@@ -83,9 +83,13 @@ def members_index(request, group_slug, form_class=GroupMemberForm, template_name
 def new_member(request, group_slug, form_class=NetworkMemberForm, template_name=MEM_NEW_TEMPLATE,
         index_template_name=MEM_INDEX_TEMPLATE, force_join=False):
 
-    update_magic_lists(request, group_slug, None, form_class)
+    validated = update_magic_lists(request, group_slug, None, form_class)
         
-    return members.new_member(request, group_slug, Network, form_class, template_name, index_template_name, force_join)
+    if validated:
+        return members.new_member(request, group_slug, Network, form_class, template_name, index_template_name, force_join)
+    else:
+        request.user.message_set.create(message='User is already an exec of another chapter!')
+        return HttpResponseRedirect(reverse('network_members_index', kwargs={'group_slug': group_slug}))
     
 @login_required
 def invite_member(request, group_slug, form_class=GroupInviteForm, template_name=MEM_INVITE_TEMPLATE,
@@ -100,9 +104,13 @@ def member_detail(request, group_slug, username, form_class=EditGroupMemberForm,
 def edit_member(request, group_slug, username, form_class=EditNetworkMemberForm, template_name=MEM_EDIT_TEMPLATE,
         detail_template_name=MEM_DETAIL_TEMPLATE):
     
-    update_magic_lists(request, group_slug, username, form_class)
+    validated = update_magic_lists(request, group_slug, username, form_class)
         
-    return members.edit_member(request, group_slug, username, Network, form_class, template_name, detail_template_name)
+    if validated:
+        return members.edit_member(request, group_slug, username, Network, form_class, template_name, detail_template_name)
+    else:
+        request.user.message_set.create(message='User is already an exec of another chapter!')
+        return HttpResponseRedirect(reverse('network_members_index', kwargs={'group_slug': group_slug}))
 
 @login_required    
 def delete_member(request, group_slug, username):
@@ -228,33 +236,17 @@ def update_magic_lists(request, group_slug, username, form_class):
                 users = form.cleaned_data['user']
                 
             for other_user in users:
-                # build list of Natl Rep objects that user should be in
-                currentlists = NationalRepList.objects.filter(member_users=other_user)
-                newlists = []
-                
-                if form.cleaned_data['is_admin'] == True:
-                    selected_lists = form.cleaned_data['replists']
-                else:
-                    selected_lists = []
-                    #FIXME: allow people to be de-admin'ed without losing
-                    # list settings...
-
-                for listslug in selected_lists:
-                    list = get_object_or_404(NationalRepList, slug=listslug)
-                    newlists.append(list)
-                    
-                    # add to list if not already on it
-                    if list not in currentlists:
-                        obj = list.add_member(other_user)
-                    
-                # get current lists, remove from rep lists as needed
-                for list in currentlists:
-                    if list not in newlists:
-                        list.remove_member(other_user)
-                        
-                # and do exec lists too
+                # exec lists too
                 if form.cleaned_data['is_admin'] == True:
                     if group.is_chapter():
+                        # important work-around: if they're already on a different
+                        # exec list, do NOT let them be added again!
+                        otherexec = ExecList.objects.filter(parent__isnull=False,
+                                                            member_users=other_user)
+                        if otherexec.count() > 0:
+                            return False
+                        
+                        
                         # TODO: don't hard-code slug?
                         try:    # all execs
                             allexec = ExecList.objects.get(slug='exec')
@@ -289,3 +281,28 @@ def update_magic_lists(request, group_slug, username, form_class):
                     for list in execlists:
                         list.remove_member(other_user)
 
+                # build list of Natl Rep objects that user should be in
+                currentlists = NationalRepList.objects.filter(member_users=other_user)
+                newlists = []
+                
+                if form.cleaned_data['is_admin'] == True:
+                    selected_lists = form.cleaned_data['replists']
+                else:
+                    selected_lists = []
+                    #FIXME: allow people to be de-admin'ed without losing
+                    # list settings...
+
+                for listslug in selected_lists:
+                    list = get_object_or_404(NationalRepList, slug=listslug)
+                    newlists.append(list)
+                    
+                    # add to list if not already on it
+                    if list not in currentlists:
+                        obj = list.add_member(other_user)
+                    
+                # get current lists, remove from rep lists as needed
+                for list in currentlists:
+                    if list not in newlists:
+                        list.remove_member(other_user)
+                        
+    return True
