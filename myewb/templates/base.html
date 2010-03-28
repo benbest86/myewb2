@@ -52,9 +52,9 @@
 			<div id="content">
 	
             {% for announcement in site_wide_announcements %}
-                <div id="site_wide_announcements" class="roundtop">
+                <div id="site_wide_announcements_{{announcement.pk}}" class="site_wide_announcements roundtop">
                     <div class="message-header">Announcement</div>
-                    <div class="message-close"><a href="{% url announcement_hide announcement.pk %}?next={{ request.path }}">x</a></div>
+                    <div class="message-close"><a href="#" onclick="$.get('{% url announcement_hide announcement.pk %}'); $('#site_wide_announcements_{{announcement.pk}}').slideUp(); return false;">x</a></div>
                     <div class="message">
                         <a href="{{ announcement.get_absolute_url }}">{{ announcement }}</a>
                     </div>

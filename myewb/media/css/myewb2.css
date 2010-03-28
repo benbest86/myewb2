@@ -326,7 +326,7 @@ div#messages {
     background: green;
 }
 
-div#site_wide_announcements {
+div.site_wide_announcements {
     background: blue;
 }
 
