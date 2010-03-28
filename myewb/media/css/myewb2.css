@@ -330,6 +330,10 @@ div.site_wide_announcements {
     background: blue;
 }
 
+div.site_wide_announcements p {
+	margin: 0;
+}
+
 div.message-header {
     position: relative;
     top: -1.6em;

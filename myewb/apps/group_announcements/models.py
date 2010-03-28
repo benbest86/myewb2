@@ -9,6 +9,7 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from base_groups.models import BaseGroup, GroupMember
+from lxml.html.clean import clean_html, autolink_html, Cleaner
 
 try:
     set
@@ -73,6 +74,14 @@ class Announcement(models.Model):
     def get_absolute_url(self):
         return ("announcement_detail", [str(self.pk)])
     get_absolute_url = models.permalink(get_absolute_url)
+    
+    def save(self, force_insert=False, force_update=False):
+        # validate HTML content
+        # Additional options at http://codespeak.net/lxml/lxmlhtml.html#cleaning-up-html
+        self.content = clean_html(self.content)
+        #self.content = autolink_html(self.content)
+        
+        super(Announcement, self).save(force_insert, force_update)
     
     def __unicode__(self):
         return self.title
