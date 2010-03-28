@@ -51,8 +51,8 @@
     <table id="membersList" width="100%">
         <tr>
             <th>{% trans "Name" %}</th>
-            <th>{% trans "Admin" %}</th>
-            <th>{% trans "Admin title" %}</th>
+            <th>{% trans "Exec / Leader" %}</th>
+            <th>{% trans "Title" %}</th>
             {% if is_admin %}
                 <th>{% trans "Email" %}</th>
                 <th>{% trans "Joined" %}</th>
@@ -70,9 +70,9 @@
                 <td>{{ member.user.email }}</td>
                 <td>{{ member.joined|date }}</td>
                 {% if member.is_admin %}
-                    <td><a href="{% groupurl edit_member group username=member.user.username %}">{% trans "De-admin" %}</a></td>
+                    <td><a href="{% groupurl edit_member group username=member.user.username %}">{% trans "Remove from leaders" %}</a></td>
                 {% else %}
-                    <td><a href="{% groupurl edit_member group username=member.user.username %}">{% trans "Make admin" %}</a></td>
+                    <td><a href="{% groupurl edit_member group username=member.user.username %}">{% trans "Make leader" %}</a></td>
                 {% endif %}
             {% endif %}
 		</tr>

@@ -253,8 +253,8 @@ class BaseGroup(Group):
         return self.pending_members.all().count()
     
 class BaseGroupMember(models.Model):
-    is_admin = models.BooleanField(_('admin'), default=False)
-    admin_title = models.CharField(_('admin title'), max_length=500, null=True, blank=True)
+    is_admin = models.BooleanField(_('Exec / Leader'), default=False)
+    admin_title = models.CharField(_('Title'), max_length=500, null=True, blank=True)
     admin_order = models.IntegerField(_('admin order (smallest numbers come first)'), default=999)
     joined = models.DateTimeField(_('joined'), default=datetime.datetime.now)
     

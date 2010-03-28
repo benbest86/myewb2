@@ -39,7 +39,7 @@
         
         <p>
             {% if member.is_admin %}{% trans "Title:" %} <tt>{{ member.admin_title }}</tt><br />{% endif %}
-            {% trans "Administrator:" %} {% if member.is_admin %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}<br />
+            {% trans "Exec / Leader:" %} {% if member.is_admin %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}<br />
             {% trans "Joined:" %} {{ member.created|date }}
             <br />
             {% show_tags_for group %}
