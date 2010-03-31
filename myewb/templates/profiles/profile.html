@@ -11,7 +11,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% load profile_tags %}
 {% load group_topics_tags %}
 
-{% block head_title %}{% blocktrans %}Profile for {{ other_user }}{% endblocktrans %}{% endblock %}
+{% block head_title %}{% blocktrans with other_user.visible_name as username %}Profile for {{ username }}{% endblocktrans %}{% endblock %}
 
 {% block body %}
 	<br/>
