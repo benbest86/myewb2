@@ -115,6 +115,6 @@ def email(request, form_class=AddEmailForm, template_name="account/email.html",
         add_email_form = form_class()
     return render_to_response(template_name, {
         "add_email_form": add_email_form,
-        "user": user,
+        "other_user": user,
     }, context_instance=RequestContext(request))
 

@@ -10,9 +10,9 @@
     
     <h2>{% trans "Email Addresses" %}</h2>
     
-    {% if user.emailaddress_set.all %}
+    {% if other_user.emailaddress_set.all %}
         <table class="email_list">
-            {% for emailaddress in user.emailaddress_set.all %}
+            {% for emailaddress in other_user.emailaddress_set.all %}
                 <tr>
                     <td>{% if emailaddress.primary %}<b>{{ emailaddress.email }}</b>{% else %}{{ emailaddress.email }}{% endif %}</td>
                     {% if emailaddress.verified %}
@@ -53,7 +53,7 @@
                 </tr>
             {% endfor %}
         </table>
-    {% else %} {# no user.emailaddress_set.all #}
+    {% else %} {# no other_user.emailaddress_set.all #}
         <p><span class="warning">{% trans "None" %}</span>. {% trans "You should really add one so you can receive notifications, reset your password if you forget it, etc." %}</p>
     {% endif %}
     
