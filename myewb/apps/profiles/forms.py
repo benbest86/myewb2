@@ -27,12 +27,13 @@ from siteutils.models import Address
 class ProfileForm(forms.ModelForm):
 	"""Add/edit form for the MemberProfile class."""
 	
+	gender = forms.ChoiceField(choices=MemberProfile.GENDER_CHOICES,
+							   widget=forms.RadioSelect,
+							   required=False)
+	
 	class Meta:
 		model = MemberProfile
-		exclude = ('name', 'location', 'user', 'blogrss', 'timezone', 'language',
-			'twitter_user', 'twitter_password', 'current_login', 'last_login', 'login_count',
-			'address_updated', 'membership_expiry', 'contact_info', 'sending_groups',
-			'previous_login', 'adminovision', 'health_card')
+		fields = ('first_name', 'last_name', 'about', 'gender', 'date_of_birth')
 			
 class StudentRecordForm(forms.ModelForm):
 	"""Add/edit form for the StudentRecord class."""

@@ -80,7 +80,7 @@ class MemberProfile(Profile):
     """
     
     # This will be copied to the respective fields in the User object
-    first_name = models.CharField(_('first name(s)'), max_length=100, blank=True)
+    first_name = models.CharField(_('first name'), max_length=100, blank=True)
     preferred_first_name = models.CharField(_('preferred first name (if different)'), max_length=100, blank=True)
     last_name = models.CharField(_('last name'), max_length=100, blank=True)
 
