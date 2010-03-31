@@ -49,6 +49,36 @@ def profiles(request, template_name="profiles/profiles.html"):
         "users": users,
         'search_terms': search_terms,
     }, context_instance=RequestContext(request))
+    
+@login_required
+def profile_edit(request, form_class=ProfileForm, **kwargs):
+
+    template_name = kwargs.get("template_name", "profiles/profile_edit.html")
+
+    if request.is_ajax():
+        template_name = kwargs.get(
+            "template_name_facebox",
+            "profiles/profile_edit_facebox.html"
+        )
+
+    other_user = request.user
+    profile = request.user.get_profile()
+
+    if request.method == "POST":
+        profile_form = form_class(request.POST, instance=profile)
+        if profile_form.is_valid():
+            profile = profile_form.save(commit=False)
+            profile.user = request.user
+            profile.save()
+            return HttpResponseRedirect(reverse("profile_detail", args=[request.user.username]))
+    else:
+        profile_form = form_class(instance=profile)
+
+    return render_to_response(template_name, {
+        "profile": profile,
+        "other_user": other_user,
+        "profile_form": profile_form,
+    }, context_instance=RequestContext(request))
 
 def student_records_index(request, username, template_name='profiles/student_records_index.html'):
     if request.method == 'POST':

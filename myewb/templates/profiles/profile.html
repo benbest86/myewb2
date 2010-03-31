@@ -13,15 +13,6 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 
 {% block head_title %}{% blocktrans %}Profile for {{ other_user }}{% endblocktrans %}{% endblock %}
 
-{% block extra_head %}
-<script type="text/javascript" src="{{STATIC_URL}}js/jquery-ui.js"></script>
-<script type="text/javascript" src="{{STATIC_URL}}js/address_tabs.js"></script>
-
-{# TEMPORARY CSS - WE WANT TO STYLIZE IT BETTER #}
-<link type="text/css" href="{{STATIC_URL}}css/jquery-ui.css" rel="stylesheet" />
-
-{% endblock %}
-
 {% block body %}
 	<br/>
     <h1 style="text-align: center;">{{ other_user.visible_name }}</h1>
@@ -66,26 +57,6 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 	{% if is_me or is_friend or perms.profiles %}
 		{% if regular %}regular member, expiring on {{ other_user.get_profile.membership_expiry }}{% endif %}
 		
-		<h2>{% trans "Addresses" %}</h2>
-		<div id="addresses">
-		    <ul>
-		    {% for address in other_user.get_profile.addresses.all %}
-		        <li>
-		            <a href="{% url profile_address_detail other_user.username address.label %}">
-		                <span>{{ address.label }}</span>
-		            </a>
-		        </li>
-		    {% endfor %}
-		    {% if is_me %}
-    		    <li>
-    		        <a href="{% url profile_new_address other_user.username %}">
-    		            <span><b>+</b></span>
-    		        </a>
-    		    </li>
-		    </ul>		    
-		    {% endif %}
-		</div>
-		
 		{% comment %}
         <h2>{% trans "Contact Information" %}</h2>
 		{% if other_user.get_profile.street_address %}
@@ -110,7 +81,35 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 		{% endcomment %}
 		
 		<div style="width: 33%; float: left; text-align: center; text-align: right;">
-	        <b>{% trans "Email Addresses" %}</b>
+	        <b>{% trans "Addresses" %}</b>
+		</div>
+		<div style="margin-left: 33%; padding-left: 10px;">
+			{% for address in other_user.get_profile.addresses.all %}
+				<div>
+					<a href="#" onclick="$('#profile-address-{{address.pk}}').slideToggle(); return false;">{{ address.label }}</a> ({{address.city}})
+					<div style="display: none; padding-left: 10px;" id="profile-address-{{ address.pk}}">
+						{{ address.street}}<br/>
+						{{ address.city }}, {{ address.province }}<br/>
+						{{ address.postal_code }}<br/>
+						{{ address.country }}<br/>
+					</div>
+				</div>
+			{% endfor %}
+
+			{% if is_me %}
+			    <br/>
+	            (<a href="{% url acct_email %}">{% trans "edit addresses" %}</a>)<br/>
+	        {% else %}
+	        	{% if perms.profiles %}
+				    <br/>
+		            (<a href="{% url acct_email_user other_user.username %}">{% trans "edit addresses" %}</a>)<br/>
+	        	{% endif %}
+			{% endif %}
+		</div>
+		<br/>
+	
+		<div style="width: 33%; float: left; text-align: center; text-align: right;">
+	        <b>{% trans "Emails" %}</b>
 		</div>
 		<div style="margin-left: 33%; padding-left: 10px;">
 		    {{ user.email }}
