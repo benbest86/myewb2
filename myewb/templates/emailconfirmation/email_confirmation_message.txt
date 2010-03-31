@@ -1,0 +1,12 @@
+{% load i18n %}{% blocktrans with current_site.name as site_name and user.visible_name as username %}Hello,
+
+"{{ username }}" has tried to add this email address to his/her account at {{ site_name }}.
+
+In order to confirm this email address, go to {{ activate_url }}
+
+If you are not {{ username }}, please ignore this email and the request 
+will expire in a week.
+
+Regards,
+Engineers Without Borders Canada
+{% endblocktrans %}
