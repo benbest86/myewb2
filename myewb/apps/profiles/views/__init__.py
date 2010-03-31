@@ -26,8 +26,9 @@ from django.utils.translation import ugettext_lazy as _
 from siteutils import online_middleware
 from siteutils.helpers import get_email_user
 from siteutils.decorators import owner_required
+from siteutils.models import PhoneNumber
 from profiles.models import MemberProfile, StudentRecord, WorkRecord
-from profiles.forms import StudentRecordForm, WorkRecordForm, MembershipForm
+from profiles.forms import StudentRecordForm, WorkRecordForm, MembershipForm, PhoneNumberForm
 
 from networks.models import Network
 from networks.forms import NetworkBulkImportForm
@@ -65,19 +66,43 @@ def profile_edit(request, form_class=ProfileForm, **kwargs):
     profile = request.user.get_profile()
 
     if request.method == "POST":
-        profile_form = form_class(request.POST, instance=profile)
-        if profile_form.is_valid():
-            profile = profile_form.save(commit=False)
-            profile.user = request.user
-            profile.save()
-            return HttpResponseRedirect(reverse("profile_detail", args=[request.user.username]))
+        if request.POST.get("formtype") == "phone":
+            profile_form = form_class(instance=profile)
+            phone_form = PhoneNumberForm(request.POST)
+            
+            if phone_form.is_valid():
+                phone = phone_form.save(commit=False)
+                phone.content_object = profile
+                phone.save()
+                
+                phone_form = PhoneNumberForm()
+                
+        elif request.POST.get("formtype") == "phonedelete":
+            phone = get_object_or_404(PhoneNumber, pk=request.POST.get("phoneid"))
+            
+            if phone in profile.phone_numbers.all():
+                phone.delete()
+            else:
+                return HttpResponseForbidden()
+            
+            phone_form = PhoneNumberForm()
+            profile_form = form_class(instance=profile)
+        else:
+            profile_form = form_class(request.POST, instance=profile)
+            if profile_form.is_valid():
+                profile = profile_form.save(commit=False)
+                profile.user = request.user
+                profile.save()
+                return HttpResponseRedirect(reverse("profile_detail", args=[request.user.username]))
     else:
         profile_form = form_class(instance=profile)
+        phone_form = PhoneNumberForm()
 
     return render_to_response(template_name, {
         "profile": profile,
         "other_user": other_user,
         "profile_form": profile_form,
+        "phone_form": phone_form
     }, context_instance=RequestContext(request))
 
 def student_records_index(request, username, template_name='profiles/student_records_index.html'):

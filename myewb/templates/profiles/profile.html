@@ -81,6 +81,51 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 		{% endcomment %}
 		
 		<div style="width: 33%; float: left; text-align: center; text-align: right;">
+	        <b>{% trans "Emails" %}</b>
+		</div>
+		<div style="margin-left: 33%; padding-left: 10px;">
+		    {{ user.email }}
+			{% for address in other_user.get_profile.email_addresses %}
+				<br/>{{ address.email }}
+			{% endfor %}
+
+			{% if is_me %}
+			    <br/>
+	            (<a href="{% url acct_email %}">{% trans "edit emails" %}</a>)<br/>
+	        {% else %}
+	        	{% if perms.profiles %}
+				    <br/>
+		            (<a href="{% url acct_email_user other_user.username %}">{% trans "edit emails" %}</a>)<br/>
+	        	{% endif %}
+			{% endif %}
+		</div>
+		<br/>
+	
+		<div style="width: 33%; float: left; text-align: center; text-align: right;">
+	        <b>{% trans "Phone numbers" %}</b>
+		</div>
+		<div style="margin-left: 33%; padding-left: 10px;">
+			{% for phone in other_user.get_profile.phone_numbers.all %}
+				<div>
+					{{ phone.label }}: {{ phone.number }}
+				</div>
+			{% endfor %}
+
+			{% if is_me %}
+			    <br/>
+	            (<a href="{% url profile_edit %}#phone">{% trans "edit phone numbers" %}</a>)<br/>
+	        {% comment %}
+	        {% else %}
+	        	{% if perms.profiles %}
+				    <br/>
+		            (<a href="{% url acct_email_user other_user.username %}">{% trans "edit phone numbers" %}</a>)<br/>
+	        	{% endif %}
+	        {% endcomment %}
+			{% endif %}
+		</div>
+		<br/>
+	
+		<div style="width: 33%; float: left; text-align: center; text-align: right;">
 	        <b>{% trans "Addresses" %}</b>
 		</div>
 		<div style="margin-left: 33%; padding-left: 10px;">
@@ -98,33 +143,14 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 
 			{% if is_me %}
 			    <br/>
-	            (<a href="{% url acct_email %}">{% trans "edit addresses" %}</a>)<br/>
+	            (<a href="{% url profile_edit %}#address">{% trans "edit addresses" %}</a>)<br/>
+	        {% comment %}
 	        {% else %}
 	        	{% if perms.profiles %}
 				    <br/>
 		            (<a href="{% url acct_email_user other_user.username %}">{% trans "edit addresses" %}</a>)<br/>
 	        	{% endif %}
-			{% endif %}
-		</div>
-		<br/>
-	
-		<div style="width: 33%; float: left; text-align: center; text-align: right;">
-	        <b>{% trans "Emails" %}</b>
-		</div>
-		<div style="margin-left: 33%; padding-left: 10px;">
-		    {{ user.email }}
-			{% for address in other_user.get_profile.email_addresses %}
-				<br/>{{ address.email }}
-			{% endfor %}
-
-			{% if is_me %}
-			    <br/>
-	            (<a href="{% url acct_email %}">{% trans "edit emails" %}</a>)<br/>
-	        {% else %}
-	        	{% if perms.profiles %}
-				    <br/>
-		            (<a href="{% url acct_email_user other_user.username %}">{% trans "edit emails" %}</a>)<br/>
-	        	{% endif %}
+	        {% endcomment %}
 			{% endif %}
 		</div>
 		<br/>

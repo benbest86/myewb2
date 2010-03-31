@@ -1,6 +1,7 @@
 {% extends "profiles/base.html" %}
 
 {% load i18n %}
+{% load uni_form %}
 
 {% block head_title %}{% blocktrans %}Edit Profile{% endblocktrans %}{% endblock %}
 
@@ -19,7 +20,33 @@
     
     {% include "profiles/profile_form.html" %}
     
+    
     <br/>
+    <a name="phone"></a>
+    <h1>{% trans "Phone Numbers" %}</h1>
+    <div id="phone-numbers">
+    {% for phone in profile.phone_numbers.all %}
+    	<form method="POST" action="">
+	    	{{ phone.label }}: {{ phone.number }}
+	    	&nbsp;&nbsp;&nbsp;
+    		<input type="hidden" name="formtype" value="phonedelete"/>
+    		<input type="hidden" name="phoneid" value="{{phone.pk}}"/>
+    		<input type="submit" value="delete"/>
+    	</form>
+    	<br/>
+    {% endfor %}
+    <br/>
+    <form method="POST" action="">
+		    {{ phone_form.as_ul }}
+		    <input type="hidden" name="formtype" value="phone"/>
+		    <input type="submit" value="add"/>
+    </form>
+    
+    </div>
+    
+    
+    <br/>
+    <a name="address"></a>
 	<h1>{% trans "Addresses" %}</h1>
 	<div id="addresses">
 	    <ul>
