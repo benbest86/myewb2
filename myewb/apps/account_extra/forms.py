@@ -93,6 +93,8 @@ class EmailLoginForm(forms.Form):
         
 class EmailSignupForm(forms.Form):
 
+    firstname = forms.CharField(label=_("First name"))
+    lastname = forms.CharField(label=_("Last name"))
     email = forms.EmailField(label = _("Email"), required = True, widget = forms.TextInput())
     password1 = forms.CharField(label=_("Password"), widget=forms.PasswordInput(render_value=False))
     password2 = forms.CharField(label=_("Password (again)"), widget=forms.PasswordInput(render_value=False))
@@ -123,6 +125,8 @@ class EmailSignupForm(forms.Form):
 
     def save(self):
         # username = self.cleaned_data["username"]
+        firstname = self.cleaned_data['firstname']
+        lastname = self.cleaned_data['lastname']
         email = self.cleaned_data["email"]
         password = self.cleaned_data["password1"]
         
@@ -161,9 +165,18 @@ class EmailSignupForm(forms.Form):
                 # new_user.message_set.create(message=ugettext(u"Confirmation email sent to %(email)s") % {'email': email})
                 EmailAddress.objects.add_email(new_user, email)
 
+        profile = new_user.get_profile()
+        profile.first_name = firstname
+        profile.last_name = lastname
+        profile.save()
+        
+        new_user.first_name = firstname
+        new_user.last_name = lastname
+        
         if settings.ACCOUNT_EMAIL_VERIFICATION:
             new_user.is_active = False
-            new_user.save()
+        
+        new_user.save()
 
         return username, password # required for authenticate()
 
