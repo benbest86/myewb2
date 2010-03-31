@@ -10,6 +10,7 @@ from django.template import RequestContext
 from django.utils.translation import ugettext, ugettext_lazy as _
 
 from account.utils import get_default_redirect
+from emailconfirmation.models import EmailAddress, EmailConfirmation
 
 from account_extra.forms import EmailLoginForm, EmailSignupForm
 from account.views import login as pinaxlogin
