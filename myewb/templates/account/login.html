@@ -22,7 +22,7 @@
 
 		        {% ifsetting ACCOUNT_OPEN_SIGNUP %}
 		        {% url acct_signup as signup_url %}
-		        <input type="button" opclick="window.location='{{ signup_url }}'" value="{% trans "Create account" %}" />
+		        <input type="button" onclick="window.location='{{ signup_url }}'" value="{% trans "Create account" %}" />
 		        {% endifsetting %}
 		    </p>
 
