@@ -4,12 +4,14 @@ from django import forms
 from django.conf import settings
 from django.core.cache import cache
 from django.utils.translation import ugettext_lazy as _, ugettext
+from django.shortcuts import get_object_or_404
 
 from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 
 from emailconfirmation.models import EmailAddress
+from networks.models import Network
 from siteutils import online_middleware
 
 class EmailLoginForm(forms.Form):
@@ -98,9 +100,25 @@ class EmailSignupForm(forms.Form):
     email = forms.EmailField(label = _("Email"), required = True, widget = forms.TextInput())
     password1 = forms.CharField(label=_("Password"), widget=forms.PasswordInput(render_value=False))
     password2 = forms.CharField(label=_("Password (again)"), widget=forms.PasswordInput(render_value=False))
+    chapter = forms.ChoiceField(choices=[('none', _('none'))], required=False)
 
     confirmation_key = forms.CharField(max_length=40, required=False, widget=forms.HiddenInput())
     
+    def __init__(self, *args, **kwargs):
+        #chapterlist = kwargs.pop('chapters', None)
+        
+        chapterlist = Network.objects.filter(chapter_info__isnull=False).order_by('name')
+        for chapter in chapterlist:
+            #try:
+            #    i = self.base_fields['chapter'].choices.index((chapter.slug, chapter.chapter_info.chapter_name))
+            #except ValueError:
+            #    self.base_fields['chapter'].choices.append((chapter.slug, chapter.chapter_info.chapter_name))
+            self.base_fields['chapter'].choices.append((chapter.slug, chapter.chapter_info.chapter_name))
+        
+        self.base_fields['chapter'].initial = kwargs.pop('chapter', None)
+
+        super(EmailSignupForm, self).__init__(*args, **kwargs)
+        
     def clean_email(self):
         other_emails = EmailAddress.objects.filter(email__iexact=self.cleaned_data['email'])
         verified_emails = other_emails.filter(verified=True)
@@ -177,6 +195,10 @@ class EmailSignupForm(forms.Form):
             new_user.is_active = False
         
         new_user.save()
-
+        
+        if self.cleaned_data['chapter'] != "none":
+            chapter = get_object_or_404(Network, slug=self.cleaned_data['chapter'])
+            chapter.add_member(new_user)
+            
         return username, password # required for authenticate()
 
