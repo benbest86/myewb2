@@ -20,11 +20,10 @@ This file derived from Pinax 0.7.1 (http://pinaxproject.com/), licensed under th
     {% if user.is_authenticated %}
         <li><a href="{% url profile_detail user.username %} ">{% trans "Your Profile" %}</a></li>
         <li><a href="{% url messages_inbox %} ">{% trans "Message Inbox" %}</a></li>
+	    <li><a href="{% url profiles_index %}">{% trans "Search members" %}</a></li>
     {% else %}
         <li><a href="{% url acct_signup %}">{% trans "Sign Up" %}</a></li>
     {% endif %}
-    
-    <li><a href="{% url profiles_index %}">{% trans "Search members" %}</a></li>
     
     {% if user.is_staff %}
 	    <li><a href="{% url permissions_index %}">{% trans "Permissions" %}</a></li>

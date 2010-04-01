@@ -37,6 +37,7 @@ from creditcard.forms import PaymentForm
 from creditcard.models import Payment, Product
 from friends_app.forms import InviteFriendForm
 
+@login_required
 def profiles(request, template_name="profiles/profiles.html"):
     search_terms = request.GET.get('search', '')
     if search_terms:
