@@ -44,7 +44,7 @@ def get_address_or_404(user, label):
 
 # Not really used at the moment
 @owner_required(MemberProfile)
-def address_index(request, username):
+def address_index(request, username, object=None):
     # if request.is_ajax():
     if request.method == 'GET':
         other_user = get_object_or_404(User, username=username)
@@ -62,7 +62,7 @@ def address_index(request, username):
         return create_address(request, username)
 
 @owner_required(MemberProfile)
-def create_address(request, username):
+def create_address(request, username, object=None):
     form = AddressForm(request.POST)
     other_user = get_object_or_404(User, username=username)
     if form.is_valid() and is_label_unique_for_user(other_user, form.cleaned_data['label'], None):
@@ -95,7 +95,7 @@ def create_address(request, username):
                     )
 
 @owner_required(MemberProfile)
-def new_address(request, username):
+def new_address(request, username, object=None):
     # if request.is_ajax():
     other_user = get_object_or_404(User, username=username)
     if request.method == 'POST':
@@ -165,7 +165,7 @@ def address_detail(request, username, label):
                         )
 
 @owner_required(MemberProfile)
-def edit_address(request, username, label):
+def edit_address(request, username, label, object=None):
     # if request.is_ajax():
     if request.method == 'POST':
         return address_detail(request, username, label)
@@ -182,7 +182,7 @@ def edit_address(request, username, label):
             )
 
 @owner_required(MemberProfile)
-def delete_address(request, username, label):
+def delete_address(request, username, label, object=None):
     other_user = get_object_or_404(User, username=username)
     address = get_address_or_404(other_user, label)
     if request.method == 'POST':
