@@ -42,9 +42,10 @@ def profiles(request, template_name="profiles/profiles.html"):
     if search_terms:
         users = User.objects.filter(profile__name__icontains=search_terms) | \
                         User.objects.filter(username__icontains=search_terms)
+        users = users.filter(memberprofile__grandfathered=False)
+        users = users.order_by("profile__name")
     else:
-        users = User.objects.all()
-    users = users.order_by("profile__name")
+        users = None
     
     return render_to_response(template_name, {
         "users": users,
