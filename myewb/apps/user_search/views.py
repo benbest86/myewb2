@@ -27,6 +27,7 @@ def user_search(request):
         users = User.objects.filter(first_name__icontains=first_name, last_name__icontains=last_name)
         if not chapter == 'none':
             users = users.filter(member_groups__group__slug=chapter)
+        users = users.filter(memberprofile__grandfathered=False)
     else:
         users = None
         
