@@ -39,7 +39,7 @@ class UserSearchForm(forms.Form):
 
         super(UserSearchForm, self).__init__(*args, **kwargs)
         
-class UserSelectionInput(forms.MultipleHiddenInput):
+class MultipleUserSelectionInput(forms.MultipleHiddenInput):
     """
     Used to select one or more users, which are shown as labels
     corresponding to the users' real names, but stored as hidden
@@ -72,14 +72,14 @@ class UserSelectionInput(forms.MultipleHiddenInput):
         c = Context({'users': users, 'field_name': name})
         return mark_safe(t.render(c))
         
-class UserField(forms.Field):
+class MultipleUserField(forms.Field):
  	# most of this is from messages.fields.CommaSeparatedUserField.clean
-    widget = UserSelectionInput
+    widget = MultipleUserSelectionInput
 
     def __init__(self, *args, **kwargs):
         recipient_filter = kwargs.pop('recipient_filter', None)
         self._recipient_filter = recipient_filter
-        super(UserField, self).__init__(*args, **kwargs)
+        super(MultipleUserField, self).__init__(*args, **kwargs)
 
     def clean(self, value):
     	if not value:
@@ -115,6 +115,6 @@ class UserField(forms.Field):
         return users
         
 class SampleUserSearchForm(forms.Form):
-    to = UserField(required=False)
-    cc = UserField(required=False)
-    bcc = UserField(required=False)
+    to = MultipleUserField(required=False)
+    cc = MultipleUserField(required=False)
+    bcc = MultipleUserField(required=False)
