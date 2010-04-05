@@ -8,5 +8,8 @@ Copyright 2010 Engineers Without Borders Canada
 
 import django.dispatch
 
+signup = django.dispatch.Signal(providing_args=["user"])
+listsignup = django.dispatch.Signal(providing_args=["user"])
 signin = django.dispatch.Signal(providing_args=["user"])
 deletion = django.dispatch.Signal(providing_args=["user"])
+listupgrade = django.dispatch.Signal(providing_args=["user"])

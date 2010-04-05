@@ -8,7 +8,7 @@ Copyright 2010 Engineers Without Borders (Canada) Organisation and/or volunteer 
 """
 
 from django.db.models.signals import post_save, post_delete
-from account_extra.signals import signin, deletion
+from account_extra.signals import signup, listsignup, signin, deletion, listupgrade
 from profiles.signals import regularmember, renewal
 
 from stats.models import record
@@ -19,13 +19,13 @@ from events.models import Event
 from threadedcomments.models import ThreadedComment
 from whiteboard.models import Whiteboard
 
-def record_signup(sender, instance, created, **kwargs):
-    if created:
-        if instance.is_bulk:
-            record("mailinglistsignups")
-        else:
-            record("signups")
-post_save.connect(record_signup, sender=User)
+def record_signup(sender, user, **kwargs):
+    record("signups")
+signup.connect(record_signup)
+
+def record_listsignup(sender, user, **kwargs):
+    record("mailinglistsignups")
+listsignup.connect(record_listsignup)
 
 def record_signin(sender, user, **kwargs):
     record("signins")
@@ -66,7 +66,6 @@ def record_renewal(sender, user, **kwargs):
     record("renewals")
 renewal.connect(record_renewal)
 
-
-"""
-    mailinglistupgrades = models.IntegerField(default=0)
-"""
+def record_listupgrade(sender, user, **kwargs):
+    record("mailinglistupgrades")
+listupgrade.connect(record_listupgrade)

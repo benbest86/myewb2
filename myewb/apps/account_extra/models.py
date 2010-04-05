@@ -29,6 +29,7 @@ def create_bulk_user_method(self, *args, **kwargs):
     new_user = self.create_user(*args, **kwargs)
     new_user.is_bulk = True
     new_user.save()
+    signals.listsignup.send(sender=new_user, user=new_user)
     return new_user
 ExtraUserManager.create_bulk_user = create_bulk_user_method
 

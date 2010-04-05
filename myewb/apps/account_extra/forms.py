@@ -181,7 +181,13 @@ class EmailSignupForm(forms.Form):
                     new_user.message_set.create(message=ugettext(u"Confirmation email sent to %(email)s") % {'email': email})
                     EmailAddress.objects.add_email(new_user, email)
         else:
-            new_user = User.objects.create_user(username, "", password)      
+            try:
+                new_user = User.objects.get(email=email, is_bulk=True)
+                signals.listupgrade.send(sender=new_user, user=new_user)
+            except User.DoesNotExist:
+                new_user = User.objects.create_user(username, "", password)
+                signals.signup.send(sender=new_user, user=new_user)      
+            
             if email:
                 # new_user.message_set.create(message=ugettext(u"Confirmation email sent to %(email)s") % {'email': email})
                 EmailAddress.objects.add_email(new_user, email)
