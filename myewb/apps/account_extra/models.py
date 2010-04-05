@@ -4,6 +4,7 @@ from django.db.models.signals import post_save
 from emailconfirmation.models import EmailAddress
 from manager_extras.models import ExtraUserManager
 from avatar.models import Avatar
+from account_extra import signals
 
 def clean_up_email_addresses(sender, instance, created, **kwargs):
     """
@@ -53,5 +54,6 @@ def softdelete(self, *args, **kwargs):
     #self.last_name = "user"
     self.is_active = False
     self.save()
+    signals.deletion.send(sender=self, user=self)
     
 User.softdelete = softdelete

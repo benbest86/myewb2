@@ -10,6 +10,7 @@ from django.contrib.auth import authenticate, login
 from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 
+from account_extra import signals
 from emailconfirmation.models import EmailAddress
 from networks.models import Network
 from siteutils import online_middleware
@@ -90,6 +91,8 @@ class EmailLoginForm(forms.Form):
                 request.session.set_expiry(60 * 60 * 24 * 7 * 3)
             else:
                 request.session.set_expiry(0)
+                
+            signals.signin.send(sender=self.user, user=self.user)
             return True
         return False
         

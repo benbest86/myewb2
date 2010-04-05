@@ -554,7 +554,7 @@ def pay_membership(request, username):
     elif request.user.has_module_perms("profiles"):
         other_user.get_profile().pay_membership()
         message = loader.get_template("profiles/member_upgraded.html")
-        c = Context({'user': other_user})
+        c = Context({'user': other_user.visible_name()})
         request.user.message_set.create(message=message.render(c))
         return HttpResponseRedirect(reverse('profile_detail', kwargs={'username': username }))
     
@@ -610,7 +610,7 @@ def pay_membership2(request, username):
     elif request.user.has_module_perms("profiles"):
         other_user.get_profile().pay_membership()
         message = loader.get_template("profiles/member_upgraded.html")
-        c = Context({'user': other_user})
+        c = Context({'user': other_user.visible_name()})
         request.user.message_set.create(message=message.render(c))
         return HttpResponseRedirect(reverse('profile_detail', kwargs={'username': username }))
     

@@ -8,6 +8,8 @@ Copyright 2010 Engineers Without Borders (Canada) Organisation and/or volunteer 
 """
 
 from django.db.models.signals import post_save, post_delete
+from account_extra.signals import signin, deletion
+from profiles.signals import regularmember, renewal
 
 from stats.models import record
 
@@ -15,7 +17,7 @@ from django.contrib.auth.models import User
 from group_topics.models import GroupTopic
 from events.models import Event
 from threadedcomments.models import ThreadedComment
-from whiteboards.models import Whiteboard
+from whiteboard.models import Whiteboard
 
 def record_signup(sender, instance, created, **kwargs):
     if created:
@@ -27,6 +29,7 @@ post_save.connect(record_signup, sender=User)
 
 def record_signin(sender, user, **kwargs):
     record("signins")
+signin.connect(record_signin)
 
 def record_post(sender, instance, created, **kwargs):
     if created:
@@ -47,15 +50,23 @@ def record_whiteboard(sender, instance, created, **kwargs):
     record("whiteboardEdits")
 post_save.connect(record_post, sender=Whiteboard)
 
-def record_deletion(sender, instance, **kwargs):
+def record_regupgrade(sender, user, **kwargs):
+    record("regupgrades")
+regularmember.connect(record_regupgrade)
+
+#def record_regdowngrade(sender, user, **kwargs):
+#    record("regdowngrades")
+#downgrade.connect(record_regdowngrade)
+
+def record_deletion(sender, user, **kwargs):
     record("deletions")
+deletion.connect(record_deletion)
+
+def record_renewal(sender, user, **kwargs):
+    record("renewals")
+renewal.connect(record_renewal)
+
 
 """
-    signins = models.IntegerField(default=0)
-    eventMailings = models.IntegerField(default=0)
-    regupgrades = models.IntegerField(default=0)
-    regdowngrades = models.IntegerField(default=0)
-    deletions = models.IntegerField(default=0)
-    renewals = models.IntegerField(default=0)
     mailinglistupgrades = models.IntegerField(default=0)
 """

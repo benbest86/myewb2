@@ -23,6 +23,7 @@ from emailconfirmation.models import EmailAddress
 
 from pinax.apps.profiles.models import Profile, create_profile
 
+from profiles import signals
 from networks import emailforwards
 from networks.models import Network
 from datetime import date, datetime
@@ -207,6 +208,9 @@ class MemberProfile(Profile):
     def pay_membership(self):
         if self.membership_expiry == None or self.membership_expiry < date.today():
             self.membership_expiry = date.today()
+            signals.regularmember.send(sender=self, user=self.user)
+        else:
+            signals.renewal.send(sender=self, user=self.user)
             
         self.membership_expiry = date(self.membership_expiry.year + 1,
                                       self.membership_expiry.month,
