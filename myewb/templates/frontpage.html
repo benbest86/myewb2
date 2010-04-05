@@ -34,7 +34,19 @@
         <div class="toolbarheader bkgd">{% trans "Latest Activity" %}</div>
         <div class="toolbarcontent">
         	Since you last signed in {{ user.get_profile.previous_login|timesince}} ago:<br/><br/>
-			<a href="{% url topic_since_login %}">{{posts_since_login}} new posts</a><br/>
+        	
+        	{% if posts_since_login %}
+				<a href="{% url topic_since_login %}">
+				{% ifequal posts_since_login 1 %}
+					1 new post
+				{% else %}
+					{{posts_since_login}} new posts
+				{% endifequal %}
+				</a>
+			{% else %}
+				no new posts
+			{% endif %}
+			<br/>
 			
 
             {% if can_adminovision %}
