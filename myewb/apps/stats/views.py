@@ -24,9 +24,8 @@ from stats.models import DailyStats
 def main_dashboard(request):
     
     today, created = DailyStats.objects.get_or_create(day=date.today())
-    
-    #twoweeks = date.today() - timedelta(days=14)
-    #averageusage = DailyStats.objects.filter(day__gt=twoweeks)
+
+    # ---- Daily usage ----
     averageusage = DailyStats.objects.all()
     max_signins = 0
     days = []
@@ -34,6 +33,10 @@ def main_dashboard(request):
     posts = []
     replies = []
     whiteboards = []
+    signups = []
+    listsignups = []
+    listupgrades = []
+    deletions = []
     for s in averageusage:
         if s.signins > max_signins:             # hack until django 1.1 and aggregate queries
             max_signins = s.signins
@@ -42,27 +45,54 @@ def main_dashboard(request):
         posts.append(s.posts)
         replies.append(s.replies)
         whiteboards.append(s.whiteboardEdits)
+        signups.append(s.signups)
+        listsignups.append(s.mailinglistsignups)
+        listupgrades.append(s.mailinglistupgrades)
+        deletions.append(s.deletions)
         
-    chart = SimpleLineChart(600, 450, y_range=(0, max_signins))
+    dailyUsageChart = SimpleLineChart(600, 450, y_range=(0, max_signins))
     #chart.add_data(avgsignins)
-    chart.add_data(posts)
-    chart.add_data(replies)
-    chart.add_data(signins)
-    chart.add_data(whiteboards)
+    dailyUsageChart.add_data(posts)
+    dailyUsageChart.add_data(replies)
+    dailyUsageChart.add_data(signins)
+    dailyUsageChart.add_data(whiteboards)
 
-    chart.set_colours(['ff0000', 'ffff00', '00ff00', '0000ff'])
-    chart.set_legend(['posts', 'replies', 'signins', 'whiteboards'])
-    chart.set_legend_position('b')
+    dailyUsageChart.set_colours(['ff0000', 'ffff00', '00ff00', '0000ff'])
+    dailyUsageChart.set_legend(['posts', 'replies', 'signins', 'whiteboards'])
+    dailyUsageChart.set_legend_position('b')
 
     xaxis = []
-    for i in range(0, len(days), len(days)/1):    # that last number should be 8
+    for i in range(0, len(days), 1):    # that last arg should be "len(days)/8"
         xaxis.append(days[i])
     yaxis = range(0, max_signins + 1, 2)    # that last number should be 25 or 50.  but for testing...
     yaxis[0] = ''
-    chart.set_axis_labels(Axis.LEFT, yaxis)
-    chart.set_axis_labels(Axis.BOTTOM, days)
+    dailyUsageChart.set_axis_labels(Axis.LEFT, yaxis)
+    dailyUsageChart.set_axis_labels(Axis.BOTTOM, xaxis)
         
-    dailyUsage = chart.get_url()
+    dailyUsage = dailyUsageChart.get_url()
+    
+    # ---- Account changes ----
+    accountChangesChart = SimpleLineChart(600, 450, y_range=(0, 25))
+    accountChangesChart.add_data(signups)
+    accountChangesChart.add_data(listsignups)
+    accountChangesChart.add_data(listupgrades)
+    accountChangesChart.add_data(deletions)
+
+    accountChangesChart.set_colours(['ff0000', 'ffff00', '00ff00', '0000ff'])
+    accountChangesChart.set_legend(['account signups', 'email signups', 'email upgrades', 'deletions'])
+    accountChangesChart.set_legend_position('b')
+
+    xaxis = []
+    for i in range(0, len(days), 1):    # that last arg should be "len(days)/8"
+        xaxis.append(days[i])
+    yaxis = range(0, 25, 2)    # that last number should be 25 or 50.  but for testing...
+    yaxis[0] = ''
+    accountChangesChart.set_axis_labels(Axis.LEFT, yaxis)
+    accountChangesChart.set_axis_labels(Axis.BOTTOM, xaxis)
+        
+    accountChanges = accountChangesChart.get_url()
+    
+
     
     return render_to_response("stats/dashboard.html",
                               {"signins": today.signins,
@@ -75,7 +105,8 @@ def main_dashboard(request):
                                "regupgrades": today.regupgrades,
                                "regdowngrades": today.regdowngrades,
                                "renewals": today.renewals,
-                               "dailyUsage": dailyUsage
+                               "dailyUsage": dailyUsage,
+                               "accountChanges": accountChanges
                               },
                               context_instance=RequestContext(request))
     
