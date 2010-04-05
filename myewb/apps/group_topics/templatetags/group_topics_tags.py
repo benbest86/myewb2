@@ -59,3 +59,15 @@ def show_topic_with_user(context, topic):
         "user": context.get("user")
     }
 register.inclusion_tag("topics/topic_item.html", takes_context=True)(show_topic_with_user)
+
+@register.simple_tag
+def featured_posts_threshold():
+    """
+    Returns the score needed to get onto the main "featured posts" list.
+    (can we do some caching to make this call less expensive?)
+    """
+    try:
+        return GroupTopic.objects.featured()[10].score
+    except IndexError:
+        return 0
+    

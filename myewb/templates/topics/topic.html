@@ -111,15 +111,16 @@
     				</span>
 				{% endif %}
 				
-				{% if perms.posts %}
+				{% if perms.group_topics %}
 					<p>
-						Featured posts score: {{topic.score}}
-						(current threshold: unknown)
+						Featured posts score: <span id="featured-posts-score">{{topic.score}}</span>
+						(current threshold: {% featured_posts_threshold %})
 						<br/>
-						<form action="" method="post">
+						<form action="" method="post" id="score_modifier_form">
 							modifier:
-							<input type="text" name="modifier" value="{{topic.score_modifier}}" size="3"/>%
-							<input type="button" value="update"/> 
+							<input type="text" name="modifier" value="{{topic.score_modifier}}" id="score_modifier" size="3"/>%
+							<input type="submit" value="update"/>
+							<span id="score_modifier_status"></span>
 						</form>
 						
 					</p>
@@ -176,6 +177,27 @@
 			$('#remove_from_watchlist').click(function() {
 				$('#toggle_watchlist_container').html("removing...");
 				$('#toggle_watchlist_container').load('{% url topic_watchlist_remove user.pk topic.pk %}');
+				return false;
+			});
+		});
+	</script>
+	{% endif %}
+	
+	{% if perms.group_topics %}
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$('form#score_modifier_form').submit(function() {
+				var new_modifier = $('#score_modifier').val();
+				$('#score_modifier_status').html("updating...");
+				$('#score_modifier_status').load("{% url topic_update_modifier topic.pk %}",
+						                           {value: new_modifier},
+						                           function(response, status, xhr) {
+							                           if (!isNaN(parseInt(response)))
+							                           {
+							                        	   $('#featured-posts-score').html(response);
+							                        	   $('#score_modifier_status').html("done");
+							                           }
+						                           });
 				return false;
 			});
 		});

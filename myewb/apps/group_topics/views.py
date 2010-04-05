@@ -382,4 +382,23 @@ def remove_from_watchlist(request, user_id, topic_id):
         return HttpResponse("removed")
     else:
         return HttpResponse("error! =(")
-    
+
+def update_modifier(request, topic_id):
+    """
+    Updates the "featured post" score modifier - admins can use this to 
+    bump specific posts...
+    """
+    if request.user.has_module_perms("group_topics") and request.method == 'POST':
+        value = request.POST.get("value", "")
+        
+        try:
+            modifier = int(value)
+        except:
+            return HttpResponse("invalid number")
+            
+        topic = get_object_or_404(GroupTopic, pk=topic_id)
+        topic.update_modifier(modifier)
+            
+        return HttpResponse(topic.score)
+    else:
+        return HttpResponse("denied")
