@@ -33,7 +33,9 @@
     {% if user.is_authenticated %}
         <div class="toolbarheader bkgd">{% trans "Latest Activity" %}</div>
         <div class="toolbarcontent">
-            woot
+        	Since you last signed in {{ user.get_profile.previous_login|timesince}} ago:<br/><br/>
+			{{posts_since_login}} new posts<br/>
+			
 
             {% if can_adminovision %}
                 <p style="margin-bottom: 0; text-align: right;">

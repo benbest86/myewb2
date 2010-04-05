@@ -87,6 +87,16 @@ class GroupTopicManager(models.Manager):
             qs = self.visible(user)
         return qs.order_by('-score')
     
+    def since(self, date, qs=None, user=None):
+        """
+        Returns a list of posts since the given date.  If passed the 
+        optional qs parameter, it will filter that queryset instead of creating 
+        a new one.
+        """
+        if qs == None:
+            qs = self.visible(user)
+        return qs.filter(created__gt=date)
+    
 class GroupTopic(Topic):
     """
     a discussion topic for a BaseGroup.

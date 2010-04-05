@@ -128,6 +128,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "friends_app.context_processors.invitations",
     "context_processors.combined_inbox_count",
     "siteutils.online_middleware.context",
+    "group_topics.context_processors.newposts",
 )
 
 COMBINED_INBOX_COUNT_SOURCES = (
