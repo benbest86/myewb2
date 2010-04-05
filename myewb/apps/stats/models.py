@@ -9,6 +9,8 @@ Copyright 2010 Engineers Without Borders (Canada) Organisation and/or volunteer 
 from datetime import date
 from exceptions import ValueError
 from django.db import models
+from django.contrib.auth.models import User
+from profiles.models import MemberProfile
 
 class DailyStats(models.Model):
     day = models.DateField(db_index=True)
@@ -25,11 +27,17 @@ class DailyStats(models.Model):
     deletions = models.IntegerField(default=0)
     renewals = models.IntegerField(default=0)
     mailinglistupgrades = models.IntegerField(default=0)
+    users = models.IntegerField(default=0)
+    regularmembers = models.IntegerField(default=0)
+    associatemembers = models.IntegerField(default=0)
     
 def record(action):
     stats, created = DailyStats.objects.get_or_create(day=date.today())
     if created:
         stats.day = date.today()
+        stats.users = User.objects.filter(is_active=True).count()
+        stats.regularmembers = MemberProfile.objects.filter(membership_expiry__gt=date.today()).count()
+        stats.associatemembers = User.objects.filter(is_active=True, is_bulk=False).count - stats.regularmembers
     
     # so awesome.
     # http://yuji.wordpress.com/2008/05/14/django-list-all-fields-in-an-object/
@@ -43,3 +51,5 @@ def record(action):
         raise ValueError()
         
     stats.save()
+    
+from stats.listeners import *
