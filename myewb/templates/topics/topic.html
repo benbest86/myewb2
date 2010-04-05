@@ -110,6 +110,22 @@
 	    			{% endif %}
     				</span>
 				{% endif %}
+				
+				{% if perms.posts %}
+					<p>
+						Featured posts score: {{topic.score}}
+						(current threshold: unknown)
+						<br/>
+						<form action="" method="post">
+							modifier:
+							<input type="text" name="modifier" value="{{topic.score_modifier}}" size="3"/>%
+							<input type="button" value="update"/> 
+						</form>
+						
+					</p>
+				{% endif %}
+				<br/>
+				
 			</td>
     		</tr>
 

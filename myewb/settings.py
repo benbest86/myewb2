@@ -314,6 +314,10 @@ HAYSTACK_WHOOSH_PATH = os.path.join(PROJECT_ROOT, "myewb_index")
 
 REALTIME_SEARCH = True
 
+# scores for featured posts list
+FEATURED_REPLY_SCORE = 20
+FEATURED_VIEW_SCORE = 1
+
 # local_settings.py can be used to override environment-specific settings
 # like database and email that differ between development and production.
 try:

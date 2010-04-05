@@ -6,6 +6,8 @@ Copyright 2010 Engineers Without Borders Canada
 @author: Francis Kung
 """
 
+import settings
+
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
 from django.db.models.signals import post_save
@@ -52,3 +54,11 @@ def send_to_watchlist(sender, instance, **kwargs):
             msg.send(fail_silently=False)
      
 post_save.connect(send_to_watchlist, sender=ThreadedComment, dispatch_uid='sendreplytowatchlist')
+
+def update_scores(sender, instance, **kwargs):
+    """
+    Updates the parent topic's score for the featured posts list
+    """
+    topic = instance.content_object
+    topic.update_score(settings.FEATURED_REPLY_SCORE)
+post_save.connect(update_scores, sender=ThreadedComment, dispatch_uid='updatetopicreplyscore')

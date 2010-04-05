@@ -9,6 +9,8 @@ Last modified: 2009-12-02
 @author: Joshua Gorner, Francis Kung
 """
 
+import settings
+
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.utils.translation import ugettext as _
 from django.utils.html import escape
@@ -66,12 +68,17 @@ def topic(request, topic_id, group_slug=None, edit=False, template_name="topics/
         wb.save()
         topic.whiteboard = wb
         topic.save()
+    
+    # update "featured posts" score
+    topic.update_score(settings.FEATURED_VIEW_SCORE)
         
+    # find membership status
     member = False
     if topic.group and topic.group.user_is_member(request.user):
         member = True
         
     grpadmin = topic.group.user_is_admin(request.user)
+    
 
     return render_to_response(template_name, {
         "topic": topic,
@@ -80,7 +87,11 @@ def topic(request, topic_id, group_slug=None, edit=False, template_name="topics/
         "grpadmin": grpadmin,
     }, context_instance=RequestContext(request))
 
-def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_class=AttachmentForm, template_name="topics/topics.html", bridge=None):
+# if group_slug=None will return all visible posts; otherwise will restrict by group
+# if featured=True will sort by score; otherwise will sort by date
+def topics(request, group_slug=None, form_class=GroupTopicForm,
+           attach_form_class=AttachmentForm, template_name="topics/topics.html",
+           bridge=None, featured=False):
     
     is_member = False
     group = None
@@ -173,7 +184,10 @@ def topics(request, group_slug=None, form_class=GroupTopicForm, attach_form_clas
         # also shows posts from public groups...
         # for guests, show posts from public groups only
         topics = GroupTopic.objects.visible(user=request.user)
-
+        
+    if featured:
+        topics = GroupTopic.objects.featured(topics)
+        
     if request.user.is_authenticated():
         can_adminovision = user_can_adminovision(request.user)
         can_execovision = user_can_execovision(request.user)

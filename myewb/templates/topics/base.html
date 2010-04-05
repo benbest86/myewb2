@@ -18,7 +18,7 @@
 {% if user.is_authenticated %}
 	<li><a href="{% url topic_watchlists %}">Watchlist</a></li>
 {% endif %}
-{# <li><a href="#">Hot Posts</a></li> #}
+<li><a href="{% url topic_featured %}">Featured Posts</a></li>
 
 {% if user.is_staff %}
 	<li><a href="{% url announcement_home %}">{% trans "Announcements" %}</a></li>

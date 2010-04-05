@@ -77,6 +77,16 @@ class GroupTopicManager(models.Manager):
             qs = self.get_query_set()
         return qs.filter(watchlists=watchlist)
     
+    def featured(self, qs=None, user=None):
+        """
+        Returns a list of featured posts, based on post scores.  If passed the 
+        optional qs parameter, it will filter that queryset instead of creating 
+        a new one.
+        """
+        if qs == None:
+            qs = self.visible(user)
+        return qs.order_by('-score')
+    
 class GroupTopic(Topic):
     """
     a discussion topic for a BaseGroup.
@@ -85,6 +95,11 @@ class GroupTopic(Topic):
     parent_group = models.ForeignKey(BaseGroup, related_name="topics", verbose_name=_('parent'))
     send_as_email = models.BooleanField(_('send as email'), default=False)
     whiteboard = models.ForeignKey(Whiteboard, related_name="topic", verbose_name=_('whiteboard'), null=True)
+    
+    # possibly split these out into a different table so we can optimize it?
+    # (would we lose the benefits due to the join though?)
+    score = models.IntegerField(editable=False, default=0, db_index=True)
+    score_modifier = models.IntegerField(_("score modifier"), default=100)
     
     objects = GroupTopicManager()
     
@@ -172,6 +187,16 @@ class GroupTopic(Topic):
     
     def intro_has_more(self):
         return (len(self.body) >= 600)
+    
+    def update_score(self, amount):
+        self.score += int(amount * (self.score_modifier / float(100)))
+        self.save()
+
+    def update_modifier(self, new_modifier):
+        difference = float(new_modifier) / float(self.score_modifier)
+        self.score = int(self.score * difference)
+        self.score_modifier = new_modifier
+        self.save()
 
     class Meta:
         ordering = ('-modified', )
