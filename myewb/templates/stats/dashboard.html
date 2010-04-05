@@ -1,0 +1,95 @@
+{% extends "topics/base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Main Dashboard" %}{% endblock %}
+
+{% block body %}
+
+<h1>Main Dashboard</h1>
+
+<h2>Stats Today (so far):</h2>
+<table border="0">
+	<tr>
+		<td style="text-align: right;">
+			<strong>Signins:</strong>
+		</td>
+		<td>
+			{{ signins }}
+		</td>
+	</tr>
+	<tr>
+		<td style="text-align: right;">
+			<strong>Posts:</strong>
+		</td>
+		<td>
+			{{ posts }}
+		</td>
+	</tr>
+	<tr>
+		<td style="text-align: right;">
+			<strong>Replies:</strong>
+		</td>
+		<td>
+			{{ replies }}
+		</td>
+	</tr>
+	<tr>
+		<td style="text-align: right;">
+			<strong>Signups:</strong>
+		</td>
+		<td>
+			{{ signups }}
+		</td>
+	</tr>
+	<tr>
+		<td style="text-align: right;">
+			<strong>List signups:</strong>
+		</td>
+		<td>
+			{{ listsignups }}
+		</td>
+	</tr>
+	<tr>
+		<td style="text-align: right;">
+			<strong>List upgrades:</strong>
+		</td>
+		<td>
+			{{ listupgrades }}
+		</td>
+	</tr>
+	<tr>
+		<td style="text-align: right;">
+			<strong>Deletions:</strong>
+		</td>
+		<td>
+			{{ deletions }}
+		</td>
+	</tr>
+	<tr>
+		<td style="text-align: right;">
+			<strong>Upgrades:</strong>
+		</td>
+		<td>
+			{{ regupgrades }}
+		</td>
+	</tr>
+	<tr>
+		<td style="text-align: right;">
+			<strong>Downgrades:</strong>
+		</td>
+		<td>
+			{{ regdowngrades }}
+		</td>
+	</tr>
+	<tr>
+		<td style="text-align: right;">
+			<strong>Renewals:</strong>
+		</td>
+		<td>
+			{{ renewals }}
+		</td>
+	</tr>
+</table>
+
+{% endblock %}

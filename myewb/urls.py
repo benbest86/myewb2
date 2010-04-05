@@ -68,6 +68,7 @@ urlpatterns = patterns('',
     (r'^usersearch/', include('user_search.urls')),
     (r'^permissions/', include('permissions.urls')),
     url(r'^search/', include('search.urls')),
+    (r'^stats/', include('stats.urls')),
     
     url(r'^unsubscribe/$', 'networks.views.unsubscribe', name='network_unsubscribe',),
     

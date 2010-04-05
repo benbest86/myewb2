@@ -22,6 +22,7 @@
 
 {% if user.is_staff %}
 	<li><a href="{% url announcement_home %}">{% trans "Announcements" %}</a></li>
+	<li><a href="{% url stats_dashboard %}">{% trans "Dashboard" %}</a></li>
 {% endif %}
 
 <li><a href="{% url about %}">About</a></li>
