@@ -29,5 +29,6 @@ urlpatterns = patterns('',
     url(r'^list/(?P<user_id>\d+)/remove/(?P<topic_id>\d+)/$', 'group_topics.views.remove_from_watchlist', name="topic_watchlist_remove"),
     url(r'^featured/$', 'group_topics.views.topics', {'template_name': 'frontpage.html', 'mode': 'featured'}, name="topic_featured"),
     url(r'^(?P<topic_id>\d+)/modifier/$', 'group_topics.views.update_modifier', name="topic_update_modifier"),
-    url(r'^new/$', 'group_topics.views.topics', {'template_name': 'frontpage.html', 'mode': 'new'}, name="topic_since_login"),
+    url(r'^newposts/$', 'group_topics.views.topics', {'template_name': 'frontpage.html', 'mode': 'newposts'}, name="topic_since_login"),
+    url(r'^newreplies/$', 'group_topics.views.topics', {'template_name': 'frontpage.html', 'mode': 'newreplies'}, name="topic_replies_since_login"),
 )

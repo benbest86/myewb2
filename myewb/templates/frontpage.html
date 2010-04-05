@@ -19,6 +19,18 @@
 
 {% block body %}
 
+	{% ifequal mode "newposts" %}
+		<h2>{% trans "New posts since last sign-in" %}</h2>
+	{% endifequal %}
+
+	{% ifequal mode "newreplies" %}
+		<h2>{% trans "New replies since last sign-in" %}</h2>
+	{% endifequal %}
+
+	{% ifequal mode "featured" %}
+		<h2>{% trans "Featured Posts" %}</h2>
+	{% endifequal %}
+
     {% autopaginate topics 10 %}
     
     {% for topic in topics %}
@@ -49,7 +61,7 @@
 			<br/>
 			
         	{% if replies_since_login %}
-				<a href="{% url topic_since_login %}">
+				<a href="{% url topic_replies_since_login %}">
 				{% ifequal replies_since_login 1 %}
 					1 post with new replies
 				{% else %}

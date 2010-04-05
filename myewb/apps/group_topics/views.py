@@ -187,8 +187,10 @@ def topics(request, group_slug=None, form_class=GroupTopicForm,
         
     if mode == 'featured':
         topics = GroupTopic.objects.featured(topics)
-    elif mode == 'new':
+    elif mode == 'newposts':
         topics = GroupTopic.objects.since(request.user.get_profile().previous_login, qs=topics)
+    elif mode == 'newreplies':
+        topics = GroupTopic.objects.replies_since(request.user.get_profile().previous_login, qs=topics)
         
     if request.user.is_authenticated():
         can_adminovision = user_can_adminovision(request.user)
@@ -210,6 +212,7 @@ def topics(request, group_slug=None, form_class=GroupTopicForm,
         "can_execovision": can_execovision,
         "adminovision": adminovision,
         "login_form": EmailLoginForm(),                # for front-page toolbar
+        "mode": mode
     }, context_instance=RequestContext(request))
 
 def feed(request, group_slug):
