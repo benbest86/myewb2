@@ -95,7 +95,7 @@ class GroupTopicManager(models.Manager):
         """
         if qs == None:
             qs = self.visible(user)
-        return qs.filter(created__gt=date)
+        return qs.filter(created__gt=date).order_by('created')
     
 class GroupTopic(Topic):
     """

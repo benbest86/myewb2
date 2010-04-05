@@ -27,6 +27,7 @@ urlpatterns = patterns('',
     #url(r'^list/(?P<list_id>\d+)/add/(?P<topic_id>\d+)/$', 'group_topics.views.add_to_watchlist', name="topic_watchlist_add"),
     url(r'^list/(?P<user_id>\d+)/add/(?P<topic_id>\d+)/$', 'group_topics.views.add_to_watchlist', name="topic_watchlist_add"),
     url(r'^list/(?P<user_id>\d+)/remove/(?P<topic_id>\d+)/$', 'group_topics.views.remove_from_watchlist', name="topic_watchlist_remove"),
-    url(r'^featured/$', 'group_topics.views.topics', {'template_name': 'frontpage.html', 'featured': True}, name="topic_featured"),
+    url(r'^featured/$', 'group_topics.views.topics', {'template_name': 'frontpage.html', 'mode': 'featured'}, name="topic_featured"),
     url(r'^(?P<topic_id>\d+)/modifier/$', 'group_topics.views.update_modifier', name="topic_update_modifier"),
+    url(r'^new/$', 'group_topics.views.topics', {'template_name': 'frontpage.html', 'mode': 'new'}, name="topic_since_login"),
 )

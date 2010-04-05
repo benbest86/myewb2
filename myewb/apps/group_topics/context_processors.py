@@ -13,9 +13,14 @@ def newposts(request):
     Adds the number of new posts since last signin
     """
     user = request.user
-    lastlogin = user.get_profile().previous_login
     
-    posts = GroupTopic.objects.since(lastlogin, user=user)
+    if user.is_authenticated():
+        lastlogin = user.get_profile().previous_login
+    
+        posts = GroupTopic.objects.since(lastlogin, user=user)
+        postcount = posts.count()
+    else:
+        postcount = 0
 
-    ctx = {"posts_since_login": posts.count()}
+    ctx = {"posts_since_login": postcount}
     return ctx

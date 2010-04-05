@@ -91,7 +91,7 @@ def topic(request, topic_id, group_slug=None, edit=False, template_name="topics/
 # if featured=True will sort by score; otherwise will sort by date
 def topics(request, group_slug=None, form_class=GroupTopicForm,
            attach_form_class=AttachmentForm, template_name="topics/topics.html",
-           bridge=None, featured=False):
+           bridge=None, mode=None):
     
     is_member = False
     group = None
@@ -185,8 +185,10 @@ def topics(request, group_slug=None, form_class=GroupTopicForm,
         # for guests, show posts from public groups only
         topics = GroupTopic.objects.visible(user=request.user)
         
-    if featured:
+    if mode == 'featured':
         topics = GroupTopic.objects.featured(topics)
+    elif mode == 'new':
+        topics = GroupTopic.objects.since(request.user.get_profile().previous_login, qs=topics)
         
     if request.user.is_authenticated():
         can_adminovision = user_can_adminovision(request.user)
