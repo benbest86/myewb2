@@ -1,7 +1,10 @@
 // based in part on http://www.nomadjourney.com/2009/01/using-django-templates-with-jquery-ajax/
 
 function onSelectionLoad(data, xmlRequest, textStatus) {
-    $( '#usi_add_' + data.field ).before(xmlRequest.responseText);     
+	if (!multiUser)
+		$('.selected-user').remove();
+	$( '#usi_add_' + data.field ).before(xmlRequest.responseText);
+	
     $( '.su-remove' ).click( function(event) {
         $(this).parent().remove()
     })

@@ -11,7 +11,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 
-from forms import UserSearchForm, SampleUserSearchForm
+from forms import UserSearchForm, SampleUserSearchForm, SampleMultiUserSearchForm
 
 from networks.models import Network
 from base_groups.models import GroupMember
@@ -46,12 +46,38 @@ def sample_user_search(request):
     if request.method == 'POST':
         if form.is_valid():
 
-            to_users = form.cleaned_data['to']
-            cc_users = form.cleaned_data['cc']
-            bcc_users = form.cleaned_data['bcc']
+            to_user = form.cleaned_data['to']
+            cc_user = form.cleaned_data['cc']
+            bcc_user = form.cleaned_data['bcc']
         
             return render_to_response(
                     'user_search/sample_user_search.html', 
+                    { 
+                        'form': form,
+                        'results': True,
+                        'to_user': to_user,
+                        'cc_user': cc_user,
+                        'bcc_user': bcc_user
+                    }, 
+                    context_instance=RequestContext(request))
+    return render_to_response(
+            'user_search/sample_user_search.html', 
+            { 
+                'form': form
+            }, 
+            context_instance=RequestContext(request))
+            
+def sample_multi_user_search(request):
+    form = SampleMultiUserSearchForm(request.POST)
+    
+    if request.method == 'POST':
+        if form.is_valid():
+            to_users = form.cleaned_data['to']
+            cc_users = form.cleaned_data['cc']
+            bcc_users = form.cleaned_data['bcc']
+            
+            return render_to_response(
+                    'user_search/sample_multi_user_search.html', 
                     { 
                         'form': form,
                         'results': True,
@@ -61,7 +87,7 @@ def sample_user_search(request):
                     }, 
                     context_instance=RequestContext(request))
     return render_to_response(
-            'user_search/sample_user_search.html', 
+            'user_search/sample_multi_user_search.html', 
             { 
                 'form': form
             }, 

@@ -67,9 +67,8 @@ class MultipleUserSelectionInput(forms.MultipleHiddenInput):
         			users.append(u)
         		except User.DoesNotExist:
         			pass
-        print users
         t = loader.get_template('user_search/user_selection_input.html')
-        c = Context({'users': users, 'field_name': name})
+        c = Context({'users': users, 'field_name': name, 'multiuser': True})
         return mark_safe(t.render(c))
         
 class MultipleUserField(forms.Field):
@@ -111,10 +110,79 @@ class MultipleUserField(forms.Field):
         			
         if unknown_names or invalid_users:
             raise forms.ValidationError(_(u"The following usernames are incorrect: %(users)s") % {'users': ', '.join(list(unknown_names)+invalid_users)})
-        	
+        
         return users
         
+class UserSelectionInput(forms.HiddenInput):
+    """
+    Used to select a single user.
+    Simplified version of MultipleUserSelectionInput.
+    """
+    
+    is_hidden = False
+    
+    class Media:
+        css = {
+            "all": (STATIC_URL + 'css/user_selection.css',)
+        }
+        js = (STATIC_URL + 'js/user_selection.js',)
+
+    def render(self, name, value, attrs=None, choices=()):
+        user = None
+        if isinstance(value, User):
+            user = value
+        else:
+            try:
+                user = User.objects.get(username=value)
+            except User.DoesNotExist:
+                pass
+        
+        if user:
+            users = [user]
+        else:
+            users = None
+        
+        t = loader.get_template('user_search/user_selection_input.html')
+        c = Context({'users': users, 'field_name': name, 'multiuser': False})
+        return mark_safe(t.render(c))
+        
+class UserField(forms.Field):
+    widget = UserSelectionInput
+
+    def __init__(self, *args, **kwargs):
+        recipient_filter = kwargs.pop('recipient_filter', None)
+        self._recipient_filter = recipient_filter
+        super(UserField, self).__init__(*args, **kwargs)
+
+    def clean(self, value):
+        if not value:
+            if self.required:
+                raise forms.ValidationError(_(u"Please select a recipient"))
+            else:
+                return ''
+
+        user = None
+        try:
+            user = User.objects.get(username=value)
+        except:
+            pass
+        
+        recipient_filter = self._recipient_filter
+        if recipient_filter is not None:
+            if recipient_filter(user) is False:
+                user = None
+                    
+        if user == None:
+            raise forms.ValidationError(_(u"Invalid user"))
+            
+        return user
+        
 class SampleUserSearchForm(forms.Form):
+    to = UserField(required=False)
+    cc = UserField(required=False)
+    bcc = UserField(required=False)
+
+class SampleMultiUserSearchForm(forms.Form):
     to = MultipleUserField(required=False)
     cc = MultipleUserField(required=False)
     bcc = MultipleUserField(required=False)
