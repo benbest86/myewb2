@@ -10,7 +10,7 @@ from group_topics.models import GroupTopic
 
 def newposts(request):
     """
-    Adds the number of new posts since last signin
+    Adds the number of new posts & replies since last signin
     """
     user = request.user
     
@@ -19,8 +19,13 @@ def newposts(request):
     
         posts = GroupTopic.objects.since(lastlogin, user=user)
         postcount = posts.count()
+
+        replies = GroupTopic.objects.replies_since(lastlogin, user=user)
+        replycount = replies.count()
     else:
         postcount = 0
+        replycount = 0
 
-    ctx = {"posts_since_login": postcount}
+    ctx = {"posts_since_login": postcount,
+           "replies_since_login": replycount}
     return ctx

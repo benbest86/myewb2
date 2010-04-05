@@ -48,6 +48,18 @@
 			{% endif %}
 			<br/>
 			
+        	{% if replies_since_login %}
+				<a href="{% url topic_since_login %}">
+				{% ifequal replies_since_login 1 %}
+					1 post with new replies
+				{% else %}
+					{{replies_since_login}} posts with new replies
+				{% endifequal %}
+				</a>
+			{% else %}
+				no new replies
+			{% endif %}
+			<br/>
 
             {% if can_adminovision %}
                 <p style="margin-bottom: 0; text-align: right;">

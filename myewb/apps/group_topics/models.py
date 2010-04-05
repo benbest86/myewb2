@@ -97,6 +97,16 @@ class GroupTopicManager(models.Manager):
             qs = self.visible(user)
         return qs.filter(created__gt=date).order_by('created')
     
+    def replies_since(self, date, qs=None, user=None):
+        """
+        Returns a list of posts with replies since the given date.  If passed the 
+        optional qs parameter, it will filter that queryset instead of creating 
+        a new one.
+        """
+        if qs == None:
+            qs = self.visible(user)
+        return qs.filter(last_reply__gt=date).order_by('last_reply')
+    
 class GroupTopic(Topic):
     """
     a discussion topic for a BaseGroup.
@@ -105,6 +115,8 @@ class GroupTopic(Topic):
     parent_group = models.ForeignKey(BaseGroup, related_name="topics", verbose_name=_('parent'))
     send_as_email = models.BooleanField(_('send as email'), default=False)
     whiteboard = models.ForeignKey(Whiteboard, related_name="topic", verbose_name=_('whiteboard'), null=True)
+    
+    last_reply = models.DateTimeField(_('last reply'), editable=False, blank=True, null=True)
     
     # possibly split these out into a different table so we can optimize it?
     # (would we lose the benefits due to the join though?)
