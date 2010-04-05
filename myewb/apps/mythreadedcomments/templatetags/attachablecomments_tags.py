@@ -3,6 +3,8 @@ from django.conf import settings
 from attachments.forms import AttachmentForm
 from attachments.models import Attachment
 
+from threadedcomments.models import ThreadedComment
+
 register = template.Library()
 
 def attachablecomments(context, obj):
@@ -28,3 +30,11 @@ register.inclusion_tag('threadedcomments/printablecomments.html', takes_context=
 @register.simple_tag
 def get_STATIC_URL():
     return settings.STATIC_URL
+
+@register.simple_tag
+def get_comments_since(since):
+    comments = ThreadedComment.objects.filter(date_submitted__gt=since).order_by('date_submitted').count()
+    if comments == 0:
+        return ""
+    else:
+        return "&nbsp;&nbsp;(%d new)" % comments

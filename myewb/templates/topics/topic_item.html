@@ -1,6 +1,7 @@
 {% load i18n %}
 {% load avatar_tags %}
 {% load threadedcommentstags %}
+{% load attachablecomments_tags %}
 {% load extra_tagging_tags %}
 {% load group_tags %}
 {% load group_topics_tags %}
@@ -26,17 +27,17 @@
     		{% endif %}
 
 			{% if num_comments %}
+				<a href="{{ topic.get_absolute_url }}" style="color: white;" class="nodeco">
 				{% ifequal num_comments 1 %}
-					<a href="{{ topic.get_absolute_url }}" style="color: white;" class="nodeco">1 reply</a>
+					1 reply
 				{% else %}
-					<a href="{{ topic.get_absolute_url }}" style="color: white;" class="nodeco">{{ num_comments }} replies</a>
+					{{ num_comments }} replies
 				{% endifequal %}
 				
 				{% if user.is_authenticated %}
-    				<em>{% isnewer latest.0.date_submitted user.get_profile.previous_login %}</em>
+					<em>{% get_comments_since user.get_profile.previous_login %}</em>
     			{% endif %}
-		        
-				{# TODO: show how *many* new replies? #}
+    			</a>
 			{% else %}
 					&nbsp;
 			{% endif %}
