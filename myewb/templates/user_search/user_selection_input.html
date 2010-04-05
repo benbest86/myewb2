@@ -19,3 +19,11 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
         {% show_user_search field_name %}
     </div>
 </div>
+
+<script type="text/javascript">
+{% if multiuser %}
+	var multiUser = true;
+{% else %}
+	var multiUser = false;
+{% endif %}
+</script>

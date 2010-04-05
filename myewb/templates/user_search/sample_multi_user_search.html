@@ -16,20 +16,35 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% endblock %}
 
 {% block body %}
-    <h2>Sample Usage of AJAX Single User Search</h2>
+    <h2>Sample Usage of AJAX Multiple User Search</h2>
     
     {% if results %}
     <div id="selected_user_results" style="border: solid 2px black; padding: 8px;">
         The following users were successfully selected on the previous page:<br/>
-        <b>To:</b> {{ to_user.visible_name }}<br/>
+        <b>To:</b>
+        <ul>
+        {% for sel_user in to_users %}
+            <li>{{ sel_user.visible_name }}</li>
+        {% endfor %}
+        </ul>
         
-        <b>Cc:</b> {{ cc_user.visible_name }}<br/>
+        <b>Cc:</b>
+        <ul>
+        {% for sel_user in cc_users %}
+            <li>{{ sel_user.visible_name }}</li>
+        {% endfor %}
+        </ul>
         
-        <b>Bcc:</b> {{ bcc_user.visible_name }}
+        <b>Bcc:</b>
+        <ul>
+        {% for sel_user in bcc_users %}
+            <li>{{ sel_user.visible_name }}</li>
+        {% endfor %}
+        </ul>
     </div>
     {% else %}
     
-    <form class="uniForm" id="search-users" method="POST" action="{% url profile_sample_user_search %}">
+    <form class="uniForm" id="search-users" method="POST" action="">
     	<fieldset class="inlineLabels">
     	    {{ form|as_uni_form }}
     	    

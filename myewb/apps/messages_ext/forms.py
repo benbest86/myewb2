@@ -15,7 +15,7 @@ from messages.fields import CommaSeparatedUserField
 """
 from django import forms
 from django.utils.translation import ugettext_lazy as _
-from user_search.forms import UserField, UserSelectionInput
+from user_search.forms import MultipleUserField
 from messages.forms import ComposeForm as OriginalComposeForm
 from lxml.html.clean import clean_html, autolink_html
 
@@ -24,7 +24,7 @@ class ComposeForm(OriginalComposeForm):
     A simple default form for private messages.
     """
 
-    recipient = UserField(label=_(u"Recipient"))
+    recipient = MultipleUserField(label=_(u"Recipient"))
     body = forms.CharField(label=_(u"Body"),
         widget=forms.Textarea(attrs={'rows': '12', 'cols':'55', 'class':'tinymce '}))
     

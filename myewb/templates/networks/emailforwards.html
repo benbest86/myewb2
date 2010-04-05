@@ -9,6 +9,11 @@
 {% load sorting_tags %}
 {% load base_groups_tags %}
 
+{% block extra_head %}
+	{{ block.super }}
+	{{ form.media }}
+{% endblock %}
+
 {% block head_title %}{% blocktrans %}Members of{% endblocktrans %} {{network.name}}{% endblock %}
 
 {% block body %}
@@ -44,4 +49,12 @@
 		{{ form|as_uni_form }}
         <input type="submit" value="Add" />
     </form>
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+        function getUserSelectionUrl() { return '{% url selected_user %}'; }
+        function getUserSearchUrl() { return '{% url profile_user_search %}'; }
+    </script>
 {% endblock %}

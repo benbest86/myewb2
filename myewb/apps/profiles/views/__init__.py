@@ -37,14 +37,17 @@ from creditcard.forms import PaymentForm
 from creditcard.models import Payment, Product
 from friends_app.forms import InviteFriendForm
 
+@login_required
 def profiles(request, template_name="profiles/profiles.html"):
     search_terms = request.GET.get('search', '')
     if search_terms:
         users = User.objects.filter(profile__name__icontains=search_terms) | \
                         User.objects.filter(username__icontains=search_terms)
+        if not request.user.has_module_perms("profiles"):
+            users = users.filter(memberprofile__grandfathered=False)
+        users = users.order_by("profile__name")
     else:
-        users = User.objects.all()
-    users = users.order_by("profile__name")
+        users = None
     
     return render_to_response(template_name, {
         "users": users,

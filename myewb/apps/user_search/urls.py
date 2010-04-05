@@ -8,5 +8,6 @@ from django.conf.urls.defaults import *
 urlpatterns = patterns('user_search.views',
     url(r'^search/$', 'user_search', name='profile_user_search'),
     url(r'^samplesearch/$', 'sample_user_search', name='profile_sample_user_search'),
+    url(r'^samplemultisearch/$', 'sample_multi_user_search', name='profile_sample_multi_user_search'),
     url(r'^selected/$', 'selected_user', name='selected_user'),
 )

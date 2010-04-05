@@ -14,30 +14,24 @@
 	{% show_profile_search search_terms %}
     <br/><br/>
     
-    {% autopaginate users %}
+    {% if users %}
+	    {% autopaginate users %}
     
-    {% for user in users %}
-        <div class="profile clearfix" style="height: 45px;">
-            {# @@@ factor out style into css file #}
-            <div style="float: left;">{% avatar user 40 %}</div>
-            <div style="padding: 5px; margin-left: 50px;">
-                <a href="{% url profile_detail user.username %}">{{ user.visible_name }}</a>
-                {% comment %}
-                this is buggy - crashes...
-                <br/>
-                <small>
-                    (
-                    {% for member_group in user.member_groups.all %}
-                        {% if member_group.group.is_chapter %}
-                            {{ member_group.group }}
-                        {% endif %}
-                    {% endfor %}
-                    )
-                </small>
-                {% endcomment %}
-            </div>
-        </div>
-    {% endfor %}
+    	{% for user in users %}
+	        <div class="profile clearfix" style="height: 45px;">
+            	{# @@@ factor out style into css file #}
+            	<div style="float: left;">{% avatar user 40 %}</div>
+            	<div style="padding: 5px; margin-left: 50px;">
+	                <a href="{% url profile_detail user.username %}">{{ user.visible_name }}</a>
+	            </div>
+        	</div>
+    	{% endfor %}
+
+	    {% paginate %}
+    {% else %}
+    	{% if search_terms %}
+    		No results
+    	{% endif %}
+    {% endif %}
     
-    {% paginate %}
 {% endblock %}

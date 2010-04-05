@@ -19,6 +19,7 @@ from base_groups.models import BaseGroup
 from base_groups.forms import BaseGroupForm, GroupMemberForm, EditGroupMemberForm
 from networks.models import Network, ChapterInfo, EmailForward
 from communities.models import NationalRepList
+from user_search.forms import UserField
         
 class NetworkForm(BaseGroupForm):
 
@@ -105,6 +106,7 @@ class PartialEmailWidget(forms.TextInput):
         return mark_safe(html)
         
 class EmailForwardForm(forms.ModelForm):
+    user = UserField()
     address = PartialEmailField(widget=PartialEmailWidget)
     
     def __init__(self, *args, **kwargs):

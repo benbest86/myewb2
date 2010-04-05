@@ -79,6 +79,11 @@ class MemberProfile(Profile):
     Note that Django and/or Pinax already handle language, email addresses, and 'additional info'.
     """
     
+    # necessary hack.  this mirrors the user attribute in Profile, but is 
+    # re-defined here so that we can do database joins
+    user2 = models.ForeignKey(User, unique=True, verbose_name=_('user2'), blank=True)
+    #user2 = models.ForeignKey(User, verbose_name=_('user2'), blank=True, default=0) # may need to use this for evolution to work
+    
     # This will be copied to the respective fields in the User object
     first_name = models.CharField(_('first name'), max_length=100, blank=True)
     preferred_first_name = models.CharField(_('preferred first name (if different)'), max_length=100, blank=True)
@@ -111,6 +116,10 @@ class MemberProfile(Profile):
     addresses = generic.GenericRelation(Address)
     phone_numbers = generic.GenericRelation(PhoneNumber)
     sending_groups = models.ManyToManyField("volunteering.SendingGroup", blank=True)
+    
+    grandfathered = models.BooleanField(_('grandfathered'),
+                                        help_text=_('imported from old myewb and has not accepted new terms of service'),
+                                        default=False)
 
     objects = MemberProfileManager()
     
@@ -148,6 +157,8 @@ class MemberProfile(Profile):
             self.name = self.last_name
         else:
             self.name = None
+            
+        self.user2 = self.user
         
         return models.Model.save(self, force_insert, force_update)
 
