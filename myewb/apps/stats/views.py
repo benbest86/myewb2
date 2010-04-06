@@ -23,6 +23,8 @@ from siteutils.models import Address
 from profiles.models import MemberProfile
 from group_topics.models import GroupTopic
 
+from base_groups.decorators import group_admin_required
+
 @staff_member_required
 def main_dashboard(request):
     
@@ -358,3 +360,20 @@ def main_dashboard(request):
                                "ageDistribution": ageDistribution
                               },
                               context_instance=RequestContext(request))
+
+"""
+@group_admin_required()
+def group_membership_breakdown(request, group_slug, model=None, member_model=None,
+               form_class=None, template_name=None, detail_template_name=None,
+               options=None):
+
+@group_admin_required()
+def group_membship_activity(request, group_slug, model=None, member_model=None,
+               form_class=None, template_name=None, detail_template_name=None,
+               options=None):
+
+@group_admin_required()
+def group_post_activity(request, group_slug, model=None, member_model=None,
+               form_class=None, template_name=None, detail_template_name=None,
+               options=None):
+"""
