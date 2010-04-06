@@ -95,6 +95,12 @@ class MemberProfile(Profile):
         ('F', _('Female')),
     )
     gender = models.CharField(_('gender'), max_length=1, choices=GENDER_CHOICES, null=True, blank=True)
+
+    LANG_CHOICES = (
+        ('E', _('English')),
+        ('F', _('French')),
+    )
+    language = models.CharField(_('preferred language'), max_length=1, choices=LANG_CHOICES, null=True, blank=True)
     
     date_of_birth = models.DateField(_('date of birth'), null=True, blank=True)
     # student = models.BooleanField(_('student'), null=True, blank=True)        # see below

@@ -7,21 +7,28 @@ Copyright 2010 Engineers Without Borders (Canada) Organisation and/or volunteer 
 """
 
 from datetime import date, timedelta
+import pycountry
 
 from django.contrib.admin.views.decorators import staff_member_required
+from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.contrib.auth.models import User
 
-from pygooglechart import SimpleLineChart, Axis, PieChart3D, GroupedVerticalBarChart
+from pygooglechart import SimpleLineChart, Axis, PieChart3D, StackedHorizontalBarChart
 
 from stats.models import DailyStats
 from networks.models import Network
+from siteutils.models import Address
+from profiles.models import MemberProfile
+from group_topics.models import GroupTopic
 
 @staff_member_required
 def main_dashboard(request):
     
     today, created = DailyStats.objects.get_or_create(day=date.today())
+    if today.users == 0:
+        today.users = 1
 
     # ---- Daily usage ----
     averageusage = DailyStats.objects.order_by('-day')
@@ -136,9 +143,9 @@ def main_dashboard(request):
     # ---- Status breakdown ----
     statusBreakdownChart = PieChart3D(600, 240)
     mlistmembers = today.users - today.regularmembers - today.associatemembers
-    statusBreakdownChart.add_data([mlistmembers,
-                                   today.associatemembers,
-                                   today.regularmembers])
+    statusBreakdownChart.add_data([mlistmembers + 1,            # FIXME: the +1 is needed so pygoogle doesn't crash (it doesn't handle zeroes well)
+                                   today.associatemembers + 1,
+                                   today.regularmembers + 1])
 
     statusBreakdownChart.set_colours(['ff0000', 'ffff00', '00ff00'])
     statusBreakdownChart.set_pie_labels(["mailing list members",
@@ -151,23 +158,171 @@ def main_dashboard(request):
     chapternames = []
     chaptermembers = []
     for chapter in chapters:
-        #membershipBreakdownChart.add_data([chapter.members.all().count()])
         chapternames.append(chapter.slug)
-        #chaptermembers.append(10)
-        chaptermembers.append(chapter.members.all().count())
-        #membershipBreakdownChart.add_data([10, 20])
-        #chapternames.append("test")
+        chaptermembers.append(chapter.members.all().count() + chapter.pk)
     
-    membershipBreakdownChart = GroupedVerticalBarChart(600, 240, y_range=(0, max(chaptermembers)))
+    membershipBreakdownChart = StackedHorizontalBarChart(500, 500,
+                                                         x_range=(0, max(chaptermembers)))
     membershipBreakdownChart.add_data(chaptermembers)
-    yaxis = range(0, max(chaptermembers), 1)    # that last number should be max(chaptermembers)/10.  but for testing...
+    yaxis = range(0, max(chaptermembers), 10)
     yaxis[0] = ''
-    membershipBreakdownChart.set_axis_labels(Axis.LEFT, yaxis)
-    membershipBreakdownChart.set_axis_labels(Axis.BOTTOM,
+    membershipBreakdownChart.set_axis_labels(Axis.BOTTOM, yaxis)
+    membershipBreakdownChart.set_axis_labels(Axis.LEFT,
                                              chapternames)
-    membershipBreakdownChart.set_bar_width(500 / len(chapternames))
+    membershipBreakdownChart.set_bar_width(330 / len(chapternames))
     membershipBreakdown = membershipBreakdownChart.get_url()
     
+    # ---- Province breakdown ----
+    profiletype = ContentType.objects.get_for_model(MemberProfile)
+    addresses = Address.objects.filter(content_type=profiletype)
+    totalprov = Address.objects.filter(content_type=profiletype).count() + 1     # FIXME
+    
+    provinces = []
+    provincecount = []
+    provincelist = list(pycountry.subdivisions.get(country_code='CA'))
+    for p in provincelist:
+        pcode = p.code.split('-')[1]
+        provincecount2 = Address.objects.filter(content_type=profiletype,
+                                                province=pcode).count()
+        if provincecount2 == 0:
+            provincecount2 = 1
+        provincecount.append(provincecount2)                                
+        provinces.append(pcode + " (%d%%)" % (provincecount2*100/totalprov))
+    #provinces = sorted(provinces)
+    
+    provinceBreakdownChart = PieChart3D(600, 240)
+    provinceBreakdownChart.add_data(provincecount)
+
+    #provinceBreakdownChart.set_colours(['ff0000', 'ffff00', '00ff00'])
+    provinceBreakdownChart.set_pie_labels(provinces)
+    provinceBreakdown = provinceBreakdownChart.get_url()
+
+    # ---- Gender breakdown ----
+    males = MemberProfile.objects.filter(gender='M').count() + 1
+    females = MemberProfile.objects.filter(gender='F').count() + 1
+    genderunknown = MemberProfile.objects.filter(gender__isnull=True).count() + 1 #FIXME
+    gendertotal = males + females + genderunknown
+    genderBreakdownChart = PieChart3D(600, 240)
+    genderBreakdownChart.add_data([males, females, genderunknown])
+
+    genderBreakdownChart.set_colours(['ff0000', 'ffff00', '00ff00'])
+    genderBreakdownChart.set_pie_labels(['Male (%d%%)' % (males*100/gendertotal),
+                                         'Female (%d%%)' % (females*100/gendertotal),
+                                         'Unspecified (%d%%)' % (genderunknown*100/gendertotal)])
+    genderBreakdown = genderBreakdownChart.get_url()
+
+    # ---- Student breakdown ----
+    students = User.objects.filter(studentrecord__graduation_date__isnull=True).count() + 1
+    nonstudents = User.objects.filter(workrecord__end_date__isnull=True).count() + 1
+    # yeah, i know, not 100% accurate since a student can have a part-time job
+    studentBreakdownChart = PieChart3D(600, 240)
+    studentBreakdownChart.add_data([students, nonstudents])
+
+    studentBreakdownChart.set_colours(['ff0000', '00ff00'])
+    studentBreakdownChart.set_pie_labels(['Students', 'Non-students'])
+    studentBreakdown = studentBreakdownChart.get_url()
+
+    # ---- Language breakdown ----
+    preferen = MemberProfile.objects.filter(language='E').count() + 1
+    preferfr = MemberProfile.objects.filter(language='F').count() + 1
+    prefernone = MemberProfile.objects.filter(language__isnull=True).count() + 1
+    languageBreakdownChart = PieChart3D(600, 240)
+    languageBreakdownChart.add_data([preferen, preferfr, prefernone])
+
+    languageBreakdownChart.set_colours(['ff0000', 'ffff00', '00ff00'])
+    languageBreakdownChart.set_pie_labels(['english', 'french', 'not specified'])
+    languageBreakdown = languageBreakdownChart.get_url()
+
+    # ---- Post breakdown ----
+    postspublic = GroupTopic.objects.filter(parent_group__visibility='E',
+                                            parent_group__parent__isnull=True).count() + 1
+    postsprivate = GroupTopic.objects.filter(parent_group__parent__isnull=True
+                                             ).exclude(parent_group__visibility='E').count() + 1
+    postspublicchapter = GroupTopic.objects.filter(parent_group__visibility='E',
+                                            parent_group__parent__isnull=False).count() + 1
+    postsprivatechapter = GroupTopic.objects.filter(parent_group__parent__isnull=False
+                                                    ).exclude(parent_group__visibility='E').count() + 1
+    postcount = postspublic + postsprivate + postspublicchapter + postsprivatechapter 
+    postBreakdownChart = PieChart3D(600, 240)
+    postBreakdownChart.add_data([postspublic, postspublicchapter, postsprivatechapter, postsprivate])
+
+    #postBreakdownChart.set_colours(['ff0000', 'ffff00', '00ff00'])
+    postBreakdownChart.set_pie_labels(['public', 'public chapter', 'private chapter', 'private'])
+    postBreakdown = postBreakdownChart.get_url()
+
+    # ---- Login distribution ----
+    logincount = []
+    malelogins = []
+    femalelogins = []
+    for i in range(0,30):
+        logincount.append(MemberProfile.objects.filter(login_count=i).count())
+        malelogins.append(MemberProfile.objects.filter(login_count=i, gender='M').count())
+        femalelogins.append(MemberProfile.objects.filter(login_count=i, gender='F').count())
+    
+    loginDistribution = SimpleLineChart(600, 450, y_range=(0, 9000))
+    loginDistribution.add_data(logincount)
+    loginDistribution.add_data(malelogins)
+    loginDistribution.add_data(femalelogins)
+
+    loginDistribution.set_colours(['ff0000', '0000ff', '00ff00'])
+    loginDistribution.set_legend(['logins', 'male', 'female'])
+    loginDistribution.set_legend_position('b')
+
+    yaxis = range(0, 9000, 500)    # that last number should be 25 or 50.  but for testing...
+    yaxis[0] = ''
+    loginDistribution.set_axis_labels(Axis.LEFT, yaxis)
+    loginDistribution.set_axis_labels(Axis.BOTTOM, range(0, 30))
+        
+    loginDistribution = loginDistribution.get_url()
+    
+    # ---- Login recency ----
+    loginrecent = []
+    loginrecentdate = []
+    thedate = date(date.today().year - 1,
+                   date.today().month,
+                   1)
+    while thedate.year != date.today().year or thedate.month != date.today().month:
+        if thedate.month == 12:
+            enddate = date(year=thedate.year + 1,
+                           month=1, day=1)
+        else:
+            enddate = date(year=thedate.year,
+                           month=thedate.month + 1,
+                           day=1)
+        loginrecent.append(MemberProfile.objects.filter(previous_login__range=(thedate, enddate)).count())
+        loginrecentdate.append(thedate.strftime("%B %y"))
+        thedate = enddate
+
+    loginRecency = SimpleLineChart(600, 450, y_range=(0, max(loginrecent)+1))
+    loginRecency.add_data(loginrecent)
+
+    yaxis = range(0, max(loginrecent), max(max(loginrecent)/10, 1))    # that last number should be 25 or 50.  but for testing...
+    if len(yaxis) == 0:
+        yaxis.append(10)
+        yaxis.append(10)
+    yaxis[0] = ''
+    loginRecency.set_axis_labels(Axis.LEFT, yaxis)
+    loginRecency.set_axis_labels(Axis.BOTTOM, loginrecentdate)
+        
+    loginRecency = loginRecency.get_url()
+    
+    # ---- Age distribution ----
+    ages = []
+    for age in range(15, 75):
+        year = date.today().year - age
+        ages.append(MemberProfile.objects.filter(date_of_birth__year=year).count())
+    
+    ageDistribution = SimpleLineChart(600, 450, y_range=(0, max(ages)+1))
+    ageDistribution.add_data(ages)
+
+    yaxis = range(0, max(ages)+1, 50)
+    yaxis[0] = ''
+    ageDistribution.set_axis_labels(Axis.LEFT, yaxis)
+    ageDistribution.set_axis_labels(Axis.BOTTOM, range(15, 75, 5))
+        
+    ageDistribution = ageDistribution.get_url()
+    
+    # ---- Finally! ----
     return render_to_response("stats/dashboard.html",
                               {"signins": today.signins,
                                "posts": today.posts,
@@ -191,54 +346,15 @@ def main_dashboard(request):
                                "associatememberspercent": today.associatemembers * 100 / today.users,
                                "regularmembers": today.regularmembers,
                                "regularmemberspercent": today.regularmembers * 100 / today.users,
-                               "membershipBreakdown": membershipBreakdown
+                               "membershipBreakdown": membershipBreakdown,
+                               "provinceBreakdown": provinceBreakdown,
+                               "provincecount": totalprov,
+                               "genderBreakdown": genderBreakdown,
+                               "studentBreakdown": studentBreakdown,
+                               "languageBreakdown": languageBreakdown,
+                               "postBreakdown": postBreakdown,
+                               "loginDistribution": loginDistribution,
+                               "loginRecency": loginRecency,
+                               "ageDistribution": ageDistribution
                               },
                               context_instance=RequestContext(request))
-    
-    
-    """
-    
-    graphs:
-    daily4
-    dailynewstats
-    daily2
-    dailyintegration
-    daily3
-    rankpie
-    nochapterpie
-    chapterpie
-    provincepie
-    genderpie
-    studentpie
-    languagepie
-    postpie
-    post2
-    post3
-    logins
-    lastlogin
-    birthyears
-    
-    ---
-    getGenderPie
-    getLanguagePie
-    getStudentPie
-    getChapterRankPie
-    getRankPie
-    getNoChapterPie
-    getChapterPie
-    getChampPie
-    getLastChampPie
-    getCategoryMainPie
-    getCategoryPie
-    getPostPie
-    getPost2Pie
-    getPost3Pie
-    getProvincepie
-    getLastLoginPie
-    getDailyStats (Daily2 Daily3)
-    getDailyIntegratedStats
-    getLogins
-    getNewDailySats
-    getBirthYears
-    getListMemberships
-    """    

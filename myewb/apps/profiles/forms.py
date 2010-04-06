@@ -33,7 +33,7 @@ class ProfileForm(forms.ModelForm):
 	
 	class Meta:
 		model = MemberProfile
-		fields = ('first_name', 'last_name', 'about', 'gender', 'date_of_birth')
+		fields = ('first_name', 'last_name', 'about', 'gender', 'language', 'date_of_birth')
 			
 class StudentRecordForm(forms.ModelForm):
 	"""Add/edit form for the StudentRecord class."""
