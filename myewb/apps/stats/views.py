@@ -24,6 +24,8 @@ from profiles.models import MemberProfile
 from group_topics.models import GroupTopic
 
 from base_groups.decorators import group_admin_required
+from base_groups.models import BaseGroup, GroupMemberRecord
+from threadedcomments.models import ThreadedComment
 
 @staff_member_required
 def main_dashboard(request):
@@ -361,19 +363,114 @@ def main_dashboard(request):
                               },
                               context_instance=RequestContext(request))
 
-"""
 @group_admin_required()
-def group_membership_breakdown(request, group_slug, model=None, member_model=None,
-               form_class=None, template_name=None, detail_template_name=None,
-               options=None):
+def group_membership_breakdown(request, group_slug):
+    group = get_object_or_404(BaseGroup, slug=group_slug)
+    
+    statusBreakdownChart = PieChart3D(600, 240)
+    allusers = group.member_users.all().count()
+    regular = group.member_users.filter(memberprofile__membership_expiry__gt=date.today()).count()
+    associate = group.get_accepted_members().count() - regular
+    mlist = allusers - regular - associate
+    
+    statusBreakdownChart.add_data([mlist + 1,            # FIXME: the +1 is needed so pygoogle doesn't crash (it doesn't handle zeroes well)
+                                   associate + 1,
+                                   regular + 1])
+
+    statusBreakdownChart.set_colours(['ff0000', 'ffff00', '00ff00'])
+    statusBreakdownChart.set_pie_labels(["mailing list members",
+                                         "associate members",
+                                         "regular members"])
+    return statusBreakdownChart.get_url()
+    
+@group_admin_required()
+def group_membership_activity(request, group_slug):
+    group = get_object_or_404(BaseGroup, slug=group_slug)
+    
+    listcount = []
+    listdate = []
+    currentcount = group.member_users.all().count()
+    thedate = date.today()
+    while thedate.year != date.today().year - 1 or thedate.month != date.today().month:
+        if thedate.month == 1:
+            startdate = date(year=thedate.year - 1,
+                             month=12, day=1)
+        else:
+            startdate = date(year=thedate.year,
+                             month=thedate.month - 1,
+                             day=1)
+        joins = GroupMemberRecord.objects.filter(group=group,
+                                                 membership_start=True,
+                                                 datetime__range=(startdate, thedate)).count()
+        unsubs = GroupMemberRecord.objects.filter(group=group,
+                                                  membership_end=True,
+                                                  datetime__range=(startdate, thedate)).count()
+        listcount.append(currentcount - joins + unsubs)
+        listdate.append(thedate.strftime("%B %y"))
+        thedate = startdate
+        
+    listcount.reverse()
+    listdate.reverse()
+
+    activity = SimpleLineChart(600, 450, y_range=(min(listcount)-1, max(listcount)+1))
+    activity.add_data(listcount)
+
+    yaxis = range(min(listcount)-1, max(listcount)+1, max(max(listcount)/10, 1))    # that last number should be 25 or 50.  but for testing...
+    if len(yaxis) == 0:
+        yaxis.append(10)
+        yaxis.append(10)
+    yaxis[0] = ''
+    activity.set_axis_labels(Axis.LEFT, yaxis)
+    activity.set_axis_labels(Axis.BOTTOM, listdate)
+        
+    return activity.get_url()
 
 @group_admin_required()
-def group_membship_activity(request, group_slug, model=None, member_model=None,
-               form_class=None, template_name=None, detail_template_name=None,
-               options=None):
+def group_post_activity(request, group_slug):
+    group = get_object_or_404(BaseGroup, slug=group_slug)
+    
+    postcount = []
+    replycount = []
+    allcount = []
+    listdate = []
+    thedate = date(date.today().year - 1,
+                   date.today().month,
+                   1)
+    while thedate.year != date.today().year or thedate.month != date.today().month:
+        if thedate.month == 12:
+            enddate = date(year=thedate.year + 1,
+                           month=1, day=1)
+        else:
+            enddate = date(year=thedate.year,
+                           month=thedate.month + 1,
+                           day=1)
+        posts = GroupTopic.objects.filter(parent_group=group,
+                                          created__range=(thedate, enddate)).count()
+        #replies = ThreadedComment.objects.filter(content_object__parent_group=group,
+        #                                         date_submitted__range=(thedate, enddate)).count()
+        replies = 0
+        postcount.append(posts)
+        replycount.append(replies)
+        allcount.append(posts + replies)
+        listdate.append(thedate.strftime("%B %y"))
+        thedate = enddate
 
-@group_admin_required()
-def group_post_activity(request, group_slug, model=None, member_model=None,
-               form_class=None, template_name=None, detail_template_name=None,
-               options=None):
-"""
+    postactivity = SimpleLineChart(600, 450, y_range=(min(min(postcount), min(replycount))-1, max(max(postcount), max(replycount))+1))
+    postactivity.add_data(postcount)
+    postactivity.add_data(replycount)
+    postactivity.add_data(allcount)
+
+    yaxis = [min(min(postcount), min(replycount))-1, max(max(postcount), max(replycount))+1, 1]
+    if len(yaxis) == 0:
+        yaxis.append(10)
+        yaxis.append(10)
+    yaxis[0] = ''
+    postactivity.set_axis_labels(Axis.LEFT, yaxis)
+    postactivity.set_axis_labels(Axis.BOTTOM, listdate)
+        
+    postactivity.set_colours(['ff0000', '0000ff', '00ff00'])
+    postactivity.set_legend(['posts', 'replies', 'total'])
+    postactivity.set_legend_position('b')
+
+    return postactivity.get_url()
+

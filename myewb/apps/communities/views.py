@@ -92,3 +92,7 @@ def edit_member(request, group_slug, username, form_class=EditGroupMemberForm, t
 @login_required    
 def delete_member(request, group_slug, username):
     return members.delete_member(request, group_slug, username, Community)
+
+@group_admin_required()
+def community_stats(request, group_slug):
+    return stats(request, group_slug, Community, "communities/stats.html")

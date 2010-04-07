@@ -67,6 +67,9 @@ def group_url_patterns(model, *args):
         url(r'^(?P<group_slug>[-\w]+)/members/(?P<username>[\w\._-]+)/edit/$', 'edit_member', name='%s_edit_member' % name,),
         # POST - delete member
         url(r'^(?P<group_slug>[-\w]+)/members/(?P<username>[\w\._-]+)/delete/$', 'delete_member', name='%s_delete_member' % name,),
+
+        url(r'^(?P<group_slug>[-\w]+)/stats/$', '%s_stats' % name, name='%s_stats' % name,),
+    
     )
     
     urlpatterns += patterns('base_groups.views.members',    

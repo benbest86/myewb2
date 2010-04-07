@@ -287,3 +287,12 @@ def edit_group_location(request, group_slug, model=None,
         },
         context_instance=RequestContext(request)
     )
+
+@group_admin_required()
+def stats(request, group_slug, model=None, template=None):
+    group = get_object_or_404(model, slug=group_slug)
+    
+    return render_to_response(template,
+                              {'group': group},
+                              context_instance=RequestContext(request)
+    )

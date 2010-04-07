@@ -45,6 +45,7 @@
 	            
 {#       			<a href="{% url edit_network group.slug %}">{% trans "Edit network details" %}</a><br/><br/> #}
        			<a href="{% url edit_network group.slug %}">{% trans "Edit chapter details" %}</a><br/><br/> 
+		        <a href="{% url network_stats group.slug %}">{% trans "Group statistics" %}</a><br/>
                 
                 {% if perms.base_groups and not group.is_chapter %}
                     <a href="{% url new_chapter %}?network={{ group.slug }}">{% trans "Convert to chapter" %}</a><br/>

@@ -1,0 +1,19 @@
+{% load i18n %}
+{% load statstags %} 
+
+<h1>Statistics</h1>    
+
+<div style="width: 600px; margin: 0 auto; padding: 0 25px 15px; background: #d0d0d0; text-align: center;">
+	<h2>Group Membership</h2>
+	<img src="{% group_membership_breakdown request group.slug %}" style="width: 600px; height: 240px;"/>
+</div>
+
+<div style="width: 600px; margin: 0 auto; padding: 0 25px 15px; background: #d0d0d0; text-align: center;">
+	<h2>Group Membership History</h2>
+	<img src="{% group_membership_activity request group.slug %}" style="width: 600px; height: 400px;"/>
+</div>
+
+<div style="width: 600px; margin: 0 auto; padding: 0 25px 15px; background: #d0d0d0; text-align: center;">
+	<h2>Post History</h2>
+	<img src="{% group_post_activity request group.slug %}" style="width: 600px; height: 400px;"/>
+</div>

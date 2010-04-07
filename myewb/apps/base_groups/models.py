@@ -309,6 +309,7 @@ class GroupMemberRecord(BaseGroupMember):
     group = models.ForeignKey(BaseGroup, related_name="member_records", verbose_name=_('group'))
     user = models.ForeignKey(User, related_name="group_records", verbose_name=_('user'))
     datetime = models.DateTimeField(auto_now_add=True)
+    membership_start = models.BooleanField(default=False, help_text=_('Whether this record signifies the start of a membership or not.'))
     membership_end = models.BooleanField(default=False, help_text=_('Whether this record signifies the end of a membership or not.'))
 
     class Meta(BaseGroupMember.Meta):
@@ -328,12 +329,14 @@ class GroupMemberRecord(BaseGroupMember):
             self.joined = instance.joined
 
 
-def group_member_snapshot(sender, instance, **kwargs):
+def group_member_snapshot(sender, instance, created, **kwargs):
     """
     Takes a snapshot of a GroupMember object each time is
     saved.
     """
     record = GroupMemberRecord(instance=instance)
+    if created:
+        record.membership_start = True
     record.save()
 post_save.connect(group_member_snapshot, sender=GroupMember, dispatch_uid='groupmembersnapshot')
 

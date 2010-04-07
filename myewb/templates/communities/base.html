@@ -22,6 +22,7 @@
             <div class="toolbarcontent">
 		        <a href="{% url community_new_member group.slug %}">{% trans "Add users" %}</a><br/>
 		        <a href="{% url community_invite_member group.slug %}">{% trans "Invite users" %}</a><br/>
+		        <a href="{% url community_stats group.slug %}">{% trans "Group statistics" %}</a><br/>
 	            <br/>
 	            
        			<a href="{% url edit_community group.slug %}">{% trans "Edit list details" %}</a><br/><br/>
