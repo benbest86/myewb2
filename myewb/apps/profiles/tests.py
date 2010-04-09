@@ -63,6 +63,7 @@ class TestMemberProfile(TestCase):
         c = self.client
         c.login(username='bob', password='passw0rd')
         response = c.get("/profiles/joe/")
+        print response.content
         self.assertContains(response, "joe@smith.ca")
         response = c.get("/profiles/john/")
         self.assertContains(response, "john@doe.ca")

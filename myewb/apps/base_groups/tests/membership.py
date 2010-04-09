@@ -26,7 +26,7 @@ class TestPendingMembers(TestCase):
 
     def test_reject(self):
         other_user = User.objects.create(username='other_user', email='other@ewb.ca')
-        pm = InvitationToJoinGroup.objects.create(user=other_user, group=self.bg, message='to test out membership.')
+        pm = InvitationToJoinGroup.objects.create(user=other_user, group=self.bg, message='to test out membership.', invited_by=self.creator)
         self.assertFalse(self.bg.user_is_member(other_user))
         pm.reject()
         self.assertFalse(self.bg.user_is_member(other_user))
@@ -47,7 +47,7 @@ class TestInvitations(TestCase):
     def test_invite_user(self):
         other_user = User.objects.create(username='other_user', email='other@ewb.ca')
         self.assertFalse(self.bg.user_is_pending_member(other_user))
-        InvitationToJoinGroup.objects.create(user=other_user, group=self.bg, message='to test out membership.')
+        InvitationToJoinGroup.objects.create(user=other_user, group=self.bg, message='to test out membership.', invited_by=self.creator)
         self.assertTrue(self.bg.user_is_pending_member(other_user))
         pm = other_user.pending_memberships.get()
         self.assertTrue(pm.is_invited)

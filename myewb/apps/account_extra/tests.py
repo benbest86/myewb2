@@ -15,7 +15,12 @@ class TestAccountExtra(TestCase):
         """ensure that user can signup using email address, but is not immediately logged in""" 
         prev_count = User.objects.all().count()
         c = Client()
-        response = c.post("/account/signup/", {'email': 'testuser@ewb.ca', 'password1': 'passw0rd', 'password2': 'passw0rd'})
+        response = c.post("/account/signup/", {'firstname': 'FirstName',
+                                               'lastname': 'LastName',
+                                               'email': 'testuser@ewb.ca',
+                                               'password1': 'passw0rd',
+                                               'password2': 'passw0rd'},
+                                               follow=True)
         new_count = User.objects.all().count()
         self.assertEqual(new_count, prev_count + 1)
         

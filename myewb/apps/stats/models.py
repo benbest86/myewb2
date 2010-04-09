@@ -37,7 +37,7 @@ def record(action):
         stats.day = date.today()
         stats.users = User.objects.filter(is_active=True).count()
         stats.regularmembers = MemberProfile.objects.filter(membership_expiry__gt=date.today()).count()
-        stats.associatemembers = User.objects.filter(is_active=True, is_bulk=False).count - stats.regularmembers
+        stats.associatemembers = User.objects.filter(is_active=True, is_bulk=False).count() - stats.regularmembers
     
     # so awesome.
     # http://yuji.wordpress.com/2008/05/14/django-list-all-fields-in-an-object/

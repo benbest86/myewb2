@@ -11,8 +11,8 @@ from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
-from django.core import mail
 
+from mailer.models import Message
 from emailconfirmation.models import EmailAddress
 from base_groups.models import GroupMember
 from base_groups.forms import GroupMemberForm
@@ -126,7 +126,7 @@ class TestNetworkTopicMail(TestCase):
 
     def setUp(self):
         self.ewb = Network.objects.get(slug='ewb')
-        self.logged_in = self.client.login(username='ben', password='passw0rd')
+        self.logged_in = self.client.login(username='superman', password='passw0rd')
 
     def tearDown(self):
         self.client.logout()
@@ -162,7 +162,7 @@ class TestBulkMembers(TestCase):
 
     def test_create_bulk_user(self):
         self.assertTrue(self.client.login(username='superman', password='passw0rd'))
-        self.client.post('/networks/ewb/bulk/', {'emails':'test@server.com'})
+        self.client.post('/networks/ewb/bulkimport/', {'emails':'test@server.com'})
         bulk_users = self.ewb.members.bulk()
         # we should have one bulk user at this point
         self.assertEquals(bulk_users.count(), 1)
@@ -184,7 +184,7 @@ class TestBulkMembers(TestCase):
         four@four.com
         '''
         self.client.login(username='superman', password='passw0rd')
-        self.client.post('/networks/ewb/bulk/', {'emails':email_list})
+        self.client.post('/networks/ewb/bulkimport/', {'emails':email_list})
         self.assertEquals(self.ewb.members.bulk().count(), 4)
         for email in email_list.split():
             self.assertTrue(get_email_user(email).member_groups.get(group__slug='ewb'))
@@ -196,7 +196,7 @@ class TestBulkMembers(TestCase):
         four@four.c
         '''
         self.client.login(username='superman', password='passw0rd')
-        response = self.client.post('/networks/ewb/bulk/', {'emails':invalid_email_list})
+        response = self.client.post('/networks/ewb/bulkimport/', {'emails':invalid_email_list})
         for email in invalid_email_list:
             self.assertTrue(response.content.find('%s is not a valid email.' % email))
 
@@ -209,7 +209,7 @@ class TestBulkMembers(TestCase):
         """
         new_network = Network.objects.create(slug='new-net', name='new network', creator=self.superman)
         self.assertTrue(self.client.login(username='superman', password='passw0rd'))
-        self.client.post('/networks/new-net/bulk/', {'emails':'test3@server.com'})
+        self.client.post('/networks/new-net/bulkimport/', {'emails':'test3@server.com'})
 
         self.client.logout()
         new_user_info = {
@@ -217,6 +217,8 @@ class TestBulkMembers(TestCase):
                 'password1': 'test',
                 'password2': 'test',
                 'email': 'test3@server.com',
+                'firstname': 'FirstName',
+                'lastname': 'LastName'
                 }
         self.client.post('/account/signup/', new_user_info)
         self.assertEquals(new_network.members.bulk().count(), 1)
@@ -230,7 +232,7 @@ class TestBulkMembers(TestCase):
     def test_verify_email_for_bulk_user(self):
         new_network = Network.objects.create(slug='new-net', name='new network', creator=self.superman)
         self.assertTrue(self.client.login(username='superman', password='passw0rd'))
-        self.client.post('/networks/new-net/bulk/', {'emails':'test2@server.com'})
+        response = self.client.post('/networks/new-net/bulkimport/', {'emails':'test2@server.com'})
         bulk_user = get_email_user('test2@server.com')
         self.joe.emailaddress_set.add(EmailAddress(email='test2@server.com'))
         email_address = self.joe.emailaddress_set.get(email='test2@server.com')
@@ -244,10 +246,19 @@ class TestBulkMembers(TestCase):
         self.assertEquals(new_network.members.bulk().count(), 0)
         new_network.delete()
         
+    def test_verify_bulk_remove(self):
+        email = '''one@one.com'''
+        self.client.login(username='superman', password='passw0rd')
+        self.client.post('/networks/ewb/bulkimport/', {'emails':email})
+        self.assertEquals(self.ewb.members.filter(user__email=email).count(), 1)
+        self.client.post('/networks/ewb/bulkremove/', {'emails':email})
+        
+        self.assertRaises(GroupMember.DoesNotExist, self.ewb.members.get, user__email=email)
+
     def test_verify_unsubscribe(self):
         email = '''one@one.com'''
         self.client.login(username='superman', password='passw0rd')
-        self.client.post('/networks/ewb/bulk/', {'emails':email})
+        self.client.post('/networks/ewb/bulkimport/', {'emails':email})
         self.assertEquals(self.ewb.members.filter(user__email=email).count(), 1)
         self.client.logout()
         
@@ -280,12 +291,12 @@ class TestCustomGroupMemberManager(TestCase):
     def test_accepted_members(self):
         self.client.login(username='superman', password='passw0rd')
         self.assertFalse(self.joe in [member.user for member in self.new_network.members.accepted()])
-        self.client.post('/networks/new-net/bulk/', {'emails':'joe@smith.com'})
+        self.client.post('/networks/new-net/bulkimport/', {'emails':'joe@smith.com'})
         self.assertTrue(self.joe in [member.user for member in self.new_network.members.accepted()])
 
     def test_bulk_members(self):
         self.client.login(username='superman', password='passw0rd')
         self.assertFalse('bulk@test.ca' in [member.user.email for member in self.new_network.members.bulk()])
-        self.client.post('/networks/new-net/bulk/', {'emails':'bulk@test.ca'})
+        self.client.post('/networks/new-net/bulkimport/', {'emails':'bulk@test.ca'})
         self.assertTrue('bulk@test.ca' in [member.user.email for member in self.new_network.members.bulk()])
 

@@ -205,7 +205,7 @@ class EmailSignupForm(forms.Form):
         
         new_user.save()
         
-        if self.cleaned_data['chapter'] != "none":
+        if self.cleaned_data['chapter'] != "none" and self.cleaned_data['chapter'] != "":
             chapter = get_object_or_404(Network, slug=self.cleaned_data['chapter'])
             chapter.add_member(new_user)
             

@@ -119,6 +119,7 @@
 		"model": "profiles.memberprofile",
 		"fields": {
 			"profile_ptr": 1,
+			"user2": 2,
 
 			"first_name": "Robert",
 			"preferred_first_name": "Bob",
@@ -132,7 +133,8 @@
 		"pk": 2,
 		"model": "profiles.memberprofile",
 		"fields": {
-			"profile_ptr": 2
+			"profile_ptr": 2,
+			"user2": 3
 			
 		}
 	},
@@ -140,7 +142,8 @@
 		"pk": 3,
 		"model": "profiles.memberprofile",
 		"fields": {
-			"profile_ptr": 3
+			"profile_ptr": 3,
+			"user2": 4
 			
 		}
 	},	
@@ -148,7 +151,8 @@
 		"pk": 4,
 		"model": "profiles.memberprofile",
 		"fields": {
-			"profile_ptr": 4
+			"profile_ptr": 4,
+			"user2": 5
 		}
 	},
 	{
