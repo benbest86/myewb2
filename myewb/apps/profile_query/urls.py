@@ -12,4 +12,8 @@ urlpatterns = patterns('profile_query.views',
     url(r'^addprofile/$', 'query.addprofile', name='profile_query_addprofile'),    
     url(r'^delprofile/(?P<id>\d+)/$', 'query.delprofile', name='profile_query_delprofile'),    
     url(r'^addgroup/$', 'query.addgroup', name='profile_query_addgroup'),    
+
+    url(r'^email/compose/$', 'email.compose', name='profile_query_new_email'),
+    url(r'^email/preview/$', 'email.preview', name='profile_query_preview_email'),    
+    url(r'^email/send/$', 'email.send', name='profile_query_send_email'),    
 )

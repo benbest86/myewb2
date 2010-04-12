@@ -4,7 +4,7 @@
 {% load uni_form %}
 {% load pagination_tags %}
 
-{% block head_title %}{% blocktrans %}Advaneced Profile Query{% endblocktrans %}{% endblock %}
+{% block head_title %}{% blocktrans %}Advanced Profile Query{% endblocktrans %}{% endblock %}
 
 {% block extra_head %}
 	{{ block.super }}
@@ -64,7 +64,7 @@
 		
 		{% if results %}
 		    <div>
-		    Actions: <a href="#">send email</a> | <a href="#">add to group</a> | <a href="#">save this query</a>
+		    Actions: <a href="{% url profile_query_new_email %}">send email</a> | <a href="#">add to group</a> | <a href="#">save this query</a>
 		    </div>
 		    
 		    <br/><br/>
