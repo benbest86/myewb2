@@ -8,8 +8,8 @@ Copyright 2010 Engineers Without Borders (Canada)
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('profile_query.views',
-    url(r'^$', 'profilequery', name='profile_query'),    
-    url(r'^addprofile/$', 'addprofile', name='profile_query_addprofile'),    
-    url(r'^delprofile/(?P<id>\d+)/$', 'delprofile', name='profile_query_delprofile'),    
-    url(r'^addgroup/$', 'addgroup', name='profile_query_addgroup'),    
+    url(r'^$', 'query.profilequery', name='profile_query'),    
+    url(r'^addprofile/$', 'query.addprofile', name='profile_query_addprofile'),    
+    url(r'^delprofile/(?P<id>\d+)/$', 'query.delprofile', name='profile_query_delprofile'),    
+    url(r'^addgroup/$', 'query.addgroup', name='profile_query_addgroup'),    
 )

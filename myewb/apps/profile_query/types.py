@@ -33,9 +33,9 @@ PROFILECHOICES = {'first_name': 'First Name',
                   'user__emailaddress__email': 'Email',
                   'gender': 'Gender (M or F)',
                   'language': 'Language (E or F)',
-                  'date_of_birth': 'Date of birth',
-                  'membership_expiry': 'Membership expiry',
-                  'previous_login': 'Last sign-in',
+                  'date_of_birth': 'Date of birth',             # FIXME: need date selector
+                  'membership_expiry': 'Membership expiry',     # FIXME: need date selector
+                  'previous_login': 'Last sign-in',             # FIXME: need date selector
                   'login_count': 'Number of sign-ins',
                   'addresses__city': 'City',
                   'addresses__province': 'Province',
