@@ -1,3 +1,4 @@
+from django.contrib.auth.decorators import permission_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response, get_object_or_404
@@ -8,6 +9,7 @@ from django.utils.translation import ugettext_lazy as _
 from profiles.models import MemberProfile
 from profile_query.forms import *
 
+@permission_required('profiles')
 def profilequery(request):
     form = None
     results = None
@@ -59,6 +61,7 @@ def parse_profile_term(data, id=None):
                                                                'results': 0,    # not used yet. maybe one day.
                                                                'id': id})
 
+@permission_required('profiles')
 def addprofile(request):
     """
     Add a profile-based query term.  Is an AJAX call.
@@ -83,6 +86,7 @@ def addprofile(request):
             return HttpResponse(parse_profile_term(data, id))
     return Http404
     
+@permission_required('profiles')
 def delprofile(request, id):
     """
     Remove a profile-based query term.  Is an AJAX call.
@@ -92,6 +96,7 @@ def delprofile(request, id):
     request.session['profilequery'] = terms
     return HttpResponseRedirect(reverse('profile_query'))
     
+@permission_required('profiles')
 def addgroup(request):
     """
     Add a group-based query term.  Is an AJAX call.
