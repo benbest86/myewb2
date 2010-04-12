@@ -1,0 +1,35 @@
+{% extends "profiles/base.html" %}
+
+{% load i18n %}
+{% load pagination_tags %}
+{% load profile_query_tags %}
+
+{% block head_title %}{% blocktrans %}Advanced Profile Query{% endblocktrans %}{% endblock %}
+
+{% block body %}
+
+	<h1>Advanced Profile Query</h1>
+
+	<p>	
+		<a href="{% url profile_new_query %}">Create new query</a>
+	</p>
+
+	<h3>My queries</h3>
+	{% for q in my_queries %}
+		<a href="{% url profile_query_load q.pk %}">
+			<strong>{{ q.name }}</strong> - {{q.created|date}}
+		</a>
+		<br/>
+	{% endfor %}
+	
+	<hr/>
+	<h3>Shared queries</h3>
+	
+	{% for q in shared_queries %}
+		<a href="{% url profile_query_load q.pk %}">
+			<strong>{{ q.name }}</strong> - {{q.owner}} - {{q.created|date}}
+		</a>
+		<br/>
+	{% endfor %}
+	
+{% endblock %}

@@ -6,6 +6,8 @@ Copyright 2010 Engineers Without Borders Canada
 @author Francis Kung
 """
 
+import cPickle as pickle
+
 from django.contrib.auth.decorators import permission_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
@@ -15,10 +17,61 @@ from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 
 from profiles.models import MemberProfile
-from profile_query.forms.query import ProfileQueryForm
+from profile_query.models import Query
+from profile_query.forms.query import ProfileQueryForm, QueryNameForm
 
 @permission_required('profiles')
-def profilequery(request):
+def list(request):
+    my_queries = Query.objects.filter(owner=request.user)
+    shared_queries = Query.objects.filter(shared=True).exclude(owner=request.user)
+    
+    return render_to_response(
+            'profile_query/query_list.html', 
+            {'my_queries': my_queries,
+             'shared_queries': shared_queries 
+            }, 
+            context_instance=RequestContext(request))
+
+@permission_required('profiles')
+def save(request):
+    # load up the current query, which is saved in the session
+    terms = request.session.get("profilequery")
+    
+    if request.method == 'POST':
+        form = QueryNameForm(request.POST)
+        
+        if form.is_valid():
+            query = form.save(commit=False)
+            query.terms = pickle.dumps(terms) 
+            query.owner = request.user
+            query.save()
+
+            request.user.message_set.create(message="Saved")
+            return HttpResponseRedirect(reverse('profile_new_query'))
+    else:
+        form = QueryNameForm()
+        parsed_terms = []
+        for id, term in enumerate(terms):
+            # parse to human-readable format
+            parsed_terms.append(parse_profile_term(term, id))
+        
+    return render_to_response('profile_query/query_save.html',
+                              {'form': form,
+                               'terms': parsed_terms},
+                              context_instance=RequestContext(request))
+    
+@permission_required('profiles')
+def load(request, id):
+    query = get_object_or_404(Query, pk=id)
+    
+    terms = pickle.loads(str(query.terms))        # is this forced unicode-to-ascii going to bite me later?
+    request.session['profilequery'] = terms
+    
+    request.user.message_set.create(message="Loaded")
+    return HttpResponseRedirect(reverse("profile_new_query"))
+
+@permission_required('profiles')
+def new_query(request):
     form = None
     results = None
     

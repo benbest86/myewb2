@@ -27,6 +27,8 @@
 
 	<h1>Advanced Profile Query</h1>
 	
+	<a href="{% url profile_query %}">See saved queries</a>
+
 	{% for t in terms %}
 		<div class="{% cycle 'queryterm1' 'queryterm2' %}">{{t}}</div>
 		{# FIXME: need to set the javascript toggle variable too; if there are an odd number of terms here, then we'll get two light-coloured terms in a row. #}
@@ -49,7 +51,7 @@
 	    
 	    <hr/>
 	    
-	    <form method="post" action="{% url profile_query %}">
+	    <form method="post" action="{% url profile_new_query %}">
     		<input type="submit" value="run query"/>
     	</form>
     
@@ -64,7 +66,9 @@
 		
 		{% if results %}
 		    <div>
-		    Actions: <a href="{% url profile_query_new_email %}">send email</a> | <a href="#">add to group</a> | <a href="#">save this query</a>
+		    Actions: <a href="{% url profile_query_new_email %}">send email</a> | 
+		    <a href="#">add to group</a> | 
+		    <a href="{% url profile_query_save %}">save this query</a>
 		    </div>
 		    
 		    <br/><br/>

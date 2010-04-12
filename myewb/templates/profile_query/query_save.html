@@ -1,0 +1,39 @@
+{% extends "profiles/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+
+{% block head_title %}{% blocktrans %}Advanced Profile Query{% endblocktrans %}{% endblock %}
+
+{% block extra_head %}
+	{{ block.super }}
+	
+	<style>
+		div.queryterm1 {
+			padding: 10px;
+			margin: 10px;
+			background: #f0f0f0;
+		}
+		div.queryterm2 {
+			padding: 10px;
+			margin: 10px;
+			background: #d0d0d0;
+		}
+	</style>
+{% endblock %}
+
+{% block body %}
+
+	<h1>Advanced Profile Query</h1>
+	
+	{% for t in terms %}
+		<div class="{% cycle 'queryterm1' 'queryterm2' %}">{{t}}</div>
+		{# FIXME: need to set the javascript toggle variable too; if there are an odd number of terms here, then we'll get two light-coloured terms in a row. #}
+	{% endfor %}
+	
+   	<form action="" id="profilequery_form" class="uniForm" method="post">
+    	{{ form|as_uni_form }}
+   		<input type="submit" value="save query"/>
+   	</form>
+   	
+{% endblock %}

@@ -17,6 +17,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 from profile_query.types import *
+from profile_query.models import Query
 
 class ProfileInfoQueryWidget(forms.MultiWidget):
     """
@@ -58,3 +59,8 @@ class ProfileInfoQueryField(forms.MultiValueField):
         
 class ProfileQueryForm(forms.Form):
     queryfields = ProfileInfoQueryField(label="")
+
+class QueryNameForm(forms.ModelForm):
+    class Meta:
+        model = Query
+        fields = ('name', 'shared')
