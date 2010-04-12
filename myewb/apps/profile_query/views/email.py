@@ -49,20 +49,24 @@ def preview(request):
         form = EmailForm(request.POST)
         
         if form.is_valid():
-            terms = request.session.get('profilequery', [])
-            parsed_terms = []
-            for id, term in enumerate(terms):
-                # parse to human-readable format
-                parsed_terms.append(parse_profile_term(term, id))
-                
-            recipients = build_profile_query(terms).count()
+            data = form.cleaned_data
+        else:
+            data = None
+            
+        terms = request.session.get('profilequery', [])
+        parsed_terms = []
+        for id, term in enumerate(terms):
+            # parse to human-readable format
+            parsed_terms.append(parse_profile_term(term, id))
+            
+        recipients = build_profile_query(terms).count()
 
-            return render_to_response("profile_query/email_preview.html",
-                                      {'form': form,
-                                       'terms': parsed_terms,
-                                       'data': form.cleaned_data,
-                                       'recipients': recipients},
-                                       context_instance=RequestContext(request))
+        return render_to_response("profile_query/email_preview.html",
+                                  {'form': form,
+                                   'terms': parsed_terms,
+                                   'data': data,
+                                   'recipients': recipients},
+                                   context_instance=RequestContext(request))
             
         
     else:

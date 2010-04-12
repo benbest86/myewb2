@@ -32,28 +32,31 @@
 	{% endfor %}
 	<hr/>
 	
-	<div>
-		<strong>From: "{{ data.sendername }}" &lt;{{data.senderemail}}&gt;</strong>
-	</div>
-	
-	<div>
-		<strong>Subject: {{ data.subject }}</strong>
-	</div>
-	
-	<div style="padding: 10px; margin: 25px; border: 1px solid;">
-		{{ data.body|safe }}
-	</div>
-	
-	<form method="post" action="{% url profile_query_send_email %}" id="hiddenform">
-		<div style="display: none;">
-			{{ form|as_uni_form }}
+	{% if data %}
+		<div>
+			<strong>From: "{{ data.sendername }}" &lt;{{data.senderemail}}&gt;</strong>
 		</div>
-
-		<input type="submit" value="send to {{recipients}} people"/>
-	</form>
+		
+		<div>
+			<strong>Subject: {{ data.subject }}</strong>
+		</div>
+		
+		<div style="padding: 10px; margin: 25px; border: 1px solid;">
+			{{ data.body|safe }}
+		</div>
+		
+		<form method="post" action="{% url profile_query_send_email %}" id="hiddenform">
+			<div style="display: none;">
+				{{ form|as_uni_form }}
+			</div>
 	
-	<hr/>
-	Or, edit again...<br/>
+			<input type="submit" value="send to {{recipients}} people"/>
+		</form>
+		
+		<hr/>
+		Or, edit again...<br/>
+	{% endif %}
+	
 	<form method="post" class="uniForm" action="{% url profile_query_preview_email %}">
 		{{ form|as_uni_form }}
 		
