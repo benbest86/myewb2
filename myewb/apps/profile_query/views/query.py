@@ -1,3 +1,11 @@
+"""myEWB advanced profile queries
+
+This file is part of myEWB
+Copyright 2010 Engineers Without Borders Canada
+
+@author Francis Kung
+"""
+
 from django.contrib.auth.decorators import permission_required
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
@@ -7,7 +15,7 @@ from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 
 from profiles.models import MemberProfile
-from profile_query.forms import *
+from profile_query.forms.query import ProfileQueryForm
 
 @permission_required('profiles')
 def profilequery(request):
@@ -23,15 +31,7 @@ def profilequery(request):
     
     # POST means we're running the query
     if request.method == 'POST':
-        results = MemberProfile.objects.all()
-        
-        for t in terms:
-            attribute, comparison, value = t.split("|")
-        
-            # build the query filter dynamically...
-            kwargs = {}
-            kwargs[str("%s__%s" % (attribute, comparison))] = value
-            results = results.filter(**kwargs)
+        results = build_profile_query(terms)
     else:
         form = ProfileQueryForm()
 
@@ -60,6 +60,21 @@ def parse_profile_term(data, id=None):
                                                                'value': value,
                                                                'results': 0,    # not used yet. maybe one day.
                                                                'id': id})
+
+def build_profile_query(terms):
+    """
+    Build a query based on submitted profile terms
+    """
+    results = MemberProfile.objects.all()
+    
+    for t in terms:
+        attribute, comparison, value = t.split("|")
+    
+        # build the query filter dynamically...
+        kwargs = {}
+        kwargs[str("%s__%s" % (attribute, comparison))] = value
+        results = results.filter(**kwargs)
+    return results
 
 @permission_required('profiles')
 def addprofile(request):
