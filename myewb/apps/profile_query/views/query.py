@@ -47,7 +47,7 @@ def save(request):
             query.save()
 
             request.user.message_set.create(message="Saved")
-            return HttpResponseRedirect(reverse('profile_new_query'))
+            return HttpResponseRedirect(reverse('profile_query'))
     else:
         form = QueryNameForm()
         parsed_terms = []

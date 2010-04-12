@@ -2,7 +2,6 @@
 
 {% load i18n %}
 {% load pagination_tags %}
-{% load profile_query_tags %}
 
 {% block head_title %}{% blocktrans %}Advanced Profile Query{% endblocktrans %}{% endblock %}
 
@@ -16,8 +15,11 @@
 
 	<h3>My queries</h3>
 	{% for q in my_queries %}
-		<a href="{% url profile_query_load q.pk %}">
+		<a href="{% url profile_query_load q.pk %}" class="loadquery">
 			<strong>{{ q.name }}</strong> - {{q.created|date}}
+			{% if q.shared %}
+				(shared)
+			{% endif %}
 		</a>
 		<br/>
 	{% endfor %}
@@ -26,10 +28,24 @@
 	<h3>Shared queries</h3>
 	
 	{% for q in shared_queries %}
-		<a href="{% url profile_query_load q.pk %}">
+		<a href="{% url profile_query_load q.pk %}" class="loadquery">
 			<strong>{{ q.name }}</strong> - {{q.owner}} - {{q.created|date}}
 		</a>
 		<br/>
 	{% endfor %}
 	
+{% endblock %}
+
+{% block extra_body %}
+
+<script type="text/javascript">
+	$('.loadquery').click(function() {
+		var confirmed = confirm("This will replace the current query.  Are you sure?")
+		if (confirmed)
+			return true;
+		else
+			return false;
+	});
+</script>
+
 {% endblock %}
