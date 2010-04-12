@@ -33,6 +33,8 @@ def get_STATIC_URL():
 
 @register.simple_tag
 def get_comments_since(since):
+    if since == None:
+        return ""
     comments = ThreadedComment.objects.filter(date_submitted__gt=since).order_by('date_submitted').count()
     if comments == 0:
         return ""

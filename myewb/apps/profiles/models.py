@@ -120,7 +120,8 @@ class MemberProfile(Profile):
     address_updated = models.DateField(_('address updated'), null=True, blank=True)
     replies_as_emails = models.BooleanField(_('replies as emails'), null=False, blank=True)
 
-    addresses = generic.GenericRelation(Address)
+    #addresses = generic.GenericRelation(Address)
+    addresses = models.ManyToManyField(Address)
     phone_numbers = generic.GenericRelation(PhoneNumber)
     sending_groups = models.ManyToManyField("volunteering.SendingGroup", blank=True)
     
