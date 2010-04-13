@@ -1,3 +1,2 @@
-# import regression tests
 from regression import *
-from networks import *
+from network import *
