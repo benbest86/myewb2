@@ -11,7 +11,7 @@ from django.conf.urls.defaults import *
 from creditcard.forms import PaymentForm
 from profiles.forms import MembershipForm, MembershipFormPreview
 
-urlpatterns = patterns('profiles.views',
+urlpatterns = patterns('profiles.views.profile',
     url(r'^$', 'profiles', name='profiles_index'),    
     url(r'^$', 'profiles', name='profile_list'),    
     url(r'^edit/$', 'profile_edit', name='profile_edit'),

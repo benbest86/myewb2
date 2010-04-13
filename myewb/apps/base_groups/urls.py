@@ -16,7 +16,7 @@ from groups.bridge import ContentBridge
 
 bridge = ContentBridge(BaseGroup, 'groups')
 
-urlpatterns = patterns('base_groups.views',    
+urlpatterns = patterns('base_groups.views.groups',    
     # Modified REST - only GET and POST used
 
     # GET - groups index
