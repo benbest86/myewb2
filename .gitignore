@@ -31,3 +31,6 @@ myewb/myewb_index
 
 # ignore Mac folder settings files
 .DS_Store
+
+# ignore code coverage results (but keep the folder)
+myewb/coverage_report/*

@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 55
+/svn/!svn/ver/15/python/trunk/django/apps/test_coverage
+END
+NOTICE
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/15/python/trunk/django/apps/test_coverage/NOTICE
+END
+LICENSE
+K 25
+svn:wc:ra_dav:version-url
+V 62
+/svn/!svn/ver/2/python/trunk/django/apps/test_coverage/LICENSE
+END
+README.rst
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/svn/!svn/ver/8/python/trunk/django/apps/test_coverage/README.rst
+END
+__init__.py
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/2/python/trunk/django/apps/test_coverage/__init__.py
+END
+settings.py
+K 25
+svn:wc:ra_dav:version-url
+V 66
+/svn/!svn/ver/6/python/trunk/django/apps/test_coverage/settings.py
+END
+coverage_runner.py
+K 25
+svn:wc:ra_dav:version-url
+V 73
+/svn/!svn/ver/2/python/trunk/django/apps/test_coverage/coverage_runner.py
+END

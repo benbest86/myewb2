@@ -1,0 +1,7 @@
+K 13
+svn:externals
+V 184
+coverage_report http://opensource.55minutes.com/svn/python/trunk/lib/utils/testing/coverage_report
+module_tools http://opensource.55minutes.com/svn/python/trunk/lib/utils/module_tools
+
+END
