@@ -166,7 +166,7 @@ class GroupTopic(Topic):
         if self.send_as_email:
             self.group.send_mail_to_members(self.title, message, sender=sender)
         
-        for list in self.watchlists:
+        for list in self.watchlists.all():
             user = list.owner
             # TODO: for user in list.subscribers blah blah
             sender = 'myEWB <notices@my.ewb.ca>'

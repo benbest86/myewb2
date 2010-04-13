@@ -8,6 +8,7 @@ Last modified on 2009-07-29
 """
 
 from django.contrib.auth.models import User
+from django.core import mail
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client

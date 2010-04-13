@@ -7,7 +7,7 @@
 			"first_name": "Bob",
 			"last_name": "Roberts",
 			"is_active": true,
-			"is_superuser": false,
+			"is_superuser": true,
 			"is_staff": true,
 			"last_login": "2009-03-31 19:11:56",
 			"groups": [],

@@ -63,7 +63,6 @@ class TestMemberProfile(TestCase):
         c = self.client
         c.login(username='bob', password='passw0rd')
         response = c.get("/profiles/joe/")
-        print response.content
         self.assertContains(response, "joe@smith.ca")
         response = c.get("/profiles/john/")
         self.assertContains(response, "john@doe.ca")
@@ -112,7 +111,9 @@ class TestMemberProfileForm(TestCase):
         }
         form = ProfileForm(data)
         self.assertEquals(True, form.is_valid(), 'Form errors: %s' % form.errors)
-        
+
+    """
+    disabled for now, as URL is no longer part of the profile form
     def test_bad_url(self):        
         form = ProfileForm(instance=self.profile_one)
         # include a bad url to force an error
@@ -124,6 +125,7 @@ class TestMemberProfileForm(TestCase):
         }
         form = ProfileForm(data)
         self.assertEquals(False, form.is_valid())
+    """
 
     # XXX this test is no longer since addresses have moved.
     def _test_bad_country(self):
