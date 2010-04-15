@@ -25,10 +25,26 @@ post_save.connect(clean_up_email_addresses, sender=EmailAddress)
 # add an is_bulk boolean directly to the User model
 User.add_to_class('is_bulk', models.BooleanField(default=False))
 
-def create_bulk_user_method(self, *args, **kwargs):
-    new_user = self.create_user(*args, **kwargs)
+def create_bulk_user_method(self, email):
+    # ensure email is not already in use
+    emailaddress = EmailAddress.objects.filter(email=email, verified=True)  # shoudl I remove the verified=True ?
+    if emailaddress.count() > 0:
+        return emailaddress[0].user
+    
+    # create random username
+    username = User.objects.make_random_password()
+    while User.objects.filter(username=username).count() > 0:   # ensure uniqueness
+        username = User.objects.make_random_password()
+    
+    # create the user
+    new_user = self.create_user(username=username, email=email)
     new_user.is_bulk = True
     new_user.save()
+    
+    # and the EmailAddress object too (should this be a User.postsave instead?)
+    EmailAddress.objects.add_email(new_user, email)
+    
+    # and finish up
     signals.listsignup.send(sender=new_user, user=new_user)
     return new_user
 ExtraUserManager.create_bulk_user = create_bulk_user_method

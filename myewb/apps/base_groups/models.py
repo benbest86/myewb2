@@ -147,10 +147,7 @@ class BaseGroup(Group):
         """
         email_user = get_email_user(email)
         if email_user is None:
-            username = User.objects.make_random_password()     # not a password per se, just a random string
-            while User.objects.filter(username=username).count() > 0:   # ensure uniqueness
-                username = User.objects.make_random_password()
-            email_user = User.extras.create_bulk_user(username, email)      # sets "unusable" password
+            email_user = User.extras.create_bulk_user(email)
         
         self.add_member(email_user)
     

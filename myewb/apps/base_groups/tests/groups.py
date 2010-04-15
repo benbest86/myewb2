@@ -74,5 +74,5 @@ class TestUserDuckPunches(TestCase):
         self.assertFalse(u.is_bulk)
 
     def test_bulk_user(self):
-        u = User.extras.create_bulk_user(username='fred', email='fred@ewb.ca')
+        u = User.extras.create_bulk_user(email='fred@ewb.ca')
         self.assertTrue(u.is_bulk)
