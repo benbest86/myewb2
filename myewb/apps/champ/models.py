@@ -15,6 +15,7 @@ from base_groups.models import BaseGroup
 class Activity(models.Model):
     name = models.CharField(_('Event name'), max_length=255)
     
+    date = models.DateField(null=True, blank=True)
     created_date = models.DateField(auto_now_add=True)
     modified_date = models.DateField(auto_now=True)
     
@@ -51,7 +52,8 @@ class Activity(models.Model):
         return True
     
 class Metrics(models.Model):
-    activity_id = models.PositiveIntegerField()    # don't use ForeignKey so that subclassing won't cause reverse name problems.
+#    activity_id = models.PositiveIntegerField()    # don't use ForeignKey so that subclassing won't cause reverse name problems.
+    activity = models.ForeignKey(Activity, related_name="%s" % __name__)
     metric_type = models.CharField(max_length=255, null=True)
     
     def __init__(self, *args, **kwargs):
@@ -162,6 +164,4 @@ class CurriculumEnhancementMetrics(Metrics):
     students = models.IntegerField(null=True, blank=True)
     hours = models.IntegerField(null=True, blank=True)
     professor = models.CharField(max_length=255, null=True, blank=True)
-    activity = models.CharField(max_length=255, null=True, blank=True)
-     
-    
+    ce_activity = models.CharField(max_length=255, null=True, blank=True)

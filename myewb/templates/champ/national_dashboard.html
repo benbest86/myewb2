@@ -1,0 +1,89 @@
+{% extends "champ/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+{% load wiki_tags %}
+{% load avatar_tags %}
+{% load threadedcommentstags %}
+{% load pagination_tags %}
+{% load extra_tagging_tags %}
+{% load networks_tags %}
+{% load base_groups_tags %}
+{% load group_tags %}
+{% load topics_tags %}
+{% load events_tags %} 
+
+{% block champ_body %}
+
+{% comment %}
+<h3 align="center">Currently Displaying: 
+
+#if($mode.equals("term")) $month Term $year #end
+#if($mode.equals("month")) $monthName $year #end
+#if($mode.equals("year")) $yearname #end
+#if($mode.equals("ever")) All Dates #end
+
+</h3>
+
+
+<table style="width: 95%"> <tr>
+<td align="left" valign="middle">
+	#if(!$mode.equals("ever")) <a href="$base/chapter/CHAMP/$prev" class="more">&laquo; previous $mode</a> #end
+</td>
+<td align="center">
+	<span style="font-size: 11px;">Jump to:</span> <br /> 
+	<a href="$base/chapter/CHAMP/$thisMonth" class="more">[current month]</a> 
+	<a href="$base/chapter/CHAMP/$thisTerm" class="more">[current term]</a> 
+	<a href="$base/chapter/CHAMP/$thisYear" class="more">[current year]</a> 
+	<a href="$base/chapter/CHAMP/0/ever" class="more">[all dates]</a></td>
+<td align="right" valign="middle">
+	#if(!$mode.equals("ever")) <a href="$base/chapter/CHAMP/$next" class="more">next $mode &raquo;</a> #end
+</td>
+</tr> </table>
+
+<br />
+{% endcomment %}
+
+
+<h3>Canada-Wide Dashboard</h3>
+
+<table class="cellpadding8" width="500" style="margin: 0 auto;">
+<tr><td style="width: 200px"></td><td></td></tr>
+<tr><th colspan="2">CHAMP Usage</th></tr>
+<tr><td class="labelcell">Reflection Journal Entries:</td><td> {{ journals }} </td></tr>
+<tr><td class="labelcell">Unconfirmed Activities:</td><td> {{ unconfirmed }} </td></tr>
+<tr><td class="labelcell">Confirmed Activities:</td><td>  {{ confirmed }} </td></tr>
+
+<tr><th colspan="2">Member Learning</th></tr>
+<tr><td class="labelcell">Member Learning Hours:</td><td> {{ ml_hours }} </td></tr>
+<tr><td class="labelcell">Average Attendance:</td><td>  {{ ml_attendance }}  </td></tr>
+
+<tr><th colspan="2">Public Outreach</th></tr>
+<tr><td class="labelcell">People reached:</td><td> {{pe_people }}  </td></tr>
+
+<tr><th colspan="2">Advocacy</th></tr>
+<tr><td class="labelcell">Contacts with decision makers:</td><td> {{ po_contacts }}  </td></tr>
+
+<tr><th colspan="2">Curriculum Enhancement</th></tr>
+<tr><td class="labelcell">Students Reached:</td><td> {{ ce_students }}  </td></tr>
+<tr><td class="labelcell">Total Class Hours:</td><td> {{ ce_hours}}  </td></tr>
+
+<tr><th colspan="2">Workplace Outreach</th></tr>
+<tr><td class="labelcell">Professionals Reached:</td><td>  {{ wo_professionals }} </td></tr>
+<tr><td class="labelcell">Presentations:</td><td>  {{ wo_presentations }} </td></tr>
+
+<tr><th colspan="2">School Outreach</th></tr>
+<tr><td class="labelcell">Students Reached:</td><td>  {{ so_students }} </td></tr>
+<tr><td class="labelcell">Presentations:</td><td>  {{ so_presentations }} </td></tr>
+
+
+<tr><th colspan="2">Fundraising</th></tr>
+<tr><td class="labelcell">Dollars Fundraised:</td><td>  $ {{ fundraising_dollars }} </td></tr>
+
+<tr><th colspan="2">Publicity</th></tr>
+<tr><td class="labelcell">Media Hits:</td><td>  {{ publicity_hits }} </td></tr>
+</table></table>
+
+
+
+{% endblock %}

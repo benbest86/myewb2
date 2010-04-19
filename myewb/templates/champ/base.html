@@ -1,0 +1,20 @@
+{% extends "networks/base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}CHAMP{% endblock %}
+
+{% block body %}
+<h1>CHAMP</h1>
+
+{% block champ_body %}
+{% endblock %}
+
+{% endblock %}
+
+{% block toolbar_left %}
+        <div class="toolbarheader bkgd">{% trans "CHAMP Actions" %}</div>
+        <div class="toolbarcontent">
+            links to new entries, etc
+        </div>
+{% endblock %}
