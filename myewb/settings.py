@@ -218,6 +218,7 @@ INSTALLED_APPS = (
     'user_search',
     'permissions',
     'stats',
+    'champ',
 
     # our own third-party libs
     'contrib.django_evolution',
