@@ -15,35 +15,53 @@
 
 {% block champ_body %}
 
-{% comment %}
 <h3 align="center">Currently Displaying: 
 
-#if($mode.equals("term")) $month Term $year #end
-#if($mode.equals("month")) $monthName $year #end
-#if($mode.equals("year")) $yearname #end
-#if($mode.equals("ever")) All Dates #end
+{% if term %}
+    {{ term }} term, {{ year }}
+{% else %}
+    {% if month %}
+        {{ month }}, {{ year }}
+    {% else %}
+        {% if year %}
+            {{ year }}
+        {% else %}
+            all dates
+        {% endif %}
+    {% endif %}
+{% endif %}
 
 </h3>
 
 
 <table style="width: 95%"> <tr>
 <td align="left" valign="middle">
-	#if(!$mode.equals("ever")) <a href="$base/chapter/CHAMP/$prev" class="more">&laquo; previous $mode</a> #end
+	{% if month or term or year %} <a href="$base/chapter/CHAMP/$prev" class="more">&laquo; previous {#$mode#}</a> {% endif %}
 </td>
 <td align="center">
 	<span style="font-size: 11px;">Jump to:</span> <br /> 
-	<a href="$base/chapter/CHAMP/$thisMonth" class="more">[current month]</a> 
-	<a href="$base/chapter/CHAMP/$thisTerm" class="more">[current term]</a> 
-	<a href="$base/chapter/CHAMP/$thisYear" class="more">[current year]</a> 
-	<a href="$base/chapter/CHAMP/0/ever" class="more">[all dates]</a></td>
+	
+	{% if group %}
+	    <a href="{% url champ_dashboard year=nowyear,month=nowmonth,group_slug=group.slug %}" class="more">[current month]</a> 
+	    <a href="{% url champ_dashboard year=nowyear,term=nowterm,group_slug=group.slug %}" class="more">[current term]</a> 
+	    <a href="{% url champ_dashboard year=nowyear,group_slug=group.slug %}" class="more">[current year]</a> 
+	    <a href="{% url champ_dashboard group_slug=group.slug%}" class="more">[all dates]</a></td>
+	{% else %}
+	    <a href="{% url champ_dashboard year=nowyear,month=nowmonth %}" class="more">[current month]</a> 
+	    <a href="{% url champ_dashboard year=nowyear,term=nowterm %}" class="more">[current term]</a> 
+	    <a href="{% url champ_dashboard year=nowyear %}" class="more">[current year]</a> 
+	    <a href="{% url champ_dashboard %}" class="more">[all dates]</a></td>
+    {% endif %}
 <td align="right" valign="middle">
-	#if(!$mode.equals("ever")) <a href="$base/chapter/CHAMP/$next" class="more">next $mode &raquo;</a> #end
+	{% if month or term or year %} <a href="$base/chapter/CHAMP/$next" class="more">next {#$mode#} &raquo;</a> {% endif %}
 </td>
 </tr> </table>
 
 <br />
-{% endcomment %}
 
+{% if group %}
+    {% include "champ/group_dashboard.html" %}
+{% endif %}
 
 <h3>Canada-Wide Dashboard</h3>
 

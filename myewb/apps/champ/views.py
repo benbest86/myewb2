@@ -20,6 +20,7 @@ from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponse
 from django.db.models import Q
 from django.template import RequestContext
 
+from networks.models import Network
 from champ.models import *
 
 def run_query(query, filters):
@@ -119,31 +120,42 @@ def build_filters(year=None, month=None, term=None):
             
     return activity_filters, metric_filters
     
-#@login_required()
-def national_dashboard(request, year=None, month=None, term=None):
+@login_required()
+def dashboard(request, year=None, month=None, term=None,
+                       group_slug=None):
     activity_filters, metric_filters = build_filters(year, month, term)
     
+    if group_slug:
+        activity_filters.append({'group__slug': group_slug})
+        metric_filters.append({'activity__group__slug': group_slug})
+        
+        grp = get_object_or_404(Network, slug=group_slug)
+    else:
+        grp = None
+
     context = run_stats(metric_filters)
 
     context['journals'] = 0
     context['unconfirmed'] = run_query(Activity.objects.filter(confirmed=False), activity_filters).count()
     context['confirmed'] = run_query(Activity.objects.filter(confirmed=True), activity_filters).count()
-    
-    return render_to_response('champ/national_dashboard.html',
-                              context,
-                              context_instance=RequestContext(request))
-    
-@login_required()
-def group_dashboard(request, group_slug, year=None, month=None, term=None):
-    activity_filters, metric_filters = build_filters(year, month, term)
 
-    activity_fiters.append({'group__slug': group_slug})
-    metric_fiters.append({'activity__group__slug': group_slug})
+    context['group'] = None    
+    context['is_group_admin'] = False
+    if grp:
+        context['group'] = grp
     
-    context['journals'] = 0
-    context['unconfirmed'] = run_query(Activity.objects.filter(confirmed=False), activity_filters).count()
-    context['confirmed'] = run_query(Activity.objects.filter(confirmed=True), activity_filters).count()
+        if grp.user_is_admin(request.user):
+            context['is_group_admin'] = True
+            
+    context['year'] = year
+    context['month'] = month
+    context['term'] = term
     
-    return render_to_response('champ/group_dashboard.html',
+    context['nowyear'] = 2010
+    context['nowmonth'] = '04'
+    context['nowterm'] = 'Winter'
+    
+    return render_to_response('champ/dashboard.html',
                               context,
                               context_instance=RequestContext(request))
+

@@ -9,13 +9,13 @@ Copyright 2010 Engineers Without Borders Canada
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('champ.views',
-    url(r'^$', 'national_dashboard', name='champ_national_dashboard'),    
-    url(r'^(?P<year>\d{4})/(?P<month>\d{2})/$', 'national_dashboard', name='champ_national_dashboard'),    
-    url(r'^(?P<year>\d{4})/(?P<term>[-\w]+)/$', 'national_dashboard', name='champ_national_dashboard'),    
-    url(r'^(?P<year>\d{4})/$', 'national_dashboard', name='champ_national_dashboard'),    
-    url(r'^(?P<group_slug>[-\w]+)/$', 'group_dashboard', name='champ_group_dashboard'),
-    url(r'^(?P<group_slug>[-\w]+)/(?P<year>\d{4})/(?P<month>\d{2})/$', 'group_dashboard', name='champ_group_dashboard'),
-    url(r'^(?P<group_slug>[-\w]+)/(?P<year>\d{4})/(?P<term>[-\w]+)/$', 'group_dashboard', name='champ_group_dashboard'),
-    url(r'^(?P<group_slug>[-\w]+)/(?P<year>\d{4})/$', 'group_dashboard', name='champ_group_dashboard')
+    url(r'^$', 'dashboard', name='champ_dashboard'),    
+    url(r'^(?P<year>\d{4})/(?P<month>\d{2})/$', 'dashboard', name='champ_dashboard'),    
+    url(r'^(?P<year>\d{4})/(?P<term>[-\w]+)/$', 'dashboard', name='champ_dashboard'),    
+    url(r'^(?P<year>\d{4})/$', 'dashboard', name='champ_dashboard'),    
+    url(r'^(?P<group_slug>[-\w]+)/$', 'dashboard', name='champ_dashboard'),
+    url(r'^(?P<group_slug>[-\w]+)/(?P<year>\d{4})/(?P<month>\d{2})/$', 'dashboard', name='champ_dashboard'),
+    url(r'^(?P<group_slug>[-\w]+)/(?P<year>\d{4})/(?P<term>[-\w]+)/$', 'dashboard', name='champ_dashboard'),
+    url(r'^(?P<group_slug>[-\w]+)/(?P<year>\d{4})/$', 'dashboard', name='champ_dashboard')
 
 )

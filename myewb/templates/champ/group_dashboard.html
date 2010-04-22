@@ -1,59 +1,4 @@
-{% extends "networks/base.html" %}
 
-{% load i18n %}
-{% load uni_form %}
-{% load wiki_tags %}
-{% load avatar_tags %}
-{% load threadedcommentstags %}
-{% load pagination_tags %}
-{% load extra_tagging_tags %}
-{% load networks_tags %}
-{% load base_groups_tags %}
-{% load group_tags %}
-{% load topics_tags %}
-{% load events_tags %} 
-
-{% block head_title %}CHAMP{% endblock %}
-
-{% block grouptitle %}CHAMP{% endblock %}
-
-{% block groupbody %}
-
-
-<h3 align="center">Currently Displaying: 
-
-#if($mode.equals("term")) $month Term $year #end
-#if($mode.equals("month")) $monthName $year #end
-#if($mode.equals("year")) $yearname #end
-#if($mode.equals("ever")) All Dates #end
-
-</h3>
-
-
-<table style="width: 95%"> <tr>
-<td align="left" valign="middle">
-	#if(!$mode.equals("ever")) <a href="$base/chapter/CHAMP/$prev" class="more">&laquo; previous $mode</a> #end
-</td>
-<td align="center">
-	<span style="font-size: 11px;">Jump to:</span> <br /> 
-	<a href="$base/chapter/CHAMP/$thisMonth" class="more">[current month]</a> 
-	<a href="$base/chapter/CHAMP/$thisTerm" class="more">[current term]</a> 
-	<a href="$base/chapter/CHAMP/$thisYear" class="more">[current year]</a> 
-	<a href="$base/chapter/CHAMP/0/ever" class="more">[all dates]</a></td>
-<td align="right" valign="middle">
-	#if(!$mode.equals("ever")) <a href="$base/chapter/CHAMP/$next" class="more">next $mode &raquo;</a> #end
-</td>
-</tr> </table>
-
-
-
-
-<br />
-
-
-#if($user.getChapter(true))
-	
-	
 <h3>Chapter Dashboard</h3>
 <!--<h4>with targets from $yp.yearName Plan 
 	#if($user.isPresident()) <a href="$base/chapter/EditYearPlan/$yp.year">[edit]</a>#end-->
@@ -65,54 +10,55 @@
 
 <tr>
 	<th style="width: 300px;">Indicator</th>
-	<th style="width: 150px;">Value for #if($mode.equals("term")) $month Term $year #end
-#if($mode.equals("month")) $monthName $year #end
-#if($mode.equals("year")) $yearname #end
-#if($mode.equals("ever")) All Dates #end
-</th>
-	<th  style="width: 150px;">Targets from $yp.yearName Plan <br />
-	#if($user.isPresident()) <a href="$base/chapter/EditYearPlan/$yp.year">[edit]</a>#end</th>
+	<th style="width: 150px;">Value for year {# logic for year/term/month/etc #}</th>
+	<th  style="width: 150px;">Targets from {#$yp.yearName#} Plan
+	{% if is_group_admin %}
+	     <br />
+	     <a href="$base/chapter/EditYearPlan/$yp.year">[edit]</a>
+	{% endif %}
+	</th>
 </tr>
 
 <tr><th colspan="3" align="left">CHAMP Usage</th></tr>
-#if($user.isPresident())
+{# #if($user.isPresident()) #}
+{% if is_group_admin %}
 <tr>
 	<td class="labelcell">Reflection Journal Entries:</td>
-	<td colspan="2"> $numReflections <a href="$base/chapter/ListReflections" class="more">list &raquo;</a></td>
+	<td colspan="2"> {{ journals }} <a href="$base/chapter/ListReflections" class="more">list &raquo;</a></td>
 </tr>
-#end
+{% endif %}
 <tr>
 	<td  class="labelcell">Unconfirmed Activities:</td>
-	<td colspan="2"> $numUnconf <a href="$base/chapter/ListActivities/unconfirmed" class="more">list &raquo;</a></td>
+	<td colspan="2"> {{ unconfirmed }} <a href="$base/chapter/ListActivities/unconfirmed" class="more">list &raquo;</a></td>
 </tr>
 <tr>
 	<td class="labelcell">Confirmed Activities:</td>
-	<td colspan="2">  $numConf <a href="$base/chapter/ListActivities/confirmed" class="more">list &raquo;</a></td>
+	<td colspan="2">  {{ confirmed }} <a href="$base/chapter/ListActivities/confirmed" class="more">list &raquo;</a></td>
 </tr>
 
 <tr><th colspan="3" align="left">Member Learning</th></tr>
 <tr>
 	<td class="labelcell">Member Learning Hours:</td>
-	<td> #dashboard($db.getMlTotalHours(false)) </td>
+	<td> {{ ml_hours }} </td>
 	<td> #yearplan($yp.getMlTotalHours())</td>
 </tr>
 <tr>
 	<td  class="labelcell">Average Attendance:</td>
-	<td>  #dashboard($db.getMlAverageAttendence(false))  </td>
+	<td> {{ ml_attendance }}  </td>
 	<td> #yearplan($yp.getMlAverageAttendence())</td>
 </tr>
 
 <tr><th colspan="3" align="left">Public Outreach</th></tr>
 <tr>
 	<td class="labelcell">People reached:</td>
-	<td> #dashboard($db.getEngPeopleReached(false))  </td>
+	<td> {{ pe_people }} </td>
 	<td> #yearplan($yp.getEngPeopleReached())</td>
 </tr>
 
 <tr><th colspan="3" align="left">Advocacy</th></tr>
 <tr>
 	<td class="labelcell">Contacts with decision makers:</td>
-	<td> #dashboard($db.getAdvContacts(false))  </td>
+	<td> {{ po_contacts }} </td>
 	<td> #yearplan($yp.getAdvContacts())</td>
 </tr>
 
@@ -120,12 +66,12 @@
 </tr>
 <tr>
 	<td class="labelcell">Students Reached:</td>
-	<td> #dashboard($db.getCeStudents(false))  </td>
+	<td> {{ ce_students }} </td>
 	<td> #yearplan($yp.getCeStudents())</td>
 </tr>
 <tr>
 	<td class="labelcell">Total Class Hours:</td>
-	<td> #dashboard($db.getCeHours(false))  </td>
+	<td> {{ ce_hours }} </td>
 	<td> #yearplan($yp.getCeHours())</td>
 </tr>
 
@@ -133,12 +79,12 @@
 <tr><th colspan="3" align="left">Workplace Outreach</th></tr>
 <tr>
 	<td class="labelcell">Professionals Reached:</td>
-	<td>  #dashboard($db.getWoReached(false)) </td>
+	<td>  {{ wo_professionals }} </td>
 	<td> #yearplan($yp.getWoReached())</td>
 </tr>
 <tr>
 	<td class="labelcell">Presentations:</td>
-	<td>  #dashboard($db.getWoPresentations(false)) </td>
+	<td>  {{ wo_presentations }} </td>
 	<td> #yearplan($yp.getWoPresentations())</td>
 </tr>
 
@@ -147,12 +93,12 @@
 <tr><th colspan="3" align="left">School Outreach</th></tr>
 <tr>
 	<td class="labelcell">Students Reached:</td>
-	<td>  #dashboard($db.getSoReached(false)) </td>
+	<td>  {{ so_students }} </td>
 	<td> #yearplan($yp.getSoReached())</td>
 </tr>
 <tr>
 	<td class="labelcell">Presentations:</td>
-	<td>  #dashboard($db.getSoPresentations(false)) </td>
+	<td>  {{ so_presentations }} </td>
 	<td> #yearplan($yp.getSoPresentations())</td>
 </tr>
 
@@ -161,69 +107,17 @@
 <tr><th colspan="3" align="left">Fundraising</th></tr>
 <tr>
 	<td class="labelcell">Dollars Fundraised:</td>
-	<td>  $ #dashboard($db.getFundTotal(false)) </td>
+	<td>  $ {{ fundraising_dollars }} </td>
 	<td> #yearplan($yp.getFundTotal())</td>
 </tr>
 
 <tr><th colspan="3" align="left">Publicity</th></tr>
 <tr>
 	<td class="labelcell">Media Hits:</td>
-	<td>  #dashboard($db.getPubMediaHits(false)) </td>
+	<td>  {{ publicity_hits }} </td>
 	<td> #yearplan($yp.getPubMediaHits())</td>
 </tr>
 </table>
 
-#end
-
-<!-------------------------------------------->
-<!-------------------------------------------->
-<!-------------------------------------------->
-<!-------------------------------------------->
-
-	
-#if($user.getChapter(true))
 <hr />
-#end
 
-<h3>Canada-Wide Dashboard</h3>
-
-<table class="cellpadding8" width="500" style="margin: 0 auto;">
-<tr><td style="width: 200px"></td><td></td></tr>
-<tr><th colspan="2">CHAMP Usage</th></tr>
-<tr><td class="labelcell">Reflection Journal Entries:</td><td> $globalnumReflections </td></tr>
-<tr><td class="labelcell">Unconfirmed Activities:</td><td> $globalnumUnconf </td></tr>
-<tr><td class="labelcell">Confirmed Activities:</td><td>  $globalnumConf  </td></tr>
-
-<tr><th colspan="2">Member Learning</th></tr>
-<tr><td class="labelcell">Member Learning Hours:</td><td> #dashboard($db.getMlTotalHours(true)) </td></tr>
-<tr><td class="labelcell">Average Attendance:</td><td>  #dashboard($db.getMlAverageAttendence(true))  </td></tr>
-
-<tr><th colspan="2">Public Outreach</th></tr>
-<tr><td class="labelcell">People reached:</td><td> #dashboard($db.getEngPeopleReached(true))  </td></tr>
-
-<tr><th colspan="2">Advocacy</th></tr>
-<tr><td class="labelcell">Contacts with decision makers:</td><td> #dashboard($db.getAdvContacts(true))  </td></tr>
-
-<tr><th colspan="2">Curriculum Enhancement</th></tr>
-<tr><td class="labelcell">Students Reached:</td><td> #dashboard($db.getCeStudents(true))  </td></tr>
-<tr><td class="labelcell">Total Class Hours:</td><td> #dashboard($db.getCeHours(true))  </td></tr>
-
-<tr><th colspan="2">Workplace Outreach</th></tr>
-<tr><td class="labelcell">Professionals Reached:</td><td>  #dashboard($db.getWoReached(true)) </td></tr>
-<tr><td class="labelcell">Presentations:</td><td>  #dashboard($db.getWoPresentations(true)) </td></tr>
-
-<tr><th colspan="2">School Outreach</th></tr>
-<tr><td class="labelcell">Students Reached:</td><td>  #dashboard($db.getSoReached(true)) </td></tr>
-<tr><td class="labelcell">Presentations:</td><td>  #dashboard($db.getSoPresentations(true)) </td></tr>
-
-
-<tr><th colspan="2">Fundraising</th></tr>
-<tr><td class="labelcell">Dollars Fundraised:</td><td>  $ #dashboard($db.getFundTotal(true)) </td></tr>
-
-<tr><th colspan="2">Publicity</th></tr>
-<tr><td class="labelcell">Media Hits:</td><td>  #dashboard($db.getPubMediaHits(true)) </td></tr>
-</table></table>
-
-
-
-{% endblock %}
