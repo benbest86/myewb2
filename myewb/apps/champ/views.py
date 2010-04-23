@@ -155,6 +155,8 @@ def dashboard(request, year=None, month=None, term=None,
     context['nowmonth'] = '04'
     context['nowterm'] = 'Winter'
     
+    context['allgroups'] = Network.objects.filter(chapter_info__isnull=False).order_by('name')
+    
     return render_to_response('champ/dashboard.html',
                               context,
                               context_instance=RequestContext(request))

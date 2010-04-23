@@ -59,6 +59,17 @@
 
 <br />
 
+<div style="text-align: center;">
+Chapter: 
+<select name="champ_groups" id="champ_groups">
+    <option value="1" class="champgrp">all (national)</option>
+    <option value="2" class="champgrp">all 2(national)</option>
+    {% for grp in allgroups %}
+        <option value="{{grp.slug}}" {% ifequal group grp %}selected="selected"{% endifequal %}>{{grp.name}}</option>
+    {% endfor %}
+</select>
+</div>
+
 {% if group %}
     {% include "champ/group_dashboard.html" %}
 {% endif %}
@@ -105,3 +116,15 @@
 
 
 {% endblock %}
+
+{% block extra_body %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#champ_groups').change(function() {
+                window.alert("selected " + $(this).value());
+                {# reload with selected group... #}
+            });
+        });
+    </script>
+{% endblock %}
+

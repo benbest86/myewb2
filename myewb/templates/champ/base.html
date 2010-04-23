@@ -15,6 +15,33 @@
 {% block toolbar_left %}
         <div class="toolbarheader bkgd">{% trans "CHAMP Actions" %}</div>
         <div class="toolbarcontent">
-            links to new entries, etc
+            {% if group %}
+                <p>
+                Activities:<br/>
+                <a href="">record an activity</a><br/>
+                <a href="">list unconfirmed</a><br/>
+                <a href="">list confirmed</a>
+                </p>
+                
+                <p>
+                Reflection journal:<br/>
+                <a href="">write in journal</a><br/>
+                <a href="">browse journal</a>
+                </p>
+            {% endif %}
+            
+            {% if perms.champ %}
+                <p>
+                Spreadsheets:<br/>
+                <a href="">SO spreadsheet</a><br/>
+                <a href="">activity spreadsheet</a><br/>
+                <a href="">global SO spreadsheet</a><br/>
+                <a href="">global spreadsheet</a>
+                </p>
+            {% endif %}
         </div>
+{% endblock %}
+
+{% block toolbar_right %}
+    {# override default networks toolbars, force to be empty #}
 {% endblock %}
