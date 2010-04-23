@@ -1,78 +1,142 @@
 from django.test import TestCase
 
-from django.contrib.auth.models import User
+from django.contrib.auth.models import User, AnonymousUser
 
 from base_groups.models import BaseGroup, GroupMember, GroupMemberRecord
 
-class TestMembershipHistory(TestCase):
+class TestGroupMethods(TestCase):
     """
-    Base class with default setUp and tearDown for all other
-    membership history tests.
+    Test the common methods of a BaseGroup
     """
-
+    setup = False
+    
     def setUp(self):
-        group_creator = User.objects.create_user('creator', 'c@ewb.ca')
-        self.bg = BaseGroup.objects.create(slug='bg', name='generic base group', creator=group_creator)
-        self.user = User.objects.create_user('user', 'user@ewb.ca')
+        # could use a fixture instead... but i like this better.  easier to edit.
+        if not self.setup:
+            # create group
+            self.group_creator = User.objects.create_user('creator', 'c@ewb.ca')
+            self.bg = BaseGroup.objects.create(slug='bg', name='generic base group', description='description1', creator=self.group_creator, model='Network')
+            self.invisible = BaseGroup.objects.create(slug='bg2', name='generic invisible base group', description='description2', creator=self.group_creator, visibility='M')
+            self.invisible_child = BaseGroup.objects.create(slug='bg3', name='generic invisible child group', description='description3', creator=self.group_creator, visibility='M')
+            self.visible_child = BaseGroup.objects.create(slug='bg4', name='generic visible child group', description='description4', creator=self.group_creator, visibility='E')
+            
+            # add a group admin
+            self.groupadmin = User.objects.create_user('groupadmin', 'groupadmin@ewb.ca')
+            self.bg.add_member(self.groupadmin)
+            self.invisible.add_member(self.groupadmin)
+            gmember = GroupMember.objects.get(user=self.groupadmin, group=self.bg)
+            gmember.is_admin = True
+            gmember.save()          # should we create BaseGroup.add_admin()?? but that would require refactoring all the membership forms...
+            self.invisible.add_member(self.groupadmin)
+            gmember = GroupMember.objects.get(user=self.groupadmin, group=self.invisible)
+            gmember.is_admin = True
+            gmember.save()          # should we create BaseGroup.add_admin()?? but that would require refactoring all the membership forms...
+            
+            # add a normal group member
+            self.member = User.objects.create_user('member', 'member@ewb.ca')
+            self.bg.add_member(self.member)
+            self.invisible.add_member(self.member)
+            
+            # and add a regular non-member user
+            self.user = User.objects.create_user('user', 'user@ewb.ca')
+            
+            # and make someone a member of one group, but not the other 
+            self.user2 = User.objects.create_user('user2', 'user2@ewb.ca')
+            self.bg.add_member(self.user2)
+            
+            # and a site admin
+            self.siteadmin = User.objects.create_user('siteadmin', 'siteadmin@ewb.ca')
+            self.siteadmin.is_superuser = True
+            self.siteadmin.save()
+            
+            
+            self.setup = True
 
     def tearDown(self):
-        GroupMemberRecord.objects.all().delete()
-        GroupMember.objects.all().delete()
-        BaseGroup.objects.all().delete()
-        User.objects.all().delete()
+        pass
 
-    def test_membership_lifecycle(self):
-        """
-        A general test that puts a user through a common user
-        lifecycle and ensures records are created properly.
-        """
-        # add user to start
-        gm = GroupMember.objects.create(user=self.user, group=self.bg)
-        self.assertEquals(1, GroupMemberRecord.objects.filter(user=self.user, group=self.bg).count())
-        gmr = GroupMemberRecord.objects.latest()
-        self.assertFalse(gmr.is_admin)
+    def test_is_visible(self):
+        # whoa. how many different places is this check implented in??!!!
+        # really need to consolidate!
+        # (one here, one in decorators, one in helpers...)
+        
+        # regular public group is visible to all
+        self.assertTrue(self.bg.is_visible(self.siteadmin))
+        self.assertTrue(self.bg.is_visible(self.group_creator))
+        self.assertTrue(self.bg.is_visible(self.groupadmin))
+        self.assertTrue(self.bg.is_visible(self.member))
+        self.assertTrue(self.bg.is_visible(self.user))
+        self.assertTrue(self.bg.is_visible(AnonymousUser()))
 
-        # make user admin
-        gm.is_admin = True
-        gm.admin_title = 'Lowly peon'
-        gm.save()
-        self.assertEquals(2, GroupMemberRecord.objects.filter(user=self.user, group=self.bg).count())
-        gmr = GroupMemberRecord.objects.latest()
-        self.assertTrue(gmr.is_admin)
-        self.assertEquals('Lowly peon', gmr.admin_title)
+        # private group is only visible to members
+        self.assertTrue(self.invisible.is_visible(self.siteadmin))
+        self.assertTrue(self.invisible.is_visible(self.group_creator))
+        self.assertTrue(self.invisible.is_visible(self.groupadmin))
+        self.assertTrue(self.invisible.is_visible(self.member))
+        self.assertFalse(self.invisible.is_visible(self.user))
+        self.assertFalse(self.invisible.is_visible(AnonymousUser()))
 
-        # change admin title
-        gm.admin_title = 'President'
-        gm.save()
-        self.assertEquals(3, GroupMemberRecord.objects.filter(user=self.user, group=self.bg).count())
-        gmr = GroupMemberRecord.objects.latest()
-        self.assertTrue(gmr.is_admin)
-        self.assertEquals('President', gmr.admin_title)
+        # private child is always visible to parent admins
+        self.assertTrue(self.invisible_child.is_visible(self.siteadmin))
+        self.assertTrue(self.invisible_child.is_visible(self.group_creator))
+        self.assertTrue(self.invisible_child.is_visible(self.groupadmin))
+        self.assertFalse(self.invisible_child.is_visible(self.member))
+        self.assertFalse(self.invisible_child.is_visible(self.user))
+        self.assertFalse(self.invisible_child.is_visible(AnonymousUser()))
 
-        # remove admin status
-        gm.is_admin = False
-        gm.admin_title = None
-        gm.save()
-        self.assertEquals(4, GroupMemberRecord.objects.filter(user=self.user, group=self.bg).count())
-        gmr = GroupMemberRecord.objects.latest()
-        self.assertFalse(gmr.is_admin)
-        self.assertEquals(None, gmr.admin_title)
+    def test_user_is_member(self):
+        self.assertTrue(self.bg.user_is_member(self.siteadmin, True))
+        self.assertFalse(self.bg.user_is_member(self.siteadmin))
+        self.assertTrue(self.bg.user_is_member(self.group_creator))
+        self.assertTrue(self.bg.user_is_member(self.groupadmin))
+        self.assertTrue(self.bg.user_is_member(self.member))
+        self.assertFalse(self.bg.user_is_member(self.user))
+        self.assertFalse(self.bg.user_is_member(AnonymousUser()))
 
-        # end membership
-        gm.delete()
-        self.assertEquals(5, GroupMemberRecord.objects.filter(user=self.user, group=self.bg).count())
-        gmr = GroupMemberRecord.objects.latest()
-        self.assertTrue(gmr.membership_end)
+    def test_get_member_emails(self):
+        emails = set(self.invisible.get_member_emails())
+        expected_emails = ('c@ewb.ca', 'groupadmin@ewb.ca', 'member@ewb.ca')
+        
+        self.assertEquals(emails, expected_emails)
+        
+    def test_add_member(self):
+        # this is tested in setup... if this method is broken, plenty of other tests will fail!
+        pass
+    
+    def test_add_email(self):
+        self.bg.add_email('bulkemail@ewb.ca')
+        
+        user = User.objects.get(email='bulkemail@ewb.ca')
+        self.assertTrue(user.is_bulk)
+        self.assertTrue(self.bg.get_member_emails().count('bulkemail@ewb.ca'))
 
-class TestUserDuckPunches(TestCase):
-    """
-    Testing additions to the User class.
-    """
+    def test_remove_member(self):
+        self.bg.remove_member(self.user2)
+        self.assertFalse(self.bg.user_is_member(self.user2))
+        self.assertTrue(self.user2.is_active)   #user should not be deleted =)
+        
+    def test_get_visible_children(self):
+        # admin can see all children
+        print "testing site admin"
+        self.assertEquals(self.bg.get_visible_children(self.siteadmin), (self.invisible_child, self.visible_child))
+        print "testing creator"
+        self.assertEquals(self.bg.get_visible_children(self.group_creator), (self.invisible_child, self.visible_child))
+        print "testing group admin"
+        self.assertEquals(self.bg.get_visible_children(self.groupadmin), (self.invisible_child, self.visible_child))
+        
+        # the rest can only see visible children
+        self.assertEquals(self.bg.get_visible_children(self.member), (self.visible_child))
+        self.assertEquals(self.bg.get_visible_children(self.user), (self.visible_child))
+        self.assertEquals(self.bg.get_visible_children(AnonymousUser()), (self.visible_child))
+        
+    def test_get_accepted_member(self):
+        self.bg.add_email('bulkemail2@ewb.ca')
+        bulkuser = User.objects.get(email='bulkemail2@ewb.ca')
+        
+        self.assertTrue(list(self.bg.get_accepted_members()).count(self.group_creator))
+        self.assertTrue(list(self.bg.get_accepted_members()).count(self.groupadmin))
+        self.assertTrue(list(self.bg.get_accepted_members()).count(self.member))
+        self.assertFalse(list(self.bg.get_accepted_members()).count(bulkuser))
+        self.assertFalse(list(self.bg.get_accepted_members()).count(self.user))
+        self.assertFalse(list(self.bg.get_accepted_members()).count(AnonymousUser()))
 
-    def test_non_bulk_user(self):
-        u = User.objects.create_user(username='fred', email='fred@ewb.ca')
-        self.assertFalse(u.is_bulk)
-
-    def test_bulk_user(self):
-        u = User.extras.create_bulk_user(email='fred@ewb.ca')
-        self.assertTrue(u.is_bulk)

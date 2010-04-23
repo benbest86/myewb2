@@ -133,6 +133,9 @@ def user_can_execovision(user):
     Check if user is capable of exec-o-vision (but not whether it is currently enabled)
     Or, basically, if they are the admin of any networks.
     """
+    if not user.is_authenticated():
+        return False
+    
     query = GroupMember.objects.filter(user=user,
                                        is_admin=True,
                                        group__model='Network')
