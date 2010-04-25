@@ -11,10 +11,14 @@
 <tr>
 	<th style="width: 300px;">Indicator</th>
 	<th style="width: 150px;">Value for year {# logic for year/term/month/etc #}</th>
-	<th  style="width: 150px;">Targets from {#$yp.yearName#} Plan
+	<th  style="width: 150px;">Targets from {{ year|default:"" }} Plan
 	{% if is_group_admin %}
 	     <br />
-	     <a href="$base/chapter/EditYearPlan/$yp.year">[edit]</a>
+	     {% if year %}
+	     	<a href="{% url champ_yearplan group.slug year %}">[edit]</a>
+	     {% else %}
+	     	<a href="{% url champ_yearplan group.slug %}">[edit]</a>
+	     {% endif %}
 	{% endif %}
 	</th>
 </tr>

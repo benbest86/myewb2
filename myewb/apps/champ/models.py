@@ -69,23 +69,23 @@ class Activity(models.Model):
         return True
     
 class YearPlan(models.Model):
-    year = models.DateField()
+    year = models.IntegerField()
     group = models.ForeignKey(BaseGroup, unique_for_year="year")
     modified_date = models.DateField(auto_now=True)
     last_editor = models.ForeignKey(User)
     
-    ml_average_attendance = models.IntegerField()
-    ml_total_hours = models.IntegerField()
-    adv_contacts = models.IntegerField()
-    eng_people_reached = models.IntegerField()
-    fund_total = models.IntegerField()
-    pub_media_hits = models.IntegerField()
-    ce_hours = models.IntegerField()
-    ce_students = models.IntegerField()
-    so_presentations = models.IntegerField()
-    so_reached = models.IntegerField()
-    wo_presentations = models.IntegerField()
-    wo_reached = models.IntegerField()
+    ml_average_attendance = models.IntegerField(null=True, blank=True)
+    ml_total_hours = models.IntegerField(null=True, blank=True)
+    adv_contacts = models.IntegerField(null=True, blank=True)
+    eng_people_reached = models.IntegerField(null=True, blank=True)
+    fund_total = models.IntegerField(null=True, blank=True)
+    pub_media_hits = models.IntegerField(null=True, blank=True)
+    ce_hours = models.IntegerField(null=True, blank=True)
+    ce_students = models.IntegerField(null=True, blank=True)
+    so_presentations = models.IntegerField(null=True, blank=True)
+    so_reached = models.IntegerField(null=True, blank=True)
+    wo_presentations = models.IntegerField(null=True, blank=True)
+    wo_reached = models.IntegerField(null=True, blank=True)
     
 class Metrics(models.Model):
 #    activity_id = models.PositiveIntegerField()    # don't use ForeignKey so that subclassing won't cause reverse name problems.

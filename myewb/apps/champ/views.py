@@ -152,9 +152,9 @@ def dashboard(request, year=None, month=None, term=None,
             context['is_group_admin'] = True
             
         if year:
-            yp = YearPlan.objects.filter(group=grp, year__year=year)
+            yp = YearPlan.objects.filter(group=grp, year=year)
         else:
-            yp = YearPlan.objects.filter(group=grp, year__year=date.today().year)
+            yp = YearPlan.objects.filter(group=grp, year=date.today().year)
         if yp.count():
             context['yearplan'] = yp[0]
             
@@ -447,3 +447,33 @@ def journal_detail(request, group_slug, journal_id):
                               {'journal': journal,
                                'group': group},
                                context_instance=RequestContext(request))
+
+@group_admin_required()
+def yearplan(request, group_slug, year=None):
+    group = get_object_or_404(Network, slug=group_slug)
+    if year == None:
+        year = date.today().year
+        
+    yp, created = YearPlan.objects.get_or_create(group=group, year=year,
+                                                 defaults={'last_editor': request.user})
+    
+    if request.method == 'POST':
+        form = YearPlanForm(request.POST,
+                            instance=yp)
+        
+        if form.is_valid():
+            yp = form.save(commit=False)
+            yp.last_editor = request.user
+            yp.save()
+            
+            request.user.message_set.create(message="Year plan updated")
+            return HttpResponseRedirect(reverse('champ_dashboard', kwargs={'group_slug': group_slug, 'year': year}))
+    else:
+        form = YearPlanForm(instance=yp)
+        
+    return render_to_response('champ/yearplan.html',
+                              {'group': group,
+                               'form': form,
+                               'year': year},
+                               context_instance=RequestContext(request))
+    

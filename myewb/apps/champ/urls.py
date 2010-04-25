@@ -29,4 +29,7 @@ urlpatterns = patterns('champ.views',
     url(r'^(?P<group_slug>[-\w]+)/journal/browse/', 'journal_list', name="champ_journal_list"),
     url(r'^(?P<group_slug>[-\w]+)/journal/new/', 'journal_new', name="champ_journal_new"),
     url(r'^(?P<group_slug>[-\w]+)/journal/(?P<journal_id>\d)/', 'journal_detail', name="champ_journal_detail"),
+    
+    url(r'^(?P<group_slug>[-\w]+)/yearplan/(?P<year>\d{4})/', 'yearplan', name="champ_yearplan"),
+    url(r'^(?P<group_slug>[-\w]+)/yearplan/', 'yearplan', name="champ_yearplan"),
 )

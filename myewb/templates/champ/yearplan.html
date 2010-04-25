@@ -1,0 +1,20 @@
+{% extends "champ/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+
+{% block champ_body %}
+
+<h2>{{ group.name }}: {{ year}} Year Plan</h2>
+
+<form method="post" action="" class="uniForm">
+	<fieldset class="inlineLabels">
+		{{ form|as_uni_form }}
+	</fieldset>
+	
+	<p>
+		<input type="submit"/>
+	</p>
+</form>
+
+{% endblock %}

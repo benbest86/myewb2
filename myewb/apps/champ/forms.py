@@ -103,3 +103,9 @@ class JournalForm(forms.ModelForm):
     class Meta:
         model = Journal
         fields = ('snapshot', 'highlight', 'challenge', 'leadership', 'learning', 'innovation', 'yearplan', 'office', 'private')
+        
+class YearPlanForm(forms.ModelForm):
+    class Meta:
+        model = YearPlan
+        exclude = ('year', 'group', 'last_modified', 'last_editor')
+        
