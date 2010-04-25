@@ -68,6 +68,25 @@ class Activity(models.Model):
                 return False
         return True
     
+class YearPlan(models.Model):
+    year = models.DateField()
+    group = models.ForeignKey(BaseGroup, unique_for_year="year")
+    modified_date = models.DateField(auto_now=True)
+    last_editor = models.ForeignKey(User)
+    
+    ml_average_attendance = models.IntegerField()
+    ml_total_hours = models.IntegerField()
+    adv_contacts = models.IntegerField()
+    eng_people_reached = models.IntegerField()
+    fund_total = models.IntegerField()
+    pub_media_hits = models.IntegerField()
+    ce_hours = models.IntegerField()
+    ce_students = models.IntegerField()
+    so_presentations = models.IntegerField()
+    so_reached = models.IntegerField()
+    wo_presentations = models.IntegerField()
+    wo_reached = models.IntegerField()
+    
 class Metrics(models.Model):
 #    activity_id = models.PositiveIntegerField()    # don't use ForeignKey so that subclassing won't cause reverse name problems.
     activity = models.ForeignKey(Activity, related_name="%s" % __name__,

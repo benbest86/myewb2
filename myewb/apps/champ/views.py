@@ -142,13 +142,21 @@ def dashboard(request, year=None, month=None, term=None,
     context['unconfirmed'] = run_query(Activity.objects.filter(confirmed=False), activity_filters).count()
     context['confirmed'] = run_query(Activity.objects.filter(confirmed=True), activity_filters).count()
 
-    context['group'] = None    
+    context['group'] = None
+    context['yearplan'] = None    
     context['is_group_admin'] = False
     if grp:
         context['group'] = grp
     
         if grp.user_is_admin(request.user):
             context['is_group_admin'] = True
+            
+        if year:
+            yp = YearPlan.objects.filter(group=grp, year__year=year)
+        else:
+            yp = YearPlan.objects.filter(group=grp, year__year=date.today().year)
+        if yp.count():
+            context['yearplan'] = yp[0]
             
     context['year'] = year
     context['month'] = month
