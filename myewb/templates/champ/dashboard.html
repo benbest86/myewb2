@@ -13,6 +13,7 @@
 {% load topics_tags %}
 {% load events_tags %}
 {% load schoolyear %} 
+{% load helpers %}
 
 {% block champ_body %}
 
@@ -22,7 +23,7 @@
     {{ term }} term, {{ year }}
 {% else %}
     {% if month %}
-        {{ month }}, {{ year }}
+        {{ month|month }}, {{ year }}
     {% else %}
         {% if year %}
             {{ year|schoolyear }}
@@ -37,7 +38,17 @@
 
 <table style="width: 95%"> <tr>
 <td align="left" valign="middle">
-	{% if month or term or year %} <a href="$base/chapter/CHAMP/$prev" class="more">&laquo; previous {#$mode#}</a> {% endif %}
+	{% if term %}
+		<a href="{% url champ_dashboard year=prevterm.1,term=prevterm.0,group_slug=group.slug %}" class="more">&laquo; previous term</a>
+	{% else %}
+	    {% if month %}
+			<a href="{% url champ_dashboard year=prevmonth.1,month=prevmonth.0,group_slug=group.slug %}" class="more">&laquo; previous month</a>
+	    {% else %}
+	        {% if year %}
+				<a href="{% url champ_dashboard year=prevyear,group_slug=group.slug %}" class="more">&laquo; previous year</a>
+	        {% endif %}
+	    {% endif %}
+	{% endif %}
 </td>
 <td align="center">
 	<span style="font-size: 11px;">Jump to:</span> <br /> 
@@ -54,7 +65,17 @@
 	    <a href="{% url champ_dashboard %}" class="more">[all dates]</a></td>
     {% endif %}
 <td align="right" valign="middle">
-	{% if month or term or year %} <a href="$base/chapter/CHAMP/$next" class="more">next {#$mode#} &raquo;</a> {% endif %}
+	{% if term %}
+		<a href="{% url champ_dashboard year=nextterm.1,term=nextterm.0,group_slug=group.slug %}" class="more">&raquo; next term</a>
+	{% else %}
+	    {% if month %}
+			<a href="{% url champ_dashboard year=nextmonth.1,month=nextmonth.0,group_slug=group.slug %}" class="more">&raquo; next month</a>
+	    {% else %}
+	        {% if year %}
+				<a href="{% url champ_dashboard year=nextyear,group_slug=group.slug %}" class="more">&raquo; next year</a>
+	        {% endif %}
+	    {% endif %}
+	{% endif %}
 </td>
 </tr> </table>
 

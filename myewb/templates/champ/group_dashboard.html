@@ -1,4 +1,5 @@
 {% load schoolyear %}
+{% load helpers %}
 
 <h3>Chapter Dashboard</h3>
 <!--<h4>with targets from $yp.yearName Plan 
@@ -11,7 +12,22 @@
 
 <tr>
 	<th style="width: 300px;">Indicator</th>
-	<th style="width: 150px;">Value for year {# logic for year/term/month/etc #}</th>
+	<th style="width: 150px;">
+		Value for 
+		{% if term %}
+		    {{ term }} term, {{ year }}
+		{% else %}
+		    {% if month %}
+		        {{ month|month }}, {{ year }}
+		    {% else %}
+		        {% if year %}
+		            {{ year|schoolyear }}
+		        {% else %}
+		            all dates
+		        {% endif %}
+		    {% endif %}
+		{% endif %}
+	</th>
 	<th  style="width: 150px;">Targets from {{ year|schoolyear }} Plan
 	{% if is_group_admin %}
 	     <br />

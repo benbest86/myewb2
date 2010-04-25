@@ -98,6 +98,10 @@ def build_filters(year=None, month=None, term=None):
     activity_filters = []
     metric_filters = []
     
+    if year:
+        year = int(year)
+    if month:
+        month = int(month)
     if year and month:
         activity_filters.append({'date__year': year})
         activity_filters.append({'date__month': month})
@@ -106,7 +110,7 @@ def build_filters(year=None, month=None, term=None):
     elif year and term:
         if term == 'winter':
             start = date(year, 1, 1)
-            end = date(year, 4, 31)
+            end = date(year, 4, 30)
             activity_filters.append({'date__range': (start, end)})
             metric_filters.append({'activity__date__range': (start, end)})
         elif term == 'summer':
@@ -121,7 +125,7 @@ def build_filters(year=None, month=None, term=None):
             metric_filters.append({'activity__date__range': (start, end)})
     elif year:
         start = date(year, 5, 1)
-        end = date(year+1, 4, 31)
+        end = date(year+1, 4, 30)
         activity_filters.append({'date__range': (start, end)})
         metric_filters.append({'activity__date__range': (start, end)})
             
@@ -129,7 +133,7 @@ def build_filters(year=None, month=None, term=None):
     
 @login_required()
 def dashboard(request, year=None, month=None, term=None,
-                       group_slug=None):
+              group_slug=None):
     activity_filters, metric_filters = build_filters(year, month, term)
     
     if group_slug:
@@ -168,8 +172,25 @@ def dashboard(request, year=None, month=None, term=None,
     context['term'] = term
     
     context['nowyear'] = schoolyear.school_year()
+    if year:
+        context['prevyear'] = int(year) - 1
+        context['nextyear'] = int(year) + 1
+    
     context['nowmonth'] = ("%d" % date.today().month).rjust(2, '0')
+    if month:
+        if month == "01":
+            context['prevmonth'] = (12, int(year)-1)
+        else:
+            context['prevmonth'] = (("%d" % (int(month)-1)).rjust(2, '0'), year)
+        if month == "12":
+            context['nextmonth'] = ("01", int(year)+1)
+        else:
+            context['nextmonth'] = (("%d" % (int(month)+1)).rjust(2, '0'), year)
+
     context['nowterm'] = schoolyear.term()
+    if term:
+        context['prevterm'] = schoolyear.prevterm(term, year)
+        context['nextterm'] = schoolyear.nextterm(term, year)
     
     context['allgroups'] = Network.objects.filter(chapter_info__isnull=False).order_by('name')
     

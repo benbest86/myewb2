@@ -1,4 +1,6 @@
+from datetime import date
 from django import template
+from django.template.defaultfilters import stringfilter
 from django.core.urlresolvers import reverse
 from django.forms.widgets import Select
 from django.utils.translation import ugettext_lazy as _
@@ -135,3 +137,10 @@ class LookupCtxNode(template.Node):
         except:
             pass
         return ''
+
+@register.filter()
+@stringfilter
+def month(month):
+    month = int(month)
+    d = date(date.today().year, month, date.today().day)
+    return d.strftime("%B")
