@@ -63,6 +63,14 @@
 		<td>{{ activity.execHours }}</td>
 	</tr>
 	
+	{% if not activity.confirmed %}
+		<tr>
+			<td colspan="2">
+				(<a href="{% url champ_edit_activity group.slug activity.pk %}">edit</a>)
+			</td>
+		</tr>
+	{% endif %}
+
 	<tr>
 		<td colspan="2">&nbsp;</td>
 	</tr>

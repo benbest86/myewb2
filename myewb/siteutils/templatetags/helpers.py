@@ -79,7 +79,21 @@ class LookupNode(template.Node):
         try:
             thedict = self.dict.resolve(context)
             thekey = self.key.resolve(context)
-            return thedict[thekey]
+            
+            # catch a KeyError, thrown if we were apssed a nested tuple instead of a dict
+            value = None
+            try:
+                value = thedict[thekey]
+            except:
+                try:
+                    dict2 = {}
+                    for key, val in thedict:
+                        dict2[key] = val
+                    value = dict2[thekey]
+                except:
+                    pass
+                
+            return value
         except template.VariableDoesNotExist:
             return ''
 
@@ -103,7 +117,21 @@ class LookupCtxNode(template.Node):
         try:
             thedict = self.dict.resolve(context)
             thekey = self.key.resolve(context)
-            context[self.variable] = thedict[thekey]
+
+            # catch a KeyError, thrown if we were apssed a nested tuple instead of a dict
+            value = None
+            try:
+                value = thedict[thekey]
+            except:
+                try:
+                    dict2 = {}
+                    for key, val in thedict:
+                        dict2[key] = val
+                    value = dict2[thekey]
+                except:
+                    pass
+                
+            context[self.variable] = value
         except:
             pass
         return ''

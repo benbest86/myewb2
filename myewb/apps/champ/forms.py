@@ -23,17 +23,34 @@ class ChampForm(forms.ModelForm):
     execHours = forms.CharField(label=_("Person-hours of execution"),
                                 help_text=_("how many person-hours went into running the activity? (This can be filled in later, but the activity cannot be confirmed until it's filled in.)"),
                                 required=False)
-
+    
+    def ensure_int(self, field):
+        data = self.cleaned_data[field]
+        if data == '':
+            return None
+        else:
+            try:
+                return int(data)
+            except ValueError:
+                raise forms.ValidationError("Please enter a number")
+            
+    # why doesn't django's auto-clean work???
+    def clean_numVolunteers(self):
+        return self.ensure_int('numVolunteers')
+    
+    def clean_prepHours(self):
+        return self.ensure_int('prepHours')
+    
+    def clean_execHours(self):
+        return self.ensure_int('execHours')
+    
     class Meta:
         model = Activity
         fields = ('name', 'date', 'numVolunteers', 'prepHours', 'execHours')
         
-class ChampDetailsForm(forms.ModelForm):
+class ImpactForm(forms.ModelForm):
     class Meta:
-        # this is really part 2 of ChampForm.
-        # indended to create ChampForm, then pass the instance into this form.
-        model = Activity
-        fields = ('description', 'goals', 'outcome', 'notes', 'changes', 'repeat')
+        model = ImpactMetrics
     
 class MemberLearningForm(forms.ModelForm):
     class Meta:
@@ -71,7 +88,7 @@ class CurriculumEnhancementForm(forms.ModelForm):
     class Meta:
         model = CurriculumEnhancementMetrics
         
-METRICFORMS = {'all': ChampDetailsForm,
+METRICFORMS = {'all': ImpactForm,
                'ml': MemberLearningForm,
                'so': SchoolOutreachForm,
                'func': FunctioningForm,

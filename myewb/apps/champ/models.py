@@ -12,16 +12,16 @@ from django.utils.translation import ugettext_lazy as _
 
 from base_groups.models import BaseGroup
 
-ALLMETRICS = {'all': "Basic Info",
-              'func': "Chapter Functioning",
-              'ml': "Member Learning",
-              'so': "School Outreach",
-              'pe': "Public Outreach",
-              'pa': "Advocacy",
-              'wo': "Workplace Outreach",
-              'ce': "Curriculum Enhancement",
-              'pub': "Publicity",
-              'fund': "Fundraising"}
+ALLMETRICS = (('all', "Event Impact"),
+              ('func', "Chapter Functioning"),
+              ('ml', "Member Learning"),
+              ('so', "School Outreach"),
+              ('pe', "Public Outreach"),
+              ('pa', "Advocacy"),
+              ('wo', "Workplace Outreach"),
+              ('ce', "Curriculum Enhancement"),
+              ('pub', "Publicity"),
+              ('fund', "Fundraising"))
 
 class Activity(models.Model):
     name = models.CharField(_('Event name'), max_length=255)
@@ -41,14 +41,6 @@ class Activity(models.Model):
     execHours = models.IntegerField(null=True, blank=True)
     numVolunteers = models.IntegerField(null=True, blank=True)
     
-    description = models.TextField(null=True, blank=True)
-    goals = models.TextField(null=True, blank=True)
-    outcome = models.TextField(null=True, blank=True)
-    notes = models.TextField(null=True, blank=True)
-    changes = models.TextField(null=True, blank=True)
-    
-    repeat = models.BooleanField(null=True, blank=True)
-    
     def get_metrics(self):
         """
         Returns a list of all metrics associated with this activity,
@@ -56,10 +48,18 @@ class Activity(models.Model):
         """
         results = []
         metrics = Metrics.objects.filter(activity=self.pk)
+        
         for m in metrics:
             results.append(getattr(m, m.metric_type))
             
-        return results
+        # and sort the results, by the ordering in ALLMETRICS
+        results2 = []
+        for m, mname in ALLMETRICS:
+            for n in results:
+                if m == n.metricname:
+                    results2.append(n)
+            
+        return results2
     
     def can_be_confirmed(self):
         metrics = self.get_metrics()
@@ -119,7 +119,16 @@ class Metrics(models.Model):
             if value == None or value == "":
                 return False
         return True
-        
+
+class ImpactMetrics(Metrics):
+    metricname = "all"
+    description = models.TextField(null=True, blank=True)
+    goals = models.TextField(null=True, blank=True)
+    outcome = models.TextField(null=True, blank=True)
+    notes = models.TextField(null=True, blank=True)
+    changes = models.TextField(null=True, blank=True)
+    repeat = models.BooleanField(null=True, blank=True)
+    
 class MemberLearningMetrics(Metrics):
     metricname = "ml"
     type = models.CharField(max_length=255, null=True, blank=True)

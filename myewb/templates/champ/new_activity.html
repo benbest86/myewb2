@@ -11,7 +11,11 @@
 
 {% block champ_body %}
 
-<h2>New CHAMP activity</h2>
+{% if edit %}
+	<h2>Edit CHAMP activity</h2>
+{% else %}
+	<h2>New CHAMP activity</h2>
+{% endif %}
 <h3>{{ group.name }}</h3>
 
 <form action="" method="POST" class="uniForm">
@@ -19,18 +23,26 @@
 		{{ champ_form|as_uni_form }}
 		
 		<h3>Purposes</h3>
-		{% for m in metric_names %}
+		{% for m, mname in metric_names %}
 			<div class="ctrlHolder">
 				<label for="metric_{{m}}">
-					{% lookup metric_names m %}
+					{{ mname }}
 				</label>
 				{% lookup_ctx showfields m as fieldselected %}
-				<input type="checkbox" class="checkboxinput additionalmetrics" name="{{m}}" id="champ-box-{{m}}" {% if fieldselected %}checked="checked"{% endif %}/>
-				<p class="formHint">
-					(check if this purpose is applicable to this activity)
-				</p>
+				{% ifequal m "all" %}
+					<input type="checkbox" class="checkboxinput additionalmetrics" id="champ-box-{{m}}" checked="checked" disabled="disabled"/>
+					<input type="hidden" name="all" value="on"/>
+					<p class="formHint">
+						(this is always required =) )
+					</p>
+				{% else %}
+					<input type="checkbox" class="checkboxinput additionalmetrics" name="{{m}}" id="champ-box-{{m}}" {% if fieldselected %}checked="checked"{% endif %}/>
+					<p class="formHint">
+						(check if this purpose is applicable to this activity)
+					</p>
+				{% endifequal %}
 				
-				<div id="champ-form-{{m}}" class="champ-form" style=" {% if not fieldselected %}display: none; {% endif %}margin: 10px 50px; border: solid 1px;">
+				<div id="champ-form-{{m}}" class="champ-form" style=" {% if not fieldselected %}display: none; {% endif %}margin: 10px 75px; border: solid 1px; background: #f0f0f0;">
 					{% lookup_ctx metric_forms m as mform %}
 					{{ mform|as_uni_form}}
 				</div>
