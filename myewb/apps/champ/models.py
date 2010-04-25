@@ -91,10 +91,8 @@ class Metrics(models.Model):
         """
         # so awesome.
         # http://yuji.wordpress.com/2008/05/14/django-list-all-fields-in-an-object/
-        print "get values"
         fields = {}
         for f in self._meta.fields:
-            print "trying to get ", f.name, getattr(self, f.name)
             fields[f.name] = getattr(self, f.name)
             
         if 'id' in fields:
@@ -123,7 +121,7 @@ class Metrics(models.Model):
         return True
         
 class MemberLearningMetrics(Metrics):
-    metricname = "Member Learning"
+    metricname = "ml"
     type = models.CharField(max_length=255, null=True, blank=True)
     learning_partner = models.BooleanField(null=True, blank=True)
     curriculum = models.CharField(max_length=255, null=True, blank=True)
@@ -133,7 +131,7 @@ class MemberLearningMetrics(Metrics):
     new_attendance = models.IntegerField(null=True, blank=True)
     
 class SchoolOutreachMetrics(Metrics):
-    metricname = "School Outreach"
+    metricname = "so"
     school_name = models.CharField(max_length=255, null=True, blank=True)
     school_address = models.CharField(max_length=255, null=True, blank=True)
     school_phone = models.CharField(max_length=255, null=True, blank=True)
@@ -151,7 +149,7 @@ class SchoolOutreachMetrics(Metrics):
     notes = models.TextField(null=True, blank=True)
     
 class FunctioningMetrics(Metrics):
-    metricname = "Chapter Functioning"
+    metricname = "func"
     type = models.CharField(max_length=255, null=True, blank=True)
     location = models.CharField(max_length=255, null=True, blank=True)
     purpose = models.CharField(max_length=255, null=True, blank=True)
@@ -159,7 +157,7 @@ class FunctioningMetrics(Metrics):
     duration = models.FloatField(null=True, blank=True)
     
 class PublicEngagementMetrics(Metrics):
-    metricname = "Public Outreach"
+    metricname = "pe"
     type = models.CharField(max_length=255, null=True, blank=True)
     location = models.CharField(max_length=255, null=True, blank=True)
     purpose = models.CharField(max_length=255, null=True, blank=True)
@@ -169,7 +167,7 @@ class PublicEngagementMetrics(Metrics):
     level3 = models.IntegerField(null=True, blank=True)
     
 class PublicAdvocacyMetrics(Metrics):
-    metricname = "Advocacy"
+    metricname = "pa"
     type = models.CharField(max_length=255, null=True, blank=True)
     units = models.IntegerField(null=True, blank=True)
     decision_maker = models.CharField(max_length=255, null=True, blank=True)
@@ -179,19 +177,19 @@ class PublicAdvocacyMetrics(Metrics):
     learned = models.TextField(null=True, blank=True)
     
 class PublicationMetrics(Metrics):
-    metricname = "Publicity"
+    metricname = "pub"
     outlet = models.CharField(max_length=255, null=True, blank=True)
     type = models.CharField(max_length=255, null=True, blank=True)
     location = models.CharField(max_length=255, null=True, blank=True)
     circulation = models.IntegerField(null=True, blank=True)
     
 class FundraisingMetrics(Metrics):
-    metricname = "Fundraising"
+    metricname = "fund"
     goal = models.IntegerField(null=True, blank=True)
     revenue = models.IntegerField(null=True, blank=True)
     
 class WorkplaceOutreachMetrics(Metrics):
-    metricname = "Workplace Outreach"
+    metricname = "wo"
     company = models.CharField(max_length=255, null=True, blank=True)
     city = models.CharField(max_length=255, null=True, blank=True)
     presenters = models.CharField(max_length=255, null=True, blank=True)
@@ -203,7 +201,7 @@ class WorkplaceOutreachMetrics(Metrics):
     type = models.CharField(max_length=255, null=True, blank=True)
     
 class CurriculumEnhancementMetrics(Metrics):
-    metricname = "Curriculum Enhancement"
+    metricname = "ce"
     name = models.CharField(max_length=255, null=True, blank=True)
     code = models.CharField(max_length=255, null=True, blank=True)
     students = models.IntegerField(null=True, blank=True)

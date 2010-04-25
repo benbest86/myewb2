@@ -264,9 +264,98 @@ def activity_detail(request, group_slug, activity_id):
     
     return render_to_response('champ/activity_detail.html',
                               {'activity': activity,
-                               'group': group},
+                               'group': group,
+                               'metric_names': ALLMETRICS},
                                context_instance=RequestContext(request))
     
 @group_admin_required()
 def activity_edit(request, group_slug, activity_id):
-    pass
+    group = get_object_or_404(Network, slug=group_slug)
+    activity = get_object_or_404(Activity, pk=activity_id)
+    
+    if not activity.group.pk == group.pk:
+        return HttpResponseForbidden()
+    
+    if activity.confirmed:
+        request.user.message_set.create(message="This activity is already confirmed - you can't edit it any more")
+        return HttpResponseRedirect(reverse('champ_activity', kwargs={'group_slug': group_slug, 'activity_id': activity_id}))
+
+    group = get_object_or_404(Network, slug=group_slug)
+    metric_forms = {}
+    showfields = {}
+    
+    if request.method == 'POST':
+        champ_form = ChampForm(request.POST, instance=activity)
+        
+        # also create forms for the selected metrics.
+        # initialize all to empty
+        forms_valid = champ_form.is_valid()
+        # then populate the ones we're using for this activity
+        metrics = activity.get_metrics()
+        for m in metrics:
+            if m.metricname in request.POST:
+                metric_forms[m.metricname] = METRICFORMS[m.metricname](request.POST,
+                                                                       instance=m,
+                                                                       prefix=m.metricname)
+                showfields[m.metricname] = True
+                forms_valid = forms_valid and metric_forms[m.metricname].is_valid()
+
+        for m in ALLMETRICS:
+            if m in request.POST and m not in metric_forms:
+                if m == 'all':
+                    metric_forms[m] = METRICFORMS[m](request.POST,
+                                                     instance=activity)
+                else:
+                    metric_forms[m] = METRICFORMS[m](request.POST,
+                                                     prefix=m)
+                forms_valid = forms_valid and metric_forms[m].is_valid()
+                showfields[m] = True
+            elif m not in metric_forms:
+                metric_forms[m] = METRICFORMS[m](prefix=m)
+                showfields[m] = False
+                
+        if forms_valid:
+            activity.save()
+            saved_fields = {}
+            for m in metrics:
+                if m.metricname in request.POST:
+                    metric_forms[m.metricname].save()
+                    saved_fields[m.metricname] = True
+                else:
+                    m.delete()
+            for m in ALLMETRICS:
+                if m in request.POST and m not in saved_fields:
+                    metric = metric_forms[m].save(commit=False)
+                    metric.activity = activity
+                    metric.save()
+            
+            request.user.message_set.create(message="Activity updated.")
+            return HttpResponseRedirect(reverse('champ_activity', kwargs={'group_slug': group_slug, 'activity_id': activity_id}))
+        
+    else:
+        champ_form = ChampForm(instance=activity)
+        
+        # also create forms for the selected metrics.
+        # pre-populate the ones we're using for this activity
+        metrics = activity.get_metrics()
+        for m in metrics:
+            metric_forms[m.metricname] = METRICFORMS[m.metricname](instance=m,
+                                                                   prefix=m.metricname)
+            showfields[m.metricname] = True
+            
+        # then create forms for the rest too
+        for m in ALLMETRICS:
+            if m not in metric_forms:
+                if m == 'all': 
+                    metric_forms[m] = METRICFORMS[m](instance=activity)
+                else:
+                    metric_forms[m] = METRICFORMS[m](prefix=m)
+                showfields[m] = False
+
+    return render_to_response('champ/new_activity.html',
+                              {'group': group,
+                               'champ_form': champ_form,
+                               'metric_names': ALLMETRICS,
+                               'metric_forms': metric_forms,
+                               'showfields': showfields},
+                              context_instance=RequestContext(request))

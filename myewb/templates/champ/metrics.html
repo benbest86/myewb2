@@ -1,7 +1,7 @@
 {% load helpers %}
 
 	<tr>
-		<th colspan="2">{{ metric.metricname }}</th>
+		<th colspan="2">{% lookup metric_names metric.metricname %}</th>
 	</tr>
 	
 	{% if not activity.confirmed %}
