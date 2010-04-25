@@ -24,6 +24,7 @@ from base_groups.decorators import group_admin_required
 from networks.models import Network
 from champ.models import *
 from champ.forms import *
+from siteutils import schoolyear
 
 def run_query(query, filters):
     for f in filters:
@@ -97,13 +98,12 @@ def build_filters(year=None, month=None, term=None):
     activity_filters = []
     metric_filters = []
     
-    if year:
+    if year and month:
         activity_filters.append({'date__year': year})
+        activity_filters.append({'date__month': month})
         metric_filters.append({'activity__date__year': year})
-    if month:
-        activity_filters.append({'date__month': year})
-        metric_filters.append({'activity__date__month': year})
-    if year and term:
+        metric_filters.append({'activity__date__month': month})
+    elif year and term:
         if term == 'winter':
             start = date(year, 1, 1)
             end = date(year, 4, 31)
@@ -119,6 +119,11 @@ def build_filters(year=None, month=None, term=None):
             end = date(year, 12, 31)
             activity_filters.append({'date__range': (start, end)})
             metric_filters.append({'activity__date__range': (start, end)})
+    elif year:
+        start = date(year, 5, 1)
+        end = date(year+1, 4, 31)
+        activity_filters.append({'date__range': (start, end)})
+        metric_filters.append({'activity__date__range': (start, end)})
             
     return activity_filters, metric_filters
     
@@ -162,9 +167,9 @@ def dashboard(request, year=None, month=None, term=None,
     context['month'] = month
     context['term'] = term
     
-    context['nowyear'] = 2010
-    context['nowmonth'] = '04'
-    context['nowterm'] = 'Winter'
+    context['nowyear'] = schoolyear.school_year()
+    context['nowmonth'] = ("%d" % date.today().month).rjust(2, '0')
+    context['nowterm'] = schoolyear.term()
     
     context['allgroups'] = Network.objects.filter(chapter_info__isnull=False).order_by('name')
     

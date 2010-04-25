@@ -11,7 +11,8 @@
 {% load base_groups_tags %}
 {% load group_tags %}
 {% load topics_tags %}
-{% load events_tags %} 
+{% load events_tags %}
+{% load schoolyear %} 
 
 {% block champ_body %}
 
@@ -24,7 +25,7 @@
         {{ month }}, {{ year }}
     {% else %}
         {% if year %}
-            {{ year }}
+            {{ year|schoolyear }}
         {% else %}
             all dates
         {% endif %}
