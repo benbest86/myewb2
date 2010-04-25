@@ -16,7 +16,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, render_to_response
 from django.contrib.contenttypes.models import ContentType
-from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponse
+from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 from django.db.models import Q
 from django.template import RequestContext
 
@@ -210,3 +210,45 @@ def new_activity(request, group_slug):
                                'metric_names': ALLMETRICS,
                                'metric_forms': metric_forms},
                               context_instance=RequestContext(request))
+    
+@group_admin_required()
+def confirmed(request, group_slug):
+    group = get_object_or_404(Network, slug=group_slug)
+    activities = Activity.objects.filter(confirmed=True,
+                                         group__slug=group_slug)
+    activites = activities.order_by('-date')
+    
+    return render_to_response('champ/activity_list.html',
+                              {'confirmed': True,
+                               'activities': activities,
+                               'group': group},
+                               context_instance=RequestContext(request))
+    
+@group_admin_required()
+def unconfirmed(request, group_slug):
+    group = get_object_or_404(Network, slug=group_slug)
+    activities = Activity.objects.filter(confirmed=False,
+                                         group__slug=group_slug)
+    activites = activities.order_by('-date')
+    
+    return render_to_response('champ/activity_list.html',
+                              {'confirmed': False,
+                               'activities': activities,
+                               'group': group},
+                               context_instance=RequestContext(request))
+    
+@group_admin_required()
+def activity_detail(request, group_slug, activity_id):
+    group = get_object_or_404(Network, slug=group_slug)
+    activity = get_object_or_404(Activity, pk=activity_id)
+    
+    # do we want this?
+    # and why do we need to use pk's? (check always fails otherwise)
+    if not activity.group.pk == group.pk:
+        return HttpResponseForbidden()
+    
+    return render_to_response('champ/activity_detail.html',
+                              {'activity': activity,
+                               'group': group},
+                               context_instance=RequestContext(request))
+    

@@ -29,11 +29,11 @@
 {% endif %}
 <tr>
 	<td  class="labelcell">Unconfirmed Activities:</td>
-	<td colspan="2"> {{ unconfirmed }} <a href="$base/chapter/ListActivities/unconfirmed" class="more">list &raquo;</a></td>
+	<td colspan="2"> {{ unconfirmed }} <a href="{% url champ_unconfirmed_activities group.slug %}" class="more">list &raquo;</a></td>
 </tr>
 <tr>
 	<td class="labelcell">Confirmed Activities:</td>
-	<td colspan="2">  {{ confirmed }} <a href="$base/chapter/ListActivities/confirmed" class="more">list &raquo;</a></td>
+	<td colspan="2">  {{ confirmed }} <a href="{% url champ_confirmed_activities group.slug %}" class="more">list &raquo;</a></td>
 </tr>
 
 <tr><th colspan="3" align="left">Member Learning</th></tr>

@@ -1,0 +1,14 @@
+	<tr>
+		<th colspan="2">{{ metric.metricname }}</th>
+	</tr>
+	
+	{% for name, value in metric.get_values %}
+		<tr>
+			<td><strong>{{ name }}</strong></td>
+			<td>{{ value }}</td>
+		</tr>
+	{% endfor %}
+	
+	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>

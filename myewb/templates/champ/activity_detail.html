@@ -1,0 +1,66 @@
+{% extends "champ/base.html" %}
+
+{% load i18n %}
+
+{% block champ_body %}
+
+<h2>{{ group.name }}</h2>
+<h3>{{ activity.name }}</h3>
+
+<table>
+	<tr>
+		<th colspan="2">Basic Infor</th>
+	</tr>
+	
+	<tr>
+		<td><strong>Chapter</strong></td>
+		<td>{{ activity.group.name }}</td>
+	</tr>
+	<tr>
+		<td><strong>Activity name</strong></td>
+		<td>{{ activity.name }}</td>
+	</tr>
+	<tr>
+		<td><strong>Activity date</strong></td>
+		<td>{{ activity.date|date }}</td>
+	</tr>
+	<tr>
+		<td><strong>Record Created</strong></td>
+		<td>
+			by <a href="{% url profile_detail activity.creator.username %}">{{ activity.creator.visible_name }}</a><br/>
+			on {{ activity.created_date|date }}
+		</td>
+	</tr>
+	<tr>
+		<td><strong>Record last edited</strong></td>
+		<td>
+			by <a href="{% url profile_detail activity.editor.username %}">{{ activity.editor.visible_name }}</a><br/>
+			on {{ activity.modified_date|date }}
+		</td>
+	</tr>
+	<tr>
+		<td><strong># of Volunteers</strong></td>
+		<td>{{ activity.numVolunteers }}</td>
+	</tr>
+	<tr>
+		<td><strong>Person-hours of prep</strong></td>
+		<td>{{ activity.prepHours }}</td>
+	</tr>
+	<tr>
+		<td><strong>Person-hours of execution</strong></td>
+		<td>{{ activity.execHours }}</td>
+	</tr>
+	
+	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>
+	
+	{% for metric in activity.get_metrics %}
+		{% include "champ/metrics.html" %}
+	{% endfor %}
+	
+</table>
+
+
+{% endblock %}
+

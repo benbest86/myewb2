@@ -48,16 +48,22 @@ class Activity(models.Model):
     
     repeat = models.BooleanField(null=True, blank=True)
     
-    def can_be_confirmed(self):
-        # get all metrics attached to this activity
-        metrics = Metrics.objects.filter(activity_id=self.pk)
-        
+    def get_metrics(self):
+        """
+        Returns a list of all metrics associated with this activity,
+        using the proper Metrics subclasses
+        """
+        results = []
+        metrics = Metrics.objects.filter(activity=self.pk)
         for m in metrics:
-            # translate generic Metric object into the correct subclass
-            child_metric = getattr(m, m.metric_type)
+            results.append(m.getattr(m, m.metric_type))
             
-            # and check if it can be confirmed
-            if child_metric.can_be_confirmed() == False:
+        return results
+    
+    def can_be_confirmed(self):
+        metrics = self.get_metrics()
+        for m in metrics:
+            if m.can_be_confirmed() == False:
                 return False
         return True
     
@@ -75,28 +81,42 @@ class Metrics(models.Model):
         if self.metric_type is None:
             self.metric_type = self.__class__.__name__.lower()
     
+    def get_values(self):
+        """
+        Returns a subset of this metric's fields as a dict
+        (removes all non-data fields)
+        """
+        # so awesome.
+        # http://yuji.wordpress.com/2008/05/14/django-list-all-fields-in-an-object/
+        fields = {}
+        for f in self._meta.fields:
+            fields[f.name] = getattr(self, f)
+            
+        if 'id' in fields:
+            del fields['id']
+        if 'activity_id' in fields:
+            del fields['activity_id']
+        if 'metric_type' in fields:
+            del fields['metric_type']
+        if 'metrics_ptr' in fields:
+            del fields['metrics_ptr']
+        if 'name' in fields:
+            del fields['name']
+            
+        return fields
+        
     def can_be_confirmed(self):
         """
         An activity can be confirmed if the metrics are all filled out...
         """
-        # so awesome.
-        # http://yuji.wordpress.com/2008/05/14/django-list-all-fields-in-an-object/
-        fields = [f.name for f in self._meta.fields]
-        if fields.count("id"):
-            fields.remove("id")
-        if fields.count("activity_id"):
-            fields.remove("activity_id")
-        if fields.count("metric_type"):
-            fields.remove("metric_type")
-        if fields.count("metrics_ptr"):
-            fields.remove("metrics_ptr")
-        
-        for f in fields:
-            if getattr(self, f) == None:
+        fields = self.get_values()
+        for f, value in fields:
+            if value == None:
                 return False
         return True
         
 class MemberLearningMetrics(Metrics):
+    metricname = "Member Learning"
     type = models.CharField(max_length=255, null=True, blank=True)
     learning_partner = models.BooleanField(null=True, blank=True)
     curriculum = models.CharField(max_length=255, null=True, blank=True)
@@ -106,6 +126,7 @@ class MemberLearningMetrics(Metrics):
     new_attendance = models.IntegerField(null=True, blank=True)
     
 class SchoolOutreachMetrics(Metrics):
+    metricname = "School Outreach"
     school_name = models.CharField(max_length=255, null=True, blank=True)
     school_address = models.CharField(max_length=255, null=True, blank=True)
     school_phone = models.CharField(max_length=255, null=True, blank=True)
@@ -123,6 +144,7 @@ class SchoolOutreachMetrics(Metrics):
     notes = models.TextField(null=True, blank=True)
     
 class FunctioningMetrics(Metrics):
+    metricname = "Chapter Functioning"
     type = models.CharField(max_length=255, null=True, blank=True)
     location = models.CharField(max_length=255, null=True, blank=True)
     purpose = models.CharField(max_length=255, null=True, blank=True)
@@ -130,6 +152,7 @@ class FunctioningMetrics(Metrics):
     duration = models.FloatField(null=True, blank=True)
     
 class PublicEngagementMetrics(Metrics):
+    metricname = "Public Outreach"
     type = models.CharField(max_length=255, null=True, blank=True)
     location = models.CharField(max_length=255, null=True, blank=True)
     purpose = models.CharField(max_length=255, null=True, blank=True)
@@ -139,6 +162,7 @@ class PublicEngagementMetrics(Metrics):
     level3 = models.IntegerField(null=True, blank=True)
     
 class PublicAdvocacyMetrics(Metrics):
+    metricname = "Advocacy"
     type = models.CharField(max_length=255, null=True, blank=True)
     units = models.IntegerField(null=True, blank=True)
     decision_maker = models.CharField(max_length=255, null=True, blank=True)
@@ -148,16 +172,19 @@ class PublicAdvocacyMetrics(Metrics):
     learned = models.TextField(null=True, blank=True)
     
 class PublicationMetrics(Metrics):
+    metricname = "Publicity"
     outlet = models.CharField(max_length=255, null=True, blank=True)
     type = models.CharField(max_length=255, null=True, blank=True)
     location = models.CharField(max_length=255, null=True, blank=True)
     circulation = models.IntegerField(null=True, blank=True)
     
 class FundraisingMetrics(Metrics):
+    metricname = "Fundraising"
     goal = models.IntegerField(null=True, blank=True)
     revenue = models.IntegerField(null=True, blank=True)
     
 class WorkplaceOutreachMetrics(Metrics):
+    metricname = "Workplace Outreach"
     company = models.CharField(max_length=255, null=True, blank=True)
     city = models.CharField(max_length=255, null=True, blank=True)
     presenters = models.CharField(max_length=255, null=True, blank=True)
@@ -169,6 +196,7 @@ class WorkplaceOutreachMetrics(Metrics):
     type = models.CharField(max_length=255, null=True, blank=True)
     
 class CurriculumEnhancementMetrics(Metrics):
+    metricname = "Curriculum Enhancement"
     name = models.CharField(max_length=255, null=True, blank=True)
     code = models.CharField(max_length=255, null=True, blank=True)
     students = models.IntegerField(null=True, blank=True)
