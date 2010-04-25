@@ -99,3 +99,7 @@ METRICFORMS = {'all': ImpactForm,
                'wo': WorkplaceOutreachForm,
                'ce': CurriculumEnhancementForm}
 
+class JournalForm(forms.ModelForm):
+    class Meta:
+        model = Journal
+        fields = ('snapshot', 'highlight', 'challenge', 'leadership', 'learning', 'innovation', 'yearplan', 'office', 'private')

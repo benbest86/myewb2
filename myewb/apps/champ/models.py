@@ -217,3 +217,45 @@ class CurriculumEnhancementMetrics(Metrics):
     hours = models.IntegerField(null=True, blank=True)
     professor = models.CharField(max_length=255, null=True, blank=True)
     ce_activity = models.CharField(max_length=255, null=True, blank=True)
+
+class Journal(models.Model):
+    date = models.DateField(auto_now_add=True)
+    creator = models.ForeignKey(User)
+    group = models.ForeignKey(BaseGroup)
+    private = models.BooleanField(verbose_name="Private?",
+                                  help_text="checking this box means that only you and office members will be able to read this entry. Note that default is private.",
+                                  default=True)
+
+    snapshot = models.TextField(verbose_name="Chapter Pulse",
+                                help_text="Please provide a quick chapter snapshot, an anecdote, a story, a rant, an observation, a hope or a fear of this month. This can be a big picture comment including both a highlight and a key challenge:",
+                                null=True, blank=True)
+    highlight = models.TextField(verbose_name="Team Health: Think, Do, Love",
+                                 help_text="Please share a highlight of how your team is doing",
+                                 null=True, blank=True)
+    challenge = models.TextField(verbose_name="",
+                                 help_text="Please share a key challenge of how your team is doing:",
+                                 null=True, blank=True)
+    leadership = models.TextField(verbose_name="Culture Check: Leadership, Learning, Innovation",
+                                  help_text="Please comment on the presence/development of leadership at your chapter:",
+                                  null=True, blank=True)
+    learning = models.TextField(verbose_name="",
+                                help_text="Please comment on the presence/development of learning at your chapter:",
+                                null=True, blank=True)
+    innovation = models.TextField(verbose_name="",
+                                  help_text="Please comment on the presence/development of innovation at your chapter:",
+                                  null=True, blank=True)
+    yearplan = models.TextField(verbose_name="Year Plan",
+                                help_text="Please comment on what goals are being achieved and what needs more work that has not already been mentioned above. Where the goals are referring to all program areas that make up the chapter, such as Member Learning, Fundraising, or School Outreach, to name a few:",
+                                null=True, blank=True)
+    office = models.TextField(verbose_name="National Office",
+                              help_text="Please include any questions and comments you may have for your chapter buddy or the National Office? What does the national office need to know",
+                              null=True, blank=True)
+    
+    def get_fields(self):
+        
+        fields = []
+        for f in self._meta.fields:
+            if f.name in ('snapshot', 'highlight', 'challenge', 'leadership', 'learning', 'innovation', 'yearplan', 'office'):
+                fields.append((f, getattr(self, f.name)))
+                
+        return fields

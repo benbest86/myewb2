@@ -386,3 +386,56 @@ def activity_confirm(request, group_slug, activity_id):
         request.user.message_set.create(message="Activity confirmed.  Thanks - you rock!")
         
     return HttpResponseRedirect(reverse('champ_activity', kwargs={'group_slug': group_slug, 'activity_id': activity_id}))
+
+@group_admin_required()
+def journal_list(request, group_slug):
+    group = get_object_or_404(Network, slug=group_slug)
+    
+    journals = Journal.objects.filter(group=group)
+    if not request.user.has_module_perms('champ'):
+        journals = journals.filter(private=False)
+        journals = journals | Journal.objects.filter(group=group, private=True, creator=request.user)
+    
+    journals = journals.order_by('-date')
+    
+    return render_to_response('champ/journal_list.html',
+                              {'group': group,
+                               'journals': journals},
+                              context_instance=RequestContext(request))
+
+@group_admin_required()
+def journal_new(request, group_slug):
+    group = get_object_or_404(Network, slug=group_slug)
+    
+    if request.method == 'POST':
+        form = JournalForm(request.POST)
+        
+        if form.is_valid():
+            journal = form.save(commit=False)
+            journal.creator = request.user
+            journal.group = group
+            journal.save()
+            
+            request.user.message_set.create(message="Thank you!")
+            return HttpResponseRedirect(reverse('champ_journal_detail', kwargs={'group_slug': group_slug, 'journal_id': journal.pk}))
+    
+    else:
+        form = JournalForm()
+        
+    return render_to_response('champ/journal_new.html',
+                              {'group': group,
+                               'form': form},
+                               context_instance=RequestContext(request))
+
+@group_admin_required()
+def journal_detail(request, group_slug, journal_id):
+    group = get_object_or_404(Network, slug=group_slug)
+    journal = get_object_or_404(Journal, pk=journal_id)
+    
+    if not journal.group.pk == group.pk:
+        return HttpResponseForbidden()
+    
+    return render_to_response('champ/journal_detail.html',
+                              {'journal': journal,
+                               'group': group},
+                               context_instance=RequestContext(request))
