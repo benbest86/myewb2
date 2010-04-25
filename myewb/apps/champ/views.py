@@ -135,6 +135,7 @@ def dashboard(request, year=None, month=None, term=None,
     else:
         grp = None
 
+    metric_filters.append({'activity__confirmed': True})
     context = run_stats(metric_filters)
 
     context['journals'] = 0
@@ -167,48 +168,62 @@ def dashboard(request, year=None, month=None, term=None,
 def new_activity(request, group_slug):
     group = get_object_or_404(Network, slug=group_slug)
     metric_forms = {}
+    showfields = {}
     
     if request.method == 'POST':
         champ_form = ChampForm(request.POST)
         
         # also create forms for the selected metrics
         forms_valid = champ_form.is_valid()
-        #for metric in ALLMETRICS.keys():
         for m in ALLMETRICS:
             if m in request.POST:
-                metric_forms[m] = METRICFORMS[metric](request.POST,
-                                                      prefix=m)
+                if m == 'all':
+                    metric_forms[m] = METRICFORMS[m](request.POST)
+                else:
+                    metric_forms[m] = METRICFORMS[m](request.POST,
+                                                     prefix=m)
                 forms_valid = forms_valid and metric_forms[m].is_valid()
+                showfields[m] = True
 
         if forms_valid:
+            # save the activity
             activity = champ_form.save(commit=False)
             activity.creator = request.user
             activity.editor = request.user
             activity.group = group
             activity.save()
-            # TODO: finish implementing
+            
+            # and save all associated metrics
+            for m in metric_forms:
+                if not m == 'all':
+                    metric = metric_forms[m].save(commit=False)
+                    metric.activity=activity
+                    metric.save()
             
             request.user.message_set.create(message="Activity recorded")
             return HttpResponseRedirect(reverse('champ_dashboard', kwargs={'group_slug': group_slug}))
             
         else:
             # create all the other metric forms as blank forms
-            #for m in ALLMETRICS.keys():
             for m in ALLMETRICS:
                 if m not in metric_forms:
                     metric_forms[m] = METRICFORMS[m](prefix=m)
+                    showfields[m] = False
                  
     else:
         champ_form = ChampForm()
-        #for m in ALLMETRICS.keys():
         for m in ALLMETRICS:
-            metric_forms[m] = METRICFORMS[m](prefix=m)
+            if m == 'all':
+                metric_forms[m] = METRICFORMS[m]()
+            else:
+                metric_forms[m] = METRICFORMS[m](prefix=m)
                        
     return render_to_response('champ/new_activity.html',
                               {'group': group,
                                'champ_form': champ_form,
                                'metric_names': ALLMETRICS,
-                               'metric_forms': metric_forms},
+                               'metric_forms': metric_forms,
+                               'showfields': showfields},
                               context_instance=RequestContext(request))
     
 @group_admin_required()
@@ -252,3 +267,6 @@ def activity_detail(request, group_slug, activity_id):
                                'group': group},
                                context_instance=RequestContext(request))
     
+@group_admin_required()
+def activity_edit(request, group_slug, activity_id):
+    pass

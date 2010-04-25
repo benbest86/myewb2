@@ -19,8 +19,8 @@
                 <p>
                 Activities:<br/>
                 <a href="{% url champ_new_activity group.slug %}">record an activity</a><br/>
-                <a href="">list unconfirmed</a><br/>
-                <a href="">list confirmed</a>
+                <a href="{% url champ_unconfirmed_activities group.slug %}">list unconfirmed</a><br/>
+                <a href="{% url champ_confirmed_activities group.slug %}">list confirmed</a>
                 </p>
                 
                 <p>

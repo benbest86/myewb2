@@ -57,7 +57,7 @@ class Activity(models.Model):
         results = []
         metrics = Metrics.objects.filter(activity=self.pk)
         for m in metrics:
-            results.append(m.getattr(m, m.metric_type))
+            results.append(getattr(m, m.metric_type))
             
         return results
     
@@ -70,8 +70,10 @@ class Activity(models.Model):
     
 class Metrics(models.Model):
 #    activity_id = models.PositiveIntegerField()    # don't use ForeignKey so that subclassing won't cause reverse name problems.
-    activity = models.ForeignKey(Activity, related_name="%s" % __name__)
-    metric_type = models.CharField(max_length=255, null=True)
+    activity = models.ForeignKey(Activity, related_name="%s" % __name__,
+                                 editable=False)
+    metric_type = models.CharField(max_length=255, null=True,
+                                   editable=False)
     
     def __init__(self, *args, **kwargs):
         super(Metrics, self).__init__(*args, **kwargs)
@@ -89,14 +91,18 @@ class Metrics(models.Model):
         """
         # so awesome.
         # http://yuji.wordpress.com/2008/05/14/django-list-all-fields-in-an-object/
+        print "get values"
         fields = {}
         for f in self._meta.fields:
-            fields[f.name] = getattr(self, f)
+            print "trying to get ", f.name, getattr(self, f.name)
+            fields[f.name] = getattr(self, f.name)
             
         if 'id' in fields:
             del fields['id']
         if 'activity_id' in fields:
             del fields['activity_id']
+        if 'activity' in fields:
+            del fields['activity']
         if 'metric_type' in fields:
             del fields['metric_type']
         if 'metrics_ptr' in fields:

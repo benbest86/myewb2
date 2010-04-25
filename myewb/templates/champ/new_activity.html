@@ -24,10 +24,16 @@
 				<label for="metric_{{m}}">
 					{% lookup metric_names m %}
 				</label>
-				<input type="checkbox" class="checkboxinput" name="{{m}}"/>
+				{% lookup_ctx showfields m as fieldselected %}
+				<input type="checkbox" class="checkboxinput additionalmetrics" name="{{m}}" id="champ-box-{{m}}" {% if fieldselected %}checked="checked"{% endif %}/>
 				<p class="formHint">
 					(check if this purpose is applicable to this activity)
 				</p>
+				
+				<div id="champ-form-{{m}}" class="champ-form" style=" {% if not fieldselected %}display: none; {% endif %}margin: 10px 50px; border: solid 1px;">
+					{% lookup_ctx metric_forms m as mform %}
+					{{ mform|as_uni_form}}
+				</div>
 			</div>
 		{% endfor %}
 	</fieldset>
@@ -48,7 +54,12 @@
     <script type="text/javascript">
         $(document).ready(function() {
           	{# set up javascript widgets... #}
-            var datepicker = $("input#id_date").datepicker({});
+            var datepicker123 = $("input#id_date").datepicker({});
+
+            {# show additional metrics forms as needed #}
+			$('.additionalmetrics').change(function() {
+				$('#champ-form-' + $(this).attr('name')).slideToggle(); 
+			});
         });
     </script>
 {% endblock %}

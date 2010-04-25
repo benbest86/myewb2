@@ -2,6 +2,7 @@ from django import template
 from django.core.urlresolvers import reverse
 from django.forms.widgets import Select
 from django.utils.translation import ugettext_lazy as _
+
 register = template.Library()
 
 @register.inclusion_tag("new_button.html")
@@ -81,3 +82,28 @@ class LookupNode(template.Node):
             return thedict[thekey]
         except template.VariableDoesNotExist:
             return ''
+
+# similar to lookup() as above, but inserts the value into the context intsead of printing it
+@register.tag()
+def lookup_ctx(parser, token):
+    try:
+        tagname, dict, key, astxt, variable = token.split_contents()
+    except:
+        raise template.TemplateSyntaxError, "%r tag takes exactly four arguments" % token.contents.split()[0]
+#    return as_uni_form(LookupNode(dict, key))
+    return LookupCtxNode(dict, key, variable)
+
+class LookupCtxNode(template.Node):
+    def __init__(self, dict, key, variable):
+        self.dict = template.Variable(dict)
+        self.key = template.Variable(key)
+        self.variable = variable
+        
+    def render(self, context):
+        try:
+            thedict = self.dict.resolve(context)
+            thekey = self.key.resolve(context)
+            context[self.variable] = thedict[thekey]
+        except:
+            pass
+        return ''
