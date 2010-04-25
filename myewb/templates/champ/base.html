@@ -13,8 +13,16 @@
 {% endblock %}
 
 {% block toolbar_left %}
-        <div class="toolbarheader bkgd">{% trans "CHAMP Actions" %}</div>
+        <div class="toolbarheader bkgd">{% trans "CHAMP" %}</div>
         <div class="toolbarcontent">
+        	<p>
+        		{% if group %}
+        			<a href="{% url champ_dashboard group_slug=group.slug %}">Dashboard</a>
+        		{% else %}
+        			<a href="{% url champ_dashboard %}">Dashboard</a>
+        		{% endif %}
+        	</p>
+        
             {% if group %}
                 <p>
                 Activities:<br/>

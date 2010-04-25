@@ -115,8 +115,8 @@ class Metrics(models.Model):
         An activity can be confirmed if the metrics are all filled out...
         """
         fields = self.get_values()
-        for f, value in fields:
-            if value == None:
+        for f, value in fields.items():
+            if value == None or value == "":
                 return False
         return True
         

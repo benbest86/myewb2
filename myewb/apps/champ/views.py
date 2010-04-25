@@ -56,26 +56,26 @@ def run_stats(filters):
         ce_students += c.students
         ce_hours += c.hours
     
-    wo_metrics = run_query(PublicAdvocacyMetrics.objects.all(), filters)
+    wo_metrics = run_query(WorkplaceOutreachMetrics.objects.all(), filters)
     wo_professionals = 0
     wo_presentations = 0
     for w in wo_metrics:
         wo_professionals += w.attendance 
         wo_presentations += w.presentations
     
-    so_metrics = run_query(PublicAdvocacyMetrics.objects.all(), filters)
+    so_metrics = run_query(SchoolOutreachMetrics.objects.all(), filters)
     so_students = 0
     so_presentations = 0
     for s in so_metrics:
         so_students += s.students
         so_presentations += s.presentations
     
-    fundraising_metrics = run_query(PublicAdvocacyMetrics.objects.all(), filters)
+    fundraising_metrics = run_query(FundraisingMetrics.objects.all(), filters)
     fundraising_dollars = 0
     for f in fundraising_metrics:
         fundraising_dollars += f.revenue
     
-    publicity_metrics = run_query(PublicAdvocacyMetrics.objects.all(), filters)
+    publicity_metrics = run_query(PublicationMetrics.objects.all(), filters)
     publicity_hits = publicity_metrics.count()
     
     context = {}
@@ -280,7 +280,6 @@ def activity_edit(request, group_slug, activity_id):
         request.user.message_set.create(message="This activity is already confirmed - you can't edit it any more")
         return HttpResponseRedirect(reverse('champ_activity', kwargs={'group_slug': group_slug, 'activity_id': activity_id}))
 
-    group = get_object_or_404(Network, slug=group_slug)
     metric_forms = {}
     showfields = {}
     
@@ -359,3 +358,24 @@ def activity_edit(request, group_slug, activity_id):
                                'metric_forms': metric_forms,
                                'showfields': showfields},
                               context_instance=RequestContext(request))
+
+@group_admin_required()
+def activity_confirm(request, group_slug, activity_id):
+    group = get_object_or_404(Network, slug=group_slug)
+    activity = get_object_or_404(Activity, pk=activity_id)
+    
+    if not activity.group.pk == group.pk:
+        return HttpResponseForbidden()
+    
+    if activity.confirmed:
+        request.user.message_set.create(message="This activity is already confirmed")
+
+    elif not activity.can_be_confirmed():
+        request.user.message_set.create(message="This activity cannot be confirmed yet")
+
+    else:
+        activity.confirmed = True
+        activity.save()
+        request.user.message_set.create(message="Activity confirmed.  Thanks - you rock!")
+        
+    return HttpResponseRedirect(reverse('champ_activity', kwargs={'group_slug': group_slug, 'activity_id': activity_id}))

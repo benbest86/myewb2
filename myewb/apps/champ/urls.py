@@ -23,5 +23,6 @@ urlpatterns = patterns('champ.views',
     url(r'^(?P<group_slug>[-\w]+)/unconfirmed/', 'unconfirmed', name="champ_unconfirmed_activities"),
     #url(r'^activity/(?P<id>\d)/', 'activity_detail', name="champ_activity"),
     url(r'^(?P<group_slug>[-\w]+)/activity/(?P<activity_id>\d)/edit/', 'activity_edit', name="champ_edit_activity"),
+    url(r'^(?P<group_slug>[-\w]+)/activity/(?P<activity_id>\d)/confirm/', 'activity_confirm', name="champ_confirm_activity"),
     url(r'^(?P<group_slug>[-\w]+)/activity/(?P<activity_id>\d)/', 'activity_detail', name="champ_activity"),
 )

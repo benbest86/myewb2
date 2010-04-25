@@ -15,7 +15,7 @@
 	{% for name, value in metric.get_values.items %}
 		<tr>
 			<td><strong>{{ name }}</strong></td>
-			<td>{{ value }}</td>
+			<td>{{ value|default:"<span style='color: red'>unknown</span>" }}</td>
 		</tr>
 	{% endfor %}
 
