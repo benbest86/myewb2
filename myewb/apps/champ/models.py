@@ -12,7 +12,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from base_groups.models import BaseGroup
 
-ALLMETRICS = {'func': "Chapter Functioning",
+ALLMETRICS = {'all': "Basic Info",
+              'func': "Chapter Functioning",
               'ml': "Member Learning",
               'so': "School Outreach",
               'pe': "Public Outreach",

@@ -27,6 +27,13 @@ class ChampForm(forms.ModelForm):
     class Meta:
         model = Activity
         fields = ('name', 'date', 'numVolunteers', 'prepHours', 'execHours')
+        
+class ChampDetailsForm(forms.ModelForm):
+    class Meta:
+        # this is really part 2 of ChampForm.
+        # indended to create ChampForm, then pass the instance into this form.
+        model = Activity
+        fields = ('description', 'goals', 'outcome', 'notes', 'changes', 'repeat')
     
 class MemberLearningForm(forms.ModelForm):
     class Meta:
@@ -64,7 +71,8 @@ class CurriculumEnhancementForm(forms.ModelForm):
     class Meta:
         model = CurriculumEnhancementMetrics
         
-METRICFORMS = {'ml': MemberLearningForm,
+METRICFORMS = {'all': ChampDetailsForm,
+               'ml': MemberLearningForm,
                'so': SchoolOutreachForm,
                'func': FunctioningForm,
                'pe': PublicEngagementForm,
