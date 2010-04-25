@@ -60,3 +60,24 @@ def isnewer(date1, date2):
     else:
         return ""
 
+# does a dictionary lookup, where the key is also a template variable
+@register.tag()
+def lookup(parser, token):
+    try:
+        tagname, dict, key = token.split_contents()
+    except:
+        raise template.TemplateSyntaxError, "%r tag takes exactly two arguments" % token.contents.split()[0]
+    return LookupNode(dict, key)
+
+class LookupNode(template.Node):
+    def __init__(self, dict, key):
+        self.dict = template.Variable(dict)
+        self.key = template.Variable(key)
+        
+    def render(self, context):
+        try:
+            thedict = self.dict.resolve(context)
+            thekey = self.key.resolve(context)
+            return thedict[thekey]
+        except template.VariableDoesNotExist:
+            return ''

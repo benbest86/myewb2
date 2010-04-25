@@ -12,6 +12,16 @@ from django.utils.translation import ugettext_lazy as _
 
 from base_groups.models import BaseGroup
 
+ALLMETRICS = {'func': "Chapter Functioning",
+              'ml': "Member Learning",
+              'so': "School Outreach",
+              'pe': "Public Outreach",
+              'pa': "Advocacy",
+              'wo': "Workplace Outreach",
+              'ce': "Curriculum Enhancement",
+              'pub': "Publicity",
+              'fund': "Fundraising"}
+
 class Activity(models.Model):
     name = models.CharField(_('Event name'), max_length=255)
     

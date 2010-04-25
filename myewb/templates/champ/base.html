@@ -18,7 +18,7 @@
             {% if group %}
                 <p>
                 Activities:<br/>
-                <a href="">record an activity</a><br/>
+                <a href="{% url champ_new_activity group.slug %}">record an activity</a><br/>
                 <a href="">list unconfirmed</a><br/>
                 <a href="">list confirmed</a>
                 </p>
@@ -33,8 +33,10 @@
             {% if perms.champ %}
                 <p>
                 Spreadsheets:<br/>
-                <a href="">SO spreadsheet</a><br/>
-                <a href="">activity spreadsheet</a><br/>
+                {% if group %}
+                	<a href="">SO spreadsheet</a><br/>
+                	<a href="">activity spreadsheet</a><br/>
+                {% endif %}
                 <a href="">global SO spreadsheet</a><br/>
                 <a href="">global spreadsheet</a>
                 </p>

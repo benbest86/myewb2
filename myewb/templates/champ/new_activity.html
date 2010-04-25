@@ -1,0 +1,41 @@
+{% extends "champ/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+{% load helpers %}
+
+{% block champ_body %}
+
+<h2>New CHAMP activity</h2>
+<h3>{{ group.name }}</h3>
+
+<form action="" method="POST" class="uniForm">
+	<fieldset class="inlineLabels">
+		{{ champ_form|as_uni_form }}
+		
+		<h3>Purposes</h3>
+		{% for m in metric_names %}
+			<div class="ctrlHolder">
+				<label for="metric_{{m}}">
+					{% lookup metric_names m %}
+				</label>
+				<input type="checkbox" class="checkboxinput" name="{{m}}"/>
+				<p class="formHint">
+					(check if this purpose is applicable to this activity)
+				</p>
+			</div>
+		{% endfor %}
+	</fieldset>
+	
+	<input type="submit"/>
+</form>
+
+{% endblock %}
+
+{% block extra_body %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+        });
+    </script>
+{% endblock %}
+

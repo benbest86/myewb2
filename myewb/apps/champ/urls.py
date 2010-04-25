@@ -16,6 +16,7 @@ urlpatterns = patterns('champ.views',
     url(r'^(?P<group_slug>[-\w]+)/$', 'dashboard', name='champ_dashboard'),
     url(r'^(?P<group_slug>[-\w]+)/(?P<year>\d{4})/(?P<month>\d{2})/$', 'dashboard', name='champ_dashboard'),
     url(r'^(?P<group_slug>[-\w]+)/(?P<year>\d{4})/(?P<term>[-\w]+)/$', 'dashboard', name='champ_dashboard'),
-    url(r'^(?P<group_slug>[-\w]+)/(?P<year>\d{4})/$', 'dashboard', name='champ_dashboard')
+    url(r'^(?P<group_slug>[-\w]+)/(?P<year>\d{4})/$', 'dashboard', name='champ_dashboard'),
 
+    url(r'^(?P<group_slug>[-\w]+)/new/', 'new_activity', name="champ_new_activity"),
 )

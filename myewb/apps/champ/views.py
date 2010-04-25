@@ -20,8 +20,10 @@ from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponse
 from django.db.models import Q
 from django.template import RequestContext
 
+from base_groups.decorators import group_admin_required
 from networks.models import Network
 from champ.models import *
+from champ.forms import *
 
 def run_query(query, filters):
     for f in filters:
@@ -161,3 +163,43 @@ def dashboard(request, year=None, month=None, term=None,
                               context,
                               context_instance=RequestContext(request))
 
+@group_admin_required()
+def new_activity(request, group_slug):
+    metric_forms = {}
+    
+    if request.method == 'POST':
+        champ_form = ChampForm(request.POST)
+        
+        # also create forms for the selected metrics
+        forms_valid = champ_form.is_valid()
+        #for metric in ALLMETRICS.keys():
+        for m in ALLMETRICS:
+            if m in request.POST:
+                metric_forms[m] = METRICFORMS[metric](request.POST,
+                                                      prefix=m)
+                forms_valid = forms_valid and metric_forms[m].is_valid()
+
+        if forms_valid:
+            # TODO: implement
+            pass
+        else:
+            # create all the other metric forms as blank forms
+            #for m in ALLMETRICS.keys():
+            for m in ALLMETRICS:
+                if m not in metric_forms:
+                    metric_forms[m] = METRICFORMS[m](prefix=m)
+                 
+    else:
+        champ_form = ChampForm()
+        #for m in ALLMETRICS.keys():
+        for m in ALLMETRICS:
+            metric_forms[m] = METRICFORMS[m](prefix=m)
+                       
+    
+    group = get_object_or_404(Network, slug=group_slug)
+    return render_to_response('champ/new_activity.html',
+                              {'group': group,
+                               'champ_form': champ_form,
+                               'metric_names': ALLMETRICS,
+                               'metric_forms': metric_forms},
+                              context_instance=RequestContext(request))
