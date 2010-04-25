@@ -165,6 +165,7 @@ def dashboard(request, year=None, month=None, term=None,
 
 @group_admin_required()
 def new_activity(request, group_slug):
+    group = get_object_or_404(Network, slug=group_slug)
     metric_forms = {}
     
     if request.method == 'POST':
@@ -180,8 +181,16 @@ def new_activity(request, group_slug):
                 forms_valid = forms_valid and metric_forms[m].is_valid()
 
         if forms_valid:
-            # TODO: implement
-            pass
+            activity = champ_form.save(commit=False)
+            activity.creator = request.user
+            activity.editor = request.user
+            activity.group = group
+            activity.save()
+            # TODO: finish implementing
+            
+            request.user.message_set.create(message="Activity recorded")
+            return HttpResponseRedirect(reverse('champ_dashboard', kwargs={'group_slug': group_slug}))
+            
         else:
             # create all the other metric forms as blank forms
             #for m in ALLMETRICS.keys():
@@ -195,8 +204,6 @@ def new_activity(request, group_slug):
         for m in ALLMETRICS:
             metric_forms[m] = METRICFORMS[m](prefix=m)
                        
-    
-    group = get_object_or_404(Network, slug=group_slug)
     return render_to_response('champ/new_activity.html',
                               {'group': group,
                                'champ_form': champ_form,

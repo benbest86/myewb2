@@ -4,6 +4,11 @@
 {% load uni_form %}
 {% load helpers %}
 
+{% block extra_head %}
+ <link type="text/css" href="{{STATIC_URL}}css/jquery-ui.css" rel="stylesheet" />
+ <link type="text/css" href="{{STATIC_URL}}css/ui.timepickr.css" rel="stylesheet" />
+{% endblock %}
+
 {% block champ_body %}
 
 <h2>New CHAMP activity</h2>
@@ -33,8 +38,23 @@
 {% endblock %}
 
 {% block extra_body %}
+	<script type="text/javascript" src="{{STATIC_URL}}js/jquery-ui.js"></script> 
+	<script type="text/javascript" src="{{STATIC_URL}}js/ui.datepicker.js"></script>
+	{% comment %}
+	<script type="text/javascript" src="{{STATIC_URL}}js/jquery.utils.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/jquery.strings.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/ui.dropslide.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/ui.timepickr.js"></script>
+	{% endcomment %}
+
+	<style>
+		div.ui-datepicker {z-index:10000000;}
+	</style>
+  
     <script type="text/javascript">
         $(document).ready(function() {
+          	{# set up javascript widgets... #}
+            var datepicker = $("input#id_date").datepicker({});
         });
     </script>
 {% endblock %}
