@@ -1,0 +1,80 @@
+{% extends "profiles/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+
+{% block head_title %}{% blocktrans %}Advanced Profile Query{% endblocktrans %}{% endblock %}
+
+{% block extra_head %}
+	{{ block.super }}
+	
+	<style>
+		div.queryterm1 {
+			padding: 10px;
+			margin: 10px;
+			background: #f0f0f0;
+		}
+		div.queryterm2 {
+			padding: 10px;
+			margin: 10px;
+			background: #d0d0d0;
+		}
+	</style>
+{% endblock %}
+
+{% block body %}
+
+	<h1>Advanced Profile Query</h1>
+	
+	{% for t in terms %}
+		<div class="{% cycle 'queryterm1' 'queryterm2' %}">{{t}}</div>
+		{# FIXME: need to set the javascript toggle variable too; if there are an odd number of terms here, then we'll get two light-coloured terms in a row. #}
+	{% endfor %}
+	<hr/>
+	
+	{% if data %}
+		<div>
+			<strong>From: "{{ data.sendername }}" &lt;{{data.senderemail}}&gt;</strong>
+		</div>
+		
+		<div>
+			<strong>Subject: {{ data.subject }}</strong>
+		</div>
+		
+		<div style="padding: 10px; margin: 25px; border: 1px solid;">
+			{{ data.body|safe }}
+		</div>
+		
+		<form method="post" action="{% url profile_query_send_email %}" id="hiddenform">
+			<div style="display: none;">
+				{{ form|as_uni_form }}
+			</div>
+	
+			<input type="submit" value="send to {{recipients}} people"/>
+		</form>
+		
+		<hr/>
+		Or, edit again...<br/>
+	{% endif %}
+	
+	<form method="post" class="uniForm" action="{% url profile_query_preview_email %}">
+		{{ form|as_uni_form }}
+		
+		<input type="submit" value="preview"/>
+	</form>
+	
+{% endblock %}	
+
+{% block extra_body %}
+	{{ block.super }}
+	
+	<script type="text/javascript">
+		$('#hiddenform :input').each(function() {
+			$(this).attr('id', 'final-' + $(this).attr('id'));
+			$(this).removeClass('tinymce');
+		});
+	</script>
+	
+	{% include "tinymce.html" %}
+{% endblock %}
+	

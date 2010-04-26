@@ -1,0 +1,10 @@
+<span style='float: right;'>
+	<small>
+		{# ({{results}} results for this term) &nbsp;&nbsp; #}
+		{% if id %}
+			<a href="{% url profile_query_delprofile id %}" class="removelink">(remove)</a>
+		{% endif %}
+	</small>
+</span>
+
+<strong>{{attribute}}</strong> {{comparison}} <em>{{value}}</em>

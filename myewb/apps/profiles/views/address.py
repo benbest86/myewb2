@@ -70,6 +70,7 @@ def create_address(request, username, object=None):
         profile = other_user.get_profile()
         address.content_object = profile
         address.save()
+        profile.addresses.add(address)
         if request.is_ajax():
             return JsonResponse({'valid': True, 'label': address.label})
             # return HttpResponse(simplejson.dumps({'valid': True, 'label': address.label}), mimetype='application/javascript')

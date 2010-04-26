@@ -1,0 +1,110 @@
+{% extends "profiles/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+{% load pagination_tags %}
+
+{% block head_title %}{% blocktrans %}Advanced Profile Query{% endblocktrans %}{% endblock %}
+
+{% block extra_head %}
+	{{ block.super }}
+	
+	<style>
+		div.queryterm1 {
+			padding: 10px;
+			margin: 10px;
+			background: #f0f0f0;
+		}
+		div.queryterm2 {
+			padding: 10px;
+			margin: 10px;
+			background: #d0d0d0;
+		}
+	</style>
+{% endblock %}
+
+{% block body %}
+
+	<h1>Advanced Profile Query</h1>
+	
+	<a href="{% url profile_query %}">See saved queries</a>
+
+	{% for t in terms %}
+		<div class="{% cycle 'queryterm1' 'queryterm2' %}">{{t}}</div>
+		{# FIXME: need to set the javascript toggle variable too; if there are an odd number of terms here, then we'll get two light-coloured terms in a row. #}
+	{% endfor %}
+	
+    {% if form %}
+		<hr id="querytermsend"/>
+    	<form action="" id="profilequery_form">
+	    	{{ form }}
+    		<input type="submit" value="add profile term"/>
+    	</form>
+    	<br/>
+    
+    	<!-- 
+	    <form action="" id="profilequery_form">
+	    	{{ form }}
+	    	<input type="submit" value="add group term"/> (not yet implemented)
+	    </form>
+	    -->
+	    
+	    <hr/>
+	    
+	    <form method="post" action="{% url profile_new_query %}">
+    		<input type="submit" value="run query"/>
+    	</form>
+    
+	{% else %}
+		<div style="text-align: right; padding-right: 50px;">
+			<a href="{% url profile_new_query %}">refine search</a>
+		</div>
+		<hr id="querytermsend"/>
+		<script type="text/javascript">
+			$('.removelink').hide();
+		</script>
+		
+		{% if results %}
+		    <div>
+		    Actions: <a href="{% url profile_query_new_email %}">send email</a> | 
+		    <a href="#">add to group</a> | 
+		    <a href="{% url profile_query_save %}">save this query</a>
+		    </div>
+		    
+		    <br/><br/>
+		    
+		    <div style="padding-left: 75px;">
+		    {% autopaginate results 50 %}
+
+			{% for r in results %}
+				<a href="{% url profile_detail r.user.username %}">{{ r.user.visible_name }}</a><br/>
+				<br/>
+			{% endfor %}
+		
+		    {% paginate %}
+		    </div>
+
+		{% else %}
+			<em>No results</em>
+		{% endif %}
+	{% endif %}
+
+    
+{% endblock %}
+
+{% block extra_body %}
+	{{ block.super }}
+	
+	<script type="text/javascript">
+		$(document).ready(function() {
+			var numterms = 0;
+			var toggle = 1;
+			$('#profilequery_form').submit(function() {
+				$('#querytermsend').before("<div id='queryterm-" + numterms + "' class='queryterm" + toggle + "'>loading...</div>");
+				$('#queryterm-' + numterms).load("{% url profile_query_addprofile %}", $(this).serializeArray());
+				numterms++;
+				return false;
+			});
+		});
+	</script>
+{% endblock %}
