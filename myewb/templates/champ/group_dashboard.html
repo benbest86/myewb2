@@ -45,7 +45,7 @@
 {% if is_group_admin %}
 <tr>
 	<td class="labelcell">Reflection Journal Entries:</td>
-	<td colspan="2"> {{ journals }} <a href="$base/chapter/ListReflections" class="more">list &raquo;</a></td>
+	<td colspan="2"> {{ journals }} <a href="{% url champ_journal_list group.slug %}" class="more">list &raquo;</a></td>
 </tr>
 {% endif %}
 <tr>

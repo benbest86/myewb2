@@ -10,8 +10,10 @@ define a different template segment for each, then build a list and include/pars
 (instead of having them fixed in run_stats() here)....
 """
 
+import csv
 from datetime import date
 
+from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, render_to_response
@@ -502,4 +504,28 @@ def yearplan(request, group_slug, year=None):
                                'form': form,
                                'year': year},
                                context_instance=RequestContext(request))
+
+@group_admin_required
+def csv_so(request, group_slug):
+    group = get_object_or_404(Network, slug=group_slug)
+    return run_so_csv(group)
+
+@group_admin_required
+def csv_all(request, group_slug):
+    group = get_object_or_404(Network, slug=group_slug)
+    return run_full_csv(group)
     
+@staff_member_required
+def csv_global_so(request):
+    return run_so_csv(group)
+    
+@staff_member_required
+def csv_global_all(request):
+    return run_full_csv(group)
+    
+def run_so_csv(group=None):
+    pass
+    
+def run_full_csv(group=None):
+    response = HttpResposne(mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=champ_activities_%d-%d-%d.csv' % (date.today.month, date.today.day, date.today.year)
