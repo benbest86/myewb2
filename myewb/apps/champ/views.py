@@ -505,27 +505,227 @@ def yearplan(request, group_slug, year=None):
                                'year': year},
                                context_instance=RequestContext(request))
 
-@group_admin_required
+@group_admin_required()
 def csv_so(request, group_slug):
     group = get_object_or_404(Network, slug=group_slug)
-    return run_so_csv(group)
+    return run_so_csv(group=group)
 
-@group_admin_required
+@group_admin_required()
 def csv_all(request, group_slug):
     group = get_object_or_404(Network, slug=group_slug)
-    return run_full_csv(group)
+    return run_full_csv(group=group)
     
 @staff_member_required
 def csv_global_so(request):
-    return run_so_csv(group)
+    return run_so_csv()
     
 @staff_member_required
 def csv_global_all(request):
-    return run_full_csv(group)
+    return run_full_csv()
     
 def run_so_csv(group=None):
-    pass
+    response = HttpResponse(mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=champ_schooloutreach_%d-%d-%d.csv' % (date.today().month, date.today().day, date.today().year)
+    
+    writer = csv.writer(response)
+    writer.writerow(['Chapter', 'Activity', 'Date',
+                     '# Volunteers', 'Prep Hours', 'Execution Hours',
+                     'Created', 'Created By', 'Modified',
+                     'Modified By', 'Confirmed?',
+                     
+                     'School Name', 'Teacher Name', 'Teacher Email',
+                     'Teacher Phone', 'Num Presentations', 'Num Students',
+                     'Grades', 'Class', 'Workshop', 'Num Facilitators', 'Num New Facilitators'])
+    
+    metrics = SchoolOutreachMetrics.objects.filter(activity__visible=True)
+    if group:
+        metrics = metrics.filter(activity__group=group)
+        
+    for m in metrics:
+        row = [m.activity.group.name, m.activity.name, m.activity.date,
+               m.activity.numVolunteers, m.activity.prepHours, m.activity.execHours,
+               m.activity.created_date, m.activity.creator.visible_name(),
+               m.activity.modified_date, m.activity.editor.visible_name()]
+        if m.activity.confirmed:
+            row.append('confirmed')
+        else:
+            row.append('unconfirmed')
+            
+        row.extend([m.school_name, m.teacher_name, m.teacher_email, m.teacher_phone, m.presentations, m.students, m.grades, m.subject, m.workshop, m.facilitators, m.new_facilitators])
+            
+        writer.writerow(row)
+    
+    return response
+                     
     
 def run_full_csv(group=None):
-    response = HttpResposne(mimetype='text/csv')
-    response['Content-Disposition'] = 'attachment; filename=champ_activities_%d-%d-%d.csv' % (date.today.month, date.today.day, date.today.year)
+    response = HttpResponse(mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=champ_activities_%d-%d-%d.csv' % (date.today().month, date.today().day, date.today().year)
+    
+    writer = csv.writer(response)
+    writer.writerow(['Chapter', 'Activity', 'Description', 'Full Date', 'Month',
+                     'Planning Year', '# Volunteers', 'Prep Hours', 'Execution Hours',
+                     'Goals', 'Outcomes', 'Created', 'Created By', 'Modified',
+                     'Modified By', 'Confirmed?', '# Purposes', 'Purpose(s)',
+                     
+                     'ML?', 'SO?', 'Functioning?', 'Engagement?', 'Advocacy?',
+                     'Publicity?', 'Fundraising?', 'WO?', 'CE?',
+                      
+                     'ML - Type', 'ML - LP Related', 'ML - Curriculum', 
+                     'ML - Resources By', 'ML - Duration', 'ML - Attendence',
+                     'ML - New Attendence',
+                     
+                     'SO - School Name', 'SO - Teacher Name', 'SO - Teacher Email',
+                     'SO - Teacher Phone', 'SO- Num Presentations', 'SO - Num Students',
+                     'SO - Grades', 'SO - Class', 'SO - Workshop',
+                     'SO - Num Facilitators', 'SO - Num New Facilitators',
+                     
+                     'Functioning - Type', 'Functioning - Location', 'Functioning - Purpose',
+                     'Functioning - Attendence', 'Functioning - Duration',
+                     
+                     'Engagement - Type', 'Engagement - Location', 'Engagement - Purpose',
+                     'Engagement - Subject', 'Engagement - Level1', 'Engagement - Level2',
+                     'Engagement - Level3',
+                     
+                     'Advocacy - Type', 'Advocacy - Units', 'Advocacy - DecisionMaker',
+                     'Advocacy - Position', 'Advocacy - EWB', 'Advocacy - Purpose',
+                     'Advocacy - Learned',
+                     
+                     'Publicity - Outlet', 'Publicity - Type', 'Publicity - Location',
+                     'Publicity - Issue', 'Publicity - Circulation',
+                     
+                     'Fundraising - Goal', 'Fundraising - Revenue', 'Fundraising - Repeat',
+                     
+                     'WO - Company', 'WO - City', 'WO - Presenters', 'WO - Ambassador',
+                     'WO - Email', 'WO - Phone', 'WO - NumPresentations',
+                     'WO - Attendence', 'WO - Type',
+                     
+                     'CE - Name', 'CE - Code', 'CE - NumStudents', 'CE - ClassHours',
+                     'CE - Professor', 'CE - Activity'])
+    
+    activities = Activity.objects.filter(visible=True)
+    if group:
+        activities = activities.filter(group=group)
+        
+    for a in activities:
+        impact, func, ml, so, pe, pa, wo, ce, pub, fund = a.get_metrics(pad=True)
+        
+        row = [a.group.name, a.name]
+        if impact:
+            row.append(impact.description)
+        else:
+            row.append('')
+            
+        row.extend([a.date, a.date.strftime('%B'), schoolyear.school_year_name(a.date), a.numVolunteers, a.prepHours, a.execHours])
+        
+        if impact:
+            row.extend([impact.goals, impact.outcome])
+        else:
+            row.extend(['', ''])
+            
+        row.extend([a.created_date, a.creator.visible_name(),
+                    a.modified_date, a.editor.visible_name()])
+        if a.confirmed:
+            row.append('confirmed')
+        else:
+            row.append('unconfirmed')
+            
+        row.append(len(a.get_metrics()) - 1)
+        purposes = ''
+        for m in a.get_metrics():
+            if not m.metricname == 'all':
+                purposes = purposes + m.metricname + '-'
+        if len(purposes):
+            purposes = purposes[0:-1]
+        row.append(purposes)
+        
+        if ml:
+            row.append('1')
+        else:
+            row.append('0')
+        if so:
+            row.append('1')
+        else:
+            row.append('0')
+        if func:
+            row.append('1')
+        else:
+            row.append('0')
+        if pe:
+            row.append('1')
+        else:
+            row.append('0')
+        if pa:
+            row.append('1')
+        else:
+            row.append('0')
+        if pub:
+            row.append('1')
+        else:
+            row.append('0')
+        if fund:
+            row.append('1')
+        else:
+            row.append('0')
+        if wo:
+            row.append('1')
+        else:
+            row.append('0')
+        if ce:
+            row.append('1')
+        else:
+            row.append('0')
+        
+        if ml:
+            row.append(ml.type)
+            if ml.learning_partner:
+                row.append('1')
+            else:
+                row.append('0')
+            row.extend([ml.curriculum, ml.resources_by, ml.duration, ml.attendance, ml.new_attendance])
+        else:
+            row.extend(['', '', '', '', '', '', ''])
+            
+        if so:
+            row.extend([so.school_name, so.teacher_name, so.teacher_email, so.teacher_phone, so.presentations, so.students, so.grades, so.subject, so.workshop, so.facilitators, so.new_facilitators])
+        else:
+            row.extend(['', '', '', '', '', '', '', '', '', '', ''])
+            
+        if func:
+            row.extend([func.type, func.location, func.purpose, func.attendance, func.duration])
+        else:
+            row.extend(['', '', '', '', ''])
+        
+        if pe:
+            row.extend([pe.type, pe.location, pe.purpose, pe.subject, pe.level1, pe.level2, pe.level3])
+        else:
+            row.extend(['', '', '', '', '', '', ''])
+            
+        if pa:
+            row.extend([pa.type, pa.units, pa.decision_maker, pa.position, pa.ewb, pa.purpose, pa.learned])
+        else:
+            row.extend(['', '', '', '', '', '', ''])
+
+        if pub:
+            row.extend([pub.outlet, pub.type, pub.location, '', pub.circulation])
+        else:
+            row.extend(['', '', '', '', ''])
+            
+        if fund:
+            row.extend([fund.goal, fund.revenue, ''])
+        else:
+            row.extend(['', '', ''])
+            
+        if wo:
+            row.extend([wo.company, wo.city, wo.presenters, wo.ambassador, wo.email, wo.phone, wo.presentations, wo.attendance, wo.type])
+        else:
+            row.extend(['', '', '', '', '', '', '', '', ''])
+            
+        if ce:
+            row.extend([ce.name, ce.code, ce.students, ce.hours, ce.professor, ce.ce_activity])
+        else:
+            row.extend(['', '', '', '', '', ''])
+            
+        writer.writerow(row)
+            
+    return response

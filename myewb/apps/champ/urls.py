@@ -35,6 +35,6 @@ urlpatterns = patterns('champ.views',
     
     url(r'^(?P<group_slug>[-\w]+)/csv/so/', 'csv_so', name="champ_csv_so"),
     url(r'^(?P<group_slug>[-\w]+)/csv/all/', 'csv_all', name="champ_csv"),
-    url(r'^csv/so/', 'csv_global_so', name="champ_csv_so"),
-    url(r'^csv/all/', 'csv_global_all', name="champ_csv"),
+    url(r'^csv/so/', 'csv_global_so', name="champ_global_csv_so"),
+    url(r'^csv/all/', 'csv_global_all', name="champ_global_csv"),
 )

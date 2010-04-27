@@ -11,6 +11,7 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
 from base_groups.models import BaseGroup
+from siteutils.shortcuts import get_object_or_none
 
 ALLMETRICS = (('all', "Event Impact"),
               ('func', "Chapter Functioning"),
@@ -41,7 +42,7 @@ class Activity(models.Model):
     execHours = models.IntegerField(null=True, blank=True)
     numVolunteers = models.IntegerField(null=True, blank=True)
     
-    def get_metrics(self):
+    def get_metrics(self, pad = False):
         """
         Returns a list of all metrics associated with this activity,
         using the proper Metrics subclasses
@@ -55,9 +56,13 @@ class Activity(models.Model):
         # and sort the results, by the ordering in ALLMETRICS
         results2 = []
         for m, mname in ALLMETRICS:
+            found = False
             for n in results:
                 if m == n.metricname:
                     results2.append(n)
+                    found = True
+            if pad and not found:
+                results2.append(None)
             
         return results2
     

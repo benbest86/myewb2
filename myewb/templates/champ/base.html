@@ -42,11 +42,13 @@
                 <p>
                 Spreadsheets:<br/>
                 {% if group %}
-                	<a href="">SO spreadsheet</a><br/>
-                	<a href="">activity spreadsheet</a><br/>
+                	<a href="{% url champ_csv_so group.slug %}">SO spreadsheet</a><br/>
+                	<a href="{% url champ_csv group.slug %}">activity spreadsheet</a><br/>
                 {% endif %}
-                <a href="">global SO spreadsheet</a><br/>
-                <a href="">global spreadsheet</a>
+                {% if perms.champ %}
+                	<a href="{% url champ_global_csv_so %}">global SO spreadsheet</a><br/>
+                	<a href="{% url champ_global_csv %}">global spreadsheet</a>
+                {% endif %}
                 </p>
             {% endif %}
         </div>
