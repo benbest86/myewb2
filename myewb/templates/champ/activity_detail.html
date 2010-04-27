@@ -84,3 +84,13 @@
 
 {% endblock %}
 
+{% block toolbar_left %}
+	{% if is_admin %}
+        <div class="toolbarheader bkgd">{% trans "Delete" %}</div>
+        <div class="toolbarcontent">
+        	<a href="{% url champ_activity_delete group.slug activity.pk %}">Delete this activity</a>
+        </div>
+    {% endif %}
+        
+    {{ block.super }}
+{% endblock %}

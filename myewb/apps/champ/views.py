@@ -97,8 +97,8 @@ def run_stats(filters):
     return context
 
 def build_filters(year=None, month=None, term=None):
-    activity_filters = []
-    metric_filters = []
+    activity_filters = [{'visible': True}]
+    metric_filters = [{'activity__visible': True}]
     
     if year:
         year = int(year)
@@ -149,7 +149,8 @@ def dashboard(request, year=None, month=None, term=None,
     metric_filters.append({'activity__confirmed': True})
     context = run_stats(metric_filters)
 
-    context['journals'] = 0
+    if grp:
+        context['journals'] = Journal.objects.filter(group=grp).count()
     context['unconfirmed'] = run_query(Activity.objects.filter(confirmed=False), activity_filters).count()
     context['confirmed'] = run_query(Activity.objects.filter(confirmed=True), activity_filters).count()
 
@@ -261,6 +262,7 @@ def new_activity(request, group_slug):
 def confirmed(request, group_slug):
     group = get_object_or_404(Network, slug=group_slug)
     activities = Activity.objects.filter(confirmed=True,
+                                         visible=True,
                                          group__slug=group_slug)
     activites = activities.order_by('-date')
     
@@ -274,6 +276,7 @@ def confirmed(request, group_slug):
 def unconfirmed(request, group_slug):
     group = get_object_or_404(Network, slug=group_slug)
     activities = Activity.objects.filter(confirmed=False,
+                                         visible=True,
                                          group__slug=group_slug)
     activites = activities.order_by('-date')
     
@@ -293,10 +296,15 @@ def activity_detail(request, group_slug, activity_id):
     if not activity.group.pk == group.pk:
         return HttpResponseForbidden()
     
+    if activity.visible == False:
+        request.user.message_set.create(message="That activity has been deleted.")
+        return HttpResponseRedirect(redirect('champ_dashboard', kwargs={'group_slug': group.slug}))
+    
     return render_to_response('champ/activity_detail.html',
                               {'activity': activity,
                                'group': group,
-                               'metric_names': ALLMETRICS},
+                               'metric_names': ALLMETRICS,
+                               'is_admin': group.user_is_admin(request.user)},
                                context_instance=RequestContext(request))
     
 @group_admin_required()
@@ -306,6 +314,10 @@ def activity_edit(request, group_slug, activity_id):
     
     if not activity.group.pk == group.pk:
         return HttpResponseForbidden()
+    
+    if activity.visible == False:
+        request.user.message_set.create(message="That activity has been deleted.")
+        return HttpResponseRedirect(redirect('champ_dashboard', kwargs={'group_slug': group.slug}))
     
     if activity.confirmed:
         request.user.message_set.create(message="This activity is already confirmed - you can't edit it any more")
@@ -399,7 +411,8 @@ def activity_edit(request, group_slug, activity_id):
                                'metric_names': ALLMETRICS,
                                'metric_forms': metric_forms,
                                'showfields': showfields,
-                               'edit': True},
+                               'edit': True,
+                               'is_admin': group.user_is_admin(request.user)},
                               context_instance=RequestContext(request))
 
 @group_admin_required()
@@ -409,6 +422,10 @@ def activity_confirm(request, group_slug, activity_id):
     
     if not activity.group.pk == group.pk:
         return HttpResponseForbidden()
+    
+    if activity.visible == False:
+        request.user.message_set.create(message="That activity has been deleted.")
+        return HttpResponseRedirect(redirect('champ_dashboard', kwargs={'group_slug': group.slug}))
     
     if activity.confirmed:
         request.user.message_set.create(message="This activity is already confirmed")
@@ -422,6 +439,28 @@ def activity_confirm(request, group_slug, activity_id):
         request.user.message_set.create(message="Activity confirmed.  Thanks - you rock!")
         
     return HttpResponseRedirect(reverse('champ_activity', kwargs={'group_slug': group_slug, 'activity_id': activity_id}))
+
+@group_admin_required()
+def activity_delete(request, group_slug, activity_id):
+    group = get_object_or_404(Network, slug=group_slug)
+    activity = get_object_or_404(Activity, pk=activity_id)
+    
+    if not activity.group.pk == group.pk:
+        return HttpResponseForbidden()
+    
+    if request.method == 'POST':
+        activity.editor = request.user
+        activity.visible = False
+        activity.save()
+        
+        request.user.message_set.create(message="Activity deleted.")
+        return HttpResponseRedirect(reverse('champ_dashboard', kwargs={'group_slug': group.slug}))
+        
+    else:
+        return render_to_response('champ/delete.html',
+                                  {'group': group,
+                                   'activity': activity},
+                                  context_instance=RequestContext(request))
 
 @group_admin_required()
 def journal_list(request, group_slug):
