@@ -18,7 +18,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from profiles.models import MemberProfile
 from profile_query.models import Query
-from profile_query.forms.query import ProfileQueryForm, QueryNameForm
+from profile_query.forms.query import ProfileQueryForm, GroupQueryForm, QueryNameForm
 
 @permission_required('profiles')
 def list(request):
@@ -72,7 +72,8 @@ def load(request, id):
 
 @permission_required('profiles')
 def new_query(request):
-    form = None
+    profileform = None
+    groupform = None
     results = None
     
     # load up the current query, which is saved in the session
@@ -87,12 +88,14 @@ def new_query(request):
     if request.method == 'POST' and terms:
         results = build_profile_query(terms)
     else:
-        form = ProfileQueryForm()
+        profileform = ProfileQueryForm()
+        groupform = GroupQueryForm()
 
     return render_to_response(
             'profile_query/query.html', 
             { 
-                'form': form,
+                'profileform': profileform,
+                'groupform': groupform,
                 'results': results,
                 'terms': parsed_terms
             }, 
@@ -103,17 +106,23 @@ def parse_profile_term(data, id=None):
     """
     Build human-readable format for a query term
     """
-    attribute, comparison, value = data.split("|")
-    try:            # shouldn't happen, except when I change names during development...
-        attribute = FIELD2[attribute]
-        comparison = FIELD3[comparison]
-    except:
-        pass
-    return render_to_string("profile_query/profileterm.html", {'attribute': attribute,
-                                                               'comparison': comparison,
-                                                               'value': value,
-                                                               'results': 0,    # not used yet. maybe one day.
-                                                               'id': id})
+    type, attribute, comparison, value = data.split("|")
+    
+    if type == 'group':
+        return "<div>not implemented</div>"
+    
+    else:
+        try:            # shouldn't happen, except when I change names during development...
+            attribute = PROFILE_CHOICES[attribute]
+            comparison = STRING_COMPARISONS[comparison]
+        except:
+            pass
+        
+        return render_to_string("profile_query/profileterm.html", {'attribute': attribute,
+                                                                   'comparison': comparison,
+                                                                   'value': value,
+                                                                   'results': 0,    # not used yet. maybe one day.
+                                                                   'id': id})
 
 def build_profile_query(terms):
     """
@@ -122,11 +131,13 @@ def build_profile_query(terms):
     results = MemberProfile.objects.all()
     
     for t in terms:
-        attribute, comparison, value = t.split("|")
+        type, attribute, comparison, value = t.split("|")
     
         # build the query filter dynamically...
         kwargs = {}
-        kwargs[str("%s__%s" % (attribute, comparison))] = value
+        if type == 'profile':
+            kwargs[str("%s__%s" % (attribute, comparison))] = value
+            
         results = results.filter(**kwargs)
     return results
 

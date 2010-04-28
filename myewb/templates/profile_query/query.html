@@ -34,21 +34,20 @@
 		{# FIXME: need to set the javascript toggle variable too; if there are an odd number of terms here, then we'll get two light-coloured terms in a row. #}
 	{% endfor %}
 	
-    {% if form %}
+    {% if profileform and groupform %}
 		<hr id="querytermsend"/>
-    	<form action="" id="profilequery_form">
-	    	{{ form }}
+    	<form action="" id="profilequery_profileform">
+	    	{{ profileform }}
     		<input type="submit" value="add profile term"/>
     	</form>
     	<br/>
     
-    	<!-- 
-	    <form action="" id="profilequery_form">
-	    	{{ form }}
-	    	<input type="submit" value="add group term"/> (not yet implemented)
-	    </form>
-	    -->
-	    
+    	<form action="" id="profilequery_groupform">
+	    	{{ groupform }}
+    		<input type="submit" value="add group term"/>
+    	</form>
+    	<br/>
+    
 	    <hr/>
 	    
 	    <form method="post" action="{% url profile_new_query %}">
@@ -99,7 +98,7 @@
 		$(document).ready(function() {
 			var numterms = 0;
 			var toggle = 1;
-			$('#profilequery_form').submit(function() {
+			$('#profilequery_profileform').submit(function() {
 				$('#querytermsend').before("<div id='queryterm-" + numterms + "' class='queryterm" + toggle + "'>loading...</div>");
 				$('#queryterm-' + numterms).load("{% url profile_query_addprofile %}", $(this).serializeArray());
 				numterms++;
