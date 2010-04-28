@@ -31,6 +31,7 @@ This file derived from Pinax 0.7.1 (http://pinaxproject.com/), licensed under th
     
     {% if perms.profiles %}
 	    <li><a href="{% url mass_delete %}">{% trans "Mass Delete Users" %}</a></li>
+	    <li><a href="{% url profile_query %}">{% trans "Advanced query" %}</a></li>
     {% endif %}
     
 </ul>
