@@ -78,12 +78,13 @@ def new_query(request):
     # load up the current query, which is saved in the session
     terms = request.session.get("profilequery")
     parsed_terms = []
-    for id, term in enumerate(terms):
-        # parse to human-readable format
-        parsed_terms.append(parse_profile_term(term, id))
+    if terms:
+        for id, term in enumerate(terms):
+            # parse to human-readable format
+            parsed_terms.append(parse_profile_term(term, id))
     
     # POST means we're running the query
-    if request.method == 'POST':
+    if request.method == 'POST' and terms:
         results = build_profile_query(terms)
     else:
         form = ProfileQueryForm()
