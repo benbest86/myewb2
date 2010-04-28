@@ -20,16 +20,16 @@ from group_topics.models import GroupTopic, Watchlist
 
 def send_to_watchlist(sender, instance, **kwargs):
     """
-    Sends an email to everyone who is watching this thread.
+    Sends an email to everyone who is watching this thread, and/or to post owner.
     
     We assume that comments can only be made on topics, which is technically
     false (it uses a generic foreign key) - but in our use of it, it holds.
     Will need to change this function if we ever decide to allow comments
     on other types of objects.
     """
-    
+
+    # build email
     topic = instance.content_object
-    
     attachments = Attachment.objects.attachments_for_object(topic)
     
     tmpl = loader.get_template("email_template.html")
@@ -40,19 +40,32 @@ def send_to_watchlist(sender, instance, **kwargs):
                  'attachments': attachments
                  })
     message = tmpl.render(c)
-
     sender = 'myEWB <notices@my.ewb.ca>'
+    
+    # loop through watchlists and send emails
     for list in topic.watchlists.all():
         user = list.owner
         # TODO: for user in list.subscribers blah blah
 
-        if user.get_profile().replies_as_emails:
+        if user.get_profile().watchlist_as_emails:
             msg = EmailMessage(subject=topic.title,
                                body=message,
                                from_email=sender, 
                                to=[user.email]
                               )
             msg.send(fail_silently=False)
+            
+    # send email to original post creator
+    if topic.creator.get_profile().replies_as_emails:
+        msg = EmailMessage(subject=topic.title,
+                           body=message,
+                           from_email=sender, 
+                           to=[user.email]
+                          )
+        msg.send(fail_silently=False)
+
+    # TODO: option to email anyone else who has repied to this thread too
+    # (or could be implemented as an "add to watchlist" checkbox on the reply form)
      
 post_save.connect(send_to_watchlist, sender=ThreadedComment, dispatch_uid='sendreplytowatchlist')
 
