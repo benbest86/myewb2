@@ -28,7 +28,7 @@ from siteutils.helpers import get_email_user
 from siteutils.decorators import owner_required
 from siteutils.models import PhoneNumber
 from profiles.models import MemberProfile, StudentRecord, WorkRecord
-from profiles.forms import StudentRecordForm, WorkRecordForm, MembershipForm, PhoneNumberForm
+from profiles.forms import StudentRecordForm, WorkRecordForm, MembershipForm, PhoneNumberForm, SettingsForm
 
 from networks.models import Network
 from networks.forms import NetworkBulkImportForm
@@ -671,5 +671,30 @@ def softdelete(request, username):
             return render_to_response("profiles/delete_confirm.html", {
                 "other_user": user,
             }, context_instance=RequestContext(request))
+    else:
+        return HttpResponseForbidden()
+
+def settings(request, username):
+    user = get_object_or_404(User, username=username)
+    
+    if request.user == user or request.user.has_module_perms("profiles"):
+        if request.method == 'POST':
+            form = SettingsForm(request.POST,
+                                instance=user.get_profile())
+            
+            if form.is_valid():
+                form.save()
+            
+                request.user.message_set.create(message='Settings updated.')
+                return HttpResponseRedirect(reverse('profile_detail', kwargs={'username': username}))
+            
+        else:
+            form = SettingsForm(instance=user.get_profile())
+        
+            return render_to_response("profiles/edit_settings.html",
+                                      {"other_user": user,
+                                       "form": form,
+                                       'is_me': user.pk == request.user.pk},
+                                       context_instance=RequestContext(request))
     else:
         return HttpResponseForbidden()

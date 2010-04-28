@@ -116,9 +116,13 @@ class MemberProfile(Profile):
     
     show_emails = models.BooleanField(_('show emails'), null=False, blank=True)
     show_replies = models.BooleanField(_('show replies'), null=False, blank=True)
-    sort_by_last_reply = models.BooleanField(_('sort by last reply'), null=False, blank=True)
+    #sort_by_last_reply = models.BooleanField(_('sort by last reply'), null=False, blank=True)
+    SORTING_CHOICES = (('p', _('Original post date')),
+                       ('r', _('Latest reply date')))
+    sort_by = models.CharField(_('sort by'), choices=SORTING_CHOICES, default='r', max_length=1)
     address_updated = models.DateField(_('address updated'), null=True, blank=True)
-    replies_as_emails = models.BooleanField(_('replies as emails'), null=False, blank=True)
+    replies_as_emails = models.BooleanField(_('replies as emails'), null=False, blank=True, default=True)
+    watchlist_as_emails = models.BooleanField(_('watchlist replies as emails'), null=False, blank=True, default=True)
 
     #addresses = generic.GenericRelation(Address)
     addresses = models.ManyToManyField(Address)

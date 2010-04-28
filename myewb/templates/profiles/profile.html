@@ -359,6 +359,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
         <div class="toolbarheader bkgd">{% trans "Actions" %}</div>
         <div class="toolbarcontent">
             <a href="{% url profile_edit %}" rel="facebox">update profile info</a><br/>
+            <a href="{% url profile_settings other_user.username %}">update settings</a><br/>
             change password<br/>
             <a href="{% url avatar_change %}">update picture</a><br/>
             <br/>
