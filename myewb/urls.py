@@ -70,6 +70,7 @@ urlpatterns = patterns('',
     (r'^permissions/', include('permissions.urls')),
     url(r'^search/', include('search.urls')),
     (r'^stats/', include('stats.urls')),
+    (r'^champ/', include('champ.urls')),
     
     url(r'^unsubscribe/$', 'networks.views.network.unsubscribe', name='network_unsubscribe',),
     

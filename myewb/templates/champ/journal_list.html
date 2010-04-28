@@ -1,0 +1,17 @@
+{% extends "champ/base.html" %}
+
+{% load i18n %}
+
+{% block champ_body %}
+
+<h2>{{ group.name }}</h2>
+<h3>Reflection Journal</h3>
+
+<ul>
+	{% for j in journals %}
+		<li><a href="{% url champ_journal_detail group.slug j.pk %}">{{j.date|date}}</a>, by {{ j.creator.visible_name}}</li>
+	{% endfor %}
+</ul>
+
+
+{% endblock %}

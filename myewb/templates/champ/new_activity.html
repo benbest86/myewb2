@@ -1,0 +1,78 @@
+{% extends "champ/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+{% load helpers %}
+
+{% block extra_head %}
+ <link type="text/css" href="{{STATIC_URL}}css/jquery-ui.css" rel="stylesheet" />
+ <link type="text/css" href="{{STATIC_URL}}css/ui.timepickr.css" rel="stylesheet" />
+{% endblock %}
+
+{% block champ_body %}
+
+{% if edit %}
+	<h2>Edit CHAMP activity</h2>
+{% else %}
+	<h2>New CHAMP activity</h2>
+{% endif %}
+<h3>{{ group.name }}</h3>
+
+<form action="" method="POST" class="uniForm">
+	<fieldset class="inlineLabels">
+		{{ champ_form|as_uni_form }}
+		
+		<h3>Purposes</h3>
+		{% for m, mname in metric_names %}
+			<div class="ctrlHolder">
+				<label for="metric_{{m}}">
+					{{ mname }}
+				</label>
+				{% lookup_ctx showfields m as fieldselected %}
+				{% ifequal m "all" %}
+					<input type="checkbox" class="checkboxinput additionalmetrics" id="champ-box-{{m}}" checked="checked" disabled="disabled"/>
+					<input type="hidden" name="all" value="on"/>
+					<p class="formHint">
+						(this is always required =) )
+					</p>
+				{% else %}
+					<input type="checkbox" class="checkboxinput additionalmetrics" name="{{m}}" id="champ-box-{{m}}" {% if fieldselected %}checked="checked"{% endif %}/>
+					<p class="formHint">
+						(check if this purpose is applicable to this activity)
+					</p>
+				{% endifequal %}
+				
+				<div id="champ-form-{{m}}" class="champ-form" style=" {% if not fieldselected %}display: none; {% endif %}margin: 10px 75px; border: solid 1px; background: #f0f0f0;">
+					{% lookup_ctx metric_forms m as mform %}
+					{{ mform|as_uni_form}}
+				</div>
+			</div>
+		{% endfor %}
+	</fieldset>
+	
+	<input type="submit"/>
+</form>
+
+{% endblock %}
+
+{% block extra_body %}
+	<script type="text/javascript" src="{{STATIC_URL}}js/jquery-ui.js"></script> 
+	<script type="text/javascript" src="{{STATIC_URL}}js/ui.datepicker.js"></script>
+
+	<style>
+		div.ui-datepicker {z-index:10000000;}
+	</style>
+  
+    <script type="text/javascript">
+        $(document).ready(function() {
+          	{# set up javascript widgets... #}
+            var datepicker123 = $("input#id_date").datepicker({});
+
+            {# show additional metrics forms as needed #}
+			$('.additionalmetrics').change(function() {
+				$('#champ-form-' + $(this).attr('name')).slideToggle(); 
+			});
+        });
+    </script>
+{% endblock %}
+

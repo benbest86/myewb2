@@ -1,0 +1,36 @@
+{% extends "champ/base.html" %}
+
+{% load i18n %}
+
+{% block champ_body %}
+
+<h2>{{ group.name }}</h2>
+{% if confirmed %}
+	<h3>Confirmed Activities</h3>
+	Switch to <a href="{% url champ_unconfirmed_activities group.slug %}">unconfirmed activities</a>
+{% else %}
+	<h3>Unconfirmed Activities</h3>
+	Switch to <a href="{% url champ_confirmed_activities group.slug %}">confirmed activities</a>
+{% endif %}
+<br/><br/><br/>
+
+<table>
+	<tr>
+		<th>Activity name</th>
+		<th>Activity date</th>
+	</tr>
+	{% for a in activities %}
+		<tr>
+			<td><a href="{% url champ_activity group.slug a.pk %}">{{a.name}}</a></td>
+			<td>{{a.date|date}}</td>
+		</tr>
+	{% endfor %}
+</table>
+
+{% endblock %}
+
+{% block extra_body %}
+    <script type="text/javascript">
+    </script>
+{% endblock %}
+

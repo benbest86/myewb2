@@ -1,0 +1,59 @@
+{% extends "networks/base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}CHAMP{% endblock %}
+
+{% block body %}
+<h1>CHAMP</h1>
+
+{% block champ_body %}
+{% endblock %}
+
+{% endblock %}
+
+{% block toolbar_left %}
+        <div class="toolbarheader bkgd">{% trans "CHAMP" %}</div>
+        <div class="toolbarcontent">
+        	<p>
+        		{% if group %}
+        			<a href="{% url champ_dashboard group_slug=group.slug %}">Dashboard</a>
+        		{% else %}
+        			<a href="{% url champ_dashboard %}">Dashboard</a>
+        		{% endif %}
+        	</p>
+        
+            {% if group %}
+                <p>
+                Activities:<br/>
+                <a href="{% url champ_new_activity group.slug %}">record an activity</a><br/>
+                <a href="{% url champ_unconfirmed_activities group.slug %}">list unconfirmed</a><br/>
+                <a href="{% url champ_confirmed_activities group.slug %}">list confirmed</a>
+                </p>
+                
+                <p>
+                Reflection journal:<br/>
+                <a href="{% url champ_journal_new group.slug %}">write in journal</a><br/>
+                <a href="{% url champ_journal_list group.slug %}">browse journal</a>
+                </p>
+            {% endif %}
+            
+            {% if perms.champ %}
+                <p>
+                Spreadsheets:<br/>
+                {% if group %}
+                	<a href="{% url champ_csv_so group.slug %}">SO spreadsheet</a><br/>
+                	<a href="{% url champ_csv group.slug %}">activity spreadsheet</a><br/>
+                {% endif %}
+                {% if perms.champ %}
+                	<a href="{% url champ_global_csv_so %}">global SO spreadsheet</a><br/>
+                	<a href="{% url champ_global_csv %}">global spreadsheet</a>
+                {% endif %}
+                </p>
+            {% endif %}
+        </div>
+{% endblock %}
+
+{% block toolbar_right %}
+    {# override default networks toolbars, force to be empty #}
+{% endblock %}

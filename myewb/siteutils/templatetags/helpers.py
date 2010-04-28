@@ -1,7 +1,10 @@
+from datetime import date
 from django import template
+from django.template.defaultfilters import stringfilter
 from django.core.urlresolvers import reverse
 from django.forms.widgets import Select
 from django.utils.translation import ugettext_lazy as _
+
 register = template.Library()
 
 @register.inclusion_tag("new_button.html")
@@ -60,3 +63,84 @@ def isnewer(date1, date2):
     else:
         return ""
 
+# does a dictionary lookup, where the key is also a template variable
+@register.tag()
+def lookup(parser, token):
+    try:
+        tagname, dict, key = token.split_contents()
+    except:
+        raise template.TemplateSyntaxError, "%r tag takes exactly two arguments" % token.contents.split()[0]
+    return LookupNode(dict, key)
+
+class LookupNode(template.Node):
+    def __init__(self, dict, key):
+        self.dict = template.Variable(dict)
+        self.key = template.Variable(key)
+        
+    def render(self, context):
+        try:
+            thedict = self.dict.resolve(context)
+            thekey = self.key.resolve(context)
+            
+            # catch a KeyError, thrown if we were apssed a nested tuple instead of a dict
+            value = None
+            try:
+                value = thedict[thekey]
+            except:
+                try:
+                    dict2 = {}
+                    for key, val in thedict:
+                        dict2[key] = val
+                    value = dict2[thekey]
+                except:
+                    pass
+                
+            return value
+        except template.VariableDoesNotExist:
+            return ''
+
+# similar to lookup() as above, but inserts the value into the context intsead of printing it
+@register.tag()
+def lookup_ctx(parser, token):
+    try:
+        tagname, dict, key, astxt, variable = token.split_contents()
+    except:
+        raise template.TemplateSyntaxError, "%r tag takes exactly four arguments" % token.contents.split()[0]
+#    return as_uni_form(LookupNode(dict, key))
+    return LookupCtxNode(dict, key, variable)
+
+class LookupCtxNode(template.Node):
+    def __init__(self, dict, key, variable):
+        self.dict = template.Variable(dict)
+        self.key = template.Variable(key)
+        self.variable = variable
+        
+    def render(self, context):
+        try:
+            thedict = self.dict.resolve(context)
+            thekey = self.key.resolve(context)
+
+            # catch a KeyError, thrown if we were apssed a nested tuple instead of a dict
+            value = None
+            try:
+                value = thedict[thekey]
+            except:
+                try:
+                    dict2 = {}
+                    for key, val in thedict:
+                        dict2[key] = val
+                    value = dict2[thekey]
+                except:
+                    pass
+                
+            context[self.variable] = value
+        except:
+            pass
+        return ''
+
+@register.filter()
+@stringfilter
+def month(month):
+    month = int(month)
+    d = date(date.today().year, month, date.today().day)
+    return d.strftime("%B")

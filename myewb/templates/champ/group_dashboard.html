@@ -1,0 +1,139 @@
+{% load schoolyear %}
+{% load helpers %}
+
+<h3>Chapter Dashboard</h3>
+<!--<h4>with targets from $yp.yearName Plan 
+	#if($user.isPresident()) <a href="$base/chapter/EditYearPlan/$yp.year">[edit]</a>#end-->
+</h4>
+<br />
+
+<table class="cellpadding8" style="margin: 0 auto;">
+
+
+<tr>
+	<th style="width: 300px;">Indicator</th>
+	<th style="width: 150px;">
+		Value for 
+		{% if term %}
+		    {{ term }} term, {{ year }}
+		{% else %}
+		    {% if month %}
+		        {{ month|month }}, {{ year }}
+		    {% else %}
+		        {% if year %}
+		            {{ year|schoolyear }}
+		        {% else %}
+		            all dates
+		        {% endif %}
+		    {% endif %}
+		{% endif %}
+	</th>
+	<th  style="width: 150px;">Targets from {{ year|schoolyear }} Plan
+	{% if is_group_admin %}
+	     <br />
+	     {% if year %}
+	     	<a href="{% url champ_yearplan group.slug year %}">[edit]</a>
+	     {% else %}
+	     	<a href="{% url champ_yearplan group.slug %}">[edit]</a>
+	     {% endif %}
+	{% endif %}
+	</th>
+</tr>
+
+<tr><th colspan="3" align="left">CHAMP Usage</th></tr>
+{# #if($user.isPresident()) #}
+{% if is_group_admin %}
+<tr>
+	<td class="labelcell">Reflection Journal Entries:</td>
+	<td colspan="2"> {{ journals }} <a href="{% url champ_journal_list group.slug %}" class="more">list &raquo;</a></td>
+</tr>
+{% endif %}
+<tr>
+	<td  class="labelcell">Unconfirmed Activities:</td>
+	<td colspan="2"> {{ unconfirmed }} <a href="{% url champ_unconfirmed_activities group.slug %}" class="more">list &raquo;</a></td>
+</tr>
+<tr>
+	<td class="labelcell">Confirmed Activities:</td>
+	<td colspan="2">  {{ confirmed }} <a href="{% url champ_confirmed_activities group.slug %}" class="more">list &raquo;</a></td>
+</tr>
+
+<tr><th colspan="3" align="left">Member Learning</th></tr>
+<tr>
+	<td class="labelcell">Member Learning Hours:</td>
+	<td> {{ ml_hours }} </td>
+	<td> {% if yearplan %} {{ yearplan.ml_total_hours }} {% endif %}</td>
+</tr>
+<tr>
+	<td  class="labelcell">Average Attendance:</td>
+	<td> {{ ml_attendance }}  </td>
+	<td> {% if yearplan %} {{ yearplan.average_attendance }} {% endif %}</td>
+</tr>
+
+<tr><th colspan="3" align="left">Public Outreach</th></tr>
+<tr>
+	<td class="labelcell">People reached:</td>
+	<td> {{ pe_people }} </td>
+	<td> {% if yearplan %} {{ yearplan.eng_people_reached }} {% endif %}</td>
+</tr>
+
+<tr><th colspan="3" align="left">Advocacy</th></tr>
+<tr>
+	<td class="labelcell">Contacts with decision makers:</td>
+	<td> {{ po_contacts }} </td>
+	<td> {% if yearplan %} {{ yearplan.adv_contacts }} {% endif %}</td>
+</tr>
+
+<tr><th colspan="3" align="left">Curriculum Enhancement</th>
+</tr>
+<tr>
+	<td class="labelcell">Students Reached:</td>
+	<td> {{ ce_students }} </td>
+	<td> {% if yearplan %} {{ yearplan.ce_students }} {% endif %}</td>
+</tr>
+<tr>
+	<td class="labelcell">Total Class Hours:</td>
+	<td> {{ ce_hours }} </td>
+	<td> {% if yearplan %} {{ yearplan.ce_hours }} {% endif %}</td>
+</tr>
+
+<tr><th colspan="3" align="left">Workplace Outreach</th></tr>
+<tr>
+	<td class="labelcell">Professionals Reached:</td>
+	<td>  {{ wo_professionals }} </td>
+	<td> {% if yearplan %} {{ yearplan.wo_reached }} {% endif %}</td>
+</tr>
+<tr>
+	<td class="labelcell">Presentations:</td>
+	<td>  {{ wo_presentations }} </td>
+	<td> {% if yearplan %} {{ yearplan.wo_presentations }} {% endif %}</td>
+</tr>
+
+<tr><th colspan="3" align="left">School Outreach</th></tr>
+<tr>
+	<td class="labelcell">Students Reached:</td>
+	<td>  {{ so_students }} </td>
+	<td> {% if yearplan %} {{ yearplan.so_reached }} {% endif %}</td>
+</tr>
+<tr>
+	<td class="labelcell">Presentations:</td>
+	<td>  {{ so_presentations }} </td>
+	<td> {% if yearplan %} {{ yearplan.so_presentations }} {% endif %}</td>
+</tr>
+
+<tr><th colspan="3" align="left">Fundraising</th></tr>
+<tr>
+	<td class="labelcell">Dollars Fundraised:</td>
+	<td>  $ {{ fundraising_dollars }} </td>
+	<td> {% if yearplan %} {{ yearplan.fund_total }} {% endif %}</td>
+</tr>
+
+<tr><th colspan="3" align="left">Publicity</th></tr>
+<tr>
+	<td class="labelcell">Media Hits:</td>
+	<td>  {{ publicity_hits }} </td>
+	<td> {% if yearplan %} {{ yearplan.pub_media_hits }} {% endif %}</td>
+</tr>
+</table>
+
+<hr />
+

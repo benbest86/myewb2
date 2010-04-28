@@ -1,5 +1,13 @@
 Installation instructions:
 
+Generic instructions:
+- install Pinax (http://pinaxproject.com)
+- install lxml ("easy_install lxml" - if running Linux/Mac, see http://codespeak.net/lxml/installation.html for dependencies)
+- install pycountry ("easy_install pycountry")
+
+
+==========
+
 On Ubuntu:
 # These instructions were last confirmed on a fresh Ubuntu Intrepid Ibex
 # 2009-10-08 by BBEST

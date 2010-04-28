@@ -1,0 +1,155 @@
+{% extends "champ/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+{% load wiki_tags %}
+{% load avatar_tags %}
+{% load threadedcommentstags %}
+{% load pagination_tags %}
+{% load extra_tagging_tags %}
+{% load networks_tags %}
+{% load base_groups_tags %}
+{% load group_tags %}
+{% load topics_tags %}
+{% load events_tags %}
+{% load schoolyear %} 
+{% load helpers %}
+
+{% block champ_body %}
+
+<h3 align="center">Currently Displaying: 
+
+{% if term %}
+    {{ term }} term, {{ year }}
+{% else %}
+    {% if month %}
+        {{ month|month }}, {{ year }}
+    {% else %}
+        {% if year %}
+            {{ year|schoolyear }}
+        {% else %}
+            all dates
+        {% endif %}
+    {% endif %}
+{% endif %}
+
+</h3>
+
+
+<table style="width: 95%"> <tr>
+<td align="left" valign="middle">
+	{% if term %}
+		<a href="{% url champ_dashboard year=prevterm.1,term=prevterm.0,group_slug=group.slug %}" class="more">&laquo; previous term</a>
+	{% else %}
+	    {% if month %}
+			<a href="{% url champ_dashboard year=prevmonth.1,month=prevmonth.0,group_slug=group.slug %}" class="more">&laquo; previous month</a>
+	    {% else %}
+	        {% if year %}
+				<a href="{% url champ_dashboard year=prevyear,group_slug=group.slug %}" class="more">&laquo; previous year</a>
+	        {% endif %}
+	    {% endif %}
+	{% endif %}
+</td>
+<td align="center">
+	<span style="font-size: 11px;">Jump to:</span> <br /> 
+	
+	{% if group %}
+	    <a href="{% url champ_dashboard year=nowyear,month=nowmonth,group_slug=group.slug %}" class="more">[current month]</a> 
+	    <a href="{% url champ_dashboard year=nowyear,term=nowterm,group_slug=group.slug %}" class="more">[current term]</a> 
+	    <a href="{% url champ_dashboard year=nowyear,group_slug=group.slug %}" class="more">[current year]</a> 
+	    <a href="{% url champ_dashboard group_slug=group.slug%}" class="more">[all dates]</a></td>
+	{% else %}
+	    <a href="{% url champ_dashboard year=nowyear,month=nowmonth %}" class="more">[current month]</a> 
+	    <a href="{% url champ_dashboard year=nowyear,term=nowterm %}" class="more">[current term]</a> 
+	    <a href="{% url champ_dashboard year=nowyear %}" class="more">[current year]</a> 
+	    <a href="{% url champ_dashboard %}" class="more">[all dates]</a></td>
+    {% endif %}
+<td align="right" valign="middle">
+	{% if term %}
+		<a href="{% url champ_dashboard year=nextterm.1,term=nextterm.0,group_slug=group.slug %}" class="more">&raquo; next term</a>
+	{% else %}
+	    {% if month %}
+			<a href="{% url champ_dashboard year=nextmonth.1,month=nextmonth.0,group_slug=group.slug %}" class="more">&raquo; next month</a>
+	    {% else %}
+	        {% if year %}
+				<a href="{% url champ_dashboard year=nextyear,group_slug=group.slug %}" class="more">&raquo; next year</a>
+	        {% endif %}
+	    {% endif %}
+	{% endif %}
+</td>
+</tr> </table>
+
+<br />
+
+<div style="text-align: center;">
+Chapter: 
+<form>
+<select id="champ_groups">
+    <option value="">all (national)</option>
+    {% for grp in allgroups %}
+        <option value="{{grp.slug}}" {% ifequal group grp %}selected="selected"{% endifequal %}>{{grp.name}}</option>
+    {% endfor %}
+</select>
+</form>
+</div>
+
+{% if group %}
+    {% include "champ/group_dashboard.html" %}
+{% endif %}
+
+<h3>Canada-Wide Dashboard</h3>
+
+<table class="cellpadding8" width="500" style="margin: 0 auto;">
+<tr><td style="width: 200px"></td><td></td></tr>
+<tr><th colspan="2">CHAMP Usage</th></tr>
+<tr><td class="labelcell">Reflection Journal Entries:</td><td> {{ journals }} </td></tr>
+<tr><td class="labelcell">Unconfirmed Activities:</td><td> {{ unconfirmed }} </td></tr>
+<tr><td class="labelcell">Confirmed Activities:</td><td>  {{ confirmed }} </td></tr>
+
+<tr><th colspan="2">Member Learning</th></tr>
+<tr><td class="labelcell">Member Learning Hours:</td><td> {{ ml_hours }} </td></tr>
+<tr><td class="labelcell">Average Attendance:</td><td>  {{ ml_attendance }}  </td></tr>
+
+<tr><th colspan="2">Public Outreach</th></tr>
+<tr><td class="labelcell">People reached:</td><td> {{pe_people }}  </td></tr>
+
+<tr><th colspan="2">Advocacy</th></tr>
+<tr><td class="labelcell">Contacts with decision makers:</td><td> {{ po_contacts }}  </td></tr>
+
+<tr><th colspan="2">Curriculum Enhancement</th></tr>
+<tr><td class="labelcell">Students Reached:</td><td> {{ ce_students }}  </td></tr>
+<tr><td class="labelcell">Total Class Hours:</td><td> {{ ce_hours}}  </td></tr>
+
+<tr><th colspan="2">Workplace Outreach</th></tr>
+<tr><td class="labelcell">Professionals Reached:</td><td>  {{ wo_professionals }} </td></tr>
+<tr><td class="labelcell">Presentations:</td><td>  {{ wo_presentations }} </td></tr>
+
+<tr><th colspan="2">School Outreach</th></tr>
+<tr><td class="labelcell">Students Reached:</td><td>  {{ so_students }} </td></tr>
+<tr><td class="labelcell">Presentations:</td><td>  {{ so_presentations }} </td></tr>
+
+
+<tr><th colspan="2">Fundraising</th></tr>
+<tr><td class="labelcell">Dollars Fundraised:</td><td>  $ {{ fundraising_dollars }} </td></tr>
+
+<tr><th colspan="2">Publicity</th></tr>
+<tr><td class="labelcell">Media Hits:</td><td>  {{ publicity_hits }} </td></tr>
+</table></table>
+
+
+
+{% endblock %}
+
+{% block extra_body %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#champ_groups').change(function() {
+                if ($(this).val())
+	                window.location.href="{% url champ_dashboard %}" + $(this).val() + "/";
+	            else
+	                window.location.href="{% url champ_dashboard %}";
+            });
+        });
+    </script>
+{% endblock %}
+

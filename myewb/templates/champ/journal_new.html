@@ -1,0 +1,26 @@
+{% extends "champ/base.html" %}
+
+{% load i18n %}
+
+{% block champ_body %}
+
+<h2>{{ group.name }}: Reflection Journal</h2>
+
+<form method="post" action="">
+	{% for field in form %}
+		<h3>{{ field.label}}</h3>
+		{% if field.errors %}
+			{{ field.errors }}
+		{% endif %}
+		
+		<p>{{ field.help_text}}</p>
+		
+		{{ field }}
+	{% endfor %}
+	
+	<p>
+		<input type="submit"/>
+	</p>
+</form>
+
+{% endblock %}

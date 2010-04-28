@@ -1,0 +1,21 @@
+{% extends "champ/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+
+{% block champ_body %}
+
+<h2>{{ group.name }}: Delete Activity</h2>
+
+<p><em>Are you sure you want to delete the activity "{{activity.name}}"?</em></p>
+<p><em>Only a myEWB administrator can undo this action!</em></p>
+
+<form method="get" action="{% url champ_activity group.slug activity.pk %}" style="float: left;">
+	<input type="submit" value="No, cancel"/>
+</form> 
+
+<form method="post" action="">
+	<input type="submit" value="Yes, delete" style="margin-left: 25px;"/>
+</form>
+
+{% endblock %}

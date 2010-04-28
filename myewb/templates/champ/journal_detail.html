@@ -1,0 +1,30 @@
+{% extends "champ/base.html" %}
+
+{% load i18n %}
+
+{% block champ_body %}
+
+<h2>{{ group.name }}: Reflection Journal</h2>
+
+{% if journal.private %}
+<p><em>This is a private entry</em></p>
+{% endif %}
+
+{% for f, value in journal.get_fields %}
+	{% if f.verbose_name %}
+		<hr/>
+		<h3>{{ f.verbose_name }}</h3>
+	{% endif %}
+	
+	{% if value %}
+		<p><strong>
+			{{ f.help_text }}
+		</strong></p>
+
+		<p style="padding-left: 25px;">
+			{{ value|linebreaksbr }}
+		</p>
+	{% endif %}
+{% endfor %}
+
+{% endblock %}

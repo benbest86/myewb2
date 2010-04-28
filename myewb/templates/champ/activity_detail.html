@@ -1,0 +1,96 @@
+{% extends "champ/base.html" %}
+
+{% load i18n %}
+
+{% block champ_body %}
+
+<h2>{{ group.name }}</h2>
+<h3>{{ activity.name }}</h3>
+
+<p>
+{% if activity.confirmed %}
+	This activity has been confirmed.
+{% else %}
+	{% if activity.can_be_confirmed %}
+		<a href="{% url champ_confirm_activity group.slug activity.pk %}">This activity can be confirmed</a>
+	{% else %}
+		Some values are missing - cannot confirm this activity yet
+	{% endif %}
+{% endif %}
+</p>
+
+<table>
+	<tr>
+		<th colspan="2">Basic Info</th>
+	</tr>
+	
+	<tr>
+		<td><strong>Chapter</strong></td>
+		<td>{{ activity.group.name }}</td>
+	</tr>
+	<tr>
+		<td><strong>Activity name</strong></td>
+		<td>{{ activity.name }}</td>
+	</tr>
+	<tr>
+		<td><strong>Activity date</strong></td>
+		<td>{{ activity.date|date }}</td>
+	</tr>
+	<tr>
+		<td><strong>Record Created</strong></td>
+		<td>
+			by <a href="{% url profile_detail activity.creator.username %}">{{ activity.creator.visible_name }}</a><br/>
+			on {{ activity.created_date|date }}
+		</td>
+	</tr>
+	<tr>
+		<td><strong>Record last edited</strong></td>
+		<td>
+			by <a href="{% url profile_detail activity.editor.username %}">{{ activity.editor.visible_name }}</a><br/>
+			on {{ activity.modified_date|date }}
+		</td>
+	</tr>
+	<tr>
+		<td><strong># of Volunteers</strong></td>
+		<td>{{ activity.numVolunteers }}</td>
+	</tr>
+	<tr>
+		<td><strong>Person-hours of prep</strong></td>
+		<td>{{ activity.prepHours }}</td>
+	</tr>
+	<tr>
+		<td><strong>Person-hours of execution</strong></td>
+		<td>{{ activity.execHours }}</td>
+	</tr>
+	
+	{% if not activity.confirmed %}
+		<tr>
+			<td colspan="2">
+				(<a href="{% url champ_edit_activity group.slug activity.pk %}">edit</a>)
+			</td>
+		</tr>
+	{% endif %}
+
+	<tr>
+		<td colspan="2">&nbsp;</td>
+	</tr>
+	
+	{% for metric in activity.get_metrics %}
+		{% include "champ/metrics.html" %}
+	{% endfor %}
+	
+</table>
+
+
+{% endblock %}
+
+{% block toolbar_left %}
+	{% if is_admin %}
+        <div class="toolbarheader bkgd">{% trans "Delete" %}</div>
+        <div class="toolbarcontent">
+        	<a href="{% url champ_activity_delete group.slug activity.pk %}">Delete this activity</a>
+        </div>
+    {% endif %}
+        
+    {{ block.super }}
+{% endblock %}
