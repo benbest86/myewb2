@@ -8,6 +8,7 @@ Created on: 2009-08-13
 @author: Joshua Gorner
 """
 
+from datetime import datetime
 from django.db import models
 from django.db.models import Q
 from django.db.models.signals import post_save
@@ -27,7 +28,7 @@ from lxml.html.clean import clean_html, autolink_html, Cleaner
 
 class GroupTopicManager(models.Manager):
 
-    def visible(self, user=None):
+    def visible(self, user=None, sort='p'):
         """
         Returns visible posts by group visibility. Takes an optional
         user parameter which adds GroupTopics from groups that the
@@ -35,6 +36,7 @@ class GroupTopicManager(models.Manager):
         transparently
         """
         filter_q = Q(parent_group__visibility='E')
+        order = '-created'
         if user is not None and not user.is_anonymous():
             
             # admins with admin-o-vision on automatically see everything
@@ -49,9 +51,12 @@ class GroupTopicManager(models.Manager):
             # everyone else only sees stuff from their own groups
             filter_q |= Q(parent_group__member_users=user)
 
+            if user.get_profile().sort_by == 'r':
+                order = '-last_reply'
+
         # would it be more efficient to remove the OR query above and just write
         # two different queries, instead of using distinct() here?
-        return self.get_query_set().filter(filter_q).distinct()
+        return self.get_query_set().filter(filter_q).distinct().order_by(order)
     
     def get_for_group(self, group):
         """
@@ -66,7 +71,13 @@ class GroupTopicManager(models.Manager):
         """
         if qs == None:
             qs = self.get_query_set()
-        return qs.filter(creator=user)
+
+        if user.get_profile().sort_by == 'r':
+            order = '-last_reply'
+        else:
+            order = '-created'
+
+        return qs.filter(creator=user).order_by(order)
     
     def get_for_watchlist(self, watchlist, qs=None):
         """
@@ -75,6 +86,7 @@ class GroupTopicManager(models.Manager):
         """
         if qs == None:
             qs = self.get_query_set()
+        
         return qs.filter(watchlists=watchlist)
     
     def featured(self, qs=None, user=None):
@@ -106,6 +118,12 @@ class GroupTopicManager(models.Manager):
         if qs == None:
             qs = self.visible(user)
         return qs.filter(last_reply__gt=date).order_by('last_reply')
+
+    def exclude_emails(self, qs=None, user=None):
+        if qs == None:
+            qs = self.visible(user)
+            
+        return qs.exclude(send_as_email=True)
     
 class GroupTopic(Topic):
     """
@@ -116,7 +134,7 @@ class GroupTopic(Topic):
     send_as_email = models.BooleanField(_('send as email'), default=False)
     whiteboard = models.ForeignKey(Whiteboard, related_name="topic", verbose_name=_('whiteboard'), null=True)
     
-    last_reply = models.DateTimeField(_('last reply'), editable=False, blank=True, null=True)
+    last_reply = models.DateTimeField(_('last reply'), editable=False, null=True, default=datetime.now())
     
     # possibly split these out into a different table so we can optimize it?
     # (would we lose the benefits due to the join though?)

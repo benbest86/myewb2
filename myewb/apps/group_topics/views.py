@@ -196,6 +196,10 @@ def topics(request, group_slug=None, form_class=GroupTopicForm,
         can_adminovision = user_can_adminovision(request.user)
         can_execovision = user_can_execovision(request.user)
         adminovision = request.user.get_profile().adminovision
+        
+        if not request.user.get_profile().show_emails:
+            topics = GroupTopic.objects.exclude_emails(topics)
+        
     else:
         can_adminovision = False
         can_execovision = False

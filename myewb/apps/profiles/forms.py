@@ -111,8 +111,8 @@ class SettingsForm(forms.ModelForm):
     
     show_emails = forms.BooleanField(label="Include emailed posts",
                                      required=False)
-    show_replies = forms.BooleanField(label="Include replies",
-                                      required=False)
+    #show_replies = forms.BooleanField(label="Include replies",
+    #                                  required=False)
     sort_by = forms.ChoiceField(label="Sorting",
                                 choices=MemberProfile.SORTING_CHOICES,
                                 widget=forms.RadioSelect,
@@ -126,7 +126,7 @@ class SettingsForm(forms.ModelForm):
     helper = FormHelper()
     layout = Layout(Fieldset('Front page settings',
                              'show_emails',
-                             'show_replies',
+                             #'show_replies',
                              'sort_by',
                              css_class='inlineLabels'),
                     Fieldset('Email notices',
@@ -139,7 +139,7 @@ class SettingsForm(forms.ModelForm):
     class Meta:
         model = MemberProfile
         fields = ('show_emails',
-                  'show_replies',
+                  #'show_replies',
                   'sort_by',
                   'replies_as_emails',
                   'watchlist_as_emails')
