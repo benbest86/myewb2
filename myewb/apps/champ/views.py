@@ -255,7 +255,8 @@ def new_activity(request, group_slug):
                                'metric_names': ALLMETRICS,
                                'metric_forms': metric_forms,
                                'showfields': showfields,
-                               'edit': False},
+                               'edit': False,
+                               'is_group_admin': True},
                               context_instance=RequestContext(request))
     
 @group_admin_required()
@@ -269,7 +270,8 @@ def confirmed(request, group_slug):
     return render_to_response('champ/activity_list.html',
                               {'confirmed': True,
                                'activities': activities,
-                               'group': group},
+                               'group': group,
+                               'is_group_admin': True},
                                context_instance=RequestContext(request))
     
 @group_admin_required()
@@ -283,7 +285,8 @@ def unconfirmed(request, group_slug):
     return render_to_response('champ/activity_list.html',
                               {'confirmed': False,
                                'activities': activities,
-                               'group': group},
+                               'group': group,
+                               'is_group_admin': True},
                                context_instance=RequestContext(request))
     
 @group_admin_required()
@@ -304,7 +307,8 @@ def activity_detail(request, group_slug, activity_id):
                               {'activity': activity,
                                'group': group,
                                'metric_names': ALLMETRICS,
-                               'is_admin': group.user_is_admin(request.user)},
+                               'is_admin': group.user_is_admin(request.user),
+                               'is_group_admin': True},
                                context_instance=RequestContext(request))
     
 @group_admin_required()
@@ -412,7 +416,8 @@ def activity_edit(request, group_slug, activity_id):
                                'metric_forms': metric_forms,
                                'showfields': showfields,
                                'edit': True,
-                               'is_admin': group.user_is_admin(request.user)},
+                               'is_admin': group.user_is_admin(request.user),
+                               'is_group_admin': True},
                               context_instance=RequestContext(request))
 
 @group_admin_required()
@@ -459,7 +464,8 @@ def activity_delete(request, group_slug, activity_id):
     else:
         return render_to_response('champ/delete.html',
                                   {'group': group,
-                                   'activity': activity},
+                                   'activity': activity,
+                                   'is_group_admin': True},
                                   context_instance=RequestContext(request))
 
 @group_admin_required()
@@ -475,7 +481,8 @@ def journal_list(request, group_slug):
     
     return render_to_response('champ/journal_list.html',
                               {'group': group,
-                               'journals': journals},
+                               'journals': journals,
+                               'is_group_admin': True},
                               context_instance=RequestContext(request))
 
 @group_admin_required()
@@ -499,7 +506,8 @@ def journal_new(request, group_slug):
         
     return render_to_response('champ/journal_new.html',
                               {'group': group,
-                               'form': form},
+                               'form': form,
+                               'is_group_admin': True},
                                context_instance=RequestContext(request))
 
 @group_admin_required()
@@ -512,7 +520,8 @@ def journal_detail(request, group_slug, journal_id):
     
     return render_to_response('champ/journal_detail.html',
                               {'journal': journal,
-                               'group': group},
+                               'group': group,
+                               'is_group_admin': True},
                                context_instance=RequestContext(request))
 
 @group_admin_required()
@@ -541,7 +550,8 @@ def yearplan(request, group_slug, year=None):
     return render_to_response('champ/yearplan.html',
                               {'group': group,
                                'form': form,
-                               'year': year},
+                               'year': year,
+                               'is_group_admin': True},
                                context_instance=RequestContext(request))
 
 @group_admin_required()

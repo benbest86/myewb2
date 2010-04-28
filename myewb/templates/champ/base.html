@@ -23,7 +23,7 @@
         		{% endif %}
         	</p>
         
-            {% if group %}
+            {% if group and is_group_admin %}
                 <p>
                 Activities:<br/>
                 <a href="{% url champ_new_activity group.slug %}">record an activity</a><br/>

@@ -129,6 +129,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "context_processors.combined_inbox_count",
     "siteutils.online_middleware.context",
     "group_topics.context_processors.newposts",
+    "communities.context_processors.is_exec",
 )
 
 COMBINED_INBOX_COUNT_SOURCES = (
