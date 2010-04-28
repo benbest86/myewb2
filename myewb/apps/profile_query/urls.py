@@ -21,4 +21,7 @@ urlpatterns = patterns('profile_query.views',
     url(r'^email/compose/$', 'email.compose', name='profile_query_new_email'),
     url(r'^email/preview/$', 'email.preview', name='profile_query_preview_email'),    
     url(r'^email/send/$', 'email.send', name='profile_query_send_email'),    
+
+    url(r'^export/$', 'export.download', name='profile_query_export'),    
+
 )

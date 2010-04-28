@@ -1,0 +1,78 @@
+{% extends "profiles/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+
+{% block head_title %}{% blocktrans %}Advanced Profile Query{% endblocktrans %}{% endblock %}
+
+{% block extra_head %}
+	{{ block.super }}
+	
+	<style>
+		div.queryterm1 {
+			padding: 10px;
+			margin: 10px;
+			background: #f0f0f0;
+		}
+		div.queryterm2 {
+			padding: 10px;
+			margin: 10px;
+			background: #d0d0d0;
+		}
+	</style>
+{% endblock %}
+
+{% block body %}
+
+	<h1>Advanced Profile Query</h1>
+	
+	{% for t in terms %}
+		<div class="{% cycle 'queryterm1' 'queryterm2' %}">{{t}}</div>
+	{% endfor %}
+	<hr/>
+	
+	<p>Select the fields to include:</p>
+	
+	<p>
+		<a href="#" id="checkall">(check all)</a> | 
+		<a href="#" id="checknone">(uncheck all)</a> |
+		<a href="#" id="invert">(invert)</a>
+	</p>
+	
+	<form method="post" class="uniForm" action="" id="csvform">
+		<fieldset class="inlineLabels">
+			{{ form|as_uni_form }}
+		</fieldset>
+		
+		<p>
+			<input type="submit" value="download"/>
+		</p>
+	</form>
+	
+{% endblock %}	
+
+{% block extra_body %}
+	{{ block.super }}
+	
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$('#checkall').click(function() {
+				$('#csvform :checkbox').attr('checked', 'checked');
+				return false;
+			});
+			$('#checknone').click(function() {
+				$('#csvform :checkbox').attr('checked', '');
+				return false;
+			});
+			$('#invert').click(function() {
+				$('#csvform :checkbox').each(function() {
+					if ($(this).val())
+						$(this).attr('checked', '');
+					else
+						$(this).attr('checked', 'checked');
+				});
+				return false;
+			});
+		});
+	</script>
+{% endblock %}
