@@ -147,14 +147,23 @@ def build_profile_query(terms):
     results = MemberProfile.objects.all()
     
     for t in terms:
-        type, attribute, comparison, value = t.split("|")
-    
-        # build the query filter dynamically...
+        term = t.split("|")
         kwargs = {}
-        if type == 'profile':
-            kwargs[str("%s__%s" % (attribute, comparison))] = value
+        
+        if term[0] == 'group':
+            operator, group = term[1:]
+            if operator == 'is_member':
+                results = results.filter(user__basegroup__slug=group)
+            elif operator == 'not_member':
+                results = results.exclude(user__basegroup__slug=group)
             
-        results = results.filter(**kwargs)
+        else:
+            attribute, comparison, value = term[1:]
+    
+            # build the query filter dynamically...
+            kwargs[str("%s__%s" % (attribute, comparison))] = value
+            results = results.filter(**kwargs)
+            
     return results
 
 @permission_required('profiles')
