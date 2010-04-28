@@ -1,0 +1,10 @@
+<span style='float: right;'>
+	<small>
+		{# ({{results}} results for this term) &nbsp;&nbsp; #}
+		{% ifnotequal id None %}
+			<a href="{% url profile_query_delgroup id %}" class="removelink">(remove)</a>
+		{% endifnotequal %}
+	</small>
+</span>
+
+<strong>{{operator}}</strong> <em>{{group.name}}</em>

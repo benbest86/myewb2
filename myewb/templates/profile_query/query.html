@@ -98,9 +98,16 @@
 		$(document).ready(function() {
 			var numterms = 0;
 			var toggle = 1;
+
 			$('#profilequery_profileform').submit(function() {
 				$('#querytermsend').before("<div id='queryterm-" + numterms + "' class='queryterm" + toggle + "'>loading...</div>");
 				$('#queryterm-' + numterms).load("{% url profile_query_addprofile %}", $(this).serializeArray());
+				numterms++;
+				return false;
+			});
+			$('#profilequery_groupform').submit(function() {
+				$('#querytermsend').before("<div id='queryterm-" + numterms + "' class='queryterm" + toggle + "'>loading...</div>");
+				$('#queryterm-' + numterms).load("{% url profile_query_addgroup %}", $(this).serializeArray());
 				numterms++;
 				return false;
 			});

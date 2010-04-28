@@ -16,9 +16,11 @@ from django.template import RequestContext, Context, loader, Template
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 
+from base_groups.models import BaseGroup
 from profiles.models import MemberProfile
 from profile_query.models import Query
 from profile_query.forms.query import ProfileQueryForm, GroupQueryForm, QueryNameForm
+from profile_query.types import *
 
 @permission_required('profiles')
 def list(request):
@@ -106,23 +108,37 @@ def parse_profile_term(data, id=None):
     """
     Build human-readable format for a query term
     """
-    type, attribute, comparison, value = data.split("|")
+    terms = data.split("|")
     
-    if type == 'group':
-        return "<div>not implemented</div>"
-    
+    if terms[0] == 'group':
+        operator, group = terms[1:]
+        
+        try:
+            operator = GROUP_CHOICES2[operator]
+            group = BaseGroup.objects.get(slug=group)
+        except:
+            pass
+        
+        return render_to_string("profile_query/groupterm.html",
+                                {'operator': operator,
+                                 'group': group,
+                                 'results': 0,  #maybe one day
+                                 'id': id})
     else:
+        attribute, comparison, value = terms[1:]
+        
         try:            # shouldn't happen, except when I change names during development...
             attribute = PROFILE_CHOICES[attribute]
             comparison = STRING_COMPARISONS[comparison]
         except:
             pass
         
-        return render_to_string("profile_query/profileterm.html", {'attribute': attribute,
-                                                                   'comparison': comparison,
-                                                                   'value': value,
-                                                                   'results': 0,    # not used yet. maybe one day.
-                                                                   'id': id})
+        return render_to_string("profile_query/profileterm.html",
+                                {'attribute': attribute,
+                                 'comparison': comparison,
+                                 'value': value,
+                                 'results': 0,    # not used yet. maybe one day.
+                                 'id': id})
 
 def build_profile_query(terms):
     """
@@ -169,18 +185,44 @@ def addprofile(request):
 @permission_required('profiles')
 def delprofile(request, id):
     """
-    Remove a profile-based query term.  Is an AJAX call.
+    Remove a profile-based query term.  Should be (but isn't currently) an AJAX call.
     """
     terms = request.session.get("profilequery")
     del terms[int(id)]
     request.session['profilequery'] = terms
-    return HttpResponseRedirect(reverse('profile_query'))
+    return HttpResponseRedirect(reverse('profile_new_query'))
     
 @permission_required('profiles')
 def addgroup(request):
     """
     Add a group-based query term.  Is an AJAX call.
-    
-    Not implemented yet.  =)
     """
+    # only valid as a POST...
+    if request.method == 'POST':
+        f = GroupQueryForm(request.POST)
+        
+        if f.is_valid():
+            # get the latest term
+            data = f.cleaned_data['queryfields']
+            
+            # retrieve the old terms, and add  to the list
+            terms = request.session.get("profilequery")
+            if terms == None:
+                terms = []
+            id = len(terms)
+            terms.append(data)
+            request.session['profilequery'] = terms
+        
+            # AJAX return is the human-readable version
+            return HttpResponse(parse_profile_term(data, id))
     return Http404
+    
+@permission_required('profiles')
+def delgroup(request, id):
+    """
+    Remove a group-based query term.  Should be (but isn't currently) an AJAX call.
+    """
+    terms = request.session.get("profilequery")
+    del terms[int(id)]
+    request.session['profilequery'] = terms
+    return HttpResponseRedirect(reverse('profile_new_query'))

@@ -13,6 +13,7 @@ urlpatterns = patterns('profile_query.views',
     url(r'^addprofile/$', 'query.addprofile', name='profile_query_addprofile'),    
     url(r'^delprofile/(?P<id>\d+)/$', 'query.delprofile', name='profile_query_delprofile'),    
     url(r'^addgroup/$', 'query.addgroup', name='profile_query_addgroup'),
+    url(r'^delgroup/(?P<id>\d+)/$', 'query.delgroup', name='profile_query_delgroup'),    
     
     url(r'^save/$', 'query.save', name='profile_query_save'),    
     url(r'^load/(?P<id>\d+)/$', 'query.load', name='profile_query_load'),    
