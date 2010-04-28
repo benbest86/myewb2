@@ -75,7 +75,8 @@ def create_address(request, username, object=None):
             return JsonResponse({'valid': True, 'label': address.label})
             # return HttpResponse(simplejson.dumps({'valid': True, 'label': address.label}), mimetype='application/javascript')
         else:
-            return HttpResponseRedirect(reverse('profile_address_detail', kwargs={'username': username, 'label': address.label}))
+            #return HttpResponseRedirect(reverse('profile_address_detail', kwargs={'username': username, 'label': address.label}))
+            return HttpResponseRedirect(reverse('profile_edit'))
     else:
         if request.is_ajax():
             error_data = {

@@ -105,3 +105,41 @@ class MembershipFormPreview(PaymentFormPreview):
         	f.clean
         	context = {'form': f, 'stage_field': self.unused_name('stage'), 'state': self.state}
         	return render_to_response(self.form_template, context, context_instance=RequestContext(request))
+
+class SettingsForm(forms.ModelForm):
+    """Edit form for additional MemberProfile settings"""
+    
+    show_emails = forms.BooleanField(label="Include emailed posts",
+                                     required=False)
+    #show_replies = forms.BooleanField(label="Include replies",
+    #                                  required=False)
+    sort_by = forms.ChoiceField(label="Sorting",
+                                choices=MemberProfile.SORTING_CHOICES,
+                                widget=forms.RadioSelect,
+                                required=False)
+    replies_as_emails = forms.BooleanField(label="When someone replies to my post",
+                                           required=False)
+    watchlist_as_emails = forms.BooleanField(label="When someone replies to a watchlisted post",
+                                             required=False)
+
+    # for custom uni_form layout
+    helper = FormHelper()
+    layout = Layout(Fieldset('Front page settings',
+                             'show_emails',
+                             #'show_replies',
+                             'sort_by',
+                             css_class='inlineLabels'),
+                    Fieldset('Email notices',
+                             'replies_as_emails',
+                             'watchlist_as_emails',
+                             css_class='inlineLabels'),
+                    HTML('<p><input type="submit" value="update"/></p>'))
+    helper.add_layout(layout)
+
+    class Meta:
+        model = MemberProfile
+        fields = ('show_emails',
+                  #'show_replies',
+                  'sort_by',
+                  'replies_as_emails',
+                  'watchlist_as_emails')

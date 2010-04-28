@@ -167,6 +167,7 @@ class EmailSignupForm(forms.Form):
 
         # @@@ clean up some of the repetition below -- DRY! (-- Pinax comment)
 
+        add_email = None
         if confirmed:
             if email == join_invitation.contact.email:
                 new_user = User.objects.create_user(username, email, password)
@@ -179,7 +180,7 @@ class EmailSignupForm(forms.Form):
                 join_invitation.accept(new_user) # should go before creation of EmailAddress below
                 if email:
                     new_user.message_set.create(message=ugettext(u"Confirmation email sent to %(email)s") % {'email': email})
-                    EmailAddress.objects.add_email(new_user, email)
+                    add_email = email
         else:
             try:
                 new_user = User.objects.get(email=email, is_bulk=True)
@@ -190,8 +191,7 @@ class EmailSignupForm(forms.Form):
             
             if email:
                 # new_user.message_set.create(message=ugettext(u"Confirmation email sent to %(email)s") % {'email': email})
-                EmailAddress.objects.add_email(new_user, email)
-
+                add_email = email
         profile = new_user.get_profile()
         profile.first_name = firstname
         profile.last_name = lastname
@@ -199,11 +199,16 @@ class EmailSignupForm(forms.Form):
         
         new_user.first_name = firstname
         new_user.last_name = lastname
-        
+
         if settings.ACCOUNT_EMAIL_VERIFICATION:
             new_user.is_active = False
         
         new_user.save()
+        
+        # needs to be moved down after user is saved, so that the email 
+        # confirmation message has the peron's actual name in it 
+        if add_email:
+            EmailAddress.objects.add_email(new_user, add_email)
         
         if self.cleaned_data['chapter'] != "none" and self.cleaned_data['chapter'] != "":
             chapter = get_object_or_404(Network, slug=self.cleaned_data['chapter'])

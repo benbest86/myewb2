@@ -1,0 +1,28 @@
+{% extends "profiles/profile.html" %}
+
+{% comment %}
+This file is part of myEWB
+Copyright 2010 Engineers Without Borders Canada
+{% endcomment %}
+
+{% load i18n %}
+{% load avatar_tags %}
+{% load uni_form %}
+
+{% block head_title %}{% blocktrans %}Profile settings{% endblocktrans %}{% endblock %}
+
+{% block body %}
+	{% if user.is_authenticated %}
+
+		<form method="post" action="" class="uniForm">
+			{% with form.helper as helper %}
+				{% uni_form form helper %}
+			{% endwith %}
+		</form> 
+	
+	{% else %} {# not user.is_authenticated #}
+        {% url acct_signup as signup_url %}
+        {% url acct_login as login_url %}
+        <p>{% blocktrans %}This option is not available unless you are logged in. <a href="{{ signup_url }}">Sign up</a> or <a href="{{ login_url }}">log in</a>.{% endblocktrans %}</p>
+	{% endif %}
+{% endblock %}
