@@ -18,6 +18,9 @@ class EventForm(forms.ModelForm):
     postal_code = forms.CharField(required=False,
                                   help_text='This will not be publicly visible, but will eventually be used to determine events near a user')
     
+    description = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
+
+
     def clean(self):
         if self.cleaned_data['end'] < self.cleaned_data['start']:
             raise forms.ValidationError("End time must be after the start time.")

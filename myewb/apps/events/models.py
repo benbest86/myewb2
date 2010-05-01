@@ -6,6 +6,8 @@ from django.contrib.contenttypes import generic
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
+from lxml.html.clean import clean_html, autolink_html, Cleaner
+
 from base_groups.helpers import user_can_adminovision, user_can_execovision
 from base_groups.models import BaseGroup
 from whiteboard.models import Whiteboard
@@ -90,6 +92,11 @@ class Event(models.Model):
         # (to be honest, we could probably do away with generic foreign keys altogether)
         group = BaseGroup.objects.get(id=self.object_id)
         self.parent_group = group
+        
+        # validate HTML content
+        # Additional options at http://codespeak.net/lxml/lxmlhtml.html#cleaning-up-html
+        self.description = clean_html(self.description)
+        self.description = autolink_html(self.description)
         
         super(Event, self).save(force_insert, force_update)
 

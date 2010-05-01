@@ -23,6 +23,9 @@
 {% endblock %}
 
 {% block extra_body %}
+	{{ block.super }}
+	{% include "tinymce.html" %}
+
 {#{{form.media}}#}
   <script type="text/javascript" src="{{STATIC_URL}}js/jquery-ui.js"></script> 
   <script type="text/javascript" src="{{STATIC_URL}}js/ui.datepicker.js"></script>
@@ -61,5 +64,4 @@
     
   });
   </script>
-
 {% endblock %}
