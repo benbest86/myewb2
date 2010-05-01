@@ -13,6 +13,7 @@ Last modified: 2009-08-12
 
 import re, datetime, time, urllib, pycountry
 from django import forms
+from django.contrib.auth.models import User
 from django.contrib.formtools.preview import FormPreview
 from django.core.mail import EmailMessage
 from django.shortcuts import render_to_response
@@ -21,6 +22,8 @@ from django.template import Context, loader, RequestContext
 from django.utils.safestring import mark_safe
 from apps.creditcard.utils import *
 from apps.creditcard.models import Payment, Product
+from siteutils.forms import AddressField
+from siteutils.models import Address
 
 from uni_form.helpers import FormHelper, Submit, Reset
 from uni_form.helpers import Layout, Fieldset, Row, HTML
@@ -85,9 +88,10 @@ class ProductWidget(forms.HiddenInput):
         html = "%s $%s - %s" % (html, product.amount, product.name)
         return mark_safe(html)
         
-class PaymentForm(forms.ModelForm):    
-    cc_number = CreditCardNumberField()
-    cc_expiry = CreditCardExpiryField()
+class PaymentForm(forms.ModelForm):
+    _user = None    
+    cc_number = CreditCardNumberField(label="Credit card number")
+    cc_expiry = CreditCardExpiryField(label="Credit card expiry (mm/yy)")
 #    products = MultipleEntryField(label='products',
 #                    widget=forms.MultipleHiddenInput)
 #                    widget=forms.CheckboxSelectMultiple(attrs={'checked':'checked',
@@ -98,6 +102,7 @@ class PaymentForm(forms.ModelForm):
                                label='products',
                                widget=ProductWidget)
     
+    address = AddressField(label='Billing Address')
         
 	# this gets set if the card is declined at the bank
     trnError = None
@@ -109,18 +114,14 @@ class PaymentForm(forms.ModelForm):
     layout = Layout(
                     Fieldset('Payment details', 'products'),
                     Fieldset('Credit card information',
+                             'billing_name',
                              'cc_type',
                              'cc_number',
                              'cc_expiry',
                              css_class='inlineLabels'),
                     Fieldset('Your information',
-                             'billing_name',
-                             'billing_address1',
-                             'billing_address2',
-                             'billing_city',
-                             'billing_province',
-                             'billing_postalcode',
-                             'billing_country',
+                             'address'),
+                    Fieldset('',
                              'phone',
                              'email',
                              css_class='inlineLabels')
@@ -136,7 +137,30 @@ class PaymentForm(forms.ModelForm):
     helper.action = ''
     
     class Meta:
-        model = Payment 
+        model = Payment
+        exclude=('billing_address1', 'billing_address2',
+                 'billing_city', 'billing_province', 'billing_postalcode',
+                 'billing_country')
+
+    def _get_user(self):
+        return self._user
+    def _set_user(self, value):
+        self.fields['address'].user = value
+    user = property(_get_user, _set_user)
+
+    def clean_address(self):
+        value = self.cleaned_data['address']
+        if value > 0:
+            if self.user:
+                #print "validating user"
+                addr = Address.objects.get(pk=self.cleaned_data['address'])
+                if not self.user.get_profile() == addr.content_object:
+                    raise forms.ValidationError("You do not own that address!")
+            #else:
+            #    print "no user, skipping validation"
+            return value
+        else:
+            raise forms.ValidationError("Please select an address")
 
     def clean(self):
         if self.cleaned_data:
@@ -166,7 +190,7 @@ class PaymentForm(forms.ModelForm):
                 if not province.country == country:
                     raise forms.ValidationError('Country and province do not match')
                 """
-
+                
 		# If the card is declined at the bank, trnError will get set...
         if not self.trnError == None:
             raise forms.ValidationError(self.trnError)
@@ -176,7 +200,43 @@ class PaymentForm(forms.ModelForm):
 class PaymentFormPreview(FormPreview):
     preview_template = 'creditcard/payment_preview.html'
     form_template = 'creditcard/new_payment.html'
+
+    # username is required as a kwarg.  You're screwed if it isn't there.
+    # (for displaying list of saved addresses as billing address...)
+    def parse_params(self, *args, **kwargs):
+        self.username = kwargs['username']
     
+    def _get_form(self):
+        if self.username and not self._form.user:
+            self._form.user = User.objects.get(username=self.username)
+        return self._form
+    def _set_form(self, value):
+        class FormWrapper():
+            user = None
+            form = None
+            def __call__(self, *args, **kwargs):
+                form = self.form(*args, **kwargs)
+                form.user = self.user
+                return form
+            def _get_base_fields(self):
+                return self.form.base_fields
+            def _set_base_fields(self, value):
+                pass
+            base_fields = property(_get_base_fields, _set_base_fields)
+        self._form = FormWrapper()
+        self._form.form = value
+    form = property(_get_form, _set_form)
+
+    """
+    def preview_post(self, request):
+        self.username = request.user.username
+        return super(PaymentFormPreview, self).preview_post(request)
+
+    def post_post(self, request):
+        self.username = request.user.username
+        return super(PaymentFormPreview, self).post_post(request)
+    """
+
     """
         This returns the transaction status in a roundabout way: returning
         None indicates success, and a string indicates error.  Weird, but that 
@@ -185,6 +245,9 @@ class PaymentFormPreview(FormPreview):
     def done(self, request, cleaned_data):
         
         product = Product.objects.get(sku=cleaned_data['products'])
+        address = Address.objects.get(pk=cleaned_data['address'])
+        if not request.user.get_profile() == address.content_object:
+            return HttpResponseForbidden()
         
         # stuff necessary values into dictionary... to be encoded.
         param = {'trnCardOwner': cleaned_data['billing_name'],
@@ -194,12 +257,12 @@ class PaymentFormPreview(FormPreview):
                  'ordName': cleaned_data['billing_name'],
                  'ordEmailAddress': cleaned_data['email'],
                  'ordPhoneNumber': cleaned_data['phone'],
-                 'ordAddress1': cleaned_data['billing_address1'],
-                 'ordAddress2': cleaned_data['billing_address2'],
-                 'ordCity': cleaned_data['billing_city'],
-                 'ordProvince': cleaned_data['billing_province'],
-                 'ordPostalCode': cleaned_data['billing_postalcode'],
-                 'ordCountry': cleaned_data['billing_country'],
+                 'ordAddress1': address.street,
+                 'ordAddress2': '',
+                 'ordCity':address.city,
+                 'ordProvince': address.province,
+                 'ordPostalCode': address.postal_code,
+                 'ordCountry': address.country,
                  'prod_id_1': product.sku,
                  'prod_quantity_1': '1',
                  'prod_name_1': product.name,

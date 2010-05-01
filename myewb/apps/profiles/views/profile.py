@@ -596,6 +596,7 @@ def pay_membership2(request, username):
                         pass
                 
                 form = PaymentForm(initial={'products':product.sku})
+                form.user = other_user
                 form.helper.action = reverse('profile_pay_preview', kwargs={'username': username})
 
                 return render_to_response(

@@ -84,9 +84,6 @@ class MembershipForm(forms.Form):
 class MembershipFormPreview(PaymentFormPreview):
     username = None
 	
-    def parse_params(self, *args, **kwargs):
-        self.username = kwargs['username']
-        
     # this gets called after transaction has been attempted
     def done(self, request, cleaned_data):
     	response = super(MembershipFormPreview, self).done(request, cleaned_data)

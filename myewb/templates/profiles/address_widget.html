@@ -1,0 +1,40 @@
+<script type="text/javascript" src="{{STATIC_URL}}js/jquery-ui.js"></script>
+<script type="text/javascript" src="{{STATIC_URL}}js/address_tabs.js"></script>
+<link type="text/css" href="{{STATIC_URL}}css/jquery-ui.css" rel="stylesheet" />
+<script type="text/javascript">
+	var the_selected_address = 0;
+</script>
+
+<span id="address_hidden_field">
+{{ field }}
+</span>
+
+<div id="addresses">
+    <ul>
+	    {% for address in user.get_profile.addresses.all %}
+	        <li>
+	            <a href="{% url profile_address_detail user.username address.label %}" aid="{{address.pk}}" class="address_selector">
+	                <span>{{ address.label }}</span>
+	                <script type="text/javascript">
+	                	if (the_selected_address == 0)
+		                	the_selected_address = {{ address.pk }};
+	                </script>
+	            </a>
+	        </li>
+	    {% endfor %}
+  		    <li>
+  		        <a href="{% url profile_new_address user.username %}" aid="0" class="address_selector">
+  		            <span><b>+</b></span>
+  		        </a>
+  		    </li>
+    </ul>		    
+</div>
+
+<script type='text/javascript'>
+	$(document).ready(function() {
+		$('#address_hidden_field input').val(the_selected_address);
+		$('.address_selector').click(function() {
+			$('#address_hidden_field input').val($(this).attr('aid'));
+		});
+	});
+</script>

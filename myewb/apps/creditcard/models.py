@@ -83,13 +83,14 @@ class Payment(models.Model):
 
     # FIXME: so these max_length values are completely arbitrary...
     billing_name = models.CharField(_('billing name'), max_length=45)
+    """
     billing_address1 = models.CharField(_('billing address'), max_length=45)
     billing_address2 = models.CharField(_('billing address 2'), max_length=45, blank=True)
     billing_city = models.CharField(_('billing city'), max_length=45)
     billing_postalcode = models.CharField(_('billing postal code'), max_length=45)
     billing_province = models.CharField(_('billing province'), max_length=2, choices=provinces, default='AB')
     billing_country = models.CharField(_('billing country'), max_length=2, choices=countries, default='CA')
-
+    """
     phone = models.CharField(_('phone number'), max_length=45)
     email = models.EmailField(_('email address'))
     
