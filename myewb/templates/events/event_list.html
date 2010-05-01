@@ -7,10 +7,23 @@
 
 {% block body %}
 
-{% if parent %}
-<h1>Events for {{parent.name}}</h1>
-<br/>
+<h1>
+{% if parent.name %}
+	Events for {{parent.name}}
+	<span style="font-weight: normal; font-size: 12px;">
+		(<a href="{% url events_feed_for_instance app_label model_name parent.pk %}">ical</a>)
+	</span>
+{% else %}
+	{% if parent.visible_name %}
+		Events for {{parent.visible_name}}
+		<span style="font-weight: normal; font-size: 12px;">
+			(<a href="{% url events_feed_for_user parent.username %}">ical</a>)
+		</span>
+	{% else %}
+		Events
+	{% endif %}
 {% endif %}
+</h1>
 
 {% if parent %}
 <div>

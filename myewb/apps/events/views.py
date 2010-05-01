@@ -1,3 +1,5 @@
+from vobject import iCalendar
+
 from django.views.generic.list_detail import object_list, object_detail
 from django.views.generic.create_update import create_object, delete_object,\
         update_object
@@ -6,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, render_to_response
 from django.contrib.contenttypes.models import ContentType
-from django.http import HttpResponseNotFound, HttpResponseRedirect
+from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 from django.db.models import Q
 from django.template import RequestContext
 
@@ -244,8 +246,11 @@ def for_user(request, username, year=None, month=None, day=None):
     ''' Returns response with all the events owned by or associated with a user
 
     '''
-
     user = get_object_or_404(User, username=username)
+    
+    if not request.user == user:
+        return HttpResponseForbidden() 
+    
     events = Event.objects.filter(
             (Q(object_id=user.id)
                 &
@@ -276,7 +281,6 @@ def for_instance(request, app_label, model_name, id, year=None, month=None, day=
     ''' Returns the events associated with the model instance
 
     '''
-
     obj = helpers.get_obj(app_label=app_label, model_name=model_name, id=id )
     if not helpers.is_visible(request.user, obj):
         return render_to_response('denied.html', context_instance=RequestContext(request))
@@ -294,7 +298,67 @@ def for_instance(request, app_label, model_name, id, year=None, month=None, day=
                                  'parent':obj,
                                  'year':year,
                                  'month':month,
-                                 'day':day
+                                 'day':day,
+                                 'app_label': app_label,
+                                 'model_name': model_name,
                                },
                                context_instance=RequestContext(request),
                              )
+
+def feed_for_user(request, username, year=None, month=None, day=None):
+    """
+    Returns an ical feed of a user's events
+    """
+    user = get_object_or_404(User, username=username)
+    
+    # TODO: some API key way of allowing third-party access to a user's calendar?
+    if not request.user == user:
+        return HttpResponseForbidden() 
+    
+    events = Event.objects.filter(
+            (Q(object_id=user.id)
+                &
+                Q(content_type=ContentType.objects.get_for_model(user))
+            )|
+            Q(owner=user)
+    )
+    
+    events = timebound(events, year, month, day)
+    # visibility check not needed - implicit (only finding events owned by user)
+
+    return build_ical(events)
+
+def feed_for_instance(request, app_label, model_name, id, year=None, month=None, day=None):
+    """
+    Returns an ical feed of a group's events
+    """
+    obj = helpers.get_obj(app_label=app_label, model_name=model_name, id=id )
+    if not helpers.is_visible(request.user, obj):
+        return render_to_response('denied.html', context_instance=RequestContext(request))
+        
+    events = Event.objects.filter(content_type = ContentType.objects.get_for_model(obj), object_id = id)
+    events = timebound(events, year, month, day)
+        
+    return build_ical(events)
+
+def build_ical(events):
+    ical = iCalendar()
+    
+    ical.add('method').value = 'PUBLISH'        # for IE/Outlook? http://blog.thescoop.org/archives/2007/07/31/django-ical-and-vobject/
+    
+    for e in events:
+        vevent = ical.add('vevent')
+        vevent.add('dtstart').value = e.start
+        vevent.add('dtend').value = e.end
+        vevent.add('uid').value = reverse('events_detail', kwargs={'id': e.pk, 'slug': e.slug})
+        vevent.add('url').value = reverse('events_detail', kwargs={'id': e.pk, 'slug': e.slug})
+        vevent.add('location').value = e.location
+        vevent.add('summary').value = e.title
+        vevent.add('description').value = e.description
+    
+    icalstream = ical.serialize()
+    response = HttpResponse(icalstream, mimetype='text/calendar')
+    response['Filename'] = 'myewb-events.ics'
+    response['Content-Disposition'] = 'attachment; filename=myewb-events.ics'
+    
+    return response
