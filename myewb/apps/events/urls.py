@@ -50,4 +50,6 @@ urlpatterns = patterns('',
             view='events.views.feed_for_user', name='events_feed_for_user'),
     url(r'^ical/for/(?P<app_label>[-\w]+)/(?P<model_name>[-\w]+)/(?P<id>\d+)/$',\
             view='events.views.feed_for_instance', name='events_feed_for_instance'),
+    url(r'^ical/event/(?P<eventid>\d+)/$',\
+            view='events.views.feed_for_event', name='events_feed_for_event'),
 )

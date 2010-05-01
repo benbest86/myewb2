@@ -28,6 +28,8 @@ End: {{object.end|date:"D, M j \a\t\ P"}}</p>
 <p>Created by: {{object.creator.visible_name}}<br/>
 Visible to {{object.content_object}}</p>
 
+<p><a href="{% url events_feed_for_event object.id %}">export to ical</a></p>
+
 </div>
 
 <a href="{% link_to_events_for object.content_object 'css_class' 1 %}">&lt;&lt; Back to {{object.content_object}} events</a>

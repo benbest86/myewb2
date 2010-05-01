@@ -341,6 +341,17 @@ def feed_for_instance(request, app_label, model_name, id, year=None, month=None,
         
     return build_ical(events)
 
+def feed_for_event(request, eventid):
+    """
+    Returns an ical export of a single event
+    """
+    event = get_object_or_404(Event, id=eventid)
+
+    if not helpers.is_visible(request.user, event.content_object):
+        return render_to_response('denied.html', context_instance=RequestContext(request))
+
+    return build_ical([event])
+
 def build_ical(events):
     ical = iCalendar()
     
