@@ -1536,6 +1536,21 @@
         }
     }, 
     {
+        "pk": 99, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "Everyone's apart of this, so we can do frontpage posting", 
+            "parent": null, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "E", 
+            "invite_only": false, 
+            "model": "BaseGroup", 
+            "slug": "ewb", 
+            "name": "ewb"
+        }
+    }, 
+    {
         "pk": 98,
         "model": "base_groups.logisticalgroup",
         "fields": {}

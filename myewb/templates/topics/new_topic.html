@@ -1,0 +1,80 @@
+{% extends "topics/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+{% load pagination_tags %}
+{% load group_tags %}
+{% load tagging_tags %}
+
+{% comment %}
+**********
+NOTE: this template should only be used in the context of a group (ie, the group 
+variable is not None).  The generic/combined post listing has been moved to
+templates/frontpage.html
+
+The {% if group %} checks are left in just in case, and should be removed eventually.
+***********
+{% endcomment %}
+
+{% block head_title %}{% trans "New Post" %}{% endblock %}
+
+{% block body %}
+    <h2>{% trans "New Topic" %}</h2>
+	{% ifnotequal group.slug "ewb" %}
+       	<h2>{{group.name}}</h2>
+    {% endifnotequal %}
+        
+    <form class="uniForm" method="POST" enctype="multipart/form-data" action="">
+        <fieldset class="inlineLabels">
+            {{ topic_form|as_uni_form }}
+            <div id="attachFiles">
+                {% for af in attach_forms %}
+                    {{ af|as_uni_form }}
+                {% endfor %}
+                <div id="attachLink">
+                    <a class="getAttachForm" href="{% url topic_get_attachment_form %}">{% trans "Attach a file to this post" %}</a>
+                </div>
+            </div>
+            {% ifequal group.slug "ewb" %}
+            	<p>
+            		This post will be displayed on the front page.  If you are looking to 
+            		post to a specific chapter or mailing list, find the group under the Chapter
+            		or Mailing List tab, and post from the group page.
+            	</p>
+            {% endifequal %}
+            <p class="form_block">
+                <input type="hidden" id="attachCount" name="attach_count" value="{{ attach_count }}">
+                <input type="hidden" name="next" value="{{ request.path }}" />
+                <input type="submit" id="submitPost" value="{% trans "Create New Post" %}" /></td>
+            </p>
+        </fieldset>
+    </form>
+{% endblock %}
+
+{% block extra_body %}
+	{{ block.super }}
+	{% include "tinymce.html" %}
+    {% include "comments-js.html" %}
+	
+	<link rel="stylesheet" href="{{ STATIC_URL }}css/autocomplete.css" />
+    <script type="text/javascript" src="{{STATIC_URL}}jquery.autocomplete.min.js"></script>
+	<script type="text/javascript">
+    $("#id_tags").autocomplete('{% url tagging_utils_autocomplete "group_topics" "grouptopic" %}', {
+                max: 10,
+                multiple: true,
+                multipleSeparator: ", ",
+            });
+            
+    $('#id_send_as_email').click(function() {
+    	$('#div_id_sender').slideToggle();
+    });
+    
+    $(document).ready(function() {
+    	if ($('#id_send_as_email').val())
+    		$('#div_id_sender').show();
+    	else
+    		$('#div_id_sender').hide();
+    });
+    </script>	
+{% endblock %}
+    

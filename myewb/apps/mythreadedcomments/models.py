@@ -60,7 +60,7 @@ def send_to_watchlist(sender, instance, **kwargs):
         msg = EmailMessage(subject=topic.title,
                            body=message,
                            from_email=sender, 
-                           to=[user.email]
+                           to=[topic.creator.email]
                           )
         msg.send(fail_silently=False)
 

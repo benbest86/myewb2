@@ -74,7 +74,7 @@ def topic(request, topic_id, group_slug=None, edit=False, template_name="topics/
         
     # find membership status
     member = False
-    if topic.group and topic.group.user_is_member(request.user):
+    if topic.group and (topic.group.user_is_member(request.user) or topic.group.slug == "ewb"):
         member = True
         
     grpadmin = topic.group.user_is_admin(request.user)
@@ -104,71 +104,7 @@ def topics(request, group_slug=None, form_class=GroupTopicForm,
     
     attach_count = 0
     if request.method == "POST" and group:
-        if not request.user.is_authenticated():
-            return HttpResponseForbidden()
-        try:
-            attach_count = int(request.POST.get("attach_count", 0))
-        except ValueError:
-            attach_count = 0
-            
-        if is_member:
-            topic_form = form_class(request.POST, user=request.user, group=group)
-            attach_forms = [attach_form_class(request.POST, request.FILES, prefix=str(x), instance=Attachment()) for x in range(0,attach_count)]
-            
-            # do not take blank attachment forms into account
-            for af in attach_forms:
-                if not af.is_valid() and not af['attachment_file'].data:
-                    attach_forms.remove(af)
-                    attach_count = attach_count - 1
-            
-            # all good.  save it!
-            if topic_form.is_valid() and all([af.is_valid() for af in attach_forms]):
-                topic = topic_form.save(commit=False)
-                if group:
-                    group.associate(topic, commit=False)
-                topic.creator = request.user
-                topic.save()
-                
-                # save the attachment.
-                # We need the "Topic" object in order to retrieve attachments properly
-                # since other functions only get the Topic object
-                base_topic = GroupTopic.objects.get(id=topic.id)
-                for af in attach_forms:
-                    attachment = af.save(request, base_topic)
-
-                # extra security check that sender isn't forged.
-                # can't hurt...
-                sender_valid = False
-                if group.user_is_admin(request.user):
-                    if topic_form.cleaned_data['sender'] == group.from_email:
-                        sender_valid = True
-                        sender = '"%s" <%s>' % (group.from_name, group.from_email)
-                        
-                    elif get_object_or_none(EmailAddress, email=topic_form.cleaned_data['sender']) in request.user.get_profile().email_addresses():
-                        sender_valid = True
-                        sender = '"%s %s" <%s>' % (request.user.get_profile().first_name,
-                                                   request.user.get_profile().last_name,
-                                                   topic_form.cleaned_data['sender'])
-                        
-                    elif request.user.is_staff and topic_form.cleaned_data['sender'] == "info@ewb.ca":
-                        sender_valid = True
-                        sender = '"EWB-ISF Canada" <info@ewb.ca>'
-                        
-                if topic.send_as_email:
-                    if sender_valid:
-                        request.user.message_set.create(message=escape("Sent as %s" % sender))
-                        topic.send_email(sender=sender)
-                    else:
-                        request.user.message_set.create(message="Unable to send email.")
-                    
-                # redirect out.
-                request.user.message_set.create(message=_("You have started the topic %(topic_title)s") % {"topic_title": topic.title})
-                return HttpResponseRedirect(topic.get_absolute_url())
-        else:
-            # if they can't start a topic, why are we still loading up a form?
-            request.user.message_set.create(message=_("You are not a member and so cannot start a new topic"))
-            topic_form = form_class(instance=GroupTopic())                
-            attach_forms = [attach_form_class(prefix=str(x), instance=Attachment()) for x in range(0,attach_count)]
+        return new_topic(request, group_slug)
     else:
         topic_form = form_class(instance=GroupTopic(), user=request.user, group=group)
         
@@ -218,7 +154,99 @@ def topics(request, group_slug=None, form_class=GroupTopicForm,
         "login_form": EmailLoginForm(),                # for front-page toolbar
         "mode": mode
     }, context_instance=RequestContext(request))
+    
+def new_topic(request, group_slug=None):
+    is_member = False
+    group = None
+    if group_slug is None:
+        group_slug = "ewb"
+        
+    group = get_object_or_404(BaseGroup, slug=group_slug)
+    is_member = group.user_is_member(request.user, admin_override=True)
 
+    if not group.is_visible(request.user):
+        return HttpResponseForbidden()
+    
+    attach_count = 0
+    if request.method == "POST":
+        if not request.user.is_authenticated():
+            return HttpResponseForbidden()
+        try:
+            attach_count = int(request.POST.get("attach_count", 0))
+        except ValueError:
+            attach_count = 0
+            
+        if group.slug == "ewb" or is_member:
+            topic_form = GroupTopicForm(request.POST, user=request.user, group=group)
+            attach_forms = [AttachmentForm(request.POST, request.FILES, prefix=str(x), instance=Attachment()) for x in range(0,attach_count)]
+            
+            # do not take blank attachment forms into account
+            for af in attach_forms:
+                if not af.is_valid() and not af['attachment_file'].data:
+                    attach_forms.remove(af)
+                    attach_count = attach_count - 1
+            
+            # all good.  save it!
+            if topic_form.is_valid() and all([af.is_valid() for af in attach_forms]):
+                topic = topic_form.save(commit=False)
+                if group:
+                    group.associate(topic, commit=False)
+                topic.creator = request.user
+                topic.save()
+                
+                # save the attachment.
+                # We need the "Topic" object in order to retrieve attachments properly
+                # since other functions only get the Topic object
+                base_topic = GroupTopic.objects.get(id=topic.id)
+                for af in attach_forms:
+                    attachment = af.save(request, base_topic)
+    
+                # extra security check that sender isn't forged.
+                # can't hurt...
+                sender_valid = False
+                if group.user_is_admin(request.user):
+                    if topic_form.cleaned_data['sender'] == group.from_email:
+                        sender_valid = True
+                        sender = '"%s" <%s>' % (group.from_name, group.from_email)
+                        
+                    elif get_object_or_none(EmailAddress, email=topic_form.cleaned_data['sender']) in request.user.get_profile().email_addresses():
+                        sender_valid = True
+                        sender = '"%s %s" <%s>' % (request.user.get_profile().first_name,
+                                                   request.user.get_profile().last_name,
+                                                   topic_form.cleaned_data['sender'])
+                        
+                    elif request.user.is_staff and topic_form.cleaned_data['sender'] == "info@ewb.ca":
+                        sender_valid = True
+                        sender = '"EWB-ISF Canada" <info@ewb.ca>'
+                        
+                if topic.send_as_email:
+                    if sender_valid:
+                        request.user.message_set.create(message=escape("Sent as %s" % sender))
+                        topic.send_email(sender=sender)
+                    else:
+                        request.user.message_set.create(message="Unable to send email.")
+                    
+                # redirect out.
+                request.user.message_set.create(message=_("You have started the topic %(topic_title)s") % {"topic_title": topic.title})
+                return HttpResponseRedirect(topic.get_absolute_url())
+        else:
+            # if they can't start a topic, why are we still loading up a form?
+            request.user.message_set.create(message=_("You are not a member and so cannot start a new topic"))
+            topic_form = GroupTopicForm(instance=GroupTopic())                
+            attach_forms = [AttachmentForm(prefix=str(x), instance=Attachment()) for x in range(0,attach_count)]
+            
+    else:
+        topic_form = GroupTopicForm(instance=GroupTopic(), user=request.user, group=group)
+        attach_forms = []
+
+    return render_to_response("topics/new_topic.html", {
+        "group": group,
+        "topic_form": topic_form,
+        "attach_forms": attach_forms,
+        "attach_count": attach_count,
+        "is_member": is_member,
+    }, context_instance=RequestContext(request))
+    
 def feed(request, group_slug):
     try:
         if group_slug == 'all':
