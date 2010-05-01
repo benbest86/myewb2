@@ -10,6 +10,12 @@
 
 <h2>{{object.title}}</h2>
 
+{% if can_edit %}
+<p>
+	<a href="{% url events_change object.pk %}">edit</a> | <a href="{% url events_delete object.pk %}">delete</a>
+</p>
+{% endif %}
+
 <p>Start: {{object.start|date:"D, M j \a\t P"}}<br/>
 End: {{object.end|date:"D, M j \a\t\ P"}}</p>
 

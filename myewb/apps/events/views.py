@@ -1,6 +1,7 @@
 from django.views.generic.list_detail import object_list, object_detail
 from django.views.generic.create_update import create_object, delete_object,\
         update_object
+from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404, render_to_response
@@ -107,10 +108,19 @@ def detail(request, id, slug):
             member = True
         except:
             pass
+        
+    can_edit = False
+    # see if the parent object is a descendant of BaseGroup 
+    if BaseGroup in parent.__class__.__bases__:
+         can_edit = parent.user_is_admin(request.user)
+    elif parent.__class__ == User:
+        if parent == request.user:
+            can_edit = True
 
     return render_to_response("events/event_detail.html",
                                { 'object': event,
                                 'member': member,
+                                'can_edit': can_edit
                                },
                                context_instance=RequestContext(request),
                              )
@@ -213,10 +223,22 @@ def change(request, id):
     if not helpers.is_visible(request.user, parent):
         return render_to_response('denied.html', context_instance=RequestContext(request))
     
-    return update_object(request,
-        form_class=EventForm,
-        object_id = id,
-    )
+    if request.method == 'POST':
+        #request.POST.update( { 'owner':request.user.id, 'object_id':id,
+        #        'content_type':ct.id, 'content_obj': obj, } )
+        form = EventForm(request.POST, instance=event)
+
+        if form.is_valid():
+            ev = form.save()
+            return HttpResponseRedirect(ev.get_absolute_url())
+    else:
+        form = EventForm(instance=event)
+
+    context = { 'form':form, 'object':parent, 'content_type':event.content_type }
+    context.update(locals())
+
+    return render_to_response('events/events_add.html', context,\
+            context_instance = RequestContext(request))
 
 def for_user(request, username, year=None, month=None, day=None):
     ''' Returns response with all the events owned by or associated with a user
