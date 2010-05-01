@@ -49,6 +49,7 @@
                             {% for att in attachments %}
                                 <li class="file_$file.extension">
                                 {% icon_for_filename att.filename %}<a href="{% get_STATIC_URL %}{{ att.attachment_file.name }}">{{ att.filename }}</a>
+                                {% image_preview att.attachment_file.name att.filename response.pk %} 
                                 {% filesize_for_filename att.attachment_file.name %} 
                                 </li>
                             {% endfor %}
@@ -85,6 +86,7 @@
                         {% for att in attachments %}
                             <li class="attachmentItem">
                                 {% icon_for_filename att.filename %}<a href="{% get_STATIC_URL %}{{ att.attachment_file.name }}">{{ att.filename }}</a>
+                                {% image_preview att.attachment_file.name att.filename topic.pk %} 
                                 {% filesize_for_filename att.attachment_file.name %} 
                             </li>
                         {% endfor %}

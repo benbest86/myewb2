@@ -14,6 +14,11 @@
 {% load filesize_tags %}
 {% block head_title %}{% trans "Post" %} : {{ topic.title }}{% endblock %}
 
+{% block extra_head %}
+	{{ block.super }}
+	<link type="text/css" href="{{STATIC_URL}}css/colorbox.css" rel="stylesheet" />
+{% endblock %}
+
 {% block body %}
 
 <div class="post">
@@ -44,7 +49,9 @@
 			<tr>
 				<td>By <a href="{% url profile_detail topic.creator.username %}">{{ topic.creator.visible_name }}</a>, {{ topic.created|date }}</td>
 				<td align="right" width="50%">
-				    <a href="{% groupurl topic_list topic.group %}">{{ topic.group }}</a>
+					{% ifnotequal topic.group.slug "ewb" %}
+				    	<a href="{% groupurl topic_list topic.group %}">{{ topic.group }}</a>
+				    {% endifnotequal %}
 				</td>
 			</tr>
 		</table>
@@ -76,7 +83,8 @@
                         {% for att in attachments %}
                             <li class="attachmentItem">
                                 {% icon_for_filename att.filename %} <a href="{{ STATIC_URL }}{{ att.attachment_file.name }}">{{ att.filename }}</a>
-                                {% filesize_for_filename att.attachment_file.name %} 
+                                {% image_preview att.attachment_file.name att.filename topic.pk %} 
+                                {% filesize_for_filename att.attachment_file.name %}
                             </li>
                         {% endfor %}
                     </ul>
@@ -203,4 +211,9 @@
 		});
 	</script>
 	{% endif %}
+	
+	<script type="text/javascript" src="{{STATIC_URL}}js/colorbox.js"></script>
+	<script type="text/javascript">
+		$('.preview-img').colorbox({transition: "elastic", width:"80%", height:"80%"});
+	</script>
 {% endblock %}

@@ -14,6 +14,9 @@
 {% block subnav %}
 <ul class="subnav">
 <li {# class="current" #}><a href="{% url home %}">Discussion Board</a></li>
+{% if user.is_authenticated %}
+	<li><a href="{% url topic_new %}">New Post</a></li>
+{% endif %}
 <li><a href="{% url topic_cloud %}">Tag Cloud</a></li>
 {% if user.is_authenticated %}
 	<li><a href="{% url topic_watchlists %}">Watchlist</a></li>

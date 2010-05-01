@@ -64,7 +64,9 @@
 			<tr>
 				<td>By <a href="{% url profile_detail topic.creator.username %}">{{ topic.creator.visible_name }}</a>, {{ topic.created|date }}</td>
 				<td align="right" width="50%">
-				    <a href="{% groupurl topic_list topic.group %}">{{ topic.group }}</a>
+					{% ifnotequal topic.group.slug "ewb" %}
+				    	<a href="{% groupurl topic_list topic.group %}">{{ topic.group }}</a>
+				    {% endifnotequal %}
 				</td>
 			</tr>
 		</table>

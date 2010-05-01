@@ -32,3 +32,28 @@ def icon_for_filename(filename):
             }
 register.inclusion_tag('icon_tags/filetype_icon.html')(icon_for_filename)
 
+IMAGE_EXTENSIONS = (
+        'jpg',
+        'png',
+        'gif',
+)
+
+# doesn't really fit.. should rename this to "attachment_helper_tags" or something,
+# and combine with filesize_tags
+def image_preview(filepath, filename, postid):
+    """
+    Looks at the extension on the filename and provides a javascript preview
+    if it is a recognized image
+    """
+    (shortname, extension) = os.path.splitext(filename)
+    extension = extension.lower().strip('.')
+    preview = False
+    if extension in KNOWN_EXTENSIONS:
+        preview = True
+        
+    return {'preview': preview,
+            'STATIC_URL': settings.STATIC_URL,
+            'filepath': filepath,
+            'postid': postid
+            }
+register.inclusion_tag('icon_tags/image_preview.html')(image_preview)
