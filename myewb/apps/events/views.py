@@ -15,7 +15,7 @@ from django.template import RequestContext
 from base_groups.models import BaseGroup
 from events.models import Event
 from events.forms import EventForm, GroupEventForm#, EventAddForm
-from wiki.models import Article
+from whiteboard.models import Whiteboard
 
 from django.contrib.auth.models import User
 
@@ -93,28 +93,23 @@ def detail(request, id, slug):
     if not helpers.is_visible(request.user, parent):
         return render_to_response('denied.html', context_instance=RequestContext(request))
 
-    # create whiteboard if needed
+    can_edit = False
     member = False
-    if event.whiteboard == None:
-        # this will fail if the event's parent is not a group... 
-        # so, only events attached to a group can have a whiteboard.
-        try:
-            method = getattr(event.content_object, "associate")
-            wb = Article(title="Event%d" % (event.id), content="")
+    # see if the parent object is a descendant of BaseGroup 
+    if BaseGroup in parent.__class__.__bases__:
+        can_edit = parent.user_is_admin(request.user)
+         
+        # create whiteboard if needed
+        if event.whiteboard == None:
+            wb = Whiteboard(title="Event%d" % (event.id), content="")
             event.content_object.associate(wb, commit=False)
             wb.save()
             event.whiteboard = wb
             event.save()
             
-            # FIXME: we assume if you can see the event, you can edit it
-            member = True
-        except:
-            pass
+        # we assume if you can see the event, you can edit it.  Is this intentional?
+        member = True
         
-    can_edit = False
-    # see if the parent object is a descendant of BaseGroup 
-    if BaseGroup in parent.__class__.__bases__:
-         can_edit = parent.user_is_admin(request.user)
     elif parent.__class__ == User:
         if parent == request.user:
             can_edit = True
