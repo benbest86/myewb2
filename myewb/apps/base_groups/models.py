@@ -252,6 +252,33 @@ class BaseGroup(Group):
     def num_pending_members(self):
         return self.pending_members.all().count()
     
+"""
+A hidden, private group that does not show up in any listing except for admins.
+Used for logistical purposes, etc.
+"""
+class LogisticalGroup(BaseGroup):
+    """
+    visibility = models.CharField(_('visibility'), max_length=1,
+                                  choices=BaseGroup.VISIBILITY_CHOICES,
+                                  default='M', editable=False)
+    invite_only = models.BooleanField(_('invite only'), default=True,
+                                      editable=False)
+    parent = models.ForeignKey('self', related_name="children",
+                               verbose_name=_('parent'), null=True, blank=True,
+                              editable=False)
+    """
+    
+    visibility = 'M'
+    invite_only = True
+    parent = None
+
+    def save(self, force_insert=False, force_update=False):
+        self.model = "LogisticalGroup"
+        self.visibility = 'M'
+        self.invite_only = True
+        self.parent = None
+        return super(LogisticalGroup, self).save(force_insert, force_update)
+    
 class BaseGroupMember(models.Model):
     is_admin = models.BooleanField(_('Exec / Leader'), default=False)
     admin_title = models.CharField(_('Title'), max_length=500, null=True, blank=True)
