@@ -132,6 +132,7 @@ $(document).ready(function(){
         },            
         add: function(event, ui) {
             $addressTabs.tabs('select', '#' + ui.panel.id);
-        }
+        },
+        ajaxOptions: {success: function(r,s){}}
     });
 });

@@ -1,9 +1,8 @@
+{% load i18n %}
+
 <script type="text/javascript" src="{{STATIC_URL}}js/jquery-ui.js"></script>
 <script type="text/javascript" src="{{STATIC_URL}}js/address_tabs.js"></script>
 <link type="text/css" href="{{STATIC_URL}}css/jquery-ui.css" rel="stylesheet" />
-<script type="text/javascript">
-	var the_selected_address = 0;
-</script>
 
 <span id="address_hidden_field">
 {{ field }}
@@ -13,17 +12,13 @@
     <ul>
 	    {% for address in user.get_profile.addresses.all %}
 	        <li>
-	            <a href="{% url profile_address_detail user.username address.label %}" aid="{{address.pk}}" class="address_selector">
+	            <a href="{% url profile_address_detail user.username address.label %}">
 	                <span>{{ address.label }}</span>
-	                <script type="text/javascript">
-	                	if (the_selected_address == 0)
-		                	the_selected_address = {{ address.pk }};
-	                </script>
 	            </a>
 	        </li>
 	    {% endfor %}
   		    <li>
-  		        <a href="{% url profile_new_address user.username %}" aid="0" class="address_selector">
+  		        <a href="{% url profile_new_address user.username %}">
   		            <span><b>+</b></span>
   		        </a>
   		    </li>
@@ -32,9 +27,21 @@
 
 <script type='text/javascript'>
 	$(document).ready(function() {
-		$('#address_hidden_field input').val(the_selected_address);
-		$('.address_selector').click(function() {
-			$('#address_hidden_field input').val($(this).attr('aid'));
-		});
+		// Makes sure the hidden input field matches the currently displayed address tab
+		$('#addresses').bind("tabsshow",
+							 function(event, ui) {
+			 					var current_id = $('div#addresses div:not(.ui-tabs-hide)').find('#address-line-pk').html();
+			 					if (!current_id)
+				 					current_id = 0;
+								$('#address_hidden_field input').val(current_id);
+							 });
 	});
+
+    // We can't pre-generate URLs for specific addresses
+    // There are also possible issues if we simply try to replace an arbitrary string
+    // in the auto-generated URL
+    function getBaseAddressUrl() { return "{% url profile_address_index user.username %}"; }
+    function getNewAddressUrl() { return "{% url profile_new_address user.username %}"; }
+    function getLabelDuplicationError() { return '{% trans "Error: Label is already used" %}'; }
+
 </script>

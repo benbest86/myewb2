@@ -402,17 +402,6 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 	{% show_student_records_js other_user is_me %}
 	{% show_work_records_js other_user is_me %}
 	
-	<script type="text/javascript">	
-    function getBaseAddressUrl() { 
-        // We can't pre-generate URLs for specific addresses
-        // There are also possible issues if we simply try to replace an arbitrary string
-        // in the auto-generated URL
-        return "/profiles/{{other_user.username}}/address/"; 
-    }
-    function getNewAddressUrl() { return "{% url profile_new_address other_user.username %}"; }
-    function getLabelDuplicationError() { return '{% trans "Error: Label is already used" %}'; }
-	</script>
-
 	{% if messages %}
 		{# looks for messages that are network suggestions only #}
 		<script type="text/javascript">
