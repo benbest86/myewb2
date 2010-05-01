@@ -1,11 +1,13 @@
+import re
 from django.conf import settings
 from django.shortcuts import render_to_response, get_object_or_404
-from django.http import HttpResponseRedirect, HttpResponseForbidden
+from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponseNotFound, HttpResponse
 from django.contrib.auth import authenticate
 from django.contrib.auth import login as auth_login
 from django.contrib.auth.views import logout as pinaxlogout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.forms import fields
 from django.template import RequestContext
 from django.utils.translation import ugettext, ugettext_lazy as _
 
@@ -16,6 +18,7 @@ from account_extra.forms import EmailLoginForm, EmailSignupForm
 from account.views import login as pinaxlogin
 from account.views import signup as pinaxsignup
 from account.forms import AddEmailForm
+from base_groups.models import LogisticalGroup
 
 from siteutils import online_middleware
 
@@ -118,3 +121,11 @@ def email(request, form_class=AddEmailForm, template_name="account/email.html",
         "other_user": user,
     }, context_instance=RequestContext(request))
 
+def silent_signup(request, email):
+    regex = re.compile(fields.email_re)
+    if not regex.search(email):
+        return HttpResponseNotFound()   # invalid email
+
+    group = get_object_or_404(LogisticalGroup, slug="silent_signup_api")
+    group.add_email(email)
+    return HttpResponse("success")

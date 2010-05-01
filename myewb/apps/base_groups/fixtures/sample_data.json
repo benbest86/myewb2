@@ -1521,6 +1521,26 @@
         }
     }, 
     {
+        "pk": 98, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "description": "People who were signed up through the silent API", 
+            "parent": null, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "visibility": "M", 
+            "invite_only": true, 
+            "model": "LogisticalGroup", 
+            "slug": "silent_signup_api", 
+            "name": "silent_signup_api"
+        }
+    }, 
+    {
+        "pk": 98,
+        "model": "base_groups.logisticalgroup",
+        "fields": {}
+    }, 
+    {
         "pk": 1, 
         "model": "base_groups.grouplocation", 
         "fields": {

@@ -31,4 +31,8 @@ urlpatterns = patterns('',
 
     # ajax validation    
     (r'^validate/$', 'ajax_validation.views.validate', {'form_class': EmailSignupForm}, 'signup_form_validate'),
+    
+    # silent signup API from the main site, etc
+    url(r'^silent_signup/(.+)/$', 'account_extra.views.silent_signup', name="acct_silent_signup"),
+    
 )

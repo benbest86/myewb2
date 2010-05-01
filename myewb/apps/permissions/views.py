@@ -15,8 +15,8 @@ from django.db.models import Q
 from django.contrib.auth.models import User, Group
 from django.contrib.admin.views.decorators import staff_member_required
 
-from forms import AddPermissionForm
-from models import PermissionGroup
+from permissions.forms import AddPermissionForm
+from permissions.models import PermissionGroup
 
 # Have chosen not to use our own perms system for this check because giving 
 # someone access over the perms system is giving them access to everything...
