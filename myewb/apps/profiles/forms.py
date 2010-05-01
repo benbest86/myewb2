@@ -92,7 +92,7 @@ class MembershipFormPreview(PaymentFormPreview):
     		request.user.get_profile().pay_membership()
         	
         	message = loader.get_template("profiles/member_upgraded.html")
-        	c = Context({'user': self.username})
+        	c = Context({'user': self.username.visible_name()})
         	request.user.message_set.create(message=message.render(c))
         	
         	return HttpResponseRedirect(reverse('profile_detail', kwargs={'username': self.username }))

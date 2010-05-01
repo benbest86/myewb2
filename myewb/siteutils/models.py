@@ -1,3 +1,4 @@
+import pycountry
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.contenttypes.models import ContentType
@@ -56,6 +57,23 @@ class PhoneNumber(models.Model):
   def __unicode__(self):
     return "%s: %s" % (self.label, self.number)
 
+provinces = []
+provincelist = list(pycountry.subdivisions.get(country_code='CA'))
+for p in provincelist:
+    provinces.append((p.code.split('-')[1], p.name))
+provinces = sorted(provinces)
+provinces2 = []
+provincelist = pycountry.subdivisions.get(country_code='US')
+for p in provincelist:
+    provinces2.append((p.code.split('-')[1], p.name))
+provinces2 = sorted(provinces2)
+provinces += provinces2
+provinces.append(('', 'None / Other'))
+        
+countries2 = list(pycountry.countries)
+countries = []
+for c in countries2:
+    countries.append((c.alpha2, c.name))
 
 class Address(models.Model):
   content_type = models.ForeignKey(ContentType)
@@ -65,9 +83,9 @@ class Address(models.Model):
   label = models.CharField(max_length=100, null=False, blank=False)
   street = models.CharField(_('street address'), max_length=200, null=True, blank=True)
   city = models.CharField(_('city'), max_length=100, null=True, blank=True)
-  province = models.CharField(_('province / state (abbreviation)'), max_length=10, null=True, blank=True)
+  province = models.CharField(_('province / state'), max_length=2, choices=provinces, default='AB', blank=True)
   postal_code = models.CharField(_('postal / zip code'), max_length=10, null=True, blank=True)
-  country = CountryField(_('country'), null=True, blank=True)
+  country = CountryField(_('country'), max_length=2, choices=countries, default='CA')
   
   # FIXME -- have a smarter fallback name for the 
   def __unicode__(self):

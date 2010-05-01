@@ -9,7 +9,7 @@ Last modified: 2009-08-12
 @author: Francis Kung, Ben Best
 """
 
-import re, pycountry
+import re
 from django.db import models
 from django import forms
 from django.conf import settings
@@ -50,48 +50,19 @@ CC_TYPES = (
 #    ('DS', _('Company')),
 )
 
-provinces = []
-provincelist = list(pycountry.subdivisions.get(country_code='CA'))
-for p in provincelist:
-    provinces.append((p.code.split('-')[1], p.name))
-provinces = sorted(provinces)
-provinces2 = []
-provincelist = pycountry.subdivisions.get(country_code='US')
-for p in provincelist:
-    provinces2.append((p.code.split('-')[1], p.name))
-provinces2 = sorted(provinces2)
-provinces += provinces2
-provinces.append(('', 'None'))
-        
-countries2 = list(pycountry.countries)
-countries = []
-for c in countries2:
-    countries.append((c.alpha2, c.name))
-
 class Payment(models.Model):
     """ Provides a base for credit card payments, including billing
     information and such.
     
     Most uses will probably extend this to add additional fields.
     """
-    
-    # TODO: Would be nice to pre-populate these from your profile...
-    # maybe can do it via a nice javascript UI thing?
+
     cc_type = models.CharField(_('credit card type'), max_length=2, choices=CC_TYPES)
     cc_number = models.CharField(_('credit card number'), max_length=20)
     cc_expiry = models.DateField(_('expiry date'))
 
-    # FIXME: so these max_length values are completely arbitrary...
-    billing_name = models.CharField(_('billing name'), max_length=45)
-    """
-    billing_address1 = models.CharField(_('billing address'), max_length=45)
-    billing_address2 = models.CharField(_('billing address 2'), max_length=45, blank=True)
-    billing_city = models.CharField(_('billing city'), max_length=45)
-    billing_postalcode = models.CharField(_('billing postal code'), max_length=45)
-    billing_province = models.CharField(_('billing province'), max_length=2, choices=provinces, default='AB')
-    billing_country = models.CharField(_('billing country'), max_length=2, choices=countries, default='CA')
-    """
-    phone = models.CharField(_('phone number'), max_length=45)
+    billing_name = models.CharField(_('billing name'), max_length=255)
+    phone = models.CharField(_('phone number'), max_length=20)
     email = models.EmailField(_('email address'))
     
     # well, really, many-to-one at the moment.
