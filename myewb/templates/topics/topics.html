@@ -10,9 +10,9 @@
     {{ block.super }}
     
     {% if group %}
-        <link rel="alternate" type="application/rss+xml" title="{{ group }}" href="{% url topic_feed group.slug %}" />
+        <link rel="alternate" type="application/rss+xml" title="{{ group }}" href="{% url topic_feed_group group.slug %}" />
     {% else %}
-        <link rel="alternate" type="application/rss+xml" title="myEWB Front Page" href="{% url topic_feed "all" %}" />
+        <link rel="alternate" type="application/rss+xml" title="myEWB Front Page" href="{% url topic_feed_all %}" />
     {% endif %}
 {% endblock %}
 

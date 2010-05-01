@@ -15,7 +15,6 @@ from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirec
 from django.utils.translation import ugettext as _
 from django.utils.html import escape
 from django.contrib.auth.models import User
-from django.contrib.syndication import feeds
 from django.shortcuts import get_object_or_404, render_to_response
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
@@ -30,14 +29,13 @@ from base_groups.models import BaseGroup
 from base_groups.helpers import user_can_adminovision, user_can_execovision
 from group_topics.models import GroupTopic, Watchlist
 from group_topics.forms import GroupTopicForm
-from group_topics.feeds import TopicFeedAll, TopicFeedGroup
 from threadedcomments.models import ThreadedComment
 from profiles.models import MemberProfile
 from siteutils.shortcuts import get_object_or_none
 
 from attachments.forms import AttachmentForm
 from attachments.models import Attachment
-from topics.models import Topic
+from pinax.apps.topics.models import Topic
 from whiteboard.models import Whiteboard
 
 def topic(request, topic_id, group_slug=None, edit=False, template_name="topics/topic.html", bridge=None):
@@ -247,26 +245,6 @@ def new_topic(request, group_slug=None):
         "is_member": is_member,
     }, context_instance=RequestContext(request))
     
-def feed(request, group_slug):
-    try:
-        if group_slug == 'all':
-            feedgen = TopicFeedAll(group_slug, request).get_feed()
-        else:
-            group = BaseGroup.objects.get(slug=group_slug)
-            
-            # concept of a RSS feed for a logged-in user is weird, but OK...
-            if group.is_visible(request.user):
-                feedgen = TopicFeedGroup(group_slug, request).get_feed(group_slug)
-            else:
-                return HttpResponseForbidden()
-
-    except feeds.FeedDoesNotExist:
-        raise Http404, _("Invalid feed parameters. Slug %r is valid, but other parameters, or lack thereof, are not.") % slug
-
-    response = HttpResponse(mimetype=feedgen.mime_type)
-    feedgen.write(response, 'utf-8')
-    return response
-
 def get_attachment_form(request, template_name="topics/attachment_form.html", form_class=AttachmentForm, group_slug=None, bridge=None):
 
     if request.is_ajax():

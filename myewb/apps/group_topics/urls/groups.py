@@ -11,5 +11,5 @@ Created on: 2009-08-13
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('',
-    url(r'^$', 'group_topics.views.topics', name="topic_list"),
+    url(r'^$', 'group_topics.views.topics.topics', name="topic_list"),
 )

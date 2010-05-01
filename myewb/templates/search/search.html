@@ -10,7 +10,7 @@
 {% block extra_head %}
     {{ block.super }}
     
-    <link rel="alternate" type="application/rss+xml" title="myEWB Front Page" href="{% url topic_feed "all" %}" />
+    <link rel="alternate" type="application/rss+xml" title="myEWB Front Page" href="{% url topic_feed_all %}" />
 	<link rel="stylesheet" href="{{ STATIC_URL }}css/toolbars.css" />    
 
 	<link type="text/css" href="{{STATIC_URL}}css/jquery-ui.css" rel="stylesheet" />

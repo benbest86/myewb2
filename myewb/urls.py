@@ -26,7 +26,7 @@ import os.path
 admin.autodiscover()
 
 urlpatterns = patterns('',
-    url(r'^$', 'group_topics.views.topics', {'template_name': 'frontpage.html'}, name="home"),
+    url(r'^$', 'group_topics.views.topics.topics', {'template_name': 'frontpage.html'}, name="home"),
 
     (r'^volunteering/', include('volunteering.urls')),
 
@@ -77,8 +77,12 @@ urlpatterns = patterns('',
 #    (r'^feeds/tweets/(.*)/$', 'django.contrib.syndication.views.feed', tweets_feed_dict),
 #    (r'^feeds/posts/(.*)/$', 'django.contrib.syndication.views.feed', blogs_feed_dict),
 #    (r'^feeds/bookmarks/(.*)/?$', 'django.contrib.syndication.views.feed', bookmarks_feed_dict),
-    url(r'^feeds/posts/(?P<group_slug>[-\w]+)/$', 'group_topics.views.feed', name="topic_feed"),
-    url(r'^newpost/$', 'group_topics.views.new_topic', name="topic_new"),
+    url(r'^feeds/posts/group/(?P<group_slug>[-\w]+)/$', 'group_topics.views.feed.group', name="topic_feed_group"),
+    url(r'^feeds/posts/tag/(?P<tag>[-\w]+)/$', 'group_topics.views.feed.tag', name="topic_feed_tag"),
+    url(r'^feeds/posts/featured/$', 'group_topics.views.feed.featured', name="topic_feed_featured"),
+    url(r'^feeds/posts/all/$', 'group_topics.views.feed.all', name="topic_feed_all"),
+    
+    url(r'^newpost/$', 'group_topics.views.topics.new_topic', name="topic_new"),
 )
 
 ## @@@ for now, we'll use friends_app to glue this stuff together
