@@ -66,3 +66,14 @@
 	</div>
 	
 {% endblock %}
+
+{% block extra_body %}
+	<script type="text/javascript">	
+    // We can't pre-generate URLs for specific addresses
+    // There are also possible issues if we simply try to replace an arbitrary string
+    // in the auto-generated URL
+    function getBaseAddressUrl() { return "{% url profile_address_index other_user.username %}"; }
+    function getNewAddressUrl() { return "{% url profile_new_address other_user.username %}"; }
+    function getLabelDuplicationError() { return '{% trans "Error: Label is already used" %}'; }
+	</script>
+{% endblock %}
