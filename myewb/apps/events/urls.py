@@ -23,6 +23,9 @@ urlpatterns = patterns('',
 
     url(r'add/(?P<app_label>[-\w]+)/(?P<model_name>[-\w]+)/(?P<id>\d+)/$',\
             view='events.views.add', name='events_add'),
+    url(r'add/$',\
+            view='events.views.add_choose_group', name='event_add_choose_group'),
+    
 
     url(r'change/(?P<id>\d+)/', view='events.views.change',
         name='events_change'),

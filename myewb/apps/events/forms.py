@@ -1,4 +1,8 @@
 from django import forms
+
+from base_groups.models import BaseGroup
+from communities.models import Community
+from networks.models import Network
 from events.models import Event
 
 class EventForm(forms.ModelForm):
@@ -30,6 +34,30 @@ class EventForm(forms.ModelForm):
     class Meta:
         model = Event
         exclude = ('object_id', 'content_type', 'owner', 'whiteboard', 'parent_group')
+
+class GroupEventForm(EventForm):
+    group = forms.ChoiceField(choices=[(0,'None (my personal calendar)')])
+    
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+
+        super(GroupEventForm, self).__init__(*args, **kwargs)
+
+        if user:
+            if user.has_module_perms("basegroups"):
+                networks = Network.objects.all()
+                communities = Community.objects.all()
+            else:
+                networks = Network.objects.filter(members__user=user,
+                                                  members__is_admin=True)
+                communities = Community.objects.filter(members__user=user,
+                                                       members__is_admin=True)
+            groups = []
+            for n in networks:
+                groups.append(("n%d" % n.pk, n.name))
+            for c in communities:
+                groups.append(("c%d" % c.pk, c.name))
+            self.fields['group'].choices.extend(groups)
 
 '''
 class EventAddForm(EventForm):

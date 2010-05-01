@@ -11,7 +11,7 @@ from django.template import RequestContext
 
 from base_groups.models import BaseGroup
 from events.models import Event
-from events.forms import EventForm#, EventAddForm
+from events.forms import EventForm, GroupEventForm#, EventAddForm
 from wiki.models import Article
 
 from django.contrib.auth.models import User
@@ -137,6 +137,34 @@ def create(request):
     return create_object(request,
         form_class=EventForm,
     )
+
+@login_required
+def add_choose_group(request):
+    """
+    Let someone choose a group, before creating an event...
+    """
+    if request.method == 'POST':
+        group = request.POST.get('group', None)
+        if group == "0":
+            return add(request, 'auth', 'user', request.user.pk)
+        else:
+            type = group[0:1]
+            groupid = group[1:]
+            
+            if type == 'n':
+                return add(request, 'networks', 'network', groupid)
+            elif type == 'c':
+                return add(request, 'communities', 'community', groupid)
+            else:
+                # ???
+                pass
+    form = GroupEventForm(user=request.user)
+
+    context = { 'form':form }
+    context.update(locals())
+
+    return render_to_response('events/events_add.html', context,\
+            context_instance = RequestContext(request))
 
 @login_required
 def add(request, app_label, model_name, id):

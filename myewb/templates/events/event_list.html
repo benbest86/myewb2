@@ -12,6 +12,13 @@
 <br/>
 {% endif %}
 
+{% if parent %}
+<div>
+	<a href="{% event_link_add_to parent 'css_id' 1 %}">Add an event</a>
+	<br/><br/>
+</div>
+{% endif %}
+
 <div id="calendar" style="float: left; border-width: 1px;" class="ui-corner-all">
 {% for event in events %}
   <p>{{event}}</p>
@@ -29,12 +36,10 @@
 <div id="detail-content" style="padding-top: 0.5em;"></div>
 </div>
 
-{% if parent %}
+{% if parent and parent.get_absolute_url %}
 <div style="clear: both;">
-	<a href="{% event_link_add_to parent 'css_id' 1 %}">Add event</a><br/>
-	{% if parent.get_absolute_url %}
-		<a href="{{ parent.get_absolute_url }}">&lt;&lt; Back to {{parent}}</a>
-	{% endif %}
+	<br/>
+	<a href="{{ parent.get_absolute_url }}">&lt;&lt; Back to {{parent}}</a>
 </div>
 {% endif %}
 
