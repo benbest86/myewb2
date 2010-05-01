@@ -167,12 +167,7 @@ def add(request, app_label, model_name, id):
             ev.content_type = ct
             ev.save()
 
-            try:
-                return HttpResponseRedirect(obj.get_absolute_url())
-
-            except:
-                return HttpResponseRedirect(reverse('events_all'))
-
+            return HttpResponseRedirect(ev.get_absolute_url())
     else:
         form = EventForm()
 
