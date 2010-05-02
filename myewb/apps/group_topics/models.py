@@ -35,7 +35,7 @@ class GroupTopicManager(models.Manager):
         member is a part of. Handles AnonymousUser instances
         transparently
         """
-        filter_q = Q(parent_group__visibility='E')
+        filter_q = Q(parent_group__visibility='E') | Q(parent_group__slug='ewb')
         order = '-created'
         if user is not None and not user.is_anonymous():
             
