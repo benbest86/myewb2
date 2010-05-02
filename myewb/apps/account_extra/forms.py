@@ -1,7 +1,8 @@
-from datetime import datetime
+from datetime import datetime, timedelta, date
 
 from django import forms
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.core.cache import cache
 from django.utils.translation import ugettext_lazy as _, ugettext
 from django.shortcuts import get_object_or_404
@@ -91,6 +92,15 @@ class EmailLoginForm(forms.Form):
                 request.session.set_expiry(60 * 60 * 24 * 7 * 3)
             else:
                 request.session.set_expiry(0)
+                
+            # set account reminder messages
+            # (should this be done somewhere else, probably profiles app, with a signal listener?)
+            membership_expiry = self.user.get_profile().membership_expiry
+            if membership_expiry:
+                if date.today() + timedelta(days=7) > membership_expiry:
+                    request.user.message_set.create(message="Your membership expires within a week.<br/><a href='%s'>Renew it now!</a>" % reverse('profile_pay_membership', kwargs={'username': request.user.username}))
+                elif date.today() + timedelta(days=30) > membership_expiry:
+                    request.user.message_set.create(message="Your membership expires within a month.<br/><a href='%s'>Renew it now!</a>" % reverse('profile_pay_membership', kwargs={'username': request.user.username}))
                 
             signals.signin.send(sender=self.user, user=self.user)
             return True

@@ -12,8 +12,11 @@ from profiles.models import *
 
 # can be further customized later if necessary
 
+class MemberProfileAdmin(admin.ModelAdmin):
+    list_display = ('name', 'user2')
+
 admin.site.register(Profile)
-admin.site.register(MemberProfile)
+admin.site.register(MemberProfile, MemberProfileAdmin)
 admin.site.register(StudentRecord)
 admin.site.register(WorkRecord)
 
