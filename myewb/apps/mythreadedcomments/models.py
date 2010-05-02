@@ -37,6 +37,7 @@ def send_to_watchlist(sender, instance, **kwargs):
                  'title': topic.title,
                  'body': instance.comment,
                  'topic_id': topic.pk,
+                 'event': None,
                  'attachments': attachments
                  })
     message = tmpl.render(c)

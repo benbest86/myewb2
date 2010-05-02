@@ -10,11 +10,13 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 from django.db.models import Q
-from django.template import RequestContext
+from django.template import RequestContext, Context, loader
+from django.utils.translation import ugettext_lazy as _
+from emailconfirmation.models import EmailAddress
 
 from base_groups.models import BaseGroup
 from events.models import Event
-from events.forms import EventForm, GroupEventForm#, EventAddForm
+from events.forms import EventForm, GroupEventForm, EventEmailForm#, EventAddForm
 from whiteboard.models import Whiteboard
 
 from django.contrib.auth.models import User
@@ -22,6 +24,7 @@ from django.contrib.auth.models import User
 from datetime import datetime
 
 from siteutils import helpers
+from siteutils.shortcuts import get_object_or_none
 
 def timebound(events, year=None, month=None, day=None, user=None):
     """
@@ -94,10 +97,12 @@ def detail(request, id, slug):
         return render_to_response('denied.html', context_instance=RequestContext(request))
 
     can_edit = False
+    can_send = False
     member = False
     # see if the parent object is a descendant of BaseGroup 
     if BaseGroup in parent.__class__.__bases__:
         can_edit = parent.user_is_admin(request.user)
+        can_send = True
          
         # create whiteboard if needed
         if event.whiteboard == None:
@@ -117,7 +122,8 @@ def detail(request, id, slug):
     return render_to_response("events/event_detail.html",
                                { 'object': event,
                                 'member': member,
-                                'can_edit': can_edit
+                                'can_edit': can_edit,
+                                'can_send': can_send
                                },
                                context_instance=RequestContext(request),
                              )
@@ -368,3 +374,79 @@ def build_ical(events):
     response['Content-Disposition'] = 'attachment; filename=myewb-events.ics'
     
     return response
+
+def email_event(request, eventid):
+    """
+    Lets you email an event reminder.  Email goes to the parent group (if one exists).
+    Later this would be great for "email all RSVPs" and such.
+    """
+    event = get_object_or_404(Event, id=eventid)
+    parent = event.content_object
+    
+    if not helpers.is_visible(request.user, parent):
+        return render_to_response('denied.html', context_instance=RequestContext(request))
+
+    if BaseGroup not in parent.__class__.__bases__:
+        request.user.message_set.create(message="You can only send emails to group-owned events.")
+        return HttpResponseRedirect(reverse(event.get_absolute_url()))
+    
+    if not parent.user_is_admin(request.user): 
+        request.user.message_set.create(message="You cannot send emails to the parent group.")
+        return HttpResponseRedirect(reverse(event.get_absolute_url()))
+
+    confirm = None
+    if request.method == 'POST':
+        form = EventEmailForm(request.POST, user=request.user, group=parent)
+        
+        if form.is_valid():
+            if request.POST.get('confirmed', None) and request.POST.get('action', 'back') == "send":
+                # extra security check that sender isn't forged.
+                # can't hurt...
+                # copied from group_topics.views.topics.new_topic - can we combine?
+                sender_valid = False
+                if parent.user_is_admin(request.user):
+                    if form.cleaned_data['sender'] == parent.from_email:
+                        sender_valid = True
+                        sender = '"%s" <%s>' % (parent.from_name, parent.from_email)
+                        
+                    elif get_object_or_none(EmailAddress, email=form.cleaned_data['sender']) in request.user.get_profile().email_addresses():
+                        sender_valid = True
+                        sender = '"%s %s" <%s>' % (request.user.get_profile().first_name,
+                                                   request.user.get_profile().last_name,
+                                                   form.cleaned_data['sender'])
+                        
+                    elif request.user.is_staff and form.cleaned_data['sender'] == "info@ewb.ca":
+                        sender_valid = True
+                        sender = '"EWB-ISF Canada" <info@ewb.ca>'
+                        
+                # and this is all copied from group_topics.models.GroupTopic.send_email ... =(
+                tmpl = loader.get_template("email_template.html")
+                c = Context({'group': parent,
+                             'title': form.cleaned_data['subject'],
+                             'body': form.cleaned_data['body'],
+                             'topic_id': None,
+                             'event': event,
+                             'attachments': None
+                             })
+                message = tmpl.render(c)
+            
+                parent.send_mail_to_members(form.cleaned_data['subject'], message, sender=sender)
+                
+                request.user.message_set.create(message="Email sent.")
+                return HttpResponseRedirect(event.get_absolute_url())
+            
+            if not request.POST.get('action', None):
+                confirm = request.POST
+                
+    else:
+        form = EventEmailForm(user=request.user, group=parent)
+        
+    return render_to_response('events/email.html',
+                               {'event': event,
+                                'form': form,
+                                'confirm': confirm
+                               },
+                               context_instance=RequestContext(request),
+                             )
+
+        

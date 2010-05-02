@@ -177,6 +177,7 @@ class GroupTopic(Topic):
                      'title': self.title,
                      'body': self.body,
                      'topic_id': self.pk,
+                     'event': None,
                      'attachments': attachments
                      })
         message = tmpl.render(c)

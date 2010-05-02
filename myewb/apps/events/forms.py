@@ -1,4 +1,6 @@
 from django import forms
+from django.utils.translation import ugettext_lazy as _
+from lxml.html.clean import clean_html, autolink_html
 
 from base_groups.models import BaseGroup
 from communities.models import Community
@@ -58,6 +60,52 @@ class GroupEventForm(EventForm):
             for c in communities:
                 groups.append(("c%d" % c.pk, c.name))
             self.fields['group'].choices.extend(groups)
+            
+class EventEmailForm(forms.Form):
+    subject = forms.CharField(max_length=250)
+    body = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
+    sender = forms.ChoiceField(label=_('Sender'),
+                               choices=(),
+                               required=False)
+
+    def __init__(self, *args, **kwargs):
+        user = kwargs.pop('user', None)
+        group = kwargs.pop('group', None)
+        super(EventEmailForm, self).__init__(*args, **kwargs)
+
+        # build list of potential "from" addresses
+        if user and group and group.user_is_admin(user):
+            emaillist = user.get_profile().email_addresses()
+            emails = []
+            for email in emaillist:
+                emails.append((email.email, "%s %s <%s>" % (user.get_profile().first_name,
+                                                            user.get_profile().last_name, 
+                                                            email.email)))
+                
+            if group.user_is_admin(user):
+                emails.append((group.from_email,
+                               "%s <%s>" % (group.from_name, group.from_email)))
+            
+            if user.is_staff:
+                emails.append(("info@ewb.ca",
+                               "EWB-ISF Canada <info@ewb.ca>"))
+            
+            self.fields['sender'].choices = emails
+            
+        # these people don't have permission to send email...
+        else:
+            del self.fields['sender']
+        
+    def clean_body(self):
+        body = self.cleaned_data.get('body', '')
+
+        # validate HTML content
+        # Additional options at http://codespeak.net/lxml/lxmlhtml.html#cleaning-up-html
+        body = clean_html(body)
+        #body = autolink_html(body)
+    
+        self.cleaned_data['body'] = body
+        return self.cleaned_data['body']
 
 '''
 class EventAddForm(EventForm):

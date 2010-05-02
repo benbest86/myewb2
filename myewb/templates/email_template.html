@@ -35,9 +35,16 @@ word-spacing: 0.1em;
 
 {% endif %}
 
+{% if topic_id %}
 <a href="{% url topic_detail topic_id %}" target="_blank">
 Reply to this email through myEWB &raquo;
 </a>
+{% endif %}
+{% if event %}
+<a href="{% url events_detail event.pk event.slug %}" target="_blank">
+See event details &raquo;
+</a>
+{% endif %}
 
 <br />
 <hr />

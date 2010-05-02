@@ -52,4 +52,8 @@ urlpatterns = patterns('',
             view='events.views.feed_for_instance', name='events_feed_for_instance'),
     url(r'^ical/event/(?P<eventid>\d+)/$',\
             view='events.views.feed_for_event', name='events_feed_for_event'),
+            
+    url(r'^email/(?P<eventid>\d+)/$',\
+            view='events.views.email_event', name='events_email'),
+    
 )

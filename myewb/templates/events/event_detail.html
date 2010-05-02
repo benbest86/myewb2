@@ -13,6 +13,9 @@
 {% if can_edit %}
 <p>
 	<a href="{% url events_change object.pk %}">edit</a> | <a href="{% url events_delete object.pk %}">delete</a>
+	{% if can_send %}
+		| <a href="{% url events_email object.pk %}">send email</a>
+	{% endif %}
 </p>
 {% endif %}
 

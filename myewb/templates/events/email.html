@@ -1,0 +1,53 @@
+{% extends "events/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+
+{% block head_title %}{% blocktrans %}Events{% endblocktrans %}{% endblock %}
+
+{% block body %}
+
+	<h1>Send event email</h1>
+
+	{% if confirm %}	
+		<div>
+			<strong>From: {{ confirm.sender }}</strong>
+		</div>
+		
+		<div>
+			<strong>Subject: {{ confirm.subject }}</strong>
+		</div>
+		
+		<div style="padding: 10px; margin: 25px; border: 1px solid;">
+			{{ confirm.body|safe }}
+		</div>
+		
+		<form method="post" action="" id="hiddenform">
+			<div style="display: none;">
+				{{ form|as_uni_form }}
+			</div>
+
+			<p>	
+				<input type="hidden" name="confirmed" value="confirmed"/>
+				
+				<input type="submit" name="action" value="go back"/> &nbsp;
+				<input type="submit" name="action" value="send"/>
+			</p>
+		</form>
+		
+	{% else %}
+	
+		<form method="post" class="uniForm" action="">
+			{{ form|as_uni_form }}
+			
+			<input type="submit" value="preview"/>
+		</form>
+	{% endif %}
+	
+	
+{% endblock %}	
+
+{% block extra_body %}
+	{{ block.super }}
+	{% include "tinymce.html" %}
+{% endblock %}
