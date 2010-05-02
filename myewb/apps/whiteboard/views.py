@@ -7,6 +7,8 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.utils.translation import ugettext_lazy as _
 from django.views.generic.simple import redirect_to
 
+from attachments.forms import AttachmentForm
+from attachments.models import Attachment
 from base_groups.decorators import group_membership_required, visibility_required
 from whiteboard.models import Whiteboard
 from whiteboard.forms import WhiteboardForm
@@ -50,10 +52,23 @@ def edit_article(request, title,
         except ArticleClass.DoesNotExist:
             article = None
 
+        attach_forms = []
         if request.method == 'POST':
-            form = ArticleFormClass(request.POST, instance=article)
+            try:
+                attach_count = int(request.POST.get("attach_count", 0))
+            except ValueError:
+                attach_count = 0
 
-            if form.is_valid():
+            form = ArticleFormClass(request.POST, instance=article)
+            attach_forms = [AttachmentForm(request.POST, request.FILES, prefix=str(x), instance=Attachment()) for x in range(0,attach_count)]
+            
+            # do not take blank attachment forms into account
+            for af in attach_forms:
+                if not af.is_valid() and not af['attachment_file'].data:
+                    attach_forms.remove(af)
+                    attach_count = attach_count - 1
+
+            if form.is_valid() and all([af.is_valid() for af in attach_forms]):
 
                 if request.user.is_authenticated():
                     form.editor = request.user
@@ -67,6 +82,9 @@ def edit_article(request, title,
                     form.group = group
 
                 new_article, changeset = form.save()
+
+                for af in attach_forms:
+                    attachment = af.save(request, new_article)
             
                 # FIXME: is there a more efficient way of finding the parent
                 # than running these count() queries? 
@@ -79,19 +97,42 @@ def edit_article(request, title,
                     
                 return redirect_to(request, url)
 
-    # delegate everything back to the main wiki app
-    return wiki_edit_article(request, title,
-                             group_slug, bridge,
-                             article_qs,
-                             ArticleClass, # to get the DoesNotExist exception
-                             ArticleFormClass,
-                             template_name,
-                             template_dir,
-                             extra_context,
-                             check_membership,
-                             is_member,
-                             is_private,
-                             *args, **kw)
+        elif request.method == 'GET':
+            user_ip = get_real_ip(request)
+    
+            lock = cache.get(title, None)
+            if lock is None:
+                lock = ArticleEditLock(title, request)
+            lock.create_message(request)
+    
+            initial = {'user_ip': user_ip}
+            if group_slug is not None:
+                # @@@ wikiapp currently handles the group filtering, but we will
+                # eventually want to handle that via the bridge.
+                initial.update({'content_type': get_ct(group).id,
+                                'object_id': group.id})
+    
+            if article is None:
+                initial.update({'title': title,
+                                'action': 'create'})
+                form = ArticleFormClass(initial=initial)
+            else:
+                initial['action'] = 'edit'
+                form = ArticleFormClass(instance=article,
+                                        initial=initial)
+                
+    
+        template_params = {'form': form}
+        template_params['attach_forms'] = attach_forms
+    
+        template_params['group'] = group
+        if extra_context is not None:
+            template_params.update(extra_context)
+    
+        return render_to_response(os.path.join(template_dir, template_name),
+                                  template_params,
+                                  context_instance=RequestContext(request))
+
 
 #@group_membership_required
 def revert_to_revision(request, title,

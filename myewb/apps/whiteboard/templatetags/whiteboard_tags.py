@@ -12,7 +12,8 @@ def show_whiteboard(whiteboard, group, member):
         "wb": whiteboard,
         "group": group,
         "member": member,
-        "force": False
+        "force": False,
+        "STATIC_URL": settings.STATIC_URL
     }
 
 @register.inclusion_tag("whiteboard/whiteboard.html")
@@ -24,6 +25,7 @@ def show_whiteboard_force(whiteboard, group, member):
         "wb": whiteboard,
         "group": group,
         "member": member,
-        "force": True
+        "force": True,
+        "STATIC_URL": settings.STATIC_URL
     }
 

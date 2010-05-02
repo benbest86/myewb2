@@ -9,12 +9,22 @@
 {% block body %}
 	<h1>{% trans "Edit whiteboard" %}</h1>
 
-	<form class="uniForm" id="edit-member" method="POST" action="">
+	<form class="uniForm" id="edit-member" method="POST" enctype="multipart/form-data" action="">
 		<fieldset class="inlineLabels">
 			{{ form|as_uni_form }}
-			<div class="form_block">
+            <div id="attachFiles">
+                {% for af in attach_forms %}
+                    {{ af|as_uni_form }}
+                {% endfor %}
+                <div id="attachLink">
+                    <a class="getAttachForm" href="{% url topic_get_attachment_form %}">{% trans "Attach a file to this post" %}</a>
+                </div>
+            </div>
+
+			<p class="form_block">
+                <input type="hidden" id="attachCount" name="attach_count" value="{{ attach_count }}">
 				<input type="submit" value="{% trans "save" %}"/>
-			</div>
+			</p>
 		</fieldset>
 	</form>
 
@@ -28,4 +38,5 @@
 {% block extra_body %}
 	{{ block.super }}
 	{% include "tinymce.html" %}
+    {% include "comments-js.html" %}
 {% endblock %}

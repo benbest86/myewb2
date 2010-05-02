@@ -1,6 +1,8 @@
 {% load i18n %}
 {% load group_tags %}
-
+{% load attachments_tags %}
+{% load icon_tags %}
+{% load filesize_tags %}
 
 {% if not wb.content and not force %}
 
@@ -16,6 +18,21 @@
 		{# we ignore the markup field, and assume it's html, since we've hacked it up... #}
 		{{ wb.content|safe }}
 
+        {% get_attachments_for wb as "attachments" %}
+        {% if attachments.count %}
+        	<hr/>
+            attached files:
+            <ul style="margin-top: 0px; margin-bottom: 5px; margin-left: 25px;">
+                {% for att in attachments %}
+                    <li class="attachmentItem">
+                        {% icon_for_filename att.filename %} <a href="{{ STATIC_URL }}{{ att.attachment_file.name }}">{{ att.filename }}</a>
+                        {% image_preview att.attachment_file.name att.filename wb.pk %} 
+                        {% filesize_for_filename att.attachment_file.name %}
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
 		{% if member %}
 			<br/><br/>
 			<a href="{% groupurl wiki_edit group title=wb.title %}">{% trans "Edit this article" %}</a>
@@ -28,3 +45,11 @@
 	<br/>
 
 {% endif %}
+
+<script type="text/javascript" src="{{STATIC_URL}}js/colorbox.js"></script>
+<link type="text/css" href="{{STATIC_URL}}css/colorbox.css" rel="stylesheet" />
+<script type="text/javascript">
+	$(document).ready(function() {
+		$('.preview-img').colorbox({transition: "elastic", width:"80%", height:"80%"});
+	});
+</script>
