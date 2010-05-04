@@ -89,7 +89,9 @@ div.login a.username {
 }
 
 div.login a.signout {
-    padding-left: 2em;
+display:block;
+margin-top:4px;
+padding-left:2em;
 }
 
 div#body {

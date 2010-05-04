@@ -23,7 +23,7 @@
 		Signed in as <a class="username" href="{% url profile_detail user %}"><strong>{{ user.visible_name }}</strong></a>.
 		<br/>
 		<a href="{% url messages_inbox %}">{{ messages_inbox_count }} unread messages</a>
-		<br/><br/>
+		
 		<a class="signout" href="{% url acct_logout %}">{% trans "sign out" %}</a>
     {% else %}
         <a href="{% url acct_login %}">{% trans "Login" %}</a>
