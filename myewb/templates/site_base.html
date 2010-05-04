@@ -44,7 +44,7 @@
         {% if user.is_authenticated %}
             <li><a id="tab_profile" class="green" href="{% url profile_detail user %}">{% trans "Profile" %}</a></li>
         {% else %}
-            <li><a id="tab_profile" class="green" href="{% url profile_list %}">{% trans "Sign Up" %}</a></li>
+            <li><a id="tab_profile" class="green" href="{% url acct_signup %}">{% trans "Sign Up" %}</a></li>
         {% endif %}
         <li><a id="tab_networks" class="yellow" href="{% url networks_index %}">{% trans "Chapters" %}</a></li>
         <li><a id="tab_communities" class="orange" href="{% url communities_index %}">{% trans "Mailing Lists" %}</a></li>
