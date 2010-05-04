@@ -133,7 +133,7 @@ ul.tabs li {
 }
 
 /* increase padding by 0.1em */
-ul.tabs li a:hover {
+ul.tabs li a.current, ul.tabs li a:hover {
     padding-top: 0.3em;
     margin-top: 0em;
 }
@@ -392,3 +392,11 @@ input[type="reset"]
         overflow: visible;
 }
 
+
+.inlineLabels input[type="text"] {
+padding: 4px;
+}
+/*
+Adding padding just for main content section forms
+as opposed to say the search boxes
+*/
