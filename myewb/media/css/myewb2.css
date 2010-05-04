@@ -403,7 +403,7 @@ input[type="reset"]
 }
 
 
-.inlineLabels input[type="text"] {
+.inlineLabels input[type="text"], .inlineLabels input[type="password"] {
 padding: 4px;
 }
 /*
