@@ -218,6 +218,14 @@ ul.subnav li a:hover {
     text-decoration: underline;
 }
 
+
+div#subnavsearchbox {
+float: right; 
+width: 218px; 
+padding: 0.2em 1em 0.2em 0pt;
+}
+
+
 ul.legal {
     background: #E8E8E8;
     padding: 0.5em 0;
