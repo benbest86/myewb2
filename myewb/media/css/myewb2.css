@@ -408,3 +408,12 @@ padding: 4px;
 Adding padding just for main content section forms
 as opposed to say the search boxes
 */
+
+
+ul.postlinklist {
+list-style: square;
+padding:0;
+padding-left: 1.4em;
+margin:0;
+
+}
