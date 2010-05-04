@@ -129,6 +129,22 @@ ul.tabs li {
     list-style: none;
     display: inline-block;
     text-align: center;
+
+}
+
+/* increase padding by 0.1em */
+ul.tabs li a:hover {
+    padding-top: 0.3em;
+    margin-top: 0em;
+}
+
+ul.tabs li a { 
+    color: white;
+    text-decoration: none;
+    
+    display: inline-block;
+    text-align: center;
+    
     padding: 0.2em 1em;
     margin: 0.1em 0.5em 0 0.5em;
     width: 8em;
@@ -140,17 +156,8 @@ ul.tabs li {
     font-size: 0.8em;
     height: 1.2em;
     border-bottom: 0;
-}
-
-/* increase padding by 0.1em */
-ul.tabs li:hover {
-    padding-top: 0.3em;
-    margin-top: 0em;
-}
-
-ul.tabs li a { 
-    color: white;
-    text-decoration: none;
+    
+    
 }
 
 
@@ -174,7 +181,7 @@ ul.tabs .purple { border: 1px solid #3F0074; border-bottom: 0; }
     -moz-border-radius-topright: 0.8em;
     -moz-border-radius-topleft: 0.8em;
     
-    padding: 0.6em 1.2em 0.2em;
+    /* padding: 0.6em 1.2em 0.2em; */
     margin-top: 0;
 }
 
