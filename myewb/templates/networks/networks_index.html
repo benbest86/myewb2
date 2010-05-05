@@ -15,11 +15,7 @@
 {% block body %}
     <h1>{% trans "Chapters" %}</h1>
     
-    {% if user.is_authenticated %}
-		{% if perms.chapters.create %}
-        	<p><a href="{% url new_network %}">Create</a> a network</p>
-		{% endif %}
-    {% else %}
+    {% if not user.is_authenticated %}
         {% url acct_signup as signup_url %}
         {% url acct_login as login_url %}
         <p>{% blocktrans %}<a href="{{ signup_url }}">Sign up</a> and <a href="{{ login_url }}">log in </a> to join a network.{% endblocktrans %}</p>
@@ -178,5 +174,17 @@
 	<a href="#NL">Newfoundland and Labrador</a>
 	<a href="#other">Others</a>
 </div>
+
+
+    {% if user.is_authenticated and perms.chapters.create %}
+<div class="toolbarheader bkgd">{% trans "New chapter" %}</div>
+		<div class="toolbarcontent">
+		You have permission to create chapters.
+        <p><a href="{% url new_network %}">Get rockin'!</a></p>
+</div>
+    {% endif %}
+
+
+
 
 {% endblock %}
