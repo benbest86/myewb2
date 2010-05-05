@@ -15,9 +15,8 @@
 {% block body %}
     <h1>{% trans "Mailing Lists" %}</h1>
     
-    {% if user.is_authenticated %}
-        <p><a href="{% url new_community %}">Create</a> a list</p>
-    {% else %}
+    {# moving the create a community link to the sidebar, but leaving the login prompts here for visibility #}
+    {% if not user.is_authenticated %}
         {% url acct_signup as signup_url %}
         {% url acct_login as login_url %}
         <p>{% blocktrans %}<a href="{{ signup_url }}">Sign up</a> and <a href="{{ login_url }}">log in </a> to join a community.{% endblocktrans %}</p>
@@ -89,7 +88,13 @@
         
 </div>
 
-
+    {% if user.is_authenticated %}
+<div class="toolbarheader bkgd">{% trans "Create" %}</div>
+		<div class="toolbarcontent">
+		You can create new communities and invite members to contribute.
+        <p><a href="{% url new_community %}">Create a new community</a></p>
+</div>
+    {% endif %}
 
     {% if not user.is_authenticated %}
 <div class="toolbarheader bkgd">{% trans "About EWB Communities" %}</div>
