@@ -2,8 +2,8 @@
 {% load extra_tagging_tags %}
 
 <dt><a href="{{ network.get_absolute_url }}">{{ network.name }}</a></dt>
-<dd><a href="{{ network.get_absolute_url }}">{% if network.chapter_info.city %}{{ network.chapter_info.city }}, {{ network.chapter_info.province }}{%endif%}
-<br/>More info &raquo;</a>
+<dd><a href="{{ network.get_absolute_url }}">{% if network.chapter_info.city %}{{ network.chapter_info.city }}, {{ network.chapter_info.province }}<br/>{%endif%}
+More info &raquo;</a>
 
 <br/><a class="networks-chaptersite-link" href="http://{{ network.slug }}.ewb.ca/">http://{{ network.slug }}.ewb.ca/</a>   {# @@@ make sure each chapter has a website #}
 

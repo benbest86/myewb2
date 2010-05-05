@@ -30,22 +30,100 @@
     {#{% autopaginate groups 10 %}#}
     {% if groups %}
     	
-	    {% for p, pname in provinces %}
-	    	<h2>{{ pname }}</h2>
-	    	
-		        {% for group in groups %}
-		        	{% ifequal group.chapter_info.province p %}
+    	{# Hand coded for that premium taste! #}
+    	
+    	<h2>British Columbia</h2>
+        {% for group in groups %}
+        	{% ifequal group.chapter_info.province "BC" %}
 
-				        <dl>
-				            {% show_network group %}
-				        </dl>
-			        {% endifequal %}
-		        {% endfor %}
-	    	
-	    {% endfor %}
-    
-		{# @@@ this ignores every group that doesn't have a province equal to one of the ones listed. is this an issue? #}
+		        <dl>
+		            {% show_network group %}
+		        </dl>
+	        {% endifequal %}
+        {% endfor %}
 
+    	<h2>Alberta</h2>
+        {% for group in groups %}
+        	{% ifequal group.chapter_info.province "AB" %}
+
+		        <dl>
+		            {% show_network group %}
+		        </dl>
+	        {% endifequal %}
+        {% endfor %}
+    	<h2>Saskatchewan</h2>
+        {% for group in groups %}
+        	{% ifequal group.chapter_info.province "SK" %}
+
+		        <dl>
+		            {% show_network group %}
+		        </dl>
+	        {% endifequal %}
+        {% endfor %}
+    	<h2>Manitoba</h2>
+        {% for group in groups %}
+        	{% ifequal group.chapter_info.province "MB" %}
+
+		        <dl>
+		            {% show_network group %}
+		        </dl>
+	        {% endifequal %}
+        {% endfor %}
+    	<h2>Ontario</h2>
+        {% for group in groups %}
+        	{% ifequal group.chapter_info.province "ON" %}
+
+		        <dl>
+		            {% show_network group %}
+		        </dl>
+	        {% endifequal %}
+        {% endfor %}
+    	<h2>Qu&eacute;bec</h2>
+        {% for group in groups %}
+        	{% ifequal group.chapter_info.province "QC" %}
+
+		        <dl>
+		            {% show_network group %}
+		        </dl>
+	        {% endifequal %}
+        {% endfor %}
+    	<h2>New Brunswick</h2>
+        {% for group in groups %}
+        	{% ifequal group.chapter_info.province "NB" %}
+
+		        <dl>
+		            {% show_network group %}
+		        </dl>
+	        {% endifequal %}
+        {% endfor %}
+    	<h2>Nova Scotia</h2>
+        {% for group in groups %}
+        	{% ifequal group.chapter_info.province "NS" %}
+
+		        <dl>
+		            {% show_network group %}
+		        </dl>
+	        {% endifequal %}
+        {% endfor %}
+    	<h2>Newfoundland and Labrador</h2>
+        {% for group in groups %}
+        	{% ifequal group.chapter_info.province "NL" %}
+
+		        <dl>
+		            {% show_network group %}
+		        </dl>
+	        {% endifequal %}
+        {% endfor %}
+
+    	<h2>Other</h2>
+        {% for group in groups %}
+        	{% if not group.chapter_info.province %}
+
+		        <dl>
+		            {% show_network group %}
+		        </dl>
+	        {% endif %}
+        {% endfor %}
 
         {% paginate %}
     {% endif %}
