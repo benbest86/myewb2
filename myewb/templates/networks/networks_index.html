@@ -34,6 +34,7 @@
     
     <div class="chapterlist">
     
+    
     	<h2 id="BC">British Columbia</h2>
         {% for group in groups %}
         	{% ifequal group.chapter_info.province "BC" %}
@@ -142,12 +143,29 @@
 {% endblock %}
 
 {% block toolbar_right %}
+
+
+    {% if user.is_authenticated and user.get_networks %}
+<div class="toolbarheader bkgd">{% trans "My Chapter" %}</div>
+		<div class="toolbarcontent">
+	    {% for group in user.get_networks %}
+
+			 <a href="{% url group_detail group.slug %}">{{ group.name }}</a><br/>
+
+    	{% endfor %}
+		</div>
+	{% endif %}
+
+
+    {% if not user.is_authenticated %}
 <div class="toolbarheader bkgd">{% trans "About EWB Chapters" %}</div>
 <div class="toolbarcontent">
 	You can join EWB chapters across the country to get involved in our work in Canada.
 </div>
+{% endif %}
 
-<div class="toolbarheader bkgd">{% trans "By Province" %}</div>
+
+<div class="toolbarheader bkgd">{% trans "Chapters by Province" %}</div>
 <div class="toolbarcontent provincelinklist">
 	<a href="#BC">British Columbia</a>
 	<a href="#AB">Alberta</a>
