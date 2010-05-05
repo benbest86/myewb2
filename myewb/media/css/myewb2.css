@@ -419,3 +419,39 @@ padding-left: 1.4em;
 margin:0;
 
 }
+
+
+
+/*
+Styles for the chapter list page
+possibly also to be used by the mailinglist/communities page
+*/
+div.chapterlist h2 {
+clear:both;
+}
+div.chapterlist dl {
+border:1px solid #ddd;
+float:left;
+margin-right:10px;
+padding:10px;
+width:46%; /* or, fixed at say 300px? */
+}
+
+div.chapterlist dt {
+font-size: 1.3em;
+font-weight: bold;
+}
+div.chapterlist dt a {
+}
+
+div.chapterlist dd {
+margin:0;
+}
+
+div.chapterlist dd a {
+}
+
+div.chapterlist dd a.networks-chaptersite-link {
+display:inline-block;
+margin-top:7px;
+}

@@ -31,7 +31,9 @@
     {% if groups %}
     	
     	{# Hand coded for that premium taste! #}
-    	
+    
+    <div class="chapterlist">
+    
     	<h2>British Columbia</h2>
         {% for group in groups %}
         	{% ifequal group.chapter_info.province "BC" %}
@@ -124,8 +126,10 @@
 		        </dl>
 	        {% endif %}
         {% endfor %}
+        
+	</div>
 
-        {% paginate %}
+        {#{% paginate %}#}
     {% endif %}
     
 {% endblock %}
