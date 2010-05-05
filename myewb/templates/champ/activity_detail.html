@@ -12,9 +12,11 @@
 	This activity has been confirmed.
 {% else %}
 	{% if activity.can_be_confirmed %}
-		<a href="{% url champ_confirm_activity group.slug activity.pk %}">This activity can be confirmed</a>
+		<a href="{% url champ_confirm_activity group.slug activity.pk %}">
+			<span style="font-size: 16px; background-color: yellow; color: green;">This activity can be confirmed</span>
+		</a>
 	{% else %}
-		Some values are missing - cannot confirm this activity yet
+		<span style="color: red;">Some values are missing - cannot confirm this activity yet</span>
 	{% endif %}
 {% endif %}
 </p>
