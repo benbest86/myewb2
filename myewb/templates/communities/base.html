@@ -9,7 +9,7 @@
         {% if group %}
         <li><a href="{% url community_detail group.slug %}">{{ group.name }}</a></li>
         {% endif %}
-        <li><a href="{% url communities_index %}">{% trans "All Mailing Lists" %}</a></li>
+        <li><a href="{% url communities_index %}">{% trans "All Communities" %}</a></li>
     </ul>
 {% endblock %}
 
