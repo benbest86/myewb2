@@ -34,7 +34,7 @@
     
     <div class="chapterlist">
     
-    	<h2>British Columbia</h2>
+    	<h2 id="BC">British Columbia</h2>
         {% for group in groups %}
         	{% ifequal group.chapter_info.province "BC" %}
 
@@ -44,7 +44,7 @@
 	        {% endifequal %}
         {% endfor %}
 
-    	<h2>Alberta</h2>
+    	<h2 id="AB">Alberta</h2>
         {% for group in groups %}
         	{% ifequal group.chapter_info.province "AB" %}
 
@@ -53,7 +53,8 @@
 		        </dl>
 	        {% endifequal %}
         {% endfor %}
-    	<h2>Saskatchewan</h2>
+
+    	<h2 id="SK">Saskatchewan</h2>
         {% for group in groups %}
         	{% ifequal group.chapter_info.province "SK" %}
 
@@ -62,7 +63,8 @@
 		        </dl>
 	        {% endifequal %}
         {% endfor %}
-    	<h2>Manitoba</h2>
+
+    	<h2 id="MB">Manitoba</h2>
         {% for group in groups %}
         	{% ifequal group.chapter_info.province "MB" %}
 
@@ -71,7 +73,8 @@
 		        </dl>
 	        {% endifequal %}
         {% endfor %}
-    	<h2>Ontario</h2>
+
+    	<h2 id="ON">Ontario</h2>
         {% for group in groups %}
         	{% ifequal group.chapter_info.province "ON" %}
 
@@ -80,7 +83,8 @@
 		        </dl>
 	        {% endifequal %}
         {% endfor %}
-    	<h2>Qu&eacute;bec</h2>
+
+    	<h2 id="QC">Qu&eacute;bec</h2>
         {% for group in groups %}
         	{% ifequal group.chapter_info.province "QC" %}
 
@@ -89,7 +93,8 @@
 		        </dl>
 	        {% endifequal %}
         {% endfor %}
-    	<h2>New Brunswick</h2>
+
+    	<h2 id="NB">New Brunswick</h2>
         {% for group in groups %}
         	{% ifequal group.chapter_info.province "NB" %}
 
@@ -98,7 +103,8 @@
 		        </dl>
 	        {% endifequal %}
         {% endfor %}
-    	<h2>Nova Scotia</h2>
+
+    	<h2 id="NS">Nova Scotia</h2>
         {% for group in groups %}
         	{% ifequal group.chapter_info.province "NS" %}
 
@@ -107,7 +113,8 @@
 		        </dl>
 	        {% endifequal %}
         {% endfor %}
-    	<h2>Newfoundland and Labrador</h2>
+
+    	<h2 id="NL">Newfoundland and Labrador</h2>
         {% for group in groups %}
         	{% ifequal group.chapter_info.province "NL" %}
 
@@ -117,7 +124,7 @@
 	        {% endifequal %}
         {% endfor %}
 
-    	<h2>Other</h2>
+    	<h2 id="other">Other</h2>
         {% for group in groups %}
         	{% if not group.chapter_info.province %}
 
@@ -132,4 +139,26 @@
         {#{% paginate %}#}
     {% endif %}
     
+{% endblock %}
+
+{% block toolbar_right %}
+<div class="toolbarheader bkgd">{% trans "About EWB Chapters" %}</div>
+<div class="toolbarcontent">
+	You can join EWB chapters across the country to get involved in our work in Canada.
+</div>
+
+<div class="toolbarheader bkgd">{% trans "By Province" %}</div>
+<div class="toolbarcontent provincelinklist">
+	<a href="#BC">British Columbia</a>
+	<a href="#AB">Alberta</a>
+	<a href="#SK">Saskatchewan</a>
+	<a href="#MB">Manitoba</a>
+	<a href="#ON">Ontario</a>
+	<a href="#QC">Qu&eacute;bec</a>
+	<a href="#NB">New Brunswick</a>
+	<a href="#NS">Nova Scotia</a>
+	<a href="#NL">Newfoundland and Labrador</a>
+	<a href="#other">Others</a>
+</div>
+
 {% endblock %}
