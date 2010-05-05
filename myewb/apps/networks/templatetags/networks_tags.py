@@ -8,10 +8,16 @@ Last modified on 2009-07-29
 @author Joshua Gorner
 """
 
+from datetime import date
 from django import template
+from django.core.urlresolvers import reverse
 
 register = template.Library()
 
 @register.inclusion_tag("networks/network_item.html", takes_context=True)
 def show_network(context, network):
     return {'network': network, 'request': context['request']}
+
+@register.simple_tag
+def link_to_current_champ():
+    return reverse('champ_dashboard', kwargs={'year': date.today().year})
