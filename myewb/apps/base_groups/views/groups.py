@@ -16,6 +16,7 @@ from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.utils.datastructures import SortedDict
+import pycountry
 
 from base_groups.models import BaseGroup
 from base_groups.helpers import group_search_filter, get_counts, enforce_visibility 
@@ -61,6 +62,13 @@ def groups_index(request, model=None, member_model=None, form_class=None,
         
     # add some meta-data
     groups = get_counts(groups, model)
+    
+    # and throw in a province list (useful for the chapter listing)
+    provinces = []
+    provincelist = list(pycountry.subdivisions.get(country_code='CA'))
+    for p in provincelist:
+        provinces.append((p.code.split('-')[1], p.name))
+    provinces = sorted(provinces)
 
     # return listing
     return render_to_response(
@@ -68,6 +76,7 @@ def groups_index(request, model=None, member_model=None, form_class=None,
         {
             'groups': groups,
             'search_terms': search_terms,
+            'provinces': provinces,
         },
         context_instance=RequestContext(request)
     )
