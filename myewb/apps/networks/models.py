@@ -36,7 +36,17 @@ class Network(BaseGroup):
         
     def is_chapter(self):
         return hasattr(self, "chapter_info")
-        
+
+    def user_is_president(self, user):
+        if self.is_chapter():
+            if self.user_is_admin(user):
+                stupresidents = BaseGroup.objects.get(slug='presidents')
+                propresidents = BaseGroup.objects.get(slug='prochapterpres')
+                
+                if stupresidents.user_is_member(user) or propresidents.user_is_member(user):
+                    return True
+        return False
+    
     class Meta:
         verbose_name_plural = "networks"
     

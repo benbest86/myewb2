@@ -31,11 +31,13 @@
                 <a href="{% url champ_confirmed_activities group.slug %}">list confirmed</a>
                 </p>
                 
-                <p>
-                Reflection journal:<br/>
-                <a href="{% url champ_journal_new group.slug %}">write in journal</a><br/>
-                <a href="{% url champ_journal_list group.slug %}">browse journal</a>
-                </p>
+                {% if is_president %}
+                	<p>
+                	Reflection journal:<br/>
+                	<a href="{% url champ_journal_new group.slug %}">write in journal</a><br/>
+                	<a href="{% url champ_journal_list group.slug %}">browse journal</a>
+                	</p>
+                {% endif %}
             {% endif %}
             
             {% if perms.champ %}

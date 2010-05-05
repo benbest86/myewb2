@@ -23,6 +23,7 @@ from django.db.models import Q
 from django.template import RequestContext
 
 from base_groups.decorators import group_admin_required
+from networks.decorators import chapter_president_required
 from networks.models import Network
 from champ.models import *
 from champ.forms import *
@@ -160,8 +161,8 @@ def dashboard(request, year=None, month=None, term=None,
     if grp:
         context['group'] = grp
     
-        if grp.user_is_admin(request.user):
-            context['is_group_admin'] = True
+        context['is_group_admin'] = grp.user_is_admin(request.user)
+        context['is_president'] = grp.user_is_president(request.user)
             
         if year:
             yp = YearPlan.objects.filter(group=grp, year=year)
@@ -256,7 +257,9 @@ def new_activity(request, group_slug):
                                'metric_forms': metric_forms,
                                'showfields': showfields,
                                'edit': False,
-                               'is_group_admin': True},
+                               'is_group_admin': True,
+                               'is_president': group.user_is_president(request.user)
+                               },
                               context_instance=RequestContext(request))
     
 @group_admin_required()
@@ -271,7 +274,9 @@ def confirmed(request, group_slug):
                               {'confirmed': True,
                                'activities': activities,
                                'group': group,
-                               'is_group_admin': True},
+                               'is_group_admin': True,
+                               'is_president': group.user_is_president(request.user),
+                               },
                                context_instance=RequestContext(request))
     
 @group_admin_required()
@@ -286,7 +291,9 @@ def unconfirmed(request, group_slug):
                               {'confirmed': False,
                                'activities': activities,
                                'group': group,
-                               'is_group_admin': True},
+                               'is_group_admin': True,
+                               'is_president': group.user_is_president(request.user)
+                               },
                                context_instance=RequestContext(request))
     
 @group_admin_required()
@@ -308,7 +315,9 @@ def activity_detail(request, group_slug, activity_id):
                                'group': group,
                                'metric_names': ALLMETRICS,
                                'is_admin': group.user_is_admin(request.user),
-                               'is_group_admin': True},
+                               'is_group_admin': True,
+                               'is_president': group.user_is_president(request.user)
+                               },
                                context_instance=RequestContext(request))
     
 @group_admin_required()
@@ -339,54 +348,37 @@ def activity_edit(request, group_slug, activity_id):
         # then populate the ones we're using for this activity
         metrics = activity.get_metrics()
         for m in metrics:
-            print "checking ", m
             if m.metricname in request.POST:
-                print "yep, in post"
                 metric_forms[m.metricname] = METRICFORMS[m.metricname](request.POST,
                                                                        instance=m,
                                                                        prefix=m.metricname)
                 showfields[m.metricname] = True
                 forms_valid = forms_valid and metric_forms[m.metricname].is_valid()
-            else:
-                print "no dice on", m
 
         for m, mname in ALLMETRICS:
-            print "now trying allmetrics ", m
             if m in request.POST and m not in metric_forms:
-                print "in post!", m
                 metric_forms[m] = METRICFORMS[m](request.POST,
                                                  prefix=m)
                 forms_valid = forms_valid and metric_forms[m].is_valid()
                 showfields[m] = True
             elif m not in metric_forms:
-                print "not in post, and not already processed", m
                 metric_forms[m] = METRICFORMS[m](prefix=m)
                 showfields[m] = False
-            else:
-                print "dunno whats up with ", m
                 
         if forms_valid:
-            print "valid"
             activity = champ_form.save()
             saved_fields = {}
             for m in metrics:
                 if m.metricname in request.POST:
-                    print "updating", m.metricname
                     metric_forms[m.metricname].save()
                     saved_fields[m.metricname] = True
                 else:
-                    print "deleting ", m.metricname
                     m.delete()
             for m, mname in ALLMETRICS:
                 if m in request.POST and m not in saved_fields:
-                    print "new metric added", m
                     metric = metric_forms[m].save(commit=False)
                     metric.activity = activity
                     metric.save()
-                elif m in request.POST:
-                    print "in post and already saved", m
-                else:
-                    print "ignoring", m
             
             request.user.message_set.create(message="Activity updated.")
             return HttpResponseRedirect(reverse('champ_activity', kwargs={'group_slug': group_slug, 'activity_id': activity_id}))
@@ -417,7 +409,9 @@ def activity_edit(request, group_slug, activity_id):
                                'showfields': showfields,
                                'edit': True,
                                'is_admin': group.user_is_admin(request.user),
-                               'is_group_admin': True},
+                               'is_group_admin': True,
+                               'is_president': group.user_is_president(request.user)
+                               },
                               context_instance=RequestContext(request))
 
 @group_admin_required()
@@ -465,10 +459,11 @@ def activity_delete(request, group_slug, activity_id):
         return render_to_response('champ/delete.html',
                                   {'group': group,
                                    'activity': activity,
-                                   'is_group_admin': True},
+                                   'is_group_admin': True,
+                                   'is_president': group.user_is_president(request.user)},
                                   context_instance=RequestContext(request))
 
-@group_admin_required()
+@chapter_president_required()
 def journal_list(request, group_slug):
     group = get_object_or_404(Network, slug=group_slug)
     
@@ -482,10 +477,12 @@ def journal_list(request, group_slug):
     return render_to_response('champ/journal_list.html',
                               {'group': group,
                                'journals': journals,
-                               'is_group_admin': True},
+                               'is_group_admin': True,
+                               'is_president': True,
+                               },
                               context_instance=RequestContext(request))
 
-@group_admin_required()
+@chapter_president_required()
 def journal_new(request, group_slug):
     group = get_object_or_404(Network, slug=group_slug)
     
@@ -507,10 +504,12 @@ def journal_new(request, group_slug):
     return render_to_response('champ/journal_new.html',
                               {'group': group,
                                'form': form,
-                               'is_group_admin': True},
+                               'is_group_admin': True,
+                               'is_president': True
+                               },
                                context_instance=RequestContext(request))
 
-@group_admin_required()
+@chapter_president_required()
 def journal_detail(request, group_slug, journal_id):
     group = get_object_or_404(Network, slug=group_slug)
     journal = get_object_or_404(Journal, pk=journal_id)
@@ -521,7 +520,9 @@ def journal_detail(request, group_slug, journal_id):
     return render_to_response('champ/journal_detail.html',
                               {'journal': journal,
                                'group': group,
-                               'is_group_admin': True},
+                               'is_group_admin': True,
+                               'is_president': True,
+                               },
                                context_instance=RequestContext(request))
 
 @group_admin_required()
@@ -551,7 +552,9 @@ def yearplan(request, group_slug, year=None):
                               {'group': group,
                                'form': form,
                                'year': year,
-                               'is_group_admin': True},
+                               'is_group_admin': True,
+                               'is_president': group.user_is_president(request.user)
+                               },
                                context_instance=RequestContext(request))
 
 @group_admin_required()
