@@ -19,7 +19,9 @@
 		<script type="text/javascript">
         $(document).ready(function() {
     		  $('.toolbarheader').click(function(){	
-                $(this).next().slideToggle()
+                $(this).next().slideToggle();
+                $(this).toggleClass('hidebox');
+                // indicates that the box *below* is hidden
           	});
 			
 
