@@ -40,7 +40,7 @@ class group_membership_required(object):
             user = request.user            
             group_slug = kwargs.get('group_slug', None) or (len(args) > 0 and args[0])
             group = get_object_or_404(BaseGroup, slug=group_slug)
-            if group.user_is_member(user, admin_override=True):
+            if group_slug == 'ewb' or group.user_is_member(user, admin_override=True):
                 return f(request, *args, **kwargs)
             else:
                 # deny access
@@ -84,7 +84,7 @@ class visibility_required(object):
             group_slug = kwargs.get('group_slug', None) or (len(args) > 0 and args[0])
 
             group = get_object_or_404(BaseGroup, slug=group_slug)
-            if group.is_visible(user):
+            if group_slug == 'ewb' or group.is_visible(user):
                 return f(request, *args, **kwargs)
             else:
                 # deny access

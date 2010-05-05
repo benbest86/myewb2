@@ -69,7 +69,7 @@ class BaseGroup(Group):
         visible = False
         
         # public groups are always visible
-        if self.visibility == 'E':
+        if self.visibility == 'E' or self.slug == 'ewb':
             visible = True
             
         elif user.is_authenticated():
@@ -97,6 +97,8 @@ class BaseGroup(Group):
     # setting admin_override = True means that admins will be considered group members
     def user_is_member(self, user, admin_override = False):
         if admin_override and user.has_module_perms("base_groups"):
+            return True
+        if self.slug == 'ewb':
             return True
         return user.is_authenticated() and (self.members.filter(user=user).count() > 0)
         
@@ -278,7 +280,7 @@ class LogisticalGroup(BaseGroup):
         self.invite_only = True
         self.parent = None
         return super(LogisticalGroup, self).save(force_insert, force_update)
-    
+
 class BaseGroupMember(models.Model):
     is_admin = models.BooleanField(_('Exec / Leader'), default=False)
     admin_title = models.CharField(_('Title'), max_length=500, null=True, blank=True)
