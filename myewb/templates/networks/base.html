@@ -27,7 +27,7 @@
 
 {% block toolbar_left %}
     {% if group and group.is_chapter %}
-        <div class="toolbarheader bkgd">{% trans "Chapter Info" %}</div>
+        <div class="toolbarheader bkgd" id="box-chapterinfo">{% trans "Chapter Info" %}</div>
         <div class="toolbarcontent">
             link to photo gallery, etc?
         </div>
@@ -37,7 +37,7 @@
 
     {% if group %}
 	    {% if is_admin %}
-            <div class="toolbarheader bkgd">{% trans "Admin Options" %}</div>
+            <div class="toolbarheader bkgd" id="box-admin-options">{% trans "Admin Options" %}</div>
             <div class="toolbarcontent">
 		        <a href="{% url network_new_member group.slug %}">{% trans "Add users" %}</a><br/>
 		        <a href="{% url network_invite_member group.slug %}">{% trans "Invite users" %}</a><br/>
@@ -63,7 +63,7 @@
 
 {% block toolbar_right %}
     {% if group and group.is_chapter %}
-        <div class="toolbarheader bkgd">{% trans "Chapter Executive" %}</div>
+        <div class="toolbarheader bkgd" id="box-chapter-executive">{% trans "Chapter Executive" %}</div>
         <div class="toolbarcontent">
             {% get_admins group as admins %}
             {% for admin in admins %}
