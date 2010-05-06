@@ -11,7 +11,9 @@
 {% block subnav %}
     <ul class="subnav">
         {% if group %}
-            <li><a href="{% url network_detail group.slug %}">{{ group.name }}</a></li>
+            {% ifnotequal group.slug "natloffice" %}
+                <li><a href="{% url network_detail group.slug %}">{{ group.name }}</a></li>
+            {% endifnotequal %}
         {% endif %}
         <li><a href="{% url networks_index %}">{% trans "All Chapters" %}</a></li> 
         {#<li><a href="{% url chapters_index %}">{% trans "All Chapters" %}</a></li>#}
