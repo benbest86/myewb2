@@ -9,7 +9,7 @@
         {% if group %}
         <li><a href="{% url community_detail group.slug %}">{{ group.name }}</a></li>
         {% endif %}
-        <li><a href="{% url communities_index %}">{% trans "All Mailing Lists" %}</a></li>
+        <li><a href="{% url communities_index %}">{% trans "All Communities" %}</a></li>
     </ul>
 {% endblock %}
 
@@ -18,7 +18,7 @@
 
     {% if group %}
 	    {% if is_admin %}
-            <div class="toolbarheader bkgd">{% trans "Admin Options" %}</div>
+            <div class="toolbarheader bkgd" id="box-admin-options">{% trans "Admin Options" %}</div>
             <div class="toolbarcontent">
 		        <a href="{% url community_new_member group.slug %}">{% trans "Add users" %}</a><br/>
 		        <a href="{% url community_invite_member group.slug %}">{% trans "Invite users" %}</a><br/>

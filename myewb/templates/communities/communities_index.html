@@ -13,39 +13,96 @@
 {% block head_title %}{% blocktrans %}Mailing Lists{% endblocktrans %}{% endblock %}
 
 {% block body %}
-    <h1>{% trans "Mailing Lists" %}</h1>
+    <h1>{% trans "Communities" %}</h1>
     
-    {% if user.is_authenticated %}
-        <p><a href="{% url new_community %}">Create</a> a list</p>
-    {% else %}
+    {# moving the create a community link to the sidebar, but leaving the login prompts here for visibility #}
+    {% if not user.is_authenticated %}
         {% url acct_signup as signup_url %}
         {% url acct_login as login_url %}
         <p>{% blocktrans %}<a href="{{ signup_url }}">Sign up</a> and <a href="{{ login_url }}">log in </a> to join a community.{% endblocktrans %}</p>
     {% endif %}
     
-    <form method="GET" action="">
-        <input type="text" name="search" value="{{ search_terms }}" />
-        <input type="submit" value="Search" />
-        {% if search_terms %}
-            <a href="{% clear_search_url request %}">Clear Search Terms</a>
-        {% endif %}
-    </form>
     {% autosort groups %}
     {% autopaginate groups 10 %}
     {% if groups %}
-        <p>{% trans "Order by:" %}
-            {% anchor topic_count Topics %}
-            {% anchor member_count Members %}
-            {% anchor name Name %}
-            {% anchor created Date %}
-        </p>
-        <dl>
+    
+    <div class="chapterlist communitieslist">
+
+
+
+
         {% for group in groups %}
+        <dl>
             {% show_community group %}
-        {% endfor %}
         </dl>
+
+        {% endfor %}
+        
+    </div>
+
+        <br class="clear"/>
         {% paginate %}
     {% endif %}
     
 {% endblock %}
 
+
+
+
+{% block toolbar_right %}
+
+
+    {% if user.is_authenticated and user.get_networks %}
+<div class="toolbarheader bkgd" id="box-my-communities">{% trans "My Communities" %}</div>
+		<div class="toolbarcontent">
+	    {% for group in user.get_communities %}
+
+			 <a href="{% url group_detail group.slug %}">{{ group.name }}</a><br/>
+
+    	{% endfor %}
+		</div>
+	{% endif %}
+
+
+
+<div class="toolbarheader bkgd" id="box-search-communities">{% trans "Search communities" %}</div>
+		<div class="toolbarcontent">
+
+    <form method="GET" action="">
+        <input type="text" name="search" value="{{ search_terms }}" />
+        <input type="submit" value="Search" />
+        {% if search_terms %}
+            <br/><a href="{% clear_search_url request %}">Clear Search Terms</a>
+        {% endif %}
+    </form>
+</div>
+
+<div class="toolbarheader bkgd" id="box-sort-communities">{% trans "Sort" %}</div>
+		<div class="toolbarcontent orderlistbox">
+    
+        {% trans "Order communities by:" %}
+            {% anchor topic_count Topics %}
+            {% anchor member_count Members %}
+            {% anchor name Name %}
+            {% anchor created Date %}
+        
+</div>
+
+    {% if user.is_authenticated %}
+<div class="toolbarheader bkgd" id="box-create-communities">{% trans "Create" %}</div>
+		<div class="toolbarcontent">
+		You can create new communities and invite members to contribute.
+        <p><a href="{% url new_community %}">Create a new community</a></p>
+</div>
+    {% endif %}
+
+    {% if not user.is_authenticated %}
+<div class="toolbarheader bkgd" id="box-about-communities">{% trans "About EWB Communities" %}</div>
+<div class="toolbarcontent">
+Talkin' about stuff here!
+</div>
+{% endif %}
+
+
+
+{% endblock %}

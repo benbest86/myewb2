@@ -43,7 +43,7 @@
 
 {% block toolbar_left %}
     {% if user.is_authenticated %}
-        <div class="toolbarheader bkgd">{% trans "Latest Activity" %}</div>
+        <div class="toolbarheader bkgd" id="box-latestactivity">{% trans "Latest Activity" %}</div>
         <div class="toolbarcontent">
         	Since you last signed in {{ user.get_profile.previous_login|timesince}} ago:<br/><br/>
         	
@@ -119,7 +119,7 @@
         </div>
     {% endif %}
             
-    <div class="toolbarheader bkgd">{% trans "Happening in EWB" %}</div>
+    <div class="toolbarheader bkgd"  id="box-happening">{% trans "Happening in EWB" %}</div>
     <div class="toolbarcontent" style="padding: 2px; overflow: none;">
         {% events_widget user %}
         <div style="text-align: right;">
@@ -127,7 +127,7 @@
         </div>
     </div>
     
-    <div class="toolbarheader bkgd">{% trans "Who's Online" %}</div>
+    <div class="toolbarheader bkgd" id="box-online">{% trans "Who's Online" %}</div>
     <div class="toolbarcontent">
         {% for online in online_users %}
             <a href="{% url profile_detail online %}">{{ online.visible_name }}</a><br/>

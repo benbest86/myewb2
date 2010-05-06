@@ -89,7 +89,9 @@ div.login a.username {
 }
 
 div.login a.signout {
-    padding-left: 2em;
+display:block;
+margin-top:4px;
+padding-left:2em;
 }
 
 div#body {
@@ -129,6 +131,18 @@ ul.tabs li {
     list-style: none;
     display: inline-block;
     text-align: center;
+
+}
+
+
+
+ul.tabs li a { 
+    color: white;
+    text-decoration: none;
+    
+    display: inline-block;
+    text-align: center;
+    
     padding: 0.2em 1em;
     margin: 0.1em 0.5em 0 0.5em;
     width: 8em;
@@ -140,17 +154,8 @@ ul.tabs li {
     font-size: 0.8em;
     height: 1.2em;
     border-bottom: 0;
-}
-
-/* increase padding by 0.1em */
-ul.tabs li:hover {
-    padding-top: 0.3em;
-    margin-top: 0em;
-}
-
-ul.tabs li a { 
-    color: white;
-    text-decoration: none;
+    
+    
 }
 
 
@@ -162,6 +167,8 @@ ul.tabs .red    { border: 1px solid #600608; border-bottom: 0; }
 ul.tabs .purple { border: 1px solid #3F0074; border-bottom: 0; }
 
 /* Make the current tab pop up */
+ul.tabs li a.current, ul.tabs li a:hover,
+
 .blue ul.tabs .blue,
 .green ul.tabs .green,
 .yellow ul.tabs .yellow,
@@ -172,10 +179,13 @@ ul.tabs .purple { border: 1px solid #3F0074; border-bottom: 0; }
     -webkit-border-top-right-radius: 0.8em;
     -webkit-border-top-left-radius: 0.8em;
     -moz-border-radius-topright: 0.8em;
-    -moz-border-radius-topleft: 0.8em;
+    -moz-border-radius-topleft: 0.8em;  
     
-    padding: 0.6em 1.2em 0.2em;
+    /* padding: 0.6em 1.2em 0.2em; */
     margin-top: 0;
+    
+    padding-top: 0.35em;
+    margin-top: 0em;
 }
 
 div#subnav {
@@ -210,6 +220,14 @@ ul.subnav li a {
 ul.subnav li a:hover {
     text-decoration: underline;
 }
+
+
+div#subnavsearchbox {
+float: right; 
+width: 218px; 
+padding: 0.2em 1em 0.2em 0pt;
+}
+
 
 ul.legal {
     background: #E8E8E8;
@@ -385,3 +403,92 @@ input[type="reset"]
         overflow: visible;
 }
 
+
+.inlineLabels input[type="text"], .inlineLabels input[type="password"] {
+padding: 4px;
+}
+/*
+Adding padding just for main content section forms
+as opposed to say the search boxes
+*/
+
+
+ul.postlinklist {
+list-style: square;
+padding:0;
+padding-left: 1.4em;
+margin:0;
+
+}
+
+
+
+/*
+Styles for the chapter list page
+possibly also to be used by the mailinglist/communities page
+*/
+div.chapterlist h2 {
+clear:both;
+}
+div.chapterlist dl {
+border:1px solid #ddd;
+float:left;
+margin-right:10px;
+padding:10px;
+width:300px; /* or, fixed at say 300px?  43% */
+/* min-height:92px; */
+}
+div.communitieslist dl {
+min-height:102px;
+}
+
+
+div.chapterlist dt {
+font-size: 1.3em;
+font-weight: bold;
+}
+div.chapterlist dt a {
+}
+
+div.chapterlist dd {
+margin:0;
+}
+
+div.chapterlist dd a {
+}
+
+div.chapterlist dd a.networks-chaptersite-link {
+display:inline-block;
+margin-top:7px;
+}
+
+div.provincelinklist a {
+display: block;
+}
+
+
+
+.clear {
+clear:both;
+}
+
+
+div.toolbarcontent input[type="text"] { 
+width: 150px;
+}
+
+div.orderlistbox a {
+display: block;
+}
+
+
+
+div.gmapsboxcontent h3 {
+margin:0;
+padding:0;
+margin-bottom:0.5em;
+}
+div.gmapsboxcontent a {
+display: block;
+margin-bottom:0.2em;
+}

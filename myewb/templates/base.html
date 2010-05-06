@@ -38,9 +38,10 @@
 	        <div id="subnav" class="clearfix bkgd-light">
 	        	{% block subnav_base %}
 	        	
-				<div style="float: right; width: 150px; padding: 0.2em 1em 0.2em 0">
+				<div id="subnavsearchbox">
 					<form method="get" action="{% url search %}">
 						<input type="text" value="search" style="width: 150px; color: #a0a0a0;" id="global_search_box" name="q"/>
+						<input type="submit" value="search" class="bkgd-light" />
 					</form>
 				</div>
 

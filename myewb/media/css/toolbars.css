@@ -29,7 +29,26 @@
         padding:3px;
         padding-left: 9px;
         font-size: 13px;
+        
+        cursor: pointer;
 }
+
+.toolbarheader:before {
+	padding-right: 5px;
+	content: "-";
+	opacity: 0.5;
+}
+
+.toolbarheader.hidebox:before
+{
+/* indicating the box below it is closed somehow. */
+	content: "+";
+}
+
+.toolbarheader.hidebox {
+margin-bottom: 5px;
+}
+
 
 #toolbarcolumn_left .toolbarheader
 {

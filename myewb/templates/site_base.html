@@ -14,6 +14,43 @@
 		{% block extra_head %}{% endblock %}
 		<link rel="stylesheet" href="{{ STATIC_URL }}css/myewb2.css" />
 		<link rel="stylesheet" href="{{ STATIC_URL }}css/segmented_control.css" />
+		
+		
+		<script type="text/javascript">
+        $(document).ready(function() {
+    		  $('.toolbarheader').click(function(){	
+                $(this).next().slideToggle();
+                $(this).toggleClass('hidebox');
+                if($(this).attr('id')) {
+                    console.log($(this).attr('id'));
+                    
+                    
+                    {% if user.is_authenticated %}
+                    /*
+                    $.ajax({
+                      url: "/urltousersettings/box/"+$(this).attr('id'),
+                      cache: false,  // this prepends another query onto the end with a timestamp - make sure it doesn't mix up the handler page?
+                      
+                      //success: function(html){
+                      //  console.log(html);
+                      //}   // just for debugging; not actually required to send anything back.
+                    });
+                    */
+                    {% endif %}
+                    {# state saving only works if youre logged in, so only really try then #}
+                    
+                    
+                } else {
+                    console.log('no id');
+                }
+                // indicates that the box *below* is hidden
+          	});
+			
+
+		
+        });
+		</script>
+		
 {% endblock %}
 
 {% block login %}
@@ -23,7 +60,7 @@
 		Signed in as <a class="username" href="{% url profile_detail user %}"><strong>{{ user.visible_name }}</strong></a>.
 		<br/>
 		<a href="{% url messages_inbox %}">{{ messages_inbox_count }} unread messages</a>
-		<br/><br/>
+		
 		<a class="signout" href="{% url acct_logout %}">{% trans "sign out" %}</a>
     {% else %}
         <a href="{% url acct_login %}">{% trans "Login" %}</a>
@@ -40,16 +77,16 @@
 
 {% block right_tabs %}
     <ul class="tabs">{% spaceless %}
-        <li id="tab_home" class="blue current"><a href="{% url home %}">{% trans "Home" %}</a></li>
+        <li><a id="tab_home" class="blue" href="{% url home %}">{% trans "Home" %}</a></li>
         {% if user.is_authenticated %}
-            <li id="tab_profile" class="green"><a href="{% url profile_detail user %}">{% trans "Profile" %}</a></li>
+            <li><a id="tab_profile" class="green" href="{% url profile_detail user %}">{% trans "Profile" %}</a></li>
         {% else %}
-            <li id="tab_profile" class="green"><a href="{% url profile_list %}">{% trans "Profiles" %}</a></li>
+            <li><a id="tab_profile" class="green" href="{% url acct_signup %}">{% trans "Sign Up" %}</a></li>
         {% endif %}
-        <li id="tab_networks" class="yellow"><a href="{% url networks_index %}">{% trans "Chapters" %}</a></li>
-        <li id="tab_communities" class="orange"><a href="{% url communities_index %}">{% trans "Mailing Lists" %}</a></li>
-        <li id="tab_events" class="red"><a href="{% url events_all %}">{% trans "Events" %}</a></li>
-        <li id="tab_volunteering" class="purple"><a href="{% url volunteering_index %}">{% trans "Volunteering" %}</a></li>
+        <li><a id="tab_networks" class="yellow" href="{% url networks_index %}">{% trans "Chapters" %}</a></li>
+        <li><a id="tab_communities" class="orange" href="{% url communities_index %}">{% trans "Communities" %}</a></li>
+        <li><a id="tab_events" class="red" href="{% url events_all %}">{% trans "Events" %}</a></li>
+        <li><a id="tab_volunteering" class="purple" href="{% url volunteering_index %}">{% trans "Volunteering" %}</a></li>
     {% endspaceless %}</ul>
 {% endblock %}
 
