@@ -53,7 +53,7 @@
 
 
     {% if user.is_authenticated and user.get_networks %}
-<div class="toolbarheader bkgd">{% trans "My Communities" %}</div>
+<div class="toolbarheader bkgd" id="box-my-communities">{% trans "My Communities" %}</div>
 		<div class="toolbarcontent">
 	    {% for group in user.get_communities %}
 
@@ -65,7 +65,7 @@
 
 
 
-<div class="toolbarheader bkgd">{% trans "Search communities" %}</div>
+<div class="toolbarheader bkgd" id="box-search-communities">{% trans "Search communities" %}</div>
 		<div class="toolbarcontent">
 
     <form method="GET" action="">
@@ -77,7 +77,7 @@
     </form>
 </div>
 
-<div class="toolbarheader bkgd">{% trans "Sort" %}</div>
+<div class="toolbarheader bkgd" id="box-sort-communities">{% trans "Sort" %}</div>
 		<div class="toolbarcontent orderlistbox">
     
         {% trans "Order communities by:" %}
@@ -89,7 +89,7 @@
 </div>
 
     {% if user.is_authenticated %}
-<div class="toolbarheader bkgd">{% trans "Create" %}</div>
+<div class="toolbarheader bkgd" id="box-create-communities">{% trans "Create" %}</div>
 		<div class="toolbarcontent">
 		You can create new communities and invite members to contribute.
         <p><a href="{% url new_community %}">Create a new community</a></p>
@@ -97,7 +97,7 @@
     {% endif %}
 
     {% if not user.is_authenticated %}
-<div class="toolbarheader bkgd">{% trans "About EWB Communities" %}</div>
+<div class="toolbarheader bkgd" id="box-about-communities">{% trans "About EWB Communities" %}</div>
 <div class="toolbarcontent">
 Talkin' about stuff here!
 </div>

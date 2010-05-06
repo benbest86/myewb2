@@ -18,7 +18,7 @@
 
     {% if group %}
 	    {% if is_admin %}
-            <div class="toolbarheader bkgd">{% trans "Admin Options" %}</div>
+            <div class="toolbarheader bkgd" id="box-admin-options">{% trans "Admin Options" %}</div>
             <div class="toolbarcontent">
 		        <a href="{% url community_new_member group.slug %}">{% trans "Add users" %}</a><br/>
 		        <a href="{% url community_invite_member group.slug %}">{% trans "Invite users" %}</a><br/>

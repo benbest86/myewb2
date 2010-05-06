@@ -152,7 +152,7 @@
 
 {% block toolbar_left %}
     {% if group and user.is_authenticated %}
-        <div class="toolbarheader bkgd">{% trans "Membership" %}</div>
+        <div class="toolbarheader bkgd" id="box-membership">{% trans "Membership" %}</div>
         <div class="toolbarcontent">
             {% get_membership group request.user as member %}
             {% if member %}
@@ -183,7 +183,7 @@
 
 {% block toolbar_right %}
     {% if group and user.is_authenticated %}
-        <div class="toolbarheader bkgd">{% trans "Members" %}</div>
+        <div class="toolbarheader bkgd" id="box-members">{% trans "Members" %}</div>
         <div class="toolbarcontent">
             <form method="GET" action="{% groupurl members_index group %}">
                 <input type="text" name="search" style="width: 150px" value="{{ search_terms }}" />

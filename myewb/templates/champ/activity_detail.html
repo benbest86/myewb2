@@ -86,7 +86,7 @@
 
 {% block toolbar_left %}
 	{% if is_admin %}
-        <div class="toolbarheader bkgd">{% trans "Delete" %}</div>
+        <div class="toolbarheader bkgd" id="box-activity-delete">{% trans "Delete" %}</div>
         <div class="toolbarcontent">
         	<a href="{% url champ_activity_delete group.slug activity.pk %}">Delete this activity</a>
         </div>
