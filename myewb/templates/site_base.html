@@ -77,7 +77,7 @@
 
 {% block right_tabs %}
     <ul class="tabs">{% spaceless %}
-        <li><a id="tab_home" class="blue current" href="{% url home %}">{% trans "Home" %}</a></li>
+        <li><a id="tab_home" class="blue" href="{% url home %}">{% trans "Home" %}</a></li>
         {% if user.is_authenticated %}
             <li><a id="tab_profile" class="green" href="{% url profile_detail user %}">{% trans "Profile" %}</a></li>
         {% else %}

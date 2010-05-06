@@ -134,11 +134,7 @@ ul.tabs li {
 
 }
 
-/* increase padding by 0.1em */
-ul.tabs li a.current, ul.tabs li a:hover {
-    padding-top: 0.3em;
-    margin-top: 0em;
-}
+
 
 ul.tabs li a { 
     color: white;
@@ -171,6 +167,8 @@ ul.tabs .red    { border: 1px solid #600608; border-bottom: 0; }
 ul.tabs .purple { border: 1px solid #3F0074; border-bottom: 0; }
 
 /* Make the current tab pop up */
+ul.tabs li a.current, ul.tabs li a:hover,
+
 .blue ul.tabs .blue,
 .green ul.tabs .green,
 .yellow ul.tabs .yellow,
@@ -181,10 +179,13 @@ ul.tabs .purple { border: 1px solid #3F0074; border-bottom: 0; }
     -webkit-border-top-right-radius: 0.8em;
     -webkit-border-top-left-radius: 0.8em;
     -moz-border-radius-topright: 0.8em;
-    -moz-border-radius-topleft: 0.8em;
+    -moz-border-radius-topleft: 0.8em;  
     
     /* padding: 0.6em 1.2em 0.2em; */
     margin-top: 0;
+    
+    padding-top: 0.35em;
+    margin-top: 0em;
 }
 
 div#subnav {
