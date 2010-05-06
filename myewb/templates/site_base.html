@@ -24,18 +24,21 @@
                 if($(this).attr('id')) {
                     console.log($(this).attr('id'));
                     
-                    
                     {% if user.is_authenticated %}
-                    /*
+                    var action = "";
+                    if ($(this).hasClass('hidebox'))
+                        action = "close";
+                    else
+                        action = "show";
+                    
                     $.ajax({
-                      url: "/urltousersettings/box/"+$(this).attr('id'),
+                      url: "{% url profile_toolbar_action %}" + action + "/" + $(this).attr('id') + "/",
                       cache: false,  // this prepends another query onto the end with a timestamp - make sure it doesn't mix up the handler page?
                       
                       //success: function(html){
                       //  console.log(html);
                       //}   // just for debugging; not actually required to send anything back.
                     });
-                    */
                     {% endif %}
                     {# state saving only works if youre logged in, so only really try then #}
                     
@@ -44,9 +47,15 @@
                     console.log('no id');
                 }
                 // indicates that the box *below* is hidden
-          	});
-			
 
+          	  });
+
+            // process saved settings, hide previously closed toolbars 
+            {% for t in closed_toolbars %}
+            	var tbox = $('#{{ t }}');
+            	tbox.next().hide();
+            	tbox.toggleClass('hidebox');
+            {% endfor %}
 		
         });
 		</script>

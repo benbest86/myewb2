@@ -356,4 +356,9 @@ class WorkRecord(models.Model):
         """
         return (user.id == self.user_id)
 
-
+class ToolbarState(models.Model):
+    user = models.ForeignKey(User, verbose_name=_('user'),
+                             db_index=True)
+    toolbar = models.CharField(max_length=255,
+                               db_index=True)
+    state = models.CharField(max_length=1)

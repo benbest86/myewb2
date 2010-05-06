@@ -15,7 +15,7 @@ from django.shortcuts import get_object_or_404
 from pinax.apps.profiles.views import *
 from pinax.apps.profiles.views import profile as pinaxprofile
 from django.template import RequestContext, Context, loader
-from django.http import HttpResponseRedirect, HttpResponseForbidden
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
 from django.core.urlresolvers import reverse
 from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
@@ -27,7 +27,7 @@ from siteutils import online_middleware
 from siteutils.helpers import get_email_user
 from siteutils.decorators import owner_required
 from siteutils.models import PhoneNumber
-from profiles.models import MemberProfile, StudentRecord, WorkRecord
+from profiles.models import MemberProfile, StudentRecord, WorkRecord, ToolbarState
 from profiles.forms import StudentRecordForm, WorkRecordForm, MembershipForm, PhoneNumberForm, SettingsForm
 
 from networks.models import Network
@@ -699,3 +699,18 @@ def settings(request, username):
                                        context_instance=RequestContext(request))
     else:
         return HttpResponseForbidden()
+
+@login_required
+def toolbar_action(request, action=None, toolbar_id=None):
+    if action == None or toolbar_id == None:
+        return HttpResponseForbidden
+    
+    state, created = ToolbarState.objects.get_or_create(user=request.user,
+                                                        toolbar=toolbar_id)
+    if action == "close":
+        state.state = "c"
+    else:
+        state.state = "o"
+    state.save()
+    
+    return HttpResponse("")

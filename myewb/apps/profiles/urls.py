@@ -38,7 +38,10 @@ urlpatterns = patterns('profiles.views.profile',
     url(r'^(?P<username>[\w\._-]+)/work/$', 'work_records_index', name='work_records_index'),
     url(r'^(?P<username>[\w\._-]+)/work/new/$', 'new_work_record', name='new_work_record'),
     url(r'^(?P<username>[\w\._-]+)/work/(?P<work_record_id>\d+)/edit/$', 'edit_work_record', name='edit_work_record'),
-)
+
+    url(r'^toolbar/(?P<action>[-\w]+)/(?P<toolbar_id>[-\w]+)/$', 'toolbar_action', name='profile_toolbar_action'),
+    url(r'^toolbar/$', 'toolbar_action', name='profile_toolbar_action'), # never called. but needed to hack up with javascript later.
+    )
 
 urlpatterns += patterns('profiles.views.address',
     url(r'^(?P<username>[\w\._-]+)/address/$', 'address_index', name='profile_address_index'),
