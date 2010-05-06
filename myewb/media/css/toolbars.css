@@ -45,6 +45,11 @@
 	content: "+";
 }
 
+.toolbarheader.hidebox {
+margin-bottom: 5px;
+}
+
+
 #toolbarcolumn_left .toolbarheader
 {
         -webkit-border-top-right-radius: 7px;

@@ -21,6 +21,24 @@
     		  $('.toolbarheader').click(function(){	
                 $(this).next().slideToggle();
                 $(this).toggleClass('hidebox');
+                if($(this).attr('id')) {
+                    console.log($(this).attr('id'));
+                    /*
+                    $.ajax({
+                      url: "/urltousersettings/box/"+$(this).attr('id'),
+                      cache: false,  // this prepends another query onto the end with a timestamp - make sure it doesn't mix up the handler page?
+                      
+                      //success: function(html){
+                      //  console.log(html);
+                      //}   // just for debugging; not actually required to send anything back.
+                    });
+                    */
+                    
+                    
+                    
+                } else {
+                    console.log('no id');
+                }
                 // indicates that the box *below* is hidden
           	});
 			
