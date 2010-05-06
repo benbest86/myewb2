@@ -12,6 +12,14 @@
 
 {% block head_title %}{% blocktrans %}Chapters{% endblocktrans %}{% endblock %}
 
+
+{% block extra_head_base %}
+    {{ block.super }}
+    {# adding the map code just to this page #}
+    <script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=ABQIAAAAr4bFrclzv3t-BOujwrE_ChQ0Fohs0N8x-JP4ajf_M3hambhEhxQGoPFQ1wxpT0v6W-JM-Y1BcHXU7A" type="text/javascript"></script>
+
+{% endblock %}
+
 {% block body %}
     <h1>{% trans "Chapters" %}</h1>
     
@@ -28,7 +36,18 @@
     	
     	{# Hand coded for that premium taste! #}
     
+    
+    <div id="map" style="width: 550px; height: 250px; border: 1px solid black; margin: 10px auto; display:none;"></div>
+
+
+    
     <div class="chapterlist">
+    
+<script type="text/javascript">//<![CDATA[
+var cityArray = new Array();
+//]]>
+</script>
+
     
     
     	<h2 id="BC">British Columbia</h2>
@@ -38,6 +57,17 @@
 		        <dl>
 		            {% show_network group %}
 		        </dl>
+		        
+<script type="text/javascript">//<![CDATA[
+	if(cityArray["{{group.chapter_info.city }}"] == null)
+	{
+		cityArray["{{group.chapter_info.city }}"] = new Object();
+	}
+    cityArray["{{group.chapter_info.city }}"]["{{group.slug }}"] = "{{group.name }}";
+//]]>
+</script>
+
+		        
 	        {% endifequal %}
         {% endfor %}
 
@@ -48,6 +78,16 @@
 		        <dl>
 		            {% show_network group %}
 		        </dl>
+		        
+<script type="text/javascript">//<![CDATA[
+	if(cityArray["{{group.chapter_info.city }}"] == null)
+	{
+		cityArray["{{group.chapter_info.city }}"] = new Object();
+	}
+    cityArray["{{group.chapter_info.city }}"]["{{group.slug }}"] = "{{group.name }}";
+//]]>
+</script>
+		        
 	        {% endifequal %}
         {% endfor %}
 
@@ -58,6 +98,16 @@
 		        <dl>
 		            {% show_network group %}
 		        </dl>
+		        
+<script type="text/javascript">//<![CDATA[
+	if(cityArray["{{group.chapter_info.city }}"] == null)
+	{
+		cityArray["{{group.chapter_info.city }}"] = new Object();
+	}
+    cityArray["{{group.chapter_info.city }}"]["{{group.slug }}"] = "{{group.name }}";
+//]]>
+</script>
+		        
 	        {% endifequal %}
         {% endfor %}
 
@@ -68,6 +118,16 @@
 		        <dl>
 		            {% show_network group %}
 		        </dl>
+		        
+<script type="text/javascript">//<![CDATA[
+	if(cityArray["{{group.chapter_info.city }}"] == null)
+	{
+		cityArray["{{group.chapter_info.city }}"] = new Object();
+	}
+    cityArray["{{group.chapter_info.city }}"]["{{group.slug }}"] = "{{group.name }}";
+//]]>
+</script>
+		        
 	        {% endifequal %}
         {% endfor %}
 
@@ -78,6 +138,16 @@
 		        <dl>
 		            {% show_network group %}
 		        </dl>
+		        
+<script type="text/javascript">//<![CDATA[
+	if(cityArray["{{group.chapter_info.city }}"] == null)
+	{
+		cityArray["{{group.chapter_info.city }}"] = new Object();
+	}
+    cityArray["{{group.chapter_info.city }}"]["{{group.slug }}"] = "{{group.name }}";
+//]]>
+</script>
+		        
 	        {% endifequal %}
         {% endfor %}
 
@@ -88,6 +158,16 @@
 		        <dl>
 		            {% show_network group %}
 		        </dl>
+		        
+<script type="text/javascript">//<![CDATA[
+	if(cityArray["{{group.chapter_info.city }}"] == null)
+	{
+		cityArray["{{group.chapter_info.city }}"] = new Object();
+	}
+    cityArray["{{group.chapter_info.city }}"]["{{group.slug }}"] = "{{group.name }}";
+//]]>
+</script>
+		        
 	        {% endifequal %}
         {% endfor %}
 
@@ -98,6 +178,16 @@
 		        <dl>
 		            {% show_network group %}
 		        </dl>
+		        
+<script type="text/javascript">//<![CDATA[
+	if(cityArray["{{group.chapter_info.city }}"] == null)
+	{
+		cityArray["{{group.chapter_info.city }}"] = new Object();
+	}
+    cityArray["{{group.chapter_info.city }}"]["{{group.slug }}"] = "{{group.name }}";
+//]]>
+</script>
+		        
 	        {% endifequal %}
         {% endfor %}
 
@@ -108,6 +198,16 @@
 		        <dl>
 		            {% show_network group %}
 		        </dl>
+		        
+<script type="text/javascript">//<![CDATA[
+	if(cityArray["{{group.chapter_info.city }}"] == null)
+	{
+		cityArray["{{group.chapter_info.city }}"] = new Object();
+	}
+    cityArray["{{group.chapter_info.city }}"]["{{group.slug }}"] = "{{group.name }}";
+//]]>
+</script>
+		        
 	        {% endifequal %}
         {% endfor %}
 
@@ -118,6 +218,16 @@
 		        <dl>
 		            {% show_network group %}
 		        </dl>
+		        
+<script type="text/javascript">//<![CDATA[
+	if(cityArray["{{group.chapter_info.city|escapejs }}"] == null)
+	{
+		cityArray["{{group.chapter_info.city|escapejs }}"] = new Object();
+	}
+    cityArray["{{group.chapter_info.city|escapejs }}"]["{{group.slug }}"] = "{{group.name }}";
+//]]>
+</script>
+		        
 	        {% endifequal %}
         {% endfor %}
 
@@ -128,6 +238,8 @@
 		        <dl>
 		            {% show_network group %}
 		        </dl>
+		        
+		        
 	        {% endif %}
         {% endfor %}
         
@@ -135,6 +247,83 @@
 
         {#{% paginate %}#}
     {% endif %}
+    
+    
+    {# map code #}
+<script type="text/javascript">
+
+		//<![CDATA[
+			var HereIcon = new GIcon();
+			HereIcon.image ="http://labs.google.com/ridefinder/images/mm_20_red.png";
+			HereIcon.shadow ="http://labs.google.com/ridefinder/images/mm_20_shadow.png";
+			HereIcon.iconSize = new GSize(12, 20);
+			HereIcon.shadowSize = new GSize(22, 20);
+			HereIcon.iconAnchor = new GPoint(6, 20);
+			HereIcon.infoWindowAnchor = new GPoint(5, 1);
+
+			var geoArray = {
+			"Sherbrooke" : new GLatLng(45.347328, -71.936991),
+			"Qu&eacute;bec" : new GLatLng(46.775109, -71.324011),
+			"London" : new GLatLng(42.976427, -81.249659),
+			"Windsor" : new GLatLng(42.291192, -82.997466),
+			"Guelph" : new GLatLng(43.535309, -80.246183),
+			"Hamilton" : new GLatLng(43.242711, -79.892195),
+			"Halifax" : new GLatLng(44.65, -63.6),
+			"Fredericton" : new GLatLng(45.957319, -66.647818),
+			"Victoria" : new GLatLng(48.42804, -123.356467),
+			"Burnaby" : new GLatLng(49.250494, -122.95967),
+			"Edmonton" : new GLatLng(53.53279, -113.503383),
+			"Calgary" : new GLatLng(51.039877, -114.080796),
+			"Saskatoon" : new GLatLng(52.13142, -106.64594),
+			"Regina" : new GLatLng(50.452557, -104.611296),
+			"Winnipeg" : new GLatLng(49.875822, -97.148721),
+			"St. John\x27s" : new GLatLng(47.550575, -52.746072),
+			"Waterloo" : new GLatLng(43.477918, -80.537828),
+			"Ottawa" : new GLatLng(45.352088, -75.72344),
+			"Vancouver" : new GLatLng(49.250494, -123.111934),
+			"Montreal" : new GLatLng(45.512363, -73.675627),
+			"Toronto" : new GLatLng(43.723057, -79.392486)
+			};
+
+		function createMarker(city) 
+		{
+			var marker = new GMarker(geoArray[city], HereIcon);
+			var data = "<div class=\"gmapsboxcontent\" align=\"center\" style=\"margin:0; padding: 0; font-size: 12px;\"><h3>" + city + "</h3>";
+			for (var shortname in cityArray[city])
+			{
+				if(typeof shortname == "string")
+				{
+					data += "<a href=\"/networks/" + shortname+ "\">" + cityArray[city][shortname] + "</a>";  {# @@@ this URL is hardcoded in here by slug. #}
+				}
+			}
+
+			GEvent.addListener(marker, "click", function() {marker.openInfoWindowHtml(data);});
+			return marker;
+		}
+
+		function myEWBOnLoad() 
+		{
+			if (GBrowserIsCompatible()) 
+			{
+				document.getElementById("map").style.display = "block";
+				var map = new GMap2(document.getElementById("map"));
+				map.setCenter( new GLatLng(51.429013, -90.373047), 3);
+				map.addControl(new GSmallMapControl());
+
+				for(var city in geoArray) 
+				{
+					map.addOverlay(createMarker(city));
+				}
+			}
+		}
+		
+		myEWBOnLoad();
+		//]]>
+
+    </script>		
+    
+    
+    
     
 {% endblock %}
 

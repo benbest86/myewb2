@@ -480,3 +480,15 @@ width: 150px;
 div.orderlistbox a {
 display: block;
 }
+
+
+
+div.gmapsboxcontent h3 {
+margin:0;
+padding:0;
+margin-bottom:0.5em;
+}
+div.gmapsboxcontent a {
+display: block;
+margin-bottom:0.2em;
+}
