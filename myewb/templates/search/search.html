@@ -50,7 +50,14 @@
     </div>
     
     <div id="div-people-search" class="group-subsection">
-    People search goes here.
+
+<form id="search-profile" method="GET" action="{% url profiles_index %}">
+	<input type="text" name="search" value="{{ search_terms }}" style="width: 150px;"/>
+	<input type="submit" value="{% trans "search" %}"/>
+</form>
+
+
+
     </div>
 
 
