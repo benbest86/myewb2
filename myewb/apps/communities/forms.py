@@ -35,7 +35,8 @@ class CommunityForm(BaseGroupForm):
     invite_only = forms.BooleanField(required=False,
                                      widget=forms.HiddenInput)
     visibility = forms.ChoiceField(required=False,
-                                   widget=forms.HiddenInput)
+                                   widget=forms.HiddenInput,
+                                   choices=BaseGroup.VISIBILITY_CHOICES)
 
     def __init__(self, *args, **kwargs):
         user = kwargs.pop('user', None)
@@ -51,15 +52,29 @@ class CommunityForm(BaseGroupForm):
         # a model field, it isn't done automatically)        
         if self.instance.pk:
             # not sure why "if self.instance" doesn't work; that's set even for a new form
+
             if not self.instance.invite_only:
                 self.fields['group_permissions'].initial='P'
             elif self.instance.visibility == 'E':
                 self.fields['group_permissions'].initial='I'
             elif self.instance.visibility == 'M':
                 self.fields['group_permissions'].initial='R'
+
+            # hack way to see if this is actually a NationalRepList or ExecList instance
+            # (self.instance.__class__ doesn't work, since the object is instantiated as a community)
+            try:
+                if getattr(self.instance, "nationalreplist"):
+                    del self.fields['group_permissions']
+            except: 
+                pass
+            try:
+                if getattr(self.instance, "execlist"):
+                    del self.fields['group_permissions']
+            except:
+                pass
             
     def clean(self):
-        perms = self.cleaned_data['group_permissions']
+        perms = self.cleaned_data.get('group_permissions', None)
         
         if perms == 'P':
             self.cleaned_data['visibility'] = 'E'
@@ -71,7 +86,8 @@ class CommunityForm(BaseGroupForm):
             self.cleaned_data['visibility'] = 'M'
             self.cleaned_data['invite_only'] = True
         else:
-            raise forms.ValidationError(_('Select a valid permissions level'))
+            # don't change anything
+            pass
             
         return super(CommunityForm, self).clean()
     
