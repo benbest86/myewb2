@@ -120,18 +120,25 @@
 				{% endif %}
 				
 				{% if perms.group_topics %}
-					<p>
+					<br/><br/>
+					<div id="simple_hotlist">
+						<form action="" method="post" class="score_modifier_form">
+							<input type="hidden" name="modifier" value="{{topic.score_modifier|add:100}}"/>
+							<input type="submit" value="add to global hostlist"/> (<a href="#" id="show_advanced_hotlist">advanced hotlist options</a>)
+						</form>
+					</div>
+					<div id="advanced_hotlist" style="display: none;">
 						Featured posts score: <span id="featured-posts-score">{{topic.score}}</span>
 						(current threshold: {% featured_posts_threshold %})
 						<br/>
-						<form action="" method="post" id="score_modifier_form">
+						<form action="" method="post" class="score_modifier_form">
 							modifier:
-							<input type="text" name="modifier" value="{{topic.score_modifier}}" id="score_modifier" size="3"/>%
+							<input type="text" name="modifier" value="{{topic.score_modifier}}" size="3"/>%
 							<input type="submit" value="update"/>
 							<span id="score_modifier_status"></span>
 						</form>
 						
-					</p>
+					</div>
 				{% endif %}
 				<br/>
 				
@@ -194,8 +201,13 @@
 	{% if perms.group_topics %}
 	<script type="text/javascript">
 		$(document).ready(function() {
-			$('form#score_modifier_form').submit(function() {
-				var new_modifier = $('#score_modifier').val();
+			$('#show_advanced_hotlist').click(function() {
+				$('#simple_hotlist').slideToggle();
+				$('#advanced_hotlist').slideToggle();
+				return false;
+			});
+			$('form.score_modifier_form').submit(function() {
+				var new_modifier = $(this).find('input[name=modifier]').val();
 				$('#score_modifier_status').html("updating...");
 				$('#score_modifier_status').load("{% url topic_update_modifier topic.pk %}",
 						                           {value: new_modifier},
