@@ -217,6 +217,9 @@
     if it's just an empty block, for efficiency.
     {% endcomment %}
     
+	<script type="text/javascript" src="{{STATIC_URL}}js/colorbox.js"></script>
+	<link type="text/css" href="{{STATIC_URL}}css/colorbox.css" rel="stylesheet" />
+
     <script type="text/javascript">
         $(document).ready(function() {
             $('#groupheader a').each(function() {
@@ -238,7 +241,9 @@
             if (url.match('#'))
                 $('#show-' + url.split('#')[1]).click();
 
+            {# load up colorbox =) #}
+    		$('.preview-img').colorbox({transition: "elastic", width:"80%", height:"80%"});
         });
-    </script>
+	</script>
 {% endblock %}
 
