@@ -33,11 +33,13 @@ def login(request, form_class=EmailLoginForm,
             associate_openid, openid_success_url, url_required)
 
 def signup(request, form_class=EmailSignupForm,
-        template_name="account/signup.html", success_url=None):
+        template_name="account/signup.html", success_url=None,
+        chapter_slug=None):
     if success_url is None:
         success_url = get_default_redirect(request)
     if request.method == "POST":
-        form = form_class(request.POST)
+        form = form_class(request.POST,
+                          chapter=chapter_slug)
         if form.is_valid():
             username, password = form.save()
             if settings.ACCOUNT_EMAIL_VERIFICATION:
@@ -54,7 +56,8 @@ def signup(request, form_class=EmailSignupForm,
                 request.user.message_set.create(message=login_message)
                 return HttpResponseRedirect(success_url)
     else:
-        form = form_class()
+        form = form_class(chapter=chapter_slug)
+        
     return render_to_response(template_name, {
         "form": form,
     }, context_instance=RequestContext(request))
