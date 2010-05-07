@@ -21,7 +21,6 @@ class GroupTopicForm(forms.ModelForm):
     sender = forms.ChoiceField(label=_('Sender'),
                                choices=(),
                                required=False)
-
     class Meta:
         model = GroupTopic
         fields = ('title', 'body', 'tags', 'send_as_email')
@@ -32,7 +31,7 @@ class GroupTopicForm(forms.ModelForm):
         super(GroupTopicForm, self).__init__(*args, **kwargs)
 
         # build list of potential "from" addresses
-        if user and group and group.user_is_admin(user):
+        if user and group and group.user_is_admin(user) and group.slug != "ewb":
             emaillist = user.get_profile().email_addresses()
             emails = []
             for email in emaillist:
