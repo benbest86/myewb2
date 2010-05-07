@@ -6,9 +6,9 @@
     <div class="community_stats">
         {% trans "Members:" %} <b>{{ community.member_count }}</b>
 &nbsp;
-        {% trans "Topics:" %} <b>{{ community.topic_count }}</b>
+        {% trans "Posts:" %} <b>{{ community.topic_count }}</b>
         <br />
-        <a href="{{ community.get_absolute_url }}/new">Join this group &raquo;</a><br/>
+        <a href="{{ community.get_absolute_url }}new">Join this group &raquo;</a><br/>
         
         {% show_tags_for community %} {# @@@ #}
     </div>

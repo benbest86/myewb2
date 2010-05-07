@@ -14,12 +14,26 @@
 	<link rel="stylesheet" href="{{ STATIC_URL }}css/toolbars.css" />    
 
 	<link type="text/css" href="{{STATIC_URL}}css/jquery-ui.css" rel="stylesheet" />
+
+	
 {% endblock %}
 
 {% block head_title %}{% trans "Search" %}{% endblock %}
 
 {% block body %}
-    <h2>Search</h2>
+
+    <h1>Search</h1>
+
+
+<ul class="segmented" id="groupheader" style="float: none;">
+        <li id="li-group-postsearch" class="current"><a href="#post-search" id="show-postsearch">Search posts and events</a></li>
+        <li id="li-group-peoplesearch"><a href="#people-search" id="show-peoplesearch">People Search</a></li>
+
+    </ul>
+
+    <div id="div-post-search" class="group-subsection" style="display: block;">
+
+
 
     <form method="get" action=".">
         <table>
@@ -31,8 +45,23 @@
                 </td>
             </tr>
         </table>
+    </form>
 
-        <h3>Results</h3>
+    </div>
+    
+    <div id="div-people-search" class="group-subsection">
+
+<form id="search-profile" method="GET" action="{% url profiles_index %}">
+	<input type="text" name="search" value="{{ search_terms }}" style="width: 150px;"/>
+	<input type="submit" value="{% trans "search" %}"/>
+</form>
+
+
+
+    </div>
+
+
+        <h1>Results</h1>
         
         
 		{% if results %}
@@ -71,7 +100,6 @@
       	  <p>No results found.</p>
         {% endif %}
 
-    </form>
 {% endblock %}
 
 {% block extra_body %}
@@ -83,6 +111,9 @@
     var datepicker = $("input#id_start_date, input#id_end_date").datepicker({});
   });
   </script>
+  
+    <script type="text/javascript" src="{{STATIC_URL}}js/tabselection.js"></script> 
+
 
 {% endblock %}
   

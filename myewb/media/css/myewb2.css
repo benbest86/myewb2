@@ -492,3 +492,43 @@ div.gmapsboxcontent a {
 display: block;
 margin-bottom:0.2em;
 }
+
+
+div.frontpage-mygroups-div {
+padding-bottom:10px;
+}
+
+span.frontpage-mygroups-actions {
+margin-left: 10px;
+display: block;
+}
+
+
+div.site_wide_announcements, div#messages {
+margin-bottom: 1em;
+}
+
+div.createaccount {
+float:right;
+}
+
+div#content div.createaccount input[type="button"] {
+font-size: 1.2em;
+padding:1.5em 2.5em;
+}
+
+div span.noaccountquestion {
+display:block;
+margin-bottom:0.5em;
+text-align:center;
+}
+
+div#content input[type="button"], div#content input[type="submit"] {
+padding:5px 7px;
+}
+
+div#content .toolbarcontent input[type="button"], div#content .toolbarcontent input[type="submit"] {
+padding:0 3px;
+/* back to the default on line 393 */
+}
+

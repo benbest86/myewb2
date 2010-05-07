@@ -49,12 +49,25 @@
                 // indicates that the box *below* is hidden
 
           	  });
+          	  
+        {% block frontpagerightJS %}
+
+          	  
+        {% endblock frontpagerightJS %}
+          	  
+          	  
 
             // process saved settings, hide previously closed toolbars 
             {% for t in closed_toolbars %}
-            	var tbox = $('#{{ t }}');
-            	tbox.next().hide();
-            	tbox.toggleClass('hidebox');
+                {% ifequal t "toolbarcolumn_right_container" %}
+                    $('#toolbarcolumn_right_container').hide();
+                    $('#toolbarcolumn_right_show').show();
+                {% else %}
+                	var tbox = $('#{{ t }}');
+                	tbox.next().hide();
+                	tbox.addClass('hidebox');
+            	
+            	{% endifequal %}
             {% endfor %}
 		
         });

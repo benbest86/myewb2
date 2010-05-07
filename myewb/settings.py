@@ -314,8 +314,8 @@ LOGGING_OUTPUT_ENABLED = False
 
 # django-haystack searching
 HAYSTACK_SITECONF = 'myewb.search_sites'
-HAYSTACK_SEARCH_ENGINE = 'dummy'
-#HAYSTACK_SEARCH_ENGINE = 'whoosh'    # use this once you've installed the dependency
+#HAYSTACK_SEARCH_ENGINE = 'dummy'
+HAYSTACK_SEARCH_ENGINE = 'whoosh'    # use this once you've installed the dependency
 HAYSTACK_WHOOSH_PATH = os.path.join(PROJECT_ROOT, "myewb_index")
 
 REALTIME_SEARCH = True

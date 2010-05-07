@@ -20,10 +20,6 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/myewb2-posts.css" />
 <script type="text/javascript" src="{{ STATIC_URL }}pinax/js/topics.js"></script>
 
-{# TODO: move this into an appropriate CSS file #}
-<style type="text/css" media="all">
-    .group-subsection { display: none; }
-</style>
 {% endblock %}
 
 {# FIXME: how to choose between communities & networks? #}
@@ -91,13 +87,13 @@
 		</div>		
 	{% endif %}
 
-    <div id="group-info" class="group-subsection" style="display: block;">
+    <div id="div-group-info" class="group-subsection" style="display: block;">
         {% block groupbody %}
             {# OVERRIDE ME! #}
         {% endblock %}
     </div>
 
-    <div id="group-posts" class="group-subsection">
+    <div id="div-group-posts" class="group-subsection">
         <h2>{% trans "Discussions" %}{% if group.topics.all.count %} ({{ group.topics.all.count }}){% endif %}</h2>
 
 	    {% if member and member.is_accepted %}
@@ -123,13 +119,13 @@
         {% endwith %}
     </div>
     
-    <div id="group-events" class="group-subsection">
+    <div id="div-group-events" class="group-subsection">
         <h2>{% trans "Upcoming Events" %}</h2>
         {% events_upcoming user group %} <br/>
         <a href="{% link_to_events_for group 'css_class' 1 %}">Go to the {{group}} calendar</a><br/>
     </div>
     
-    <div id="group-whiteboard" class="group-subsection">
+    <div id="div-group-whiteboard" class="group-subsection">
         {% get_membership group request.user as member %}
         {% show_whiteboard_force group.whiteboard group member %}
     </div>
@@ -245,5 +241,6 @@
     		$('.preview-img').colorbox({transition: "elastic", width:"80%", height:"80%"});
         });
 	</script>
+  <script type="text/javascript" src="{{STATIC_URL}}js/tabselection.js"></script> 
 {% endblock %}
 

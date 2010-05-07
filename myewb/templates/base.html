@@ -60,7 +60,6 @@
                         {{ announcement.content|safe }}
                     </div>
                 </div>
-                <br/>
             {% endfor %}
             
             {% if messages %}
@@ -74,7 +73,6 @@
                         {% endfor %}
                     </div>
                 </div>
-                <br/>
             {% endif %}
             
             <div id="toolbarcolumn_left">{% spaceless %}
@@ -95,11 +93,17 @@
                 {% endblock %}
             {% endspaceless %}</div>
 
-            <div id="toolbarcolumn_right">{% spaceless %}
-                {% block toolbar_right %}
-                    {# same scheme as toolbarcolumn_left #}
-                {% endblock %}            
-            {% endspaceless %}</div>
+
+            {% block toolbarcolumn_right_top %}{% endblock %}
+                
+                <div id="toolbarcolumn_right">{% spaceless %}
+                    {% block toolbar_right %}
+                        {# same scheme as toolbarcolumn_left #}
+                    {% endblock %}            
+                {% endspaceless %}</div>
+            
+            
+            {% block toolbarcolumn_right_bottom %}{% endblock %}
 
             <div id="maincolumn" style="overflow-x: hidden;">
 
