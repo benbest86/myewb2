@@ -100,6 +100,12 @@
     <div id="group-posts" class="group-subsection">
         <h2>{% trans "Discussions" %}{% if group.topics.all.count %} ({{ group.topics.all.count }}){% endif %}</h2>
 
+	    {% if member and member.is_accepted %}
+			<p style="font-size: 14px;">
+	    		<a href="{% groupurl topic_new group %}">Create a new post</a>
+		    </p>
+	    {% endif %}
+	    
         {% get_grouptopics_for_group group as topic_queryset %}
         {% with topic_queryset|slice:":5" as topics %}
             {% if topics %}
@@ -111,8 +117,7 @@
             {% else %}
                 {% groupurl topic_list group as new_topic_url %}
                 <p>
-                    {% trans "None yet." %}
-                    {% if user.is_authenticated %}<br/><a href="{{ new_topic_url }}">{% trans "Start one..." %}</a>{% endif %}
+                    {% trans "None posts." %}
                 </p>
             {% endif %}
         {% endwith %}

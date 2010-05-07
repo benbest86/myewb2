@@ -12,4 +12,5 @@ from django.conf.urls.defaults import *
 
 urlpatterns = patterns('',
     url(r'^$', 'group_topics.views.topics.topics', name="topic_list"),
+    url(r'^new/$', 'group_topics.views.topics.new_topic', name="topic_new"),
 )
