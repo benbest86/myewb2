@@ -675,8 +675,12 @@ def softdelete(request, username):
     else:
         return HttpResponseForbidden()
 
-def settings(request, username):
-    user = get_object_or_404(User, username=username)
+@login_required
+def settings(request, username=None):
+    if username:
+        user = get_object_or_404(User, username=username)
+    else:
+        user = request.user
     
     if request.user == user or request.user.has_module_perms("profiles"):
         if request.method == 'POST':
