@@ -101,6 +101,22 @@
                 {% endif %}
            	{% endif %}
         </div>
+        
+        {# my groups #}
+        <div class="toolbarheader bkgd" id="box-frontpage-mygroups">{% trans "My groups" %}</div>
+        <div class="toolbarcontent">
+             	{% for group in user.get_networks %}
+	                <a href="{% url group_detail group.slug %}">{{ group.name }}</a><br/>
+            	{% endfor %}
+            	{% for group in user.get_communities %}
+	                <a href="{% url group_detail group.slug %}">{{ group.name }}</a><br/>
+	                &nbsp; x new posts &nbsp; New post &raquo;<br/>
+            	{% endfor %}
+
+ 
+        </div>
+        
+        
     {% else %}
         <div class="toolbarheader bkgd">{% trans "Sign In" %}</div>
         <div class="toolbarcontent">
