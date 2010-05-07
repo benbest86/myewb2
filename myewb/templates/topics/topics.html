@@ -37,7 +37,17 @@ The {% if group %} checks are left in just in case, and should be removed eventu
 {% block body %}
     {% if group %}
         <h1>{% blocktrans with group.get_absolute_url as group_url and group.name as group_name %}Posts for <a href="{{ group_url }}">{{ group_name }}</a>{% endblocktrans %}</h1>
+
+		<p style="font-size: 14px;">
+	    {% if is_member %}
+	    	<a href="{% groupurl topic_new group %}">Create a new post</a>
+	    {% else %}
+	    	You need to join this group before you can post to it.
+	    {% endif %}
+	    </p>
+    
     {% endif %}
+
 
     {% autopaginate topics 10 %}
     
@@ -47,28 +57,6 @@ The {% if group %} checks are left in just in case, and should be removed eventu
     
     {% paginate %}
     
-    {% if group and is_member %}
-        <h2>{% trans "New Topic" %}</h2>
-        
-        <form class="uniForm" method="POST" enctype="multipart/form-data" action="">
-            <fieldset class="inlineLabels">
-                {{ topic_form|as_uni_form }}
-                <div id="attachFiles">
-                    {% for af in attach_forms %}
-                        {{ af|as_uni_form }}
-                    {% endfor %}
-                    <div id="attachLink">
-                        <a class="getAttachForm" href="{% url topic_get_attachment_form %}">{% trans "Attach a file to this post" %}</a>
-                    </div>
-                </div>
-                <div class="form_block">
-                    <input type="hidden" id="attachCount" name="attach_count" value="{{ attach_count }}">
-                    <input type="hidden" name="next" value="{{ request.path }}" />
-                    <input type="submit" id="submitPost" value="{% trans "Create New Post" %}" /></td>
-                </div>
-            </fieldset>
-        </form>
-    {% endif %}
 {% endblock %}
 
 {% block extra_body %}

@@ -72,7 +72,7 @@
 		
 		<a class="signout" href="{% url acct_logout %}">{% trans "sign out" %}</a>
     {% else %}
-        <a href="{% url acct_login %}">{% trans "Login" %}</a>
+        <a href="{% url acct_login %}?url={{request.path}}">{% trans "Login" %}</a>
 {% ifsetting ACCOUNT_OPEN_SIGNUP %}{% trans "or" %} <a href="{% url acct_signup %}"><strong>{% trans "Sign up" %}</strong></a>{% endifsetting %}
     {% endif %}
 	</div>

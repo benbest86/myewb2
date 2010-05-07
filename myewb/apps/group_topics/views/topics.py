@@ -153,7 +153,7 @@ def topics(request, group_slug=None, form_class=GroupTopicForm,
         "mode": mode
     }, context_instance=RequestContext(request))
     
-def new_topic(request, group_slug=None):
+def new_topic(request, group_slug=None, bridge=None):
     is_member = False
     group = None
     if group_slug is None:

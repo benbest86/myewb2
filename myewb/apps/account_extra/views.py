@@ -25,6 +25,10 @@ from siteutils import online_middleware
 def login(request, form_class=EmailLoginForm, 
         template_name="account/login.html", success_url=None,
         associate_openid=False, openid_success_url=None, url_required=False):
+    
+    if not success_url:
+        success_url = request.GET.get("url", None)
+    
     return pinaxlogin(request, form_class, template_name, success_url, 
             associate_openid, openid_success_url, url_required)
 
