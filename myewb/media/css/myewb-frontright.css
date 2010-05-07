@@ -1,9 +1,18 @@
-#toolbarcolumn_right
+#toolbarcolumn_right_container
 {
         width: 300px;
         float: right;
+        
+        margin:0 -1em 0 1em;        
+}
+#toolbarcolumn_right {
+width: 300px;
+margin:0;
 }
 
+#box-around-ewb-rightbar {
+-moz-border-radius-topleft:7px;
+}
 .toolbarheader_right
 {
         /* background-repeat:no-repeat;

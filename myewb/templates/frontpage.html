@@ -11,7 +11,41 @@
     {{ block.super }}
     
     <link rel="alternate" type="application/rss+xml" title="myEWB Front Page" href="{% url topic_feed_all %}" />
-	<link rel="stylesheet" href="{{ STATIC_URL }}css/toolbars.css" />    
+	<link rel="stylesheet" href="{{ STATIC_URL }}css/toolbars.css" />   
+	
+ 
+{% endblock %}
+
+{% block frontpagerightJS %}
+            function toggleFrontpageToolbar() {
+                $('#toolbarcolumn_right_container').toggle();
+                $('#toolbarcolumn_right_show').toggle();
+                
+                {% if user.is_authenticated %}
+                    
+                    var action = "";
+                    if (! $('#toolbarcolumn_right_container').is(':visible'))
+                        action = "close";
+                    else
+                        action = "show";
+                    
+                    
+                    $.ajax({
+                      url: "{% url profile_toolbar_action %}" + action + "/" + "toolbarcolumn_right_container" + "/",
+                      cache: false,  // this prepends another query onto the end with a timestamp - make sure it doesn't mix up the handler page?
+                    });
+                {% endif %}
+                {# state saving only works if youre logged in, so only really try then #}
+
+                                
+
+            }
+            
+            $('.frontpagetoolbarToggles').click(function(){	
+                toggleFrontpageToolbar();
+
+          	  });
+
 {% endblock %}
 
 
@@ -156,7 +190,17 @@
 {% block toolbar_right %}
     {# put this in its own file, since its so big (and others like kyle may want to edit it #}
     {% include "frontpage-right.html" %}
-{% endblock %}            
+{% endblock %}      
+
+{% block toolbarcolumn_right_top %}
+                <div id="box-around-ewb-rightbar" class="toolbarheader-wide bkgd frontpagetoolbarToggles">Around EWB</div>
+{% endblock %}
+
+{% block toolbarcolumn_right_bottom %}
+<div id="toolbarcolumn_right_show" class="blue frontpagetoolbarToggles" style="display:none;">
+            +
+            </div>
+{% endblock %}      
 
 {% block extra_body %}
 {% comment %}
