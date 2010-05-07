@@ -8,14 +8,14 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% load profile_tags %}
 
 {# should probably pull this CSS stuff out into the css file... #}
-<div class="toolbarheader bkgd">{% trans "Find Users" %}</div>
+<div class="toolbarheader bkgd" id="box-find-users">{% trans "Find Users" %}</div>
 <div class="toolbarcontent">
 	{% show_profile_search "" %}
 </div>
 
 {% if is_me or is_friend or perms.profiles %}
     {% if other_user.basegroup_set.all %}
-		<div class="toolbarheader bkgd">
+		<div class="toolbarheader bkgd"  id="box-groups">
     	    {% if is_me %}
                 {% trans "My Groups" %}
             {% else %}
@@ -39,7 +39,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
     {% endif %}
     
     {% if other_friends %}
-		<div class="toolbarheader bkgd">{% trans "Friends" %}</div>
+		<div class="toolbarheader bkgd" id="box-friends">{% trans "Friends" %}</div>
 		<div class="toolbarcontent">
 			{# TODO: limit number shown here, maybe add a "see more" page #}
 	        {% for friendship in other_friends %}
