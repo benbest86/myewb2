@@ -64,6 +64,23 @@ def send_to_watchlist(sender, instance, **kwargs):
                            to=[topic.creator.email]
                           )
         msg.send(fail_silently=False)
+        
+    # send email to participants
+    participants = []
+    allcomments = ThreadedComment.objects.all_for_object(topic)
+    for c in allcomments:
+        if c.user.get_profile().replies_as_emails2 and c.user.email not in participants:
+            participants.append(c.user.email)
+            
+    if topic.creator.get_profile().replies_as_emails:   # remove creator if they already received an email
+        participants.remove(topic.creator.email)
+    if len(participants):
+        msg = EmailMessage(subject=topic.title,
+                           body=message,
+                           from_email=sender, 
+                           to=participants
+                          )
+        msg.send(fail_silently=False)
 
     # TODO: option to email anyone else who has repied to this thread too
     # (or could be implemented as an "add to watchlist" checkbox on the reply form)

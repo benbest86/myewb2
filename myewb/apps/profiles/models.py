@@ -122,6 +122,7 @@ class MemberProfile(Profile):
     sort_by = models.CharField(_('sort by'), choices=SORTING_CHOICES, default='r', max_length=1)
     address_updated = models.DateField(_('address updated'), null=True, blank=True)
     replies_as_emails = models.BooleanField(_('replies as emails'), null=False, blank=True, default=True)
+    replies_as_emails2 = models.BooleanField(_('replies as emails two'), null=False, blank=True, default=True)
     watchlist_as_emails = models.BooleanField(_('watchlist replies as emails'), null=False, blank=True, default=True)
 
     #addresses = generic.GenericRelation(Address)

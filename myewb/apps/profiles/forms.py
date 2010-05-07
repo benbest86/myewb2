@@ -115,9 +115,14 @@ class SettingsForm(forms.ModelForm):
                                 widget=forms.RadioSelect,
                                 required=False)
     replies_as_emails = forms.BooleanField(label="When someone replies to my post",
-                                           required=False)
+                                           required=False,
+                                           help_text="Send me an email when someone replies to a post that I started")
+    replies_as_emails2 = forms.BooleanField(label="When someone replies to my reply",
+                                            required=False,
+                                            help_text="Send me an email when someone replies to a post that I have also replied to")
     watchlist_as_emails = forms.BooleanField(label="When someone replies to a watchlisted post",
-                                             required=False)
+                                             required=False,
+                                             help_text="Send me an email when someone replies to a post on my watchlist")
 
     # for custom uni_form layout
     helper = FormHelper()
@@ -128,6 +133,7 @@ class SettingsForm(forms.ModelForm):
                              css_class='inlineLabels'),
                     Fieldset('Email notices',
                              'replies_as_emails',
+                             'replies_as_emails2',
                              'watchlist_as_emails',
                              css_class='inlineLabels'),
                     HTML('<p><input type="submit" value="update"/></p>'))
@@ -139,4 +145,5 @@ class SettingsForm(forms.ModelForm):
                   #'show_replies',
                   'sort_by',
                   'replies_as_emails',
+                  'replies_as_emails2',
                   'watchlist_as_emails')
