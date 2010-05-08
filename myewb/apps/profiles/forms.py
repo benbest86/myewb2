@@ -61,25 +61,25 @@ MEMBERSHIP_TYPES = (('studues', _("Student ($20)")),
 				    ('produes', _("Professional ($40)")))
 
 class MembershipForm(forms.Form):
-	membership_type = forms.ChoiceField(choices=MEMBERSHIP_TYPES,
+    membership_type = forms.ChoiceField(choices=MEMBERSHIP_TYPES,
 										widget=forms.RadioSelect)
-	chapters = [('none', _('(none)'))]
-	chapter = forms.ChoiceField(choices=chapters)
-	
-	helper = FormHelper()
-	layout = Layout('membership_type')
-	helper.add_layout(layout)
-	submit = Submit('submit', 'Continue')
-	helper.add_input(submit)
-	helper.action = ''
-	
-	def __init__(self, *args, **kwargs):
-		chapterlist = kwargs.pop('chapters', None)
-		for chapter in chapterlist:
-			print chapter
+    chapters = [('none', _('(none)'))]
+    chapter = forms.ChoiceField(choices=chapters)
+    
+    helper = FormHelper()
+    layout = Layout('membership_type')
+    helper.add_layout(layout)
+    submit = Submit('submit', 'Continue')
+    helper.add_input(submit)
+    helper.action = ''
+    
+    def __init__(self, *args, **kwargs):
+        self.base_fields['chapter'].choices = self.chapters     # why do I need to reset this? weird...
+        chapterlist = kwargs.pop('chapters', None)
+        for chapter in chapterlist:
 			self.base_fields['chapter'].choices.append((chapter.slug, chapter.chapter_info.chapter_name))
-		
-		super(MembershipForm, self).__init__(*args, **kwargs)
+            
+        super(MembershipForm, self).__init__(*args, **kwargs)
     
 class MembershipFormPreview(PaymentFormPreview):
     username = None
