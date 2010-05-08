@@ -157,21 +157,26 @@ def add_choose_group(request):
     Let someone choose a group, before creating an event...
     """
     if request.method == 'POST':
-        group = request.POST.get('group', None)
-        if group == "0":
-            return add(request, 'auth', 'user', request.user.pk)
-        else:
-            type = group[0:1]
-            groupid = group[1:]
-            
-            if type == 'n':
-                return add(request, 'networks', 'network', groupid)
-            elif type == 'c':
-                return add(request, 'communities', 'community', groupid)
+        form = GroupEventForm(request.POST, user=request.user)
+        
+        if form.is_valid(): 
+            group = request.POST.get('group', None)
+            if group == "0":
+                return add(request, 'auth', 'user', request.user.pk)
             else:
-                # ???
-                pass
-    form = GroupEventForm(user=request.user)
+                type = group[0:1]
+                groupid = group[1:]
+                
+                if type == 'n':
+                    return add(request, 'networks', 'network', groupid)
+                elif type == 'c':
+                    return add(request, 'communities', 'community', groupid)
+                else:
+                    # ???
+                    pass
+            
+    else:
+        form = GroupEventForm(user=request.user)
 
     context = { 'form':form }
     context.update(locals())

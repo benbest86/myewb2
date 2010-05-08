@@ -26,10 +26,11 @@ class EventForm(forms.ModelForm):
     
     description = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
 
-
     def clean(self):
-        if self.cleaned_data['end'] < self.cleaned_data['start']:
-            raise forms.ValidationError("End time must be after the start time.")
+        # why does this get called before field validation that ensures they are filled in???
+        if self.cleaned_data.get('end', None) and self.cleaned_data.get('start', None):
+            if self.cleaned_data['end'] < self.cleaned_data['start']:
+                raise forms.ValidationError("End time must be after the start time.")
         
         return self.cleaned_data
 

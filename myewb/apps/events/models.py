@@ -102,5 +102,3 @@ class Event(models.Model):
 
     class Meta:
         ordering=( '-start', )
-        unique_together = (('start', 'slug'),)
-
