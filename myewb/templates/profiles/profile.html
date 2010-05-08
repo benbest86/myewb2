@@ -360,7 +360,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
         <div class="toolbarcontent">
             <a href="{% url profile_edit %}" rel="facebox">update profile info</a><br/>
             <a href="{% url profile_settings other_user.username %}">update settings</a><br/>
-            change password<br/>
+            <a href="{% url acct_passwd %}">change password</a><br/>
             <a href="{% url avatar_change %}">update picture</a><br/>
             <br/>
             <a href="{% url account_delete other_user %}">delete my account</a><br/>
