@@ -35,7 +35,7 @@ def main_dashboard(request):
         today.users = 1
 
     # ---- Daily usage ----
-    averageusage = DailyStats.objects.order_by('-day')
+    averageusage = DailyStats.objects.order_by('day')
     max_signins = 0
     days = []
     signins = []
@@ -68,7 +68,8 @@ def main_dashboard(request):
         regdowngrades.append(s.regdowngrades)
 
     xaxis = []
-    for i in range(0, len(days), 1):    # that last arg should be "len(days)/8"
+    for i in range(0, len(days), 1):    # this will make limited test data look better
+    #for i in range(0, len(days), len(days)/8):
         xaxis.append(days[i])
 
     # ---- Daily usage ----
@@ -83,7 +84,8 @@ def main_dashboard(request):
     dailyUsageChart.set_legend(['posts', 'replies', 'signins', 'whiteboards'])
     dailyUsageChart.set_legend_position('b')
 
-    yaxis = range(0, max_signins + 1, 2)    # that last number should be 25 or 50.  but for testing...
+    #yaxis = range(0, max_signins + 1, 2)    # this will make limited test data look better
+    yaxis = range(0, max_signins + 1, 50)
     yaxis[0] = ''
     dailyUsageChart.set_axis_labels(Axis.LEFT, yaxis)
     dailyUsageChart.set_axis_labels(Axis.BOTTOM, xaxis)
@@ -101,7 +103,8 @@ def main_dashboard(request):
     accountChangesChart.set_legend(['account signups', 'email signups', 'email upgrades', 'deletions'])
     accountChangesChart.set_legend_position('b')
 
-    yaxis = range(0, 25, 2)    # that last number should be 25 or 50.  but for testing...
+    #yaxis = range(0, 25, 2)    # this will make limited test data look better
+    yaxis = range(0, 25, 50)
     yaxis[0] = ''
     accountChangesChart.set_axis_labels(Axis.LEFT, yaxis)
     accountChangesChart.set_axis_labels(Axis.BOTTOM, xaxis)
@@ -117,7 +120,7 @@ def main_dashboard(request):
     membershipChart.set_legend(['total users', 'regular members'])
     membershipChart.set_legend_position('b')
 
-    yaxis = range(42000, 52000, 1000)    # that last number should be 25 or 50.  but for testing...
+    yaxis = range(42000, 52000, 1000)
     yaxis[0] = ''
     yaxis2 = range(0, 1500, 50)
     yaxis2[0] = ''
@@ -137,7 +140,8 @@ def main_dashboard(request):
     membershipChangesChart.set_legend(['regular upgrades', 'renewals', 'regular downgrades'])
     membershipChangesChart.set_legend_position('b')
 
-    yaxis = range(0, 25, 2)    # that last number should be 25 or 50.  but for testing...
+    #yaxis = range(0, 25, 2)    # the same.
+    yaxis = range(0, 25, 50)
     yaxis[0] = ''
     membershipChangesChart.set_axis_labels(Axis.LEFT, yaxis)
     membershipChangesChart.set_axis_labels(Axis.BOTTOM, xaxis)
@@ -163,7 +167,7 @@ def main_dashboard(request):
     chaptermembers = []
     for chapter in chapters:
         chapternames.append(chapter.slug)
-        chaptermembers.append(chapter.members.all().count() + chapter.pk)
+        chaptermembers.append(chapter.members.all().count())
     
     membershipBreakdownChart = StackedHorizontalBarChart(500, 500,
                                                          x_range=(0, max(chaptermembers)))
@@ -285,6 +289,7 @@ def main_dashboard(request):
     thedate = date(date.today().year - 1,
                    date.today().month,
                    1)
+    skip = False
     while thedate.year != date.today().year or thedate.month != date.today().month:
         if thedate.month == 12:
             enddate = date(year=thedate.year + 1,
@@ -294,7 +299,11 @@ def main_dashboard(request):
                            month=thedate.month + 1,
                            day=1)
         loginrecent.append(MemberProfile.objects.filter(previous_login__range=(thedate, enddate)).count())
-        loginrecentdate.append(thedate.strftime("%B %y"))
+        if not skip:
+            loginrecentdate.append(thedate.strftime("%B %y"))
+        else:
+            loginrecentdate.append("")
+        skip = not skip
         thedate = enddate
 
     loginRecency = SimpleLineChart(600, 450, y_range=(0, max(loginrecent)+1))
@@ -391,6 +400,7 @@ def group_membership_activity(request, group_slug):
     listdate = []
     currentcount = group.member_users.all().count()
     thedate = date.today()
+    skip = False
     while thedate.year != date.today().year - 1 or thedate.month != date.today().month:
         if thedate.month == 1:
             startdate = date(year=thedate.year - 1,
@@ -406,19 +416,22 @@ def group_membership_activity(request, group_slug):
                                                   membership_end=True,
                                                   datetime__range=(startdate, thedate)).count()
         listcount.append(currentcount - joins + unsubs)
-        listdate.append(thedate.strftime("%B %y"))
+        if not skip:
+            listdate.append(thedate.strftime("%B %y"))
+        else:
+            listdate.append("")
+        skip = not skip
         thedate = startdate
         
     listcount.reverse()
     listdate.reverse()
 
-    activity = SimpleLineChart(600, 450, y_range=(min(listcount)-1, max(listcount)+1))
+    activity = SimpleLineChart(600, 450, y_range=(min(listcount), max(listcount)))
     activity.add_data(listcount)
 
-    yaxis = range(min(listcount)-1, max(listcount)+1, max(max(listcount)/10, 1))    # that last number should be 25 or 50.  but for testing...
-    if len(yaxis) == 0:
-        yaxis.append(10)
-        yaxis.append(10)
+    yaxis = range(min(listcount), max(listcount), max(max(listcount)/10, 1))    # that last number should be 25 or 50.  but for testing...
+    if len(yaxis) < 2:  # only for testing...
+        yaxis.append(1)
     yaxis[0] = ''
     activity.set_axis_labels(Axis.LEFT, yaxis)
     activity.set_axis_labels(Axis.BOTTOM, listdate)
@@ -436,6 +449,7 @@ def group_post_activity(request, group_slug):
     thedate = date(date.today().year - 1,
                    date.today().month,
                    1)
+    skip = False
     while thedate.year != date.today().year or thedate.month != date.today().month:
         if thedate.month == 12:
             enddate = date(year=thedate.year + 1,
@@ -452,18 +466,21 @@ def group_post_activity(request, group_slug):
         postcount.append(posts)
         replycount.append(replies)
         allcount.append(posts + replies)
-        listdate.append(thedate.strftime("%B %y"))
+        if not skip:
+            listdate.append(thedate.strftime("%B %y"))
+        else:
+            listdate.append("")
+        skip = not skip
         thedate = enddate
 
-    postactivity = SimpleLineChart(600, 450, y_range=(min(min(postcount), min(replycount))-1, max(max(postcount), max(replycount))+1))
+    postactivity = SimpleLineChart(600, 450, y_range=(min(min(postcount), min(replycount)), max(max(postcount), max(replycount)) + 1))
     postactivity.add_data(postcount)
     postactivity.add_data(replycount)
     postactivity.add_data(allcount)
 
-    yaxis = [min(min(postcount), min(replycount))-1, max(max(postcount), max(replycount))+1, 1]
-    if len(yaxis) == 0:
-        yaxis.append(10)
-        yaxis.append(10)
+    yaxis = range(min(min(postcount), min(replycount)), max(max(postcount), max(replycount)) + 1, 1)
+    if len(yaxis) < 2:
+        yaxis.append(1)
     yaxis[0] = ''
     postactivity.set_axis_labels(Axis.LEFT, yaxis)
     postactivity.set_axis_labels(Axis.BOTTOM, listdate)
