@@ -406,35 +406,35 @@ def delete_work_record(request, username, work_record_id, object=None):
 # override default "save" function so we can prompt people to join networks
 def profile(request, username, template_name="profiles/profile.html", extra_context=None):
     other_user = User.objects.get(username=username)
-    if request.user == other_user:
-        if request.method == "POST":
-            if request.POST["action"] == "update":
-                profile_form = ProfileForm(request.POST, instance=other_user.get_profile())
-                if profile_form.is_valid():
-                    
-                    # if changed city, prompt to update networks
-                    if profile_form.cleaned_data['city'] != other_user.get_profile().city:
-                        # join new network
-                        # TODO: use geocoding to find closest network(s)
-                        try:
-                            network = Network.objects.get(name=profile_form.cleaned_data['city'], network_type='R')
 
-                            if not network.user_is_member(other_user):
-                                message = loader.get_template("profiles/suggest_network.html")
-                                c = Context({'network': network, 'action': 'join'})
-                                request.user.message_set.create(message=message.render(c))
-                        except Network.DoesNotExist:
-                            pass
-                            
-                        # leave old network
-                        try:
-                            network = Network.objects.get(name=other_user.get_profile().city, network_type='R')
-                            if network.user_is_member(other_user):
-                                message = loader.get_template("profiles/suggest_network.html")
-                                c = Context({'network': network, 'action': 'leave', 'user': other_user})
-                                request.user.message_set.create(message=message.render(c))
-                        except Network.DoesNotExist:
-                            pass
+    """
+    This is really really neat code, but dunno where to put it since 
+    address is now handled via ajax widget...!!
+    
+    # if changed city, prompt to update networks
+    if profile_form.cleaned_data['city'] != other_user.get_profile().city:
+        # join new network
+        # TODO: use geocoding to find closest network(s)
+        try:
+            network = Network.objects.get(name=profile_form.cleaned_data['city'], network_type='R')
+
+            if not network.user_is_member(other_user):
+                message = loader.get_template("profiles/suggest_network.html")
+                c = Context({'network': network, 'action': 'join'})
+                request.user.message_set.create(message=message.render(c))
+        except Network.DoesNotExist:
+            pass
+            
+        # leave old network
+        try:
+            network = Network.objects.get(name=other_user.get_profile().city, network_type='R')
+            if network.user_is_member(other_user):
+                message = loader.get_template("profiles/suggest_network.html")
+                c = Context({'network': network, 'action': 'leave', 'user': other_user})
+                request.user.message_set.create(message=message.render(c))
+        except Network.DoesNotExist:
+            pass
+    """
     
     if extra_context == None:
         extra_context = {}
