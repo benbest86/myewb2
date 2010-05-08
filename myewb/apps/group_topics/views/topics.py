@@ -202,7 +202,7 @@ def new_topic(request, group_slug=None, bridge=None):
                 # extra security check that sender isn't forged.
                 # can't hurt...
                 sender_valid = False
-                if group.user_is_admin(request.user):
+                if group.user_is_admin(request.user) and topic_form.cleaned_data.get('sender', None):
                     if topic_form.cleaned_data['sender'] == group.from_email:
                         sender_valid = True
                         sender = '"%s" <%s>' % (group.from_name, group.from_email)

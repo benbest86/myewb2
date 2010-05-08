@@ -109,11 +109,13 @@ def free_comment(request, content_type=None, object_id=None, edit_id=None, paren
         if request.user.is_anonymous():
             return HttpResponseForbidden()
         
+        # get parent object
         ctype = ContentType.objects.get(id=content_type)
         parentgrp = helpers.get_obj(ct=ctype, id=object_id)
         if not helpers.is_visible(request.user, parentgrp):
             return HttpResponseForbidden()
         
+        # set up the comment object for saving
         if not edit_id:
             new_comment.ip_address = request.META.get('REMOTE_ADDR', None)
             new_comment.content_type = get_object_or_404(ContentType, id = int(content_type))
@@ -123,8 +125,23 @@ def free_comment(request, content_type=None, object_id=None, edit_id=None, paren
         if parent_id:
             new_comment.parent = get_object_or_404(model, id = int(parent_id))
         new_comment.save()
+        
+        # handle attachments
         for af in attach_forms:
             attachment = af.save(request, new_comment)
+            
+        # handle tags
+        newtags = set(form.cleaned_data['tags'].split(','))
+        oldtags = set(new_comment.content_object.tags.split(','))
+        alltags = newtags | oldtags
+        alltags.remove('')
+        tagstring = ""
+        for t in alltags:
+            tagstring += t + ","
+        new_comment.content_object.tags = tagstring
+        new_comment.content_object.save()
+        
+        # and display success messages
         if model == ThreadedComment:
             if add_messages:
                 request.user.message_set.create(message="Your message has been posted successfully.")

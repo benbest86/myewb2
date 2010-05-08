@@ -73,7 +73,7 @@ class GroupTopicForm(forms.ModelForm):
             # look up alias - if one exists, use the real tag
             try:
                 alias = TagAlias.objects.get(alias=tag)
-                tags += alias.tag.name
+                tags += alias.tag.name + ","
                 # should the alias just store the tag's text, instead of a 
                 # reference to the object, for db efficiency?
                 
