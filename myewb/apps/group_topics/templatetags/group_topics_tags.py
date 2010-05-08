@@ -9,6 +9,7 @@ Created on: 2009-12-10
 from django import template
 from django.contrib.auth.models import User
 from group_topics.models import GroupTopic, Watchlist
+import settings
 
 register = template.Library()
 
@@ -56,7 +57,8 @@ def show_topic_with_user(context, topic):
     return {
         "topic": topic,
         "group": context.get("group"),
-        "user": context.get("user")
+        "user": context.get("user"),
+        "STATIC_URL": settings.STATIC_URL,
     }
 register.inclusion_tag("topics/topic_item.html", takes_context=True)(show_topic_with_user)
 

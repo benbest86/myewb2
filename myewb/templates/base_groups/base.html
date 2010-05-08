@@ -113,7 +113,7 @@
             {% else %}
                 {% groupurl topic_list group as new_topic_url %}
                 <p>
-                    {% trans "None posts." %}
+                    {% trans "No posts." %}
                 </p>
             {% endif %}
         {% endwith %}
@@ -226,7 +226,7 @@
                     $('#groupheader li').each(function() {
                         $(this).removeClass('current');
                     });
-                    $('#' + $(this).attr('id').substring(5)).slideDown();
+                    $('#div-' + $(this).attr('id').substring(5)).slideDown();
                     $('#li-' + $(this).attr('id').substring(5)).addClass('current');
                 });
             });
@@ -241,6 +241,6 @@
     		$('.preview-img').colorbox({transition: "elastic", width:"80%", height:"80%"});
         });
 	</script>
-  <script type="text/javascript" src="{{STATIC_URL}}js/tabselection.js"></script> 
+{#  <script type="text/javascript" src="{{STATIC_URL}}js/tabselection.js"></script> #} 
 {% endblock %}
 
