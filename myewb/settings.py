@@ -120,7 +120,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
     "pinax.core.context_processors.pinax_settings",
 
-    "notification.context_processors.notification",
+#    "notification.context_processors.notification",
     "group_announcements.context_processors.site_wide_announcements",
 #    "account.context_processors.openid",
     "account.context_processors.account",
@@ -136,7 +136,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 COMBINED_INBOX_COUNT_SOURCES = (
     "messages.context_processors.inbox",
     "friends_app.context_processors.invitations",
-    "notification.context_processors.notification",
+#    "notification.context_processors.notification",
 )
 
 INSTALLED_APPS = (
@@ -151,7 +151,7 @@ INSTALLED_APPS = (
     'pinax.templatetags',
     
     # external
-    'notification', # must be first
+#    'notification', # must be first
 #    'django_openid',
     'emailconfirmation',
     'django_extensions',
