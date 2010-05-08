@@ -1,0 +1,60 @@
+{% extends "topics/base.html" %}
+
+{% load i18n %}
+{% load uni_form %}
+{% load pagination_tags %}
+{% load group_tags %}
+{% load tagging_tags %}
+
+{% comment %}
+**********
+NOTE: this template should only be used in the context of a group (ie, the group 
+variable is not None).  The generic/combined post listing has been moved to
+templates/frontpage.html
+
+The {% if group %} checks are left in just in case, and should be removed eventually.
+***********
+{% endcomment %}
+
+{% block head_title %}{% trans "New Post" %}{% endblock %}
+
+{% block body %}
+    <h2>{% trans "New Post" %}</h2>
+	{% ifnotequal group.slug "ewb" %}
+       	<h2>{{group.name}}</h2>
+    {% endifnotequal %}
+    
+	<div>
+		<strong>Title: {{ data.title }}</strong>
+	</div>
+	
+	{% if data.send_as_email %}
+		<p>
+			<em>(send as email from {{ data.sender }})</em>
+		</p>
+	{% endif %}
+	
+	<div style="padding: 10px; margin: 25px; border: 1px solid;">
+		{{ data.body|safe }}
+	</div>
+	
+	<div>
+		<strong>Tags: </strong> {{ data.tags }}
+	</div>
+	<br/>
+	
+    <form class="uniForm" method="POST" enctype="multipart/form-data" action="">
+    	<div style="display: none;">
+            {{ topic_form|as_uni_form }}
+            {% for af in attach_forms %}
+                {{ af|as_uni_form }}
+            {% endfor %}
+        </div>
+        <p class="form_block">
+            <input type="hidden" id="attachCount" name="attach_count" value="{{ attach_count }}">
+            <input type="hidden" name="next" value="{{ request.path }}" />
+            <input type="submit" name="goback" value="{% trans "Go back and edit" %}" />
+            <input type="submit" name="previewed" value="{% trans "Create New Post" %}" />
+        </p>
+    </form>
+{% endblock %}

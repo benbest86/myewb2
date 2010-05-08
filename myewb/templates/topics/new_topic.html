@@ -19,7 +19,7 @@ The {% if group %} checks are left in just in case, and should be removed eventu
 {% block head_title %}{% trans "New Post" %}{% endblock %}
 
 {% block body %}
-    <h2>{% trans "New Topic" %}</h2>
+    <h2>{% trans "New Post" %}</h2>
 	{% ifnotequal group.slug "ewb" %}
        	<h2>{{group.name}}</h2>
     {% endifnotequal %}

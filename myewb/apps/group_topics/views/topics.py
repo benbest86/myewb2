@@ -185,7 +185,19 @@ def new_topic(request, group_slug=None, bridge=None):
                     attach_count = attach_count - 1
             
             # all good.  save it!
-            if topic_form.is_valid() and all([af.is_valid() for af in attach_forms]):
+            if topic_form.is_valid() and all([af.is_valid() for af in attach_forms]) and not request.POST.get("goback", None):
+                
+                if not request.POST.get("previewed", None):
+                    return render_to_response("topics/preview.html",
+                                              {"group": group,
+                                               "topic_form": topic_form,
+                                               "attach_forms": attach_forms,
+                                               "attach_count": attach_count,
+                                               "is_member": is_member,
+                                               "data": request.POST,
+                                              },
+                                              context_instance=RequestContext(request))
+                    
                 topic = topic_form.save(commit=False)
                 if group:
                     group.associate(topic, commit=False)
