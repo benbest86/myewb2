@@ -7,7 +7,7 @@ from lxml.html.clean import clean_html, autolink_html
 
 class MyThreadedCommentForm(ThreadedCommentForm):
     comment = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
-    tags = forms.CharField()
+    tags = forms.CharField(required=False)
     
     def clean_comment(self):
         self.cleaned_data['comment'] = clean_html(self.cleaned_data['comment'])
