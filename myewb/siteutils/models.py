@@ -48,6 +48,7 @@ class PhoneNumber(models.Model):
       ('Cottage', _('Cottage')),
       ('Parents', _('Parents')),
       ('Placement', _('Placement')),
+      ('Other', _('Other'))
   )
   
   # want a combo box for this -- choices/custom

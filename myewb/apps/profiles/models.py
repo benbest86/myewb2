@@ -24,8 +24,7 @@ from emailconfirmation.models import EmailAddress
 from pinax.apps.profiles.models import Profile, create_profile
 
 from profiles import signals
-from networks import emailforwards
-from networks.models import Network
+#from networks import emailforwards
 from datetime import date, datetime
 from siteutils.countries import CountryField
 from siteutils.models import Address, PhoneNumber
@@ -246,22 +245,22 @@ def create_member_profile(sender, instance=None, **kwargs):
 post_save.disconnect(create_profile, sender=User)
 post_save.connect(create_member_profile, sender=User)
 
-def set_primary_email(sender, instance=None, **kwargs):
-    """
-    Automatically sets a verified email to primary if no verified address exists yet.
-    Also updates LDAP for email forwards if the primary emai
-    """
-    if instance is not None and instance.verified:
-        user = instance.user
-        if instance.primary == False:
-            # if we only have one email it is this one
-            if user.emailaddress_set.count() == 1:
-                instance.set_as_primary()
-                emailforwards.updateUser(user, instance.email)
-        else:
-            emailforwards.updateUser(user, instance.email)
-
-post_save.connect(set_primary_email, sender=EmailAddress)
+#def set_primary_email(sender, instance=None, **kwargs):
+#    """
+#    Automatically sets a verified email to primary if no verified address exists yet.
+#    Also updates LDAP for email forwards if the primary emai
+#    """
+#    if instance is not None and instance.verified:
+#        user = instance.user
+#        if instance.primary == False:
+#            # if we only have one email it is this one
+#            if user.emailaddress_set.count() == 1:
+#                instance.set_as_primary()
+#                emailforwards.updateUser(user, instance.email)
+#        else:
+#            emailforwards.updateUser(user, instance.email)
+#
+#post_save.connect(set_primary_email, sender=EmailAddress)
     
 class StudentRecordManager(models.Manager):
     def get_from_view_args(self, *args, **kwargs):
@@ -280,7 +279,7 @@ class StudentRecord(models.Model):
     """
     
     user = models.ForeignKey(User, verbose_name=_('user'))
-    network = models.ForeignKey(Network, verbose_name=_('network'))
+    network = models.ForeignKey("networks.Network", verbose_name=_('network'))
     
     institution = models.CharField(_('institution'), max_length=50, null=True, blank=True)
     student_number = models.IntegerField(_('student number'), null=True, blank=True)
@@ -323,7 +322,7 @@ class WorkRecord(models.Model):
     """
     
     user = models.ForeignKey(User, verbose_name=_('user'))
-    network = models.ForeignKey(Network, verbose_name=_('network'))
+    network = models.ForeignKey("networks.Network", verbose_name=_('network'))
     
     employer = models.CharField(_('employer'), max_length=50, null=True, blank=True)
     sector = models.CharField(_('sector'), max_length=40, null=True, blank=True)

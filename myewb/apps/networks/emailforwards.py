@@ -9,7 +9,9 @@ Last modified on 2009-08-17
 """
 
 from django import forms
+from django.db.models.signals import post_save
 from django.utils.translation import ugettext_lazy as _
+from emailconfirmation.models import EmailAddress
 
 from base_groups.models import BaseGroup
 from base_groups.forms import BaseGroupForm, GroupMemberForm
@@ -192,4 +194,21 @@ def forwardsForGroup(slug):
 
     else:
         return []
+
     
+def set_primary_email(sender, instance=None, **kwargs):
+    """
+    Automatically sets a verified email to primary if no verified address exists yet.
+    Also updates LDAP for email forwards if the primary email is changed.
+    """
+    if instance is not None and instance.verified:
+        user = instance.user
+        if instance.primary == False:
+            # if we only have one email it is this one
+            if user.emailaddress_set.count() == 1:
+                instance.set_as_primary()
+                emailforwards.updateUser(user, instance.email)
+        else:
+            emailforwards.updateUser(user, instance.email)
+
+post_save.connect(set_primary_email, sender=EmailAddress)
