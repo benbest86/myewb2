@@ -71,6 +71,42 @@
             {% endfor %}
 		
         });
+        
+        
+
+    {% if user.is_authenticated %}
+// Watch-list JS code
+// should this be stored somewhere more post-specific?
+	$(document).ready(function() {
+		$('.watchlist-toggle').click(function() {
+		
+		  var topicID = $(this).attr('id').substring('17');
+		  
+		  console.log(topicID);
+		  
+		  if($(this).hasClass('toggle-remove')) {
+		      // remove it from the watchlist when clicked
+                $(this).html("removing...");
+				$(this).load('{% url topic_watchlist_remove user.pk %}' + topicID + '/');
+				
+				$(this).removeClass('toggle-remove');
+				$(this).addClass('toggle-add');
+		  } else {
+                $(this).html("adding...");
+				$(this).load('{% url topic_watchlist_add user.pk %}' + topicID + '/');
+				
+				$(this).removeClass('toggle-add');
+				$(this).addClass('toggle-remove');
+		  }
+		
+			return false;
+		});
+	});
+    
+    {% endif %}
+        
+        
+        
 		</script>
 		
 {% endblock %}

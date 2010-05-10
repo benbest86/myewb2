@@ -389,7 +389,7 @@ def add_to_watchlist(request, user_id, topic_id):
         list.add_post(topic)
         
         # TODO: do I want to templatize?
-        return HttpResponse("added")
+        return HttpResponse("[remove from watch-list]")
     else:
         return HttpResponse("error! =(")
 
@@ -406,8 +406,8 @@ def remove_from_watchlist(request, user_id, topic_id):
     if list.user_can_control(request.user):
         list.remove_post(topic)
         
-        # TODO: do I want to templatize?
-        return HttpResponse("removed")
+        # TODO: do I want to templatize?  do you!  just kidding. -sean  @@@
+        return HttpResponse("[add to watch-list]")  # was "removed"
     else:
         return HttpResponse("error! =(")
 

@@ -17,6 +17,7 @@
 {% block extra_head %}
 	{{ block.super }}
 	<link type="text/css" href="{{STATIC_URL}}css/colorbox.css" rel="stylesheet" />
+	
 {% endblock %}
 
 {% block body %}
@@ -112,9 +113,9 @@
 					<br/>
 					<span id="toggle_watchlist_container">
 					{% if on_list %}
-	    				<a href="#" id="remove_from_watchlist" class="more">[remove from watch-list]</a>
+	    				<a href="#" id="toggle_watchlist-{{ topic.pk }}" class="more watchlist-toggle toggle-remove">[remove from watch-list]</a>
 	    			{% else %}
-	    				<a href="#" id="add_to_watchlist" class="more">[add to watch-list]</a>
+	    				<a href="#" id="toggle_watchlist-{{ topic.pk }}" class="more watchlist-toggle toggle-add">[add to watch-list]</a>
 	    			{% endif %}
     				</span>
 				{% endif %}
@@ -181,9 +182,14 @@
     </script>	
 	{% endif %}	
 
-	{% if user.is_authenticated %}	
+	{% if user.is_authenticated %}
+	
+	
+	
+	{% comment %}	
 	<script type="text/javascript">
 		$(document).ready(function() {
+		
 			$('#add_to_watchlist').click(function() {
 				$('#toggle_watchlist_container').html("adding...");
 				$('#toggle_watchlist_container').load('{% url topic_watchlist_add user.pk topic.pk %}');
@@ -194,8 +200,14 @@
 				$('#toggle_watchlist_container').load('{% url topic_watchlist_remove user.pk topic.pk %}');
 				return false;
 			});
+			
+			
 		});
 	</script>
+	
+	{% endcomment %}
+	
+	
 	{% endif %}
 	
 	{% if perms.group_topics %}
