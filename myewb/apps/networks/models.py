@@ -56,14 +56,15 @@ class ChapterInfo(models.Model):
     # chapter name is not necessarily predictable, e.g. "Grand River Professional Chapter" for Kitchener-Waterloo
     chapter_name = models.CharField(_('chapter name'), max_length=500)
         
-    street_address = models.CharField(_('street address'), max_length=50)
-    street_address_two = models.CharField(_('street address line 2'), max_length=50, null=True, blank=True)
-    city = models.CharField(_('city'), max_length=40)
+    street_address = models.CharField(_('street address'), max_length=255)
+    street_address_two = models.CharField(_('street address line 2'), max_length=255, null=True, blank=True)
+    city = models.CharField(_('city'), max_length=255)
     province = models.CharField(_('province'), max_length=10)
-    postal_code = models.CharField(_('postal code'), max_length=16)
+    postal_code = models.CharField(_('postal code'), max_length=10)
     phone = models.CharField(_('telephone number'), max_length=40, null=True, blank=True)
     fax = models.CharField(_('fax number'), max_length=40, null=True, blank=True)
-    
+
+    francophone = models.BooleanField(_('francophone chapter?'), default=False)
     student = models.BooleanField(_('student chapter?'), default=True)
     
 def create_network_location(sender, instance=None, **kwargs):

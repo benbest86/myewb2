@@ -5,6 +5,12 @@ Generic instructions:
 - install lxml ("easy_install lxml" - if running Linux/Mac, see http://codespeak.net/lxml/installation.html for dependencies)
 - install pycountry ("easy_install pycountry")
 
+edit one file in your Pinax env:
+(the pinax installation insturctions recommend installing to pinax-env though you may have chosen a different directory)
+(and replaec python-2.6 with your version)
+pinax-env/lib/python-2.6/site-packages/pinax/apps/groups/base.py
+line 37, remove the uniqueness constraint, so it looks like
+name = models.CharField(_('name'), max_length=80, unique=False)
 
 ==========
 

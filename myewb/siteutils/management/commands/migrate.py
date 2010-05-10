@@ -10,6 +10,10 @@ from siteutils.models import Address, PhoneNumber
 
 from django.core.management.base import NoArgsCommand
 
+from base_groups.models import BaseGroup, LogisticalGroup, GroupMemberRecord, GroupMember
+from communities.models import Community, NationalRepList, ExecList
+from networks.models import Network, ChapterInfo
+
 class Command(NoArgsCommand):
     help = "Migrates data from myEWB1"
     requires_model_validation = False
@@ -34,8 +38,22 @@ class Command(NoArgsCommand):
         print ""
         print ""
         
+        print "==============="
+        print "Migrating groups"
+        print datetime.now()
+        print "==============="
+        print ""
+        self.migrate_groups(c)
+        
+        print ""
+        print "finished groups at", datetime.now()
+        print ""
+        print ""
+        
         
     def migrate_users(self, c):
+        # ./manage.py reset --noinput account auth profiles siteutils ; ./manage.py migrate | tee users.log
+        
         c.execute("SELECT * FROM users")
         counter = 0
         for row in c.fetchall():
@@ -182,3 +200,171 @@ class Command(NoArgsCommand):
                     wr.income_level = 'high'
                 
                 wr.save()
+
+    def migrate_groups(self, c):
+        # ./manage.py reset --noinput base_groups communities networks ; ./manage.py migrate | tee groups.log
+        
+        # get all chapters first
+        c.execute("SELECT * FROM groupchapter")
+        chapterinfo = {}
+        execlists = []
+        for row in c.fetchall():
+            chapterinfo[row[0]] = {'id': row[0],
+                                   'address': row[1],
+                                   'address1': row[2],
+                                   'suite': row[3],
+                                   'address2': row[4],
+                                   'city': row[5],
+                                   'province': row[6],
+                                   'postalcode': row[7],
+                                   'phone': row[9],
+                                   'fax': row[10],
+                                   'execId': row[11],
+                                   'francophone': row[12],
+                                   'professional': row[13]}
+            execlists.append(row[11])
+        
+        c.execute("SELECT * FROM groups")
+        counter = 0
+        for row in c.fetchall():
+            # causes problems. and doesn't exist anyway.
+            if row[0] == 35:
+                continue
+            
+            if counter % 100 == 0:
+                print "Groups: id %d - name %s - slug %s" % (row[0], row[1], row[10])
+                
+            # what kind of group do we need?
+            if row[7]:
+                type = Network
+            elif row[8]:
+                type = ExecList
+            elif row[13]:
+                type = NationalRepList
+            elif row[5]:
+                type = LogisticalGroup
+            else:
+                type = Community
+            
+            # prepare data    
+            if row[4]:
+                visibility = 'E'
+                invite_only = False
+            else:
+                visibility = 'M'
+                invite_only = True
+            if row[12] is None:
+                slug = row[10]
+            else:
+                slug = row[0]
+
+            # basic group object
+            grp = type.objects.create(id=row[0],
+                                      slug=slug,
+                                      name=row[1],
+                                      creator_id=1,
+                                      created=datetime.now(),
+                                      description=row[2],
+                                      visibility=visibility,
+                                      invite_only=invite_only,
+                                      is_active = row[6] | row[5],
+                                      is_project=row[9],
+                                      welcome_email=row[14]
+                                      )
+
+            # create chapter-specific info
+            if type == Network:
+                if chapterinfo[row[0]]['professional']:
+                    grp.network_type = 'R'
+                else:
+                    grp.network_type = 'U'
+                grp.save
+                
+                addr2 = ""
+                if chapterinfo[row[0]]['suite']:
+                    addr2 += "Apt " + chapterinfo[row[0]]['suite'] + "|n"
+                if chapterinfo[row[0]]['address2']:
+                    addr2 += chapterinfo[row[0]]['address2']
+                ch = ChapterInfo.objects.create(network=grp,
+                                                chapter_name=row[1],
+                                                street_address=chapterinfo[row[0]]['address1'],
+                                                street_address_two=addr2,
+                                                city=chapterinfo[row[0]]['city'],
+                                                province=chapterinfo[row[0]]['province'],
+                                                postal_code=chapterinfo[row[0]]['postalcode'],
+                                                phone=chapterinfo[row[0]]['phone'],
+                                                fax=chapterinfo[row[0]]['fax'],
+                                                francophone=chapterinfo[row[0]]['francophone'],
+                                                student= not chapterinfo[row[0]]['professional']
+                                               )
+                
+        # assign parent groups separately, since using a parent that comes later
+        # in the dump will cause an error
+        # also do slugs here, since the slug may rely on the parent's name
+        c.execute("SELECT * FROM groups")
+        for row in c.fetchall():
+            if row[12]:
+                 grp = BaseGroup.objects.get(id=row[0])
+                 parent = BaseGroup.objects.get(id=row[12])
+                 grp.parent = parent
+                 grp.slug = parent.slug + "-" + row[10]
+                 while BaseGroup.objects.filter(slug=grp.slug).count() > 0:
+                     grp.slug = grp.slug + "a"
+                 grp.from_email = grp.slug + "@my.ewb.ca"
+                 grp.save()
+                 print "Re-parenting", row[0], row[1], grp.slug
+
+        # and build memberships
+        c.execute("SELECT * FROM roles")
+        for row in c.fetchall():
+            # excluded users...
+            if row[5] == 1 or row[5] == 2:
+                continue
+            
+            print "Role: user", row[5], "group", row[6], "level", row[4], "start", row[1], "end", row[2]
+            
+            start = row[1]
+            end = row[2]
+            title = row[3]
+            level = row[4]      # r m s a
+            user = User.objects.get(pk=row[5])
+            group = BaseGroup.objects.get(pk=row[6])
+            
+            # special case: this is the main EWB group, so deals with account creation
+            if row[5] == 1:
+                user.date_joined = start
+                if end is not None:
+                    user.is_active = False
+                user.save()
+            else:
+                # find admin level
+                if level == 'a':
+                    is_admin = True
+                else:
+                    is_admin = False
+                    
+                # role is ended.. create the  snapshots
+                if end is not None:
+                    GroupMemberRecord.objects.create(group=group,
+                                                     user=user,
+                                                     datetime=start,
+                                                     membership_start=True,
+                                                     is_admin=is_admin,
+                                                     title=title)
+                    GroupMemberRecord.objects.create(group=group,
+                                                     user=user,
+                                                     datetime=start,
+                                                     membership_end=True)
+                else:
+                    # create or update the role
+                    # (in myEWB1, admins had a second role - in myEWB 2, they
+                    #  will only have one role)
+                    # and no need to do snapshot creation, the signals will do that for us 
+                    gm, created = GroupMember.objects.get_or_create(group=group,
+                                                                    user=user)
+                    gm.is_admin=is_admin
+                    gm.admin_title=title
+                    if created:
+                        gm.joined=start
+                    gm.save()
+                    

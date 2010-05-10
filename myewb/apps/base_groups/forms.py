@@ -8,7 +8,8 @@ Last modified on 2009-07-29
 """
 from settings import STATIC_URL
 from django import forms
-from django.utils.translation import ugettext_lazy as _
+#from django.utils.translation import ugettext_lazy as _
+from siteutils.countries import _
 
 from base_groups.models import BaseGroup, GroupMember, GroupLocation, InvitationToJoinGroup
 from base_groups.helpers import get_valid_parents
