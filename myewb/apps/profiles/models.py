@@ -26,13 +26,14 @@ from pinax.apps.profiles.models import Profile, create_profile
 from profiles import signals
 #from networks import emailforwards
 from datetime import date, datetime
-from siteutils.countries import CountryField
+#from siteutils.countries import CountryField
 from siteutils.models import Address, PhoneNumber
 
 class Passport(models.Model):
   profile = models.ForeignKey(Profile, related_name="passports", blank=True)
 
-  country = CountryField()
+#  country = CountryField()
+  country = models.CharField(blank=True, max_length=2)
   passport_number = models.CharField(blank=True, max_length=100)
   name_on_passport = models.CharField(_('name on passport'), blank=True, max_length=200)
   issued_date = models.DateField(default=datetime.today)
@@ -85,9 +86,9 @@ class MemberProfile(Profile):
     #user2 = models.ForeignKey(User, verbose_name=_('user2'), blank=True, default=0) # may need to use this for evolution to work
     
     # This will be copied to the respective fields in the User object
-    first_name = models.CharField(_('first name'), max_length=100, blank=True)
-    preferred_first_name = models.CharField(_('preferred first name (if different)'), max_length=100, blank=True)
-    last_name = models.CharField(_('last name'), max_length=100, blank=True)
+    first_name = models.CharField(_('first name'), max_length=100, blank=True, null=True)
+    preferred_first_name = models.CharField(_('preferred first name (if different)'), max_length=100, blank=True, null=True)
+    last_name = models.CharField(_('last name'), max_length=100, blank=True, null=True)
 
     GENDER_CHOICES = (
         ('M', _('Male')),
@@ -279,11 +280,11 @@ class StudentRecord(models.Model):
     """
     
     user = models.ForeignKey(User, verbose_name=_('user'))
-    network = models.ForeignKey("networks.Network", verbose_name=_('network'))
+    network = models.ForeignKey("networks.Network", verbose_name=_('network'), blank=True, null=True)
     
-    institution = models.CharField(_('institution'), max_length=50, null=True, blank=True)
-    student_number = models.IntegerField(_('student number'), null=True, blank=True)
-    field = models.CharField(_('field'), max_length=40, null=True, blank=True)
+    institution = models.CharField(_('institution'), max_length=255, null=True, blank=True)
+    student_number = models.CharField(_('student number'), max_length=255, null=True, blank=True)
+    field = models.CharField(_('field'), max_length=255, null=True, blank=True)
     
     STUDENT_LEVELS = (
         ('HS', _('High school')),
@@ -322,11 +323,11 @@ class WorkRecord(models.Model):
     """
     
     user = models.ForeignKey(User, verbose_name=_('user'))
-    network = models.ForeignKey("networks.Network", verbose_name=_('network'))
+    network = models.ForeignKey("networks.Network", verbose_name=_('network'), blank=True, null=True)
     
-    employer = models.CharField(_('employer'), max_length=50, null=True, blank=True)
-    sector = models.CharField(_('sector'), max_length=40, null=True, blank=True)
-    position = models.CharField(_('position'), max_length=50, null=True, blank=True)
+    employer = models.CharField(_('employer'), max_length=255, null=True, blank=True)
+    sector = models.CharField(_('sector'), max_length=255, null=True, blank=True)
+    position = models.CharField(_('position'), max_length=255, null=True, blank=True)
     start_date = models.DateField(_('start date'), null=True, blank=True)
     end_date = models.DateField(_('end date'), null=True, blank=True)
     

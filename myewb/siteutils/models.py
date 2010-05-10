@@ -52,8 +52,8 @@ class PhoneNumber(models.Model):
   )
   
   # want a combo box for this -- choices/custom
-  label = models.CharField(_('number type'), max_length=50, choices=PHONE_LABELS, null=True, blank=True)
-  number = models.CharField(_('phone number'), max_length=40, null=True, blank=True)
+  label = models.CharField(_('number type'), max_length=255, choices=PHONE_LABELS, null=True, blank=True)
+  number = models.CharField(_('phone number'), max_length=255, null=True, blank=True)
 
   def __unicode__(self):
     return "%s: %s" % (self.label, self.number)
@@ -81,11 +81,11 @@ class Address(models.Model):
   object_id = models.PositiveIntegerField()
   content_object = generic.GenericForeignKey()
   
-  label = models.CharField(max_length=100, null=False, blank=False)
-  street = models.CharField(_('street address'), max_length=200, null=True, blank=True)
-  city = models.CharField(_('city'), max_length=100, null=True, blank=True)
+  label = models.CharField(max_length=255, null=False, blank=False)
+  street = models.CharField(_('street address'), max_length=255, null=True, blank=True)
+  city = models.CharField(_('city'), max_length=255, null=True, blank=True)
   province = models.CharField(_('province / state'), max_length=2, choices=provinces, default='AB', blank=True)
-  postal_code = models.CharField(_('postal / zip code'), max_length=10, null=True, blank=True)
+  postal_code = models.CharField(_('postal / zip code'), max_length=255, null=True, blank=True)
   country = CountryField(_('country'), max_length=2, choices=countries, default='CA')
   
   # FIXME -- have a smarter fallback name for the 

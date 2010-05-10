@@ -1,5 +1,8 @@
-from django.utils.translation import ugettext as _
+#from django.utils.translation import ugettext as _
 from django.db import models
+
+def _(text):
+    return text
 
 # http://xml.coverpages.org/country3166.html
 COUNTRIES = (
