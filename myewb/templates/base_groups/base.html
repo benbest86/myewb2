@@ -126,6 +126,8 @@
     </div>
     
     <div id="div-group-whiteboard" class="group-subsection">
+        <h2>{% trans "Whiteboard" %}</h2>
+
         {% get_membership group request.user as member %}
         {% show_whiteboard_force group.whiteboard group member %}
     </div>
