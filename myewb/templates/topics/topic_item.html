@@ -20,7 +20,7 @@
 
 		<div style="float: right; margin-top: -8px; margin-right: 15px; font-size: 10px; font-weight: normal; text-align: right; width: 150px;">
 			{% get_comment_count for topic as num_comments %}
-            {% get_latest_comments 1 as latest %}
+            {% get_latest_comments_for 1 as latest for topic %}
             
 			{% if topic.num_whiteboard_edits %}
     			<a href="{{ topic.get_absolute_url }}" style="float: right; margin-top: 3px; margin-left: 10px; padding: 0;" border="0"><img src="{{ STATIC_URL }}images/post_icons/whiteboard.gif" border="0"/></a>

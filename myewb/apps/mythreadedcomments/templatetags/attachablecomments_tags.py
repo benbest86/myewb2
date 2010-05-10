@@ -40,3 +40,34 @@ def get_comments_since(since):
         return ""
     else:
         return "&nbsp;&nbsp;(%d new)" % comments
+
+def do_get_latest_comments_for(parser, token):
+    """
+    Gets the latest comments by date_submitted, for a particular object
+    """
+    error_message = "%r tag must be of format {%% %r NUM_TO_GET as CONTEXT_VARIABLE for OBJECT %%}" % (token.contents.split()[0], token.contents.split()[0])
+    try:
+        split = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError, error_message
+    if len(split) != 6:
+        raise template.TemplateSyntaxError, error_message
+    if split[2] != 'as':
+        raise template.TemplateSyntaxError, error_message
+    if split[4] != 'for':
+        raise template.TemplateSyntaxError, error_message
+    
+    return LatestCommentsForNode(split[1], split[3], split[5])
+
+class LatestCommentsForNode(template.Node):
+    def __init__(self, num, context_name, obj):
+        self.num = num
+        self.context_name = context_name
+        self.object = template.Variable(obj)
+        
+    def render(self, context):
+        object = self.object.resolve(context)
+        comments = ThreadedComment.objects.all_for_object(object).order_by('-date_submitted')[:self.num]
+        context[self.context_name] = comments
+        return ''
+register.tag('get_latest_comments_for', do_get_latest_comments_for)
