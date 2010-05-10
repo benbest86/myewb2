@@ -62,7 +62,7 @@
 	<div class="postsubheader bkgd-light"> <!-- stat row -->
 		<table width="100%" style="margin:0; padding: 0;">
 			<tr>
-				<td>By <a href="{% url profile_detail topic.creator.username %}">{{ topic.creator.visible_name }}</a>, {{ topic.created|date }}</td>
+				<td>By <a href="{% url profile_detail topic.creator.username %}">{{ topic.creator.visible_name }}</a> on {{ topic.created|date }} at {{ topic.created|time }}</td>
 				<td align="right" width="50%">
 					{% ifnotequal topic.group.slug "ewb" %}
 				    	<a href="{{ topic.group.get_absolute_url }}#group-posts">{{ topic.group }}</a>
@@ -91,13 +91,13 @@
 			<tr>
 			<td align="right" valign="top" colspan="2" style="font-size: 10px; padding-right: 10px;">
 		        {% if num_comments %}
-					Latest reply by <a href="{% url profile_detail latest.0.user.username %}" class="nodeco">{{ latest.0.user.visible_name }}</a>, {{ latest.0.date_submitted|date }} 
+					<a href="{{ topic.get_absolute_url }}#reply-{{ latest.0.id }}">Latest reply</a> by <a href="{% url profile_detail latest.0.user.username %}" class="nodeco">{{ latest.0.user.visible_name }}</a><br/> on {{ latest.0.date_submitted|date }} at {{ latest.0.date_submitted|time }}
 
                     {% if topic.num_whiteboard_edits %}<br/>{% endif %}
 				{% endif %}
 					
 		        {% if topic.num_whiteboard_edits %}
-		            Lastest whiteboard edit by <a href="{% url profile_detail topic.whiteboard.latest_changeset.editor.username %}">{{ topic.whiteboard.latest_changeset.editor.visible_name }}</a>, {{ topic.whiteboard.latest_changeset.modified|date }}
+		            Lastest whiteboard edit by <a href="{% url profile_detail topic.whiteboard.latest_changeset.editor.username %}">{{ topic.whiteboard.latest_changeset.editor.visible_name }}</a> on {{ topic.whiteboard.latest_changeset.modified|date }}
 		        {% endif %}
 		    </td>
     		</tr>
