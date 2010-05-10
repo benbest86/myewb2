@@ -207,8 +207,8 @@ def set_primary_email(sender, instance=None, **kwargs):
             # if we only have one email it is this one
             if user.emailaddress_set.count() == 1:
                 instance.set_as_primary()
-                emailforwards.updateUser(user, instance.email)
+                updateUser(user, instance.email)
         else:
-            emailforwards.updateUser(user, instance.email)
+            updateUser(user, instance.email)
 
 post_save.connect(set_primary_email, sender=EmailAddress)
