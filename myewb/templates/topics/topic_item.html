@@ -18,7 +18,7 @@
 		<a href="{{ topic.get_absolute_url }}"><img src="{{ STATIC_URL }}images/post_icons/paperclip.gif" style="float: right; margin: -5px 10px 0 0; padding: 0;" border="0"/></a>
 		{% endif %}
 
-		<div style="float: right; margin-top: -8px; margin-right: 15px; font-size: 10px; font-weight: normal; text-align: right; width: 150px;">
+		<div class="topic-numberofreplies">
 			{% get_comment_count for topic as num_comments %}
             {% get_latest_comments_for 1 as latest for topic %}
             

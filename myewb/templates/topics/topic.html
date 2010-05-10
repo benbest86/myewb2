@@ -30,7 +30,7 @@
 		<a href="{{ topic.get_absolute_url }}"><img src="{{ STATIC_URL }}images/post_icons/paperclip.gif" style="float: right; margin: -5px 10px 0 0; padding: 0;" border="0"/></a>
 		{% endif %}
 
-		<div style="float: right; margin-top: -8px; margin-right: 15px; font-size: 10px; font-weight: normal; text-align: right; width: 150px;">
+		<div class="topic-numberofreplies">
 			{% if topic.num_whiteboard_edits %}
     			<a href="{{ topic.get_absolute_url }}" style="float: right; margin-top: 3px; margin-left: 10px; padding: 0;" border="0"><img src="{{ STATIC_URL }}images/post_icons/whiteboard.gif" border="0"/></a>
     		{% endif %}
