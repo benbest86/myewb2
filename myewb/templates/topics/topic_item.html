@@ -35,7 +35,7 @@
 				{% endifequal %}
 				
 				{% if user.is_authenticated %}
-					<em>{% get_comments_since user.get_profile.previous_login %}</em>
+					<em>{% get_comments_since user.get_profile.previous_login %}</em> {# Wait - this is the total, not topic-specific as it should be. #}
     			{% endif %}
     			</a>
 			{% else %}

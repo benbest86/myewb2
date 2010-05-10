@@ -7,12 +7,12 @@
 .red, .red .bkgd    { background: #b71818; }
 .purple, .purple .bkgd { background: #8b00cc; }
 
-.blue div  { border: 0px solid #0049ee; }
-.green div  { border: 0px solid #00a81c; }
-.yellow div { border: 0px solid #f1ce00; }
-.orange div { border: 0px solid #ff7900; }
-.red div    { border: 0px solid #b71818; }
-.purple div { border: 0px solid #8b00cc; }
+.blue div, div.blue-border  { border: 0px solid #0049ee; }
+.green div, div.green-border  { border: 0px solid #00a81c; }
+.yellow div, div.yellow-border { border: 0px solid #f1ce00; }
+.orange div, div.orange-border { border: 0px solid #ff7900; }
+.red div, div.red-border    { border: 0px solid #b71818; }
+.purple div, div.purple-border { border: 0px solid #8b00cc; }
 div { border: 0px solid #000000; }
 
 /* Light colours (ie for subnav, subheader background) */
