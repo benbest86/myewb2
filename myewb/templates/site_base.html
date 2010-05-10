@@ -22,7 +22,7 @@
                 $(this).next().slideToggle();
                 $(this).toggleClass('hidebox');
                 if($(this).attr('id')) {
-                    console.log($(this).attr('id'));
+                    //console.log($(this).attr('id'));
                     
                     {% if user.is_authenticated %}
                     var action = "";
@@ -44,7 +44,7 @@
                     
                     
                 } else {
-                    console.log('no id');
+                    //console.log('no id');
                 }
                 // indicates that the box *below* is hidden
 

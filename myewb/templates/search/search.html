@@ -67,11 +67,11 @@
 				{% else %}
 					{% ifequal result.model_name "whiteboard" %}
 <div class="post">
-	<div class="postheader yellow {# some way of checking if this is a chapter or a community? #}" style="position: relative;"> <!-- header row -->
+	<div class="postheader orange {# some way of checking if this is a chapter or a community? #}" style="position: relative;"> <!-- header row -->
     <a class="postheaderlink" href="{{ result.object.parent_group.get_absolute_url }}#group-whiteboard">Whiteboard for {{ result.object.parent_group }}</a>
 	</div>
 	
-    <div class="postcontent yellow-border">
+    <div class="postcontent orange-border">
 					    
 				        {% get_membership result.object.parent_group request.user as member %}
 				        {% show_whiteboard_force result.object result.object.parent_group member %}

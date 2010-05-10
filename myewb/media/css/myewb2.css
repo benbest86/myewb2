@@ -32,6 +32,10 @@ div { border: 0px solid #000000; }
 .purple ul.subnav, .purple ul.subnav a { color: #530084; }
 
 
+.lighter {
+color: #777;
+}
+
 body, body#bodybackground {
     background: #C1C1C3;
     font-family: verdana, sans serif;
