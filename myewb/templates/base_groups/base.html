@@ -20,6 +20,19 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}css/myewb2-posts.css" />
 <script type="text/javascript" src="{{ STATIC_URL }}pinax/js/topics.js"></script>
 
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui.js"></script>
+
+
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui.css" />
+
+	<script type="text/javascript">
+	$(function() {
+		$("#chapter-tabs").tabs();
+	});
+	</script>
+
+
+
 {% endblock %}
 
 {# FIXME: how to choose between communities & networks? #}
@@ -44,57 +57,26 @@
         <h1>{{ group.name }}</h1>
     {% endblock %}
 
-    <ul class="segmented" id="groupheader" style="float: none;">
-        <li id="li-group-info" class="current"><a href="#group-info" id="show-group-info">{{ group.name }}</a></li>
-        <li id="li-group-posts"><a href="#group-posts" id="show-group-posts">Group Posts</a></li>
-        <li id="li-group-events"><a href="#group-events" id="show-group-events">Upcoming Events</a></li>
-        <li id="li-group-whiteboard"><a href="#group-whiteboard" id="show-group-whiteboard">Whiteboard</a></li>
-    </ul>
 
-	{% get_membership group request.user as member %}
-	{% if member and member.is_invited %}
-		<div class="bkgd-light" style="border: 1px; width: 75%; margin: 0 auto; padding: 5px;">
-			{% trans "You have been invited to join this group." %}<br/>
-			<form method="POST" action="{% groupurl accept_invitation group username=member.user.username %}">
-				<input type="submit" value="{% trans "Join group" %}" style="float: left;"/>
-			</form>            			
-			<form method="POST" action="{% groupurl delete_member group username=member.user.username %}">
-				&nbsp;&nbsp;&nbsp;<input type="submit" value="{% trans "Decline" %}" />
-			</form>
-		</div>
-	{% else %}
-		{% if not user.is_authenticated %}
-			<form method="post" action="{% url new_email_member group.slug %}">
-				{{ joinform }}
-				<input type="submit" value="subscribe to the mailing list"/>
-			</form>
-		{% endif %}
-	{% endif %}
-	
-	{% if member and member.is_requested %}
-		<div class="bkgd-light" style="border: 1px; width: 75%; margin: 0 auto; padding: 5px;">
-			{% trans "You have requested membership in this group and your request is pending." %}
-			<form method="POST" action="{% groupurl delete_member group username=member.user.username %}">
-				&nbsp;&nbsp;&nbsp;<input type="submit" value="{% trans "cancel request" %}" />
-			</form>
-		</div>
-	{% endif %}
-	
-	{% if requests_outstanding %}
-		<div class="bkgd-light" style="border: 1px; width: 75%; margin: 0 auto; padding: 5px;">
-			{% trans "There are outstanding membership requests." %}
-			<a href="{% groupurl members_index group %}">{% trans "Click here to manage" %}</a>
-		</div>		
-	{% endif %}
 
-    <div id="div-group-info" class="group-subsection" style="display: block;">
-        {% block groupbody %}
+
+<div id="chapter-tabs">
+	<ul>
+		<li><a href="#group-info">{{ group.name }}</a></li>
+
+		<li><a href="#group-posts">Group Posts</a></li>
+		<li><a href="#group-events">Group Events</a></li>
+		<li><a href="#group-whiteboard">Group Whiteboard</a></li>
+
+	</ul>
+	<div id="group-info">
+		{% block groupbody %}
             {# OVERRIDE ME! #}
         {% endblock %}
-    </div>
+	</div>
+	<div id="group-posts">
 
-    <div id="div-group-posts" class="group-subsection">
-        <h2>{% trans "Discussions" %}{% if group.topics.all.count %} ({{ group.topics.all.count }}){% endif %}</h2>
+		<h2>{% trans "Discussions" %}{% if group.topics.all.count %} ({{ group.topics.all.count }}){% endif %}</h2>
 
 	    {% if member and member.is_accepted %}
 			<p style="font-size: 14px;">
@@ -104,6 +86,7 @@
 	    
         {% get_grouptopics_for_group group as topic_queryset %}
         {% with topic_queryset|slice:":5" as topics %}
+            {# slice -- http://stackoverflow.com/questions/992230/django-for-loop-counter-break #}
             {% if topics %}
                 {% for topic in topics|slice:":5" %}
                     {% show_topic_with_user topic %}
@@ -117,20 +100,29 @@
                 </p>
             {% endif %}
         {% endwith %}
-    </div>
-    
-    <div id="div-group-events" class="group-subsection">
-        <h2>{% trans "Upcoming Events" %}</h2>
+
+
+	</div>
+	<div id="group-events">
+		<h2>{% trans "Upcoming Events" %}</h2>
         {% events_upcoming user group %} <br/>
         <a href="{% link_to_events_for group 'css_class' 1 %}">Go to the {{group}} calendar</a><br/>
-    </div>
-    
-    <div id="div-group-whiteboard" class="group-subsection">
-        <h2>{% trans "Whiteboard" %}</h2>
+
+
+	</div>
+	<div id="group-whiteboard">
+		        <h2>{% trans "Whiteboard" %}</h2>
 
         {% get_membership group request.user as member %}
         {% show_whiteboard_force group.whiteboard group member %}
-    </div>
+        
+	</div>
+	
+</div>
+
+
+
+
 
     {% comment %}
 
@@ -154,6 +146,29 @@
 {% endblock %}
 
 {% block toolbar_left %}
+
+
+
+
+
+{% if not user.is_authenticated %}
+        <div class="toolbarheader bkgd" id="box-membership">{% trans "Sign Up" %}</div>
+        <div class="toolbarcontent">
+            <p>Enter your email address below to sign up for the {{ group.name }} mailing list!</p>
+
+			<form method="post" action="{% url new_email_member group.slug %}">
+				{{ joinform }}
+				<input type="submit" value="Subscribe"/>
+			</form>
+        </div>
+		{% endif %}
+
+
+
+
+
+
+
     {% if group and user.is_authenticated %}
         <div class="toolbarheader bkgd" id="box-membership">{% trans "Membership" %}</div>
         <div class="toolbarcontent">
@@ -170,12 +185,55 @@
                 {% endif %}
                 
                 {% if member.is_invited %}
-                    {% trans "You have been invited to join this group." %}<br/>
+
+		<div class="bkgd-light" style="border: 1px; width: 75%; margin: 0 auto; padding: 5px;">
+			{% trans "You have been invited to join this group." %}<br/>
+			<form method="POST" action="{% groupurl accept_invitation group username=member.user.username %}">
+				<input type="submit" value="{% trans "Join group" %}" style="float: left;"/>
+			</form>            			
+			<form method="POST" action="{% groupurl delete_member group username=member.user.username %}">
+				&nbsp;&nbsp;&nbsp;<input type="submit" value="{% trans "Decline" %}" />
+			</form>
+		</div>
+		
+
                 {% endif %}
                 
                 {% if member.is_requested %}
-                    {% trans "You have requested membership in this group and your request is pending." %}<br/>
-                {% endif %}
+		<div class="bkgd-light" style="border: 1px; width: 75%; margin: 0 auto; padding: 5px;">
+			{% trans "You have requested membership in this group and your request is pending." %}
+			<form method="POST" action="{% groupurl delete_member group username=member.user.username %}">
+				&nbsp;&nbsp;&nbsp;<input type="submit" value="{% trans "cancel request" %}" />
+			</form>
+		</div>
+		                {% endif %}
+                
+                
+                {# Dropping these here from further up the page. @@@ might need formatting. #}
+                
+	{% if member and member.is_invited %}
+		<div class="bkgd-light" style="border: 1px; width: 75%; margin: 0 auto; padding: 5px;">
+			{% trans "You have been invited to join this group." %}<br/>
+			<form method="POST" action="{% groupurl accept_invitation group username=member.user.username %}">
+				<input type="submit" value="{% trans "Join group" %}" style="float: left;"/>
+			</form>            			
+			<form method="POST" action="{% groupurl delete_member group username=member.user.username %}">
+				&nbsp;&nbsp;&nbsp;<input type="submit" value="{% trans "Decline" %}" />
+			</form>
+		</div>
+		
+	{% endif %}
+
+
+	{% if requests_outstanding %}
+		<div class="bkgd-light" style="border: 1px; width: 75%; margin: 0 auto; padding: 5px;">
+			{% trans "There are outstanding membership requests." %}
+			<a href="{% groupurl members_index group %}">{% trans "Click here to manage" %}</a>
+		</div>		
+	{% endif %}
+                
+                
+                
                 
             {% else %}
 				<a href="{% groupurl new_member group %}">{% trans "Join group" %}</a><br/>
@@ -183,6 +241,10 @@
         </div>        
     {% endif %}
 {% endblock %}
+
+
+
+
 
 {% block toolbar_right %}
     {% if group and user.is_authenticated %}
@@ -218,31 +280,6 @@
 	<script type="text/javascript" src="{{STATIC_URL}}js/colorbox.js"></script>
 	<link type="text/css" href="{{STATIC_URL}}css/colorbox.css" rel="stylesheet" />
 
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $('#groupheader a').each(function() {
-                $(this).click(function() {
-                    $('.group-subsection').each(function() {
-                        $(this).slideUp();
-                    });
-                    $('#groupheader li').each(function() {
-                        $(this).removeClass('current');
-                    });
-                    $('#div-' + $(this).attr('id').substring(5)).slideDown();
-                    $('#li-' + $(this).attr('id').substring(5)).addClass('current');
-                });
-            });
-            
-            {# Pre-select one of the boxes if needed #}
-            {# thanks http://blog.rebeccamurphey.com/2007/12/04/anchor-based-url-navigation-with-jquery/ #}
-            var url = document.location.toString();
-            if (url.match('#'))
-                $('#show-' + url.split('#')[1]).click();
-
-            {# load up colorbox =) #}
-    		$('.preview-img').colorbox({transition: "elastic", width:"80%", height:"80%"});
-        });
-	</script>
-{#  <script type="text/javascript" src="{{STATIC_URL}}js/tabselection.js"></script> #} 
+    
 {% endblock %}
 
