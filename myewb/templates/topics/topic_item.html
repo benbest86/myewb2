@@ -18,7 +18,7 @@
 		<a href="{{ topic.get_absolute_url }}"><img src="{{ STATIC_URL }}images/post_icons/paperclip.gif" style="float: right; margin: -5px 10px 0 0; padding: 0;" border="0"/></a>
 		{% endif %}
 
-		<div style="float: right; margin-top: -8px; margin-right: 15px; font-size: 10px; font-weight: normal; text-align: right; width: 150px;">
+		<div class="topic-numberofreplies">
 			{% get_comment_count for topic as num_comments %}
             {% get_latest_comments_for 1 as latest for topic %}
             
@@ -35,7 +35,7 @@
 				{% endifequal %}
 				
 				{% if user.is_authenticated %}
-					<em>{% get_comments_since user.get_profile.previous_login %}</em>
+					<em>{% get_comments_since user.get_profile.previous_login %}</em> {# Wait - this is the total, not topic-specific as it should be. #}
     			{% endif %}
     			</a>
 			{% else %}
@@ -62,7 +62,7 @@
 	<div class="postsubheader bkgd-light"> <!-- stat row -->
 		<table width="100%" style="margin:0; padding: 0;">
 			<tr>
-				<td>By <a href="{% url profile_detail topic.creator.username %}">{{ topic.creator.visible_name }}</a>, {{ topic.created|date }}</td>
+				<td>By <a href="{% url profile_detail topic.creator.username %}">{{ topic.creator.visible_name }}</a> on {{ topic.created|date }} at {{ topic.created|time }}</td>
 				<td align="right" width="50%">
 					{% ifnotequal topic.group.slug "ewb" %}
 				    	<a href="{{ topic.group.get_absolute_url }}#group-posts">{{ topic.group }}</a>
@@ -91,13 +91,13 @@
 			<tr>
 			<td align="right" valign="top" colspan="2" style="font-size: 10px; padding-right: 10px;">
 		        {% if num_comments %}
-					Latest reply by <a href="{% url profile_detail latest.0.user.username %}" class="nodeco">{{ latest.0.user.visible_name }}</a>, {{ latest.0.date_submitted|date }} 
+					<a href="{{ topic.get_absolute_url }}#reply-{{ latest.0.id }}">Latest reply</a> by <a href="{% url profile_detail latest.0.user.username %}" class="nodeco">{{ latest.0.user.visible_name }}</a><br/> on {{ latest.0.date_submitted|date }} at {{ latest.0.date_submitted|time }}
 
                     {% if topic.num_whiteboard_edits %}<br/>{% endif %}
 				{% endif %}
 					
 		        {% if topic.num_whiteboard_edits %}
-		            Lastest whiteboard edit by <a href="{% url profile_detail topic.whiteboard.latest_changeset.editor.username %}">{{ topic.whiteboard.latest_changeset.editor.visible_name }}</a>, {{ topic.whiteboard.latest_changeset.modified|date }}
+		            Lastest whiteboard edit by <a href="{% url profile_detail topic.whiteboard.latest_changeset.editor.username %}">{{ topic.whiteboard.latest_changeset.editor.visible_name }}</a> on {{ topic.whiteboard.latest_changeset.modified|date }}
 		        {% endif %}
 		    </td>
     		</tr>
@@ -110,9 +110,9 @@
 					<br/>
 					<span id="toggle_watchlist_container-{{ topic.pk }}">
 					{% if on_list %}
-	    				<a href="#" id="toggle_watchlist-{{ topic.pk }}" class="more">[remove from watch-list]</a>
+	    				<a href="#" id="toggle_watchlist-{{ topic.pk }}" class="more watchlist-toggle toggle-remove">[remove from watch-list]</a>
 	    			{% else %}
-	    				<a href="#" id="toggle_watchlist-{{ topic.pk }}" class="more">[add to watch-list]</a>
+	    				<a href="#" id="toggle_watchlist-{{ topic.pk }}" class="more watchlist-toggle toggle-add">[add to watch-list]</a>
 	    			{% endif %}
     				</span>
 				{% endif %}
@@ -131,22 +131,3 @@
 	</div>
 
 </div>
-
-{# TODO: uses classes too, and put this once in extra_body instead of for each topic... #}
-{% if user.is_authenticated %}
-<script type="text/javascript">
-	$(document).ready(function() {
-		$('#toggle_watchlist-{{ topic.pk }}').click(function() {
-			{% if on_list %}
-				$('#toggle_watchlist_container-{{ topic.pk }}').html("adding...");
-				$('#toggle_watchlist_container-{{ topic.pk }}').load('{% url topic_watchlist_remove user.pk topic.pk %}');
-			{% else %}
-				$('#toggle_watchlist_container-{{ topic.pk }}').html("adding...");
-				$('#toggle_watchlist_container-{{ topic.pk }}').load('{% url topic_watchlist_add user.pk topic.pk %}');
-			{% endif %}
-			return false;
-		});
-	});
-</script>
-{% endif %}
-

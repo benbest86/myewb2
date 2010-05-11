@@ -3,7 +3,7 @@
             $('.group-subsection').hide();
             $('.group-subsection:first').show()
             
-            $('#groupheader a').each(function() {
+            $('#groupheader a[href*=#]').each(function() {
                 $(this).click(function() {
                     $('.group-subsection').each(function() {
                         $(this).hide();

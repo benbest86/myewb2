@@ -6,13 +6,30 @@
 {% block body_class %}events red{% endblock %}
 
 {% block subnav %}
-    {% if user.is_authenticated %}
+
         <ul class="subnav">
+        
+{% if object.content_object %} {# shows on a specific event's page #}
+<li><a href="{% link_to_events_for object.content_object 'css_class' 1 %} ">{{object.content_object }}</a></li>
+{% else %}
+    {% if parent.name %}  {# shows on the list page for that chapter or community #}
+        <li><a href="{% link_to_events_for parent 'css_class' 1 %} ">{{parent.name }}</a></li>
+    {% else %}
+        {% if obj.name %}  {# used on "New Event for ..." page#}
+            <li><a href="{% link_to_events_for obj 'css_class' 1 %} ">{{obj.name }}</a></li>
+        {% endif %}
+
+    {% endif %}
+    
+
+{% endif %}
+            <li><a href="{% url events_all %} ">{% trans "All events" %}</a></li>
+    {% if user.is_authenticated %}
             <li><a href="{% url events_for_user username=request.user.username%} ">{% trans "Your events" %}</a></li>
             <li><a href="{% url event_add_choose_group %} ">{% trans "Add an Event" %}</a></li> 
-        </ul>
-    {% else %}
-        &nbsp;
     {% endif %}
+        </ul>
+
+
 {% endblock %}
 
