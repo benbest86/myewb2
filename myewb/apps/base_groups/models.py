@@ -291,8 +291,9 @@ class LogisticalGroup(BaseGroup):
 class BaseGroupMember(models.Model):
     is_admin = models.BooleanField(_('Exec / Leader'), default=False)
     admin_title = models.CharField(_('Title'), max_length=500, null=True, blank=True)
-    admin_order = models.IntegerField(_('admin order (smallest numbers come first)'), default=999)
+    admin_order = models.IntegerField(_('admin order (smallest numbers come first)'), default=999, blank=True, null=True)
     joined = models.DateTimeField(_('joined'), default=datetime.datetime.now)
+    imported = models.BooleanField(default=False, editable=False)
     
     class Meta:
         abstract = True
@@ -344,7 +345,8 @@ class GroupMemberRecord(BaseGroupMember):
     # See http://docs.djangoproject.com/en/dev/topics/db/models/#be-careful-with-related-name
     group = models.ForeignKey(BaseGroup, related_name="member_records", verbose_name=_('group'))
     user = models.ForeignKey(User, related_name="group_records", verbose_name=_('user'))
-    datetime = models.DateTimeField(auto_now_add=True)
+    #datetime = models.DateTimeField(auto_now_add=True)
+    datetime = models.DateTimeField(default=datetime.datetime.now())
     membership_start = models.BooleanField(default=False, help_text=_('Whether this record signifies the start of a membership or not.'))
     membership_end = models.BooleanField(default=False, help_text=_('Whether this record signifies the end of a membership or not.'))
 
@@ -363,6 +365,7 @@ class GroupMemberRecord(BaseGroupMember):
             self.admin_title = instance.admin_title
             self.admin_order = instance.admin_order
             self.joined = instance.joined
+            self.datetime = instance.joined
 
 
 def group_member_snapshot(sender, instance, created, **kwargs):

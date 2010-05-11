@@ -7,6 +7,7 @@ from siteutils import countries
 from django.contrib.auth.models import User
 from profiles.models import MemberProfile, StudentRecord, WorkRecord
 from siteutils.models import Address, PhoneNumber
+from champ.views import fix_encoding
 
 from django.core.management.base import NoArgsCommand
 
@@ -26,12 +27,18 @@ class Command(NoArgsCommand):
                              charset="utf8")
         c = db.cursor()
 
+        db2 = MySQLdb.connect(user='root',
+                             passwd='',
+                             db='myewb2-migration',
+                             charset="utf8")
+        c2 = db2.cursor()
+
         print "==============="
         print "Migrating users"
         print datetime.now()
         print "==============="
         print ""
-        self.migrate_users(c)
+        #self.migrate_users(c)
         
         print ""
         print "finished users at", datetime.now()
@@ -43,16 +50,19 @@ class Command(NoArgsCommand):
         print datetime.now()
         print "==============="
         print ""
-        self.migrate_groups(c)
+        self.migrate_groups(c, c2)
         
         print ""
         print "finished groups at", datetime.now()
         print ""
         print ""
         
+    
         
     def migrate_users(self, c):
         # ./manage.py reset --noinput account auth profiles siteutils ; ./manage.py migrate | tee users.log
+        
+        User.objects.create(id=1, username="admin", email="admin@ewb.ca")
         
         c.execute("SELECT * FROM users")
         counter = 0
@@ -93,9 +103,10 @@ class Command(NoArgsCommand):
             mp = u.get_profile()
             mp.first_name = row[3]
             mp.last_name = row[4]
-            mp.gender = row[20]
+            if row[20]:
+                mp.gender = row[20].upper()
             if row[6]:
-                mp.language = row[6][0]
+                mp.language = row[6][0].upper()
             if row[21]:
                 mp.date_of_birth = date(row[21], 1, 1)
             mp.membership_expiry = row[24]
@@ -154,6 +165,8 @@ class Command(NoArgsCommand):
                                            postal_code=row[13].strip(),
                                            country=row[14].strip(),
                                            content_object=mp)
+                mp.addresses.add(a)
+                mp.save()
             
             # student records
             if row[29] or row[30] or row[31] or row[32] or row[33] or row[34]:
@@ -201,7 +214,7 @@ class Command(NoArgsCommand):
                 
                 wr.save()
 
-    def migrate_groups(self, c):
+    def migrate_groups(self, c, c2):
         # ./manage.py reset --noinput base_groups communities networks ; ./manage.py migrate | tee groups.log
         
         # get all chapters first
@@ -232,21 +245,26 @@ class Command(NoArgsCommand):
                 continue
             
             if counter % 100 == 0:
-                print "Groups: id %d - name %s - slug %s" % (row[0], row[1], row[10])
+                try:
+                    print "Groups: id", row[0], "- name", unicode(row[1]).encode("utf8"), "- slug", row[10]
+                except:
+                    print "meh. couldn't print", row[0]
                 
             # what kind of group do we need?
             if row[7]:
                 type = Network
             elif row[8]:
                 type = ExecList
-            elif row[13]:
+            elif row[13] and row[13] != '0':
                 type = NationalRepList
+            elif row[0] == 5 or row[0] == 593 or row[0] == 254:        # all-exec lists
+                type = ExecList
             elif row[5]:
                 type = LogisticalGroup
             else:
                 type = Community
             
-            # prepare data    
+            # prepare data
             if row[4]:
                 visibility = 'E'
                 invite_only = False
@@ -257,7 +275,7 @@ class Command(NoArgsCommand):
                 slug = row[10]
             else:
                 slug = row[0]
-
+                
             # basic group object
             grp = type.objects.create(id=row[0],
                                       slug=slug,
@@ -312,23 +330,27 @@ class Command(NoArgsCommand):
                      grp.slug = grp.slug + "a"
                  grp.from_email = grp.slug + "@my.ewb.ca"
                  grp.save()
-                 print "Re-parenting", row[0], row[1], grp.slug
+                 try:
+                     print "Re-parenting", row[0], unicode(row[1]).encode("utf8"), grp.slug
+                 except:
+                     print "meh, couldn't print", row[0]
 
         # and build memberships
+        #c.execute("SELECT * FROM roles WHERE userid=152")
         c.execute("SELECT * FROM roles")
         for row in c.fetchall():
             # excluded users...
             if row[5] == 1 or row[5] == 2:
                 continue
             
-            print "Role: user", row[5], "group", row[6], "level", row[4], "start", row[1], "end", row[2]
+            print "Role", row[0], ": user", row[5], "group", row[6], "level", row[4], "start", row[1], "end", row[2]
             
             start = row[1]
             end = row[2]
             title = row[3]
-            level = row[4]      # r m s a
-            user = User.objects.get(pk=row[5])
-            group = BaseGroup.objects.get(pk=row[6])
+            level = row[4]      # r m s l
+            #user = User.objects.get(pk=row[5])
+            #group = BaseGroup.objects.get(pk=row[6])
             
             # special case: this is the main EWB group, so deals with account creation
             if row[5] == 1:
@@ -338,33 +360,106 @@ class Command(NoArgsCommand):
                 user.save()
             else:
                 # find admin level
-                if level == 'a':
+                if level == 'l':
                     is_admin = True
                 else:
                     is_admin = False
                     
                 # role is ended.. create the  snapshots
                 if end is not None:
+                    """
                     GroupMemberRecord.objects.create(group=group,
                                                      user=user,
                                                      datetime=start,
                                                      membership_start=True,
                                                      is_admin=is_admin,
-                                                     title=title)
+                                                     admin_title=title,
+                                                     joined=start,
+                                                     imported=True)
                     GroupMemberRecord.objects.create(group=group,
                                                      user=user,
-                                                     datetime=start,
-                                                     membership_end=True)
+                                                     datetime=end,
+                                                     membership_end=True,
+                                                     joined=start,
+                                                     imported=True)
+                    """
+                    c2.execute("""INSERT INTO base_groups_groupmemberrecord  
+                                    SET is_admin='%d', 
+                                        admin_title='%s', 
+                                        joined='%s', 
+                                        group_id='%d',  
+                                        user_id='%d', 
+                                        datetime='%s', 
+                                        membership_start='%d', 
+                                        membership_end='%d',
+                                        imported='%d'""" %
+                                        (is_admin, title, start, row[6], row[5],
+                                         start, True, False, True))
+                    c2.execute("""INSERT INTO base_groups_groupmemberrecord  
+                                    SET is_admin='%d',
+                                        joined='%s', 
+                                        group_id='%d',  
+                                        user_id='%d', 
+                                        datetime='%s', 
+                                        membership_start='%d', 
+                                        membership_end='%d',
+                                        imported='%d'""" %
+                                        (is_admin, start, row[6], row[5],
+                                         end, False, True, True))
                 else:
                     # create or update the role
                     # (in myEWB1, admins had a second role - in myEWB 2, they
                     #  will only have one role)
-                    # and no need to do snapshot creation, the signals will do that for us 
+                    # and no need to do snapshot creation, the signals will do that for us
+                    """ 
                     gm, created = GroupMember.objects.get_or_create(group=group,
-                                                                    user=user)
+                                                                    user=user,
+                                                                    joined=start,
+                                                                    imported=True)
                     gm.is_admin=is_admin
                     gm.admin_title=title
                     if created:
                         gm.joined=start
                     gm.save()
-                    
+                    """
+                    c2.execute("""SELECT id FROM base_groups_groupmember
+                                    WHERE group_id=%d AND user_id=%d""" %
+                                    (row[6], row[5]))
+                    id = c2.fetchone()
+                    if id:
+                        c2.execute("""UPDATE base_groups_groupmember
+                                        SET is_admin='%d',
+                                            admin_title='%s'
+                                        WHERE id='%d'""" % 
+                                            (is_admin, title, id[0]))
+                        c2.execute("""INSERT INTO base_groups_groupmemberrecord  
+                                        SET is_admin='%d',
+                                            joined='%s', 
+                                            group_id='%d',  
+                                            user_id='%d', 
+                                            datetime='%s', 
+                                            membership_start='%d', 
+                                            membership_end='%d',
+                                            imported='%d'""" %
+                                            (is_admin, start, row[6], row[5],
+                                             start, False, False, True))
+                    else:
+                        c2.execute("""INSERT INTO base_groups_groupmember
+                                        SET is_admin='%d',
+                                            admin_title='%s',
+                                            joined='%s',
+                                            imported='%d',
+                                            group_id='%d',    
+                                            user_id='%d'""" % 
+                                            (is_admin, title, start, True, row[6], row[5]))
+                        c2.execute("""INSERT INTO base_groups_groupmemberrecord  
+                                        SET is_admin='%d',
+                                            joined='%s', 
+                                            group_id='%d',  
+                                            user_id='%d', 
+                                            datetime='%s', 
+                                            membership_start='%d', 
+                                            membership_end='%d',
+                                            imported='%d'""" %
+                                            (is_admin, start, row[6], row[5],
+                                             start, True, False, True))
