@@ -9,9 +9,9 @@
 	{{ form.media }}
 {% endblock %}
 
-{% block li-compose %}current{% endblock %}
+{% block li-compose %}current ui-tabs-selected ui-state-active{% endblock %}
 
-{% block msgheader %}<h1>{% trans "New Message"%}</h1>{% endblock %}
+{% block msgheader %}{% trans "New Message"%}{% endblock %}
 
 {% block msgbody %}
     <form action="" method="post" class="uniForm">

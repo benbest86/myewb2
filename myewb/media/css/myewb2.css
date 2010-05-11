@@ -556,3 +556,15 @@ padding:0 15px;
 form.inline-form-button {
 display: inline; margin-right: 10px;
 }
+
+
+
+/* Messaging pages */
+.msgtitle {
+margin-top:0;
+
+}
+h2.msgheader {
+margin-top:0;
+/* do these need a set margin-bottom? :) */
+}
