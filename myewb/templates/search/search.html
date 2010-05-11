@@ -5,6 +5,7 @@
 {% load pagination_tags %}
 {% load base_groups_tags %}
 {% load group_tags %}
+{% load events_tags %}
 {% load whiteboard_tags %}
 
 {% block extra_head %}
@@ -81,11 +82,31 @@
 					{% else %}
 						{% ifequal result.model_name "event" %}
 							{# I so wish they had elif in django templates... #}
-							<div style="border: solid 1px; padding: 15px; margin: 15px;">
-								<strong>Event</strong>: 
-								<a href="{{ result.object.get_absolute_url }}">{{ result.object.title }}</a><br/>
-								{{ result.object.start|date:"D, M j \a\t P" }}
-							</div>
+							
+<div class="post">
+	<div class="postheader red" style="position: relative;"> <!-- header row -->
+    <a class="postheaderlink" href="{{ result.object.get_absolute_url }}">Event: {{ result.object.title }}</a>
+	</div>
+	
+    <div class="postcontent red-border">
+					    
+<p><span class="lighter">Starts: </span>{{result.object.start|date:"D, M j \a\t P"}} &nbsp;
+<span class="lighter">Ends: </span>{{result.object.end|date:"D, M j \a\t\ P"}}</p>
+
+{% if result.object.location %}<p>Location: {{result.object.location}}</p>{% endif %}
+
+<p>{{result.object.description|safe}}</p>
+
+    <div class="whiteboard-editing-box">
+<a href="{% link_to_events_for result.object.content_object 'css_class' 1 %}">More events for {{result.object.content_object.visible_name}}</a>
+    </div>
+    <br class="clear"/>
+
+    </div>
+</div>		  
+							
+							
+							
 						{% else %}
 		                <p>
 		                    <a href="{{ result.object.get_absolute_url }}">{{ result.object.title }}</a>
