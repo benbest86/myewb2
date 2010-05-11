@@ -8,28 +8,47 @@
 
 {% block head_title %}{% blocktrans %}All Profiles{% endblocktrans %}{% endblock %}
 
+
+{% block extra_head %}
+    {{ block.super }}
+ 
+
+	<link type="text/css" href="{{STATIC_URL}}css/jquery-ui.css" rel="stylesheet" />
+
+	
+{% endblock %}
+
+
 {% block body %}
-    <h1>{% trans "Profiles" %}</h1>
+    <h1>{% trans "Profile Search" %}</h1>
 
 
-{# is this hidden properly on other pages? #}
 
-<ul class="segmented" id="groupheader" style="float: none;">
-        <li id="li-group-postsearch"><a href="{% url search %}?q=" id="show-postsearch">Search posts and events</a></li>
-        <li id="li-group-peoplesearch" class="current"><a href="#people-search" id="show-peoplesearch">People Search</a></li>
+<div id="search-tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all">
+
+<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+
+        <li id="li-group-postsearch" class="ui-corner-top ui-state-default "><a href="{% url search %}?q=" id="show-postsearch">Search posts and events</a></li>
+        <li id="li-group-peoplesearch" class="ui-corner-top ui-state-default ui-tabs-selected ui-state-active"><a href="#people-search" id="show-peoplesearch">People Search</a></li>
 
     </ul>
 
+    <div class="ui-tabs-panel ui-widget-content ui-corner-bottom">
 
-    <div id="div-people-search" class="group-subsection" style="display: block;">
 
-
-	{% show_profile_search search_terms %}
+        <div id="div-people-search" class="group-subsection" style="display: block;">
+    
+    
+    	{% show_profile_search search_terms %}
+    
+        </div>
 
     </div>
-    <br/><br/>
+</div>
     
     {% if users %}
+    
+        <h1>Results</h1>
 	    {% autopaginate users %}
     
     	{% for user in users %}
