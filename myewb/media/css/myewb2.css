@@ -43,6 +43,14 @@ body, body#bodybackground {
     font-size: 1em;
 }
 
+
+/* standard text blocks */
+div.postcontent, div.message-body {
+font-size:12px;
+line-height: 18px;
+}
+/* also used in tinymce-content.css - be sure to copy changes there */
+
 div#footer {
     padding: 0;
 }
@@ -539,4 +547,12 @@ padding:0 3px;
 
 .form_block {
 padding: 7px;
+}
+
+.message-body {
+padding:0 15px;
+}
+
+form.inline-form-button {
+display: inline; margin-right: 10px;
 }

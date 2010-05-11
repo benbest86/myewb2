@@ -22,12 +22,20 @@
         <dd>{{ message.recipient.visible_name }}</dd>
     </dl>
     
-    <p>{% oembed %}{{ message.body|safe }}{% endoembed %}</p>
+    <div class="message-body">
+    {% oembed %}{{ message.body|safe }}{% endoembed %}
+    
+    </div>
     
     <hr/>
     {% ifequal message.recipient user %}
-        <p><a href="{% url messages_reply message.id %}">{% trans "Reply" %}</a></p>
+        {#<p><a href="{% url messages_reply message.id %}">{% trans "Reply" %}</a></p>#}
+        
+        <form class="inline-form-button" action="{% url messages_reply message.id %}" method="POST"><input type="submit" value="{% trans "Reply" %}"></form>
+        
     {% endifequal %}
     
-    <p><a href="{% url messages_delete message.id %}">{% trans "Delete" %}</a></p>
+    {#<p><a href="{% url messages_delete message.id %}">{% trans "Delete" %}</a></p>#}
+    
+        <form class="inline-form-button"  action="{% url messages_delete message.id %}" method="POST"><input type="submit" value="{% trans "Delete" %}"></form>
 {% endblock %}
