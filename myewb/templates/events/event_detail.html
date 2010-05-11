@@ -35,7 +35,15 @@ Visible to {{object.content_object}}</p>
 
 </div>
 
-<a href="{% link_to_events_for object.content_object 'css_class' 1 %}">&laquo; Back to {{object.content_object.visible_name}} events</a>
+<a href="{% link_to_events_for object.content_object 'css_class' 1 %}">&laquo; Back to 
+{% if object.content_object.visible_name %}
+
+{{object.content_object.visible_name}}
+{% else %}
+{{object.content_object }}
+{# more accurate chapter_info.name or something? #}
+{% endif %} 
+events</a>
 
 {% endblock %}
 
