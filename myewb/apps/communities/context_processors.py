@@ -24,7 +24,7 @@ def is_exec(request):
         # wrapped "get" since this needs sample data to be loaded 
         execlist = get_object_or_none(Community, slug='exec')
         
-        if execlist.user_is_member(user):
+        if execlist and execlist.user_is_member(user):
             ctx['is_exec'] = True
 
     return ctx
