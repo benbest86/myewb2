@@ -536,3 +536,7 @@ padding:0 3px;
 /* back to the default on line 393 */
 }
 
+
+.form_block {
+padding: 7px;
+}

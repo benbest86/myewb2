@@ -2,14 +2,14 @@
     padding: 4px 0;
 }
 
-.usi-search {
-    border: solid 2px black; 
-    padding: 8px;
-    margin-top: 8px;
+.uniForm .usi-search {
+border:1px solid #CCCCCC;
+margin:10px 25px;
+padding:14px;
 }
 
 .selected-user {
-    padding: 2px; 
+padding:3px 5px;
     margin: 2px; 
     -moz-border-radius: 5px; 
     -webkit-border-radius: 5px; 
@@ -17,7 +17,46 @@
     border: solid 1px blue;
 }
 
+.selected-user .su-remove {
+text-decoration: none;
+font-weight: bold;
+
+padding-left:2px;
+}
+
 .usi-add-link {
     text-decoration: none;
     font-weight: bold;
+    margin-left:7px;
+}
+
+
+#usi_recipient {
+border-bottom:0;
+}
+
+
+
+select#id_recipient-chapter {
+width:250px;
+}
+
+ul.users-search-list {
+padding: 0;
+}
+
+ul.users-search-list li {
+list-style: none;
+float:left;
+width:250px;
+/* border:1px solid; */
+}
+
+ul.users-search-list li img {
+border:0;
+float: left; 
+/* width: 30px; height: 30px; */
+margin-right: 10px;
+margin-bottom: 10px;
+
 }

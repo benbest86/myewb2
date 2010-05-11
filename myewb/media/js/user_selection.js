@@ -7,6 +7,7 @@ function onSelectionLoad(data, xmlRequest, textStatus) {
 	
     $( '.su-remove' ).click( function(event) {
         $(this).parent().remove()
+        return false; 
     })
 }
 
@@ -56,7 +57,7 @@ function onSearchSubmit(event) {
 }
 
 function onAddSelection(event) {
-    $(event.target).html($(event.target).text() == '+' ? '&ndash;' : '+');
+    //$('.usi-add-link').html('Search for users' ? 'Close search' : 'Search for users');
     form = $(event.target).closest('.usi')[0];
     $(form).find('.usi-search').slideToggle();
     return false;
@@ -65,5 +66,5 @@ function onAddSelection(event) {
 $(document).ready(function() {
     $( '.usi-search' ).hide();
     $( '.usi-submit' ).click( function(event) { onSearchSubmit(event) } );
-    $( '.usi-add-link' ).click( function(event) { onAddSelection(event) } );      
+    $( '.usi-add-link' ).click( function(event) { onAddSelection(event); return false; } );      
 });
