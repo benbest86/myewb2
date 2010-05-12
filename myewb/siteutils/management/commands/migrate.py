@@ -40,7 +40,7 @@ class Command(NoArgsCommand):
         print "==============="
         print ""
         #self.migrate_users(c)
-        self.migrate_user_emails(c, c2)
+        #self.migrate_user_emails(c, c2)
         print ""
         print "finished users at", datetime.now()
         print ""
@@ -82,7 +82,30 @@ class Command(NoArgsCommand):
         print ""
         print ""
         
-    
+        print "==============="
+        print "Migrating events"
+        print datetime.now()
+        print "==============="
+        print ""
+        self.migrate_events(c, c2)
+        
+        print ""
+        print "finished events at", datetime.now()
+        print ""
+        print ""
+        
+        print "==============="
+        print "Migrating whiteboards"
+        print datetime.now()
+        print "==============="
+        print ""
+        #self.migrate_whiteboards(c, c2)
+        
+        print ""
+        print "finished whiteboards at", datetime.now()
+        print ""
+        print ""
+        
         
     def migrate_users(self, c):
         # ./manage.py reset --noinput account auth profiles siteutils ; ./manage.py migrate | tee users.log
@@ -667,3 +690,88 @@ class Command(NoArgsCommand):
         c2.execute("ALTER TABLE  `topics_topic` ADD INDEX (  `object_id` )")
         c2.execute("ALTER TABLE  `topics_topic` ADD INDEX (  `created` )")
         
+    def migrate_events(self, c, c2):
+        # ./manage.py reset --noinput events ; ./manage.py migrate | tee events.log
+
+        # get various content types
+        c2.execute("""SELECT id FROM django_content_type
+                    WHERE app_label='communities' AND model='community'""")
+        row = c2.fetchone()
+        cmtype = row[0]
+        
+        c2.execute("""SELECT id FROM django_content_type
+                        WHERE app_label='networks' AND model='network'""")
+        row = c2.fetchone()
+        nttype = row[0]
+        
+        c2.execute("""SELECT id FROM django_content_type
+                        WHERE app_label='base_groups' AND model='logisticalgroup'""")
+        row = c2.fetchone()
+        lgtype = row[0]
+        
+        # get all events
+        c.execute("SELECT * FROM events")
+        for row in c.fetchall():
+            c2.execute("""SELECT model FROM base_groups_basegroup WHERE id=%s""",
+                       (row[4]))
+            model = c2.fetchone()
+            
+            if model[0] == "Network":
+                ctype = nttype
+            elif model[0] == "LogisticalGroup":
+                ctype = lgtype
+            else:
+                ctype = cmtype
+            
+            c2.execute("""INSERT INTO events_event
+                        SET id=%s,
+                        title=%s,
+                        description=%s,
+                        slug=%s,
+                        location=%s,
+                        postal_code='',
+                        start=%s,
+                        end=%s,
+                        owner_id=1,
+                        content_type_id=%s,
+                        object_id=%s,
+                        parent_group_id=%s""",
+                        (row[0], row[1], row[3], "event%d"%row[0], row[2],
+                         row[5], row[6], ctype, row[4], row[4]))
+            try:
+                print "event", row[0], "-", row[1], ", attached to", ctype
+            except:
+                print "meh, couldn't print for", row[0] 
+
+
+    def migrate_whiteboards(self, c, c2):
+        # ./manage.py reset --noinput whiteboard ; ./manage.py migrate | tee whiteboards.log
+
+        # get various content types
+        c2.execute("""SELECT id FROM django_content_type WHERE name='base group'
+                        AND app_label='base_groups' AND model='basegroup'""")
+        row = c2.fetchone()
+        bgtype = row[0]
+        
+        c2.execute("""SELECT id FROM django_content_type
+                        WHERE app_label='group_topics' AND model='grouptopic'""")
+        row = c2.fetchone()
+        gttype = row[0]
+
+        c2.execute("""SELECT id FROM django_content_type
+                        WHERE app_label='events' AND model='event'""")
+        row = c2.fetchone()
+        evtype = row[0]
+
+        # get all whiteboards
+        c.execute("SELECT * FROM whiteboard")
+        for row in c.fetchall():
+            c2.execute("""INSERT INTO wiki_article
+                        SET id=%s,
+                        title=%s,
+                        content=%s,
+                        created_at=%s,
+                        last_update=%s,
+                        content_type_id=%s,
+                        object_id=%s""",
+                        ())
