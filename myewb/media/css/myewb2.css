@@ -19,8 +19,8 @@ div { border: 0px solid #000000; }
 .blue .bkgd-light   { background: #c2d1ff; }
 .green .bkgd-light  { background: #bce2bc; }
 .yellow .bkgd-light { background: #fcf2bd; }
-.orange .bkgd-light { background: #ffcf9f; }
-.red .bkgd-light    { background: #efcaca; }
+.orange .bkgd-light, .orange.bkgd-light { background: #ffcf9f; }
+.red .bkgd-light, .red.bkgd-light    { background: #efcaca; }
 .purple .bkgd-light { background: #d9c1e5; }
 
 /* Dark colours (ie for subnav text) */

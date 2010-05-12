@@ -3,6 +3,7 @@
 
 {% block extra_head %}
  <link type="text/css" href="{{STATIC_URL}}css/jquery-ui.css" rel="stylesheet" />
+ 
 {% endblock %}
 
 {% block body %}
@@ -44,9 +45,11 @@
 </div>
 
 <div id="loading" style="height: 1; width: 1; overflow: visible; position: relative; top: 0.8em; left: 2em; display: none;">loading...</div>
-<div id="detail" style="margin-left: 18.5em; padding: 0.2em; display: none; border-width: 1px;" class="ui-widget ui-widget-content ui-corner-all">
-<div id="detail-title" class="ui-widget-header ui-corner-all" style="padding: 0.2em;"></div>
-<div id="detail-content" style="padding-top: 0.5em;"></div>
+<div id="detail" style="margin-left: 20.5em;">
+    <div id="detail-box">
+        <h2 id="detail-title" ></h2>
+        <div id="detail-content"></div>
+    </div>
 </div>
 
 {% if parent and parent.get_absolute_url %}
