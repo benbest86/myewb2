@@ -735,7 +735,8 @@ class Command(NoArgsCommand):
                         owner_id=1,
                         content_type_id=%s,
                         object_id=%s,
-                        parent_group_id=%s""",
+                        parent_group_id=%s,
+                        converted=0""",
                         (row[0], row[1], row[3], "event%d"%row[0], row[2],
                          row[5], row[6], ctype, row[4], row[4]))
             try:
