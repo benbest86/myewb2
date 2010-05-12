@@ -80,7 +80,7 @@ class SQLLogToConsoleMiddleware:
             for q in connection.queries:
               if q['sql'].find("django_session") == -1:
                 clean_queries.append(q)
-            t = Template("{% load sql_keyword_filters %}{% autoescape off %}{% if count %}{{ count }} quer{{ count|pluralize:\"y,ies\" }} in {{ time }} seconds:\n\n{% for sql in sqllog %}[{{ forloop.counter }}] {{ sql.time }}s: {{ sql.sql|safe|colorsql }}{% if not forloop.last %}\n\n{% endif %}{% endfor %}{% endif %}{% endautoescape %}")
+            t = Template("{% load sql_keyword_filters %}{% autoescape off %}{% if count %}{{ count }} quer{{ count|pluralize:\"y,ies\" }} in {{ time }} seconds:\n\n{% for sql in sqllog %}[{{ forloop.counter }}] {{ sql.time }}s: {{ sql.sql|safe }}{% if not forloop.last %}\n\n{% endif %}{% endfor %}{% endif %}{% endautoescape %}")
             print t.render(Context({'sqllog':clean_queries,'count':len(clean_queries),'time':time}))                
         return response
 

@@ -35,6 +35,7 @@ class GroupTopicManager(models.Manager):
         member is a part of. Handles AnonymousUser instances
         transparently
         """
+        
         filter_q = Q(parent_group__visibility='E') | Q(parent_group__slug='ewb')
         order = '-created'
         if user is not None and not user.is_anonymous():
@@ -49,14 +50,20 @@ class GroupTopicManager(models.Manager):
                               parent_group__parent__members__is_admin=True)
             
             # everyone else only sees stuff from their own groups
-            filter_q |= Q(parent_group__member_users=user)
+            groups = user.basegroup_set.all()
+            filter_q |= Q(parent_group__in=groups)
+                # doing this is MUCH MUCH quicker than trying to do a dynamic
+                # join based on member records, ie, Q(parent_group__member_users=user),
+                # and then needing to call distinct() later. 
+                # it's in the order of, 15-minute query vs 0.01s query! 
 
             if user.get_profile().sort_by == 'r':
                 order = '-last_reply'
 
         # would it be more efficient to remove the OR query above and just write
         # two different queries, instead of using distinct() here?
-        return self.get_query_set().filter(filter_q).distinct().order_by(order)
+        #return self.get_query_set().filter(filter_q).distinct().order_by(order)
+        return self.get_query_set().filter(filter_q).order_by(order)
     
     def get_for_group(self, group):
         """
