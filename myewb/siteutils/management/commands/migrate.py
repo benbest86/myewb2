@@ -63,7 +63,7 @@ class Command(NoArgsCommand):
         print datetime.now()
         print "==============="
         print ""
-        #self.migrate_tags(c, c2)
+        self.migrate_tags(c, c2)
         
         print ""
         print "finished tags at", datetime.now()
@@ -296,7 +296,9 @@ class Command(NoArgsCommand):
             else:
                 visibility = 'M'
                 invite_only = True
-            if row[12] is None:
+            if row[0] == 1:
+                slug = "ewb"
+            elif row[12] is None:
                 slug = row[10]
             else:
                 slug = row[0]
@@ -611,4 +613,38 @@ class Command(NoArgsCommand):
                                 is_approved=0,
                                 converted=0""",
                                 (row[0], gttype, row[5], row[6], row[4], row[4], row[3]))
-                
+
+        # do all post tags 
+        c.execute("SELECT * FROM tags2posts")
+        for row in c.fetchall():
+            c2.execute("""SELECT id FROM tagging_taggeditem
+                        WHERE tag_id=%s AND content_type_id=%s AND object_id=%s""",
+                        (row[1], gttype, row[0]))
+            thetag = c2.fetchone()
+            if not thetag:
+                print "post", row[0], "tag", row[1], " - inserting"
+                c2.execute("""INSERT INTO tagging_taggeditem
+                            SET tag_id=%s,
+                                content_type_id=%s,
+                                object_id=%s""",
+                                (row[1], gttype, row[0]))
+                c2.execute("""SELECT name FROM tagging_tag WHERE id=%s""",
+                           (row[1]))
+                tagname = c2.fetchone()
+                if tagname is None:
+                    tagname = [""]
+                c2.execute("""UPDATE topics_topic
+                            SET tags=CONCAT(CONCAT(tags, ","), %s)
+                            WHERE id=%s""",
+                            (tagname[0], row[0]))
+            else:
+                print "post", row[0], "tag", row[1], " - found as", thetag[0]
+
+        # this is a Good Idea.
+        c2.execute("ALTER TABLE  `group_topics_grouptopic` ADD INDEX (  `last_reply` )")
+        c2.execute("ALTER TABLE  `threadedcomments_threadedcomment` ADD INDEX (  `object_id` )")
+        c2.execute("ALTER TABLE  `threadedcomments_threadedcomment` ADD INDEX (  `date_submitted` )")
+        c2.execute("ALTER TABLE  `threadedcomments_threadedcomment` ADD INDEX (  `is_public` ,  `is_approved` ) ;")
+        c2.execute("ALTER TABLE  `topics_topic` ADD INDEX (  `object_id` )")
+        c2.execute("ALTER TABLE  `topics_topic` ADD INDEX (  `created` )")
+        
