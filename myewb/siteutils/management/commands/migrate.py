@@ -40,7 +40,7 @@ class Command(NoArgsCommand):
         print "==============="
         print ""
         #self.migrate_users(c)
-        
+        self.migrate_user_emails(c, c2)
         print ""
         print "finished users at", datetime.now()
         print ""
@@ -63,7 +63,7 @@ class Command(NoArgsCommand):
         print datetime.now()
         print "==============="
         print ""
-        self.migrate_tags(c, c2)
+        #self.migrate_tags(c, c2)
         
         print ""
         print "finished tags at", datetime.now()
@@ -75,7 +75,7 @@ class Command(NoArgsCommand):
         print datetime.now()
         print "==============="
         print ""
-        self.migrate_posts(c, c2)
+        #self.migrate_posts(c, c2)
         
         print ""
         print "finished posts at", datetime.now()
@@ -239,6 +239,25 @@ class Command(NoArgsCommand):
                 
                 wr.save()
 
+    def migrate_user_emails(self, c, c2):
+        # ./manage.py reset --noinput emailconfirmation ; ./manage.py migrate | tee useremails.log
+
+        c.execute("SELECT * FROM useremails")
+        for row in c.fetchall():
+            print "email address", row[1], "for", row[0]
+            c2.execute("""INSERT INTO emailconfirmation_emailaddress
+                        SET user_id=%s,
+                            email=%s,
+                            `primary`=0,
+                            verified=1""",
+                            (row[0], row[1]))
+            
+        print "setting primary addresses"
+        c2.execute("""UPDATE emailconfirmation_emailaddress e, auth_user u
+                    SET e.`primary`=1
+                    WHERE e.user_id=u.id AND e.email=u.email""")
+            
+        
     def migrate_groups(self, c, c2):
         # ./manage.py reset --noinput base_groups communities networks ; ./manage.py migrate | tee groups.log
         
