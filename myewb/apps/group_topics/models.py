@@ -157,7 +157,7 @@ class GroupTopic(Topic):
         super(GroupTopic, self).__init__(*args, **kwargs)
         
         # wiki parse if needed
-        if not self.converted:
+        if self.pk and not self.converted and self.body:
             bold_exp = re.compile(r'(.*?)\*\*(.+?)\*\*(.*?)', re.S)
             self.body = bold_exp.sub(r"\1<strong>\2</strong>\3", self.body)
     
@@ -171,6 +171,7 @@ class GroupTopic(Topic):
             self.body = self.body.replace("\n", "<br/>")
             
             self.converted = True
+            self.save()
     
     def get_absolute_url(self, group=None):
         kwargs = {"topic_id": self.pk}
