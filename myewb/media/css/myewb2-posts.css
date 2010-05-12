@@ -64,4 +64,20 @@ div.post
 	line-height: 18px;
 }
 
+div.topic-numberofreplies {
 
+float: right; /* margin-top: -8px; */ margin-right: 15px; font-size: 10px; font-weight: normal; text-align: right; width: 150px;
+}
+
+
+div#maincolumn div.whiteboard-box {
+border-width:1px;
+padding:15px;
+border-color: #ccc;
+
+}
+
+div#maincolumn div.whiteboard-editing-box {
+float:right;
+padding:10px;
+}

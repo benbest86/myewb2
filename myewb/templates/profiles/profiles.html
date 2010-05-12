@@ -11,7 +11,22 @@
 {% block body %}
     <h1>{% trans "Profiles" %}</h1>
 
+
+{# is this hidden properly on other pages? #}
+
+<ul class="segmented" id="groupheader" style="float: none;">
+        <li id="li-group-postsearch"><a href="{% url search %}?q=" id="show-postsearch">Search posts and events</a></li>
+        <li id="li-group-peoplesearch" class="current"><a href="#people-search" id="show-peoplesearch">People Search</a></li>
+
+    </ul>
+
+
+    <div id="div-people-search" class="group-subsection" style="display: block;">
+
+
 	{% show_profile_search search_terms %}
+
+    </div>
     <br/><br/>
     
     {% if users %}
@@ -35,3 +50,26 @@
     {% endif %}
     
 {% endblock %}
+
+{% block extra_body %}
+  <script type="text/javascript">
+  $(document).ready(function(){
+    
+    // maintain search term state
+    $('#profile-search-box').change(function() {
+        
+        $('#show-postsearch').attr('href', '{% url search %}?q=' + $(this).val());
+        
+    });
+    // initial load
+    $('#show-postsearch').attr('href', '{% url search %}?q=' + $('#profile-search-box').val());
+
+    
+  });
+  </script>
+  
+    <script type="text/javascript" src="{{STATIC_URL}}js/tabselection.js"></script> 
+
+
+{% endblock %}
+  

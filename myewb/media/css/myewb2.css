@@ -7,12 +7,12 @@
 .red, .red .bkgd    { background: #b71818; }
 .purple, .purple .bkgd { background: #8b00cc; }
 
-.blue div  { border: 0px solid #0049ee; }
-.green div  { border: 0px solid #00a81c; }
-.yellow div { border: 0px solid #f1ce00; }
-.orange div { border: 0px solid #ff7900; }
-.red div    { border: 0px solid #b71818; }
-.purple div { border: 0px solid #8b00cc; }
+.blue div, div.blue-border  { border: 0px solid #0049ee; }
+.green div, div.green-border  { border: 0px solid #00a81c; }
+.yellow div, div.yellow-border { border: 0px solid #f1ce00; }
+.orange div, div.orange-border { border: 0px solid #ff7900; }
+.red div, div.red-border    { border: 0px solid #b71818; }
+.purple div, div.purple-border { border: 0px solid #8b00cc; }
 div { border: 0px solid #000000; }
 
 /* Light colours (ie for subnav, subheader background) */
@@ -32,12 +32,24 @@ div { border: 0px solid #000000; }
 .purple ul.subnav, .purple ul.subnav a { color: #530084; }
 
 
+.lighter {
+color: #777;
+}
+
 body, body#bodybackground {
     background: #C1C1C3;
     font-family: verdana, sans serif;
     min-width: 59.3em;
     font-size: 1em;
 }
+
+
+/* standard text blocks */
+div.postcontent, div.message-body {
+font-size:12px;
+line-height: 18px;
+}
+/* also used in tinymce-content.css - be sure to copy changes there */
 
 div#footer {
     padding: 0;
@@ -532,3 +544,15 @@ padding:0 3px;
 /* back to the default on line 393 */
 }
 
+
+.form_block {
+padding: 7px;
+}
+
+.message-body {
+padding:0 15px;
+}
+
+form.inline-form-button {
+display: inline; margin-right: 10px;
+}

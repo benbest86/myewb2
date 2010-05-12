@@ -12,9 +12,9 @@
 
 {% else %}
 
-	<h2>{% trans "Whiteboard" %}</h2>
+	{# <h2>{% trans "Whiteboard" %}</h2> #}
 	
-	<div style="border: solid 1px; padding: 15px; width: 500px;">
+	<div class="whiteboard-box">
 		{# we ignore the markup field, and assume it's html, since we've hacked it up... #}
 		{{ wb.content|safe }}
 
@@ -32,16 +32,19 @@
                 {% endfor %}
             </ul>
         {% endif %}
+    </div>
+
 
 		{% if member %}
-			<br/><br/>
+    <div class="whiteboard-editing-box">
+            <span class="lighter">Last edited by <a href="{% url profile_detail  wb.latest_changeset.editor.username %}" class="nodeco">{{ wb.latest_changeset.editor.visible_name }}</a>  on {{ wb.last_update|date }} at {{ wb.last_update|date }}.</span> | 
 			<a href="{% groupurl wiki_edit group title=wb.title %}">{% trans "Edit this article" %}</a>
 			|
 			<a href="{% groupurl wiki_article_history group title=wb.title %}">{% trans "Editing history" %}</a>
-
+	</div>
+	<br class="clear"/>
 		{% endif %}
 
-	</div>
-	<br/>
+
 
 {% endif %}

@@ -17,6 +17,7 @@
 {% block extra_head %}
 	{{ block.super }}
 	<link type="text/css" href="{{STATIC_URL}}css/colorbox.css" rel="stylesheet" />
+	
 {% endblock %}
 
 {% block body %}
@@ -29,7 +30,7 @@
 		<a href="{{ topic.get_absolute_url }}"><img src="{{ STATIC_URL }}images/post_icons/paperclip.gif" style="float: right; margin: -5px 10px 0 0; padding: 0;" border="0"/></a>
 		{% endif %}
 
-		<div style="float: right; margin-top: -8px; margin-right: 15px; font-size: 10px; font-weight: normal; text-align: right; width: 150px;">
+		<div class="topic-numberofreplies">
 			{% if topic.num_whiteboard_edits %}
     			<a href="{{ topic.get_absolute_url }}" style="float: right; margin-top: 3px; margin-left: 10px; padding: 0;" border="0"><img src="{{ STATIC_URL }}images/post_icons/whiteboard.gif" border="0"/></a>
     		{% endif %}
@@ -47,7 +48,7 @@
 	<div class="postsubheader bkgd-light"> <!-- stat row -->
 		<table width="100%" style="margin:0; padding: 0;">
 			<tr>
-				<td>By <a href="{% url profile_detail topic.creator.username %}">{{ topic.creator.visible_name }}</a>, {{ topic.created|date }}</td>
+				<td>By <a href="{% url profile_detail topic.creator.username %}">{{ topic.creator.visible_name }}</a> on {{ topic.created|date }} at {{ topic.created|time }}</td>
 				<td align="right" width="50%">
 					{% ifnotequal topic.group.slug "ewb" %}
 				    	<a href="{% groupurl topic_list topic.group %}">{{ topic.group }}</a>
@@ -112,9 +113,9 @@
 					<br/>
 					<span id="toggle_watchlist_container">
 					{% if on_list %}
-	    				<a href="#" id="remove_from_watchlist" class="more">[remove from watch-list]</a>
+	    				<a href="#" id="toggle_watchlist-{{ topic.pk }}" class="more watchlist-toggle toggle-remove">[remove from watch-list]</a>
 	    			{% else %}
-	    				<a href="#" id="add_to_watchlist" class="more">[add to watch-list]</a>
+	    				<a href="#" id="toggle_watchlist-{{ topic.pk }}" class="more watchlist-toggle toggle-add">[add to watch-list]</a>
 	    			{% endif %}
     				</span>
 				{% endif %}
@@ -181,9 +182,14 @@
     </script>	
 	{% endif %}	
 
-	{% if user.is_authenticated %}	
+	{% if user.is_authenticated %}
+	
+	
+	
+	{% comment %}	
 	<script type="text/javascript">
 		$(document).ready(function() {
+		
 			$('#add_to_watchlist').click(function() {
 				$('#toggle_watchlist_container').html("adding...");
 				$('#toggle_watchlist_container').load('{% url topic_watchlist_add user.pk topic.pk %}');
@@ -194,8 +200,14 @@
 				$('#toggle_watchlist_container').load('{% url topic_watchlist_remove user.pk topic.pk %}');
 				return false;
 			});
+			
+			
 		});
 	</script>
+	
+	{% endcomment %}
+	
+	
 	{% endif %}
 	
 	{% if perms.group_topics %}

@@ -8,19 +8,33 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% load profile_tags %}
 {% load uni_form %}
 
+{% load avatar_tags %}
+
 {% if users %}
-<ul>
+<h3>Search results</h3>
+<ul class="users-search-list">
+
     {% for result_user in users %}
     {# FIXME: remove usernames once UI is such that we know users will have real name listed in profile #}
     <li>
-        <a href="{% url profile_detail result_user.username %}">{{ result_user.visible_name }}</a> - <a class="userSearchChoice" id="usr-{{ field }}-{{ result_user.username}}" href="#">Select</a>{# hyphens required for JS to work #}
+        <a class="userSearchChoice" id="usr-{{ field }}-{{ result_user.username}}" href="#">
+        
+                    {% avatar result_user 50 %}
+        
+        
+        {{ result_user.visible_name }}</a>
         {% if result_user.get_profile.chapters %}
         <br/>
-        <small>({% for chapter in result_user.get_profile.chapters %}{% if not forloop.first %}, {% endif %}{{ chapter }}{% endfor %})</small>
+        <small>({% for chapter in result_user.get_profile.chapters|slice:":3" %}{% if not forloop.first %}, {% endif %}{{ chapter }}{% endfor %})</small>
         {% endif %}
+        
+        
+        <br/><a target="_blank" href="{% url profile_detail result_user.username %}">Show profile</a>{# hyphens required for JS to work #}
+        
     </li>
     {% endfor %}
 </ul>
+<br class="clear"/>
 {% else %}
 	No results
 {% endif %}

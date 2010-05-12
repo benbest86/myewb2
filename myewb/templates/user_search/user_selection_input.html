@@ -14,8 +14,8 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
     {% for sel_user in users %}
         {% get_selected_user sel_user field_name %}
     {% endfor %}
-    <span id="usi_add_{{ field_name }}"><a href="#" class="usi-add-link" id="usi_add_link_{{ field_name }}">+</a></span>
-    <div class="usi-search" id="usi_search_{{ field_name }}" style="padding-left: 50px;">
+    <span id="usi_add_{{ field_name }}"><a href="#" class="usi-add-link" id="usi_add_link_{{ field_name }}">Search for users</a></span>
+    <div class="usi-search" id="usi_search_{{ field_name }}">
         {% show_user_search field_name %}
     </div>
 </div>

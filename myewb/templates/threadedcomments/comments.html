@@ -21,10 +21,10 @@
 
     {% for response in responses %}
 
-        <div class="postsubheader bkgd-light"> <!-- stat row -->
+        <div class="postsubheader bkgd-light" id="reply-{{ response.id }}"> <!-- stat row -->
             <table width="100%" style="margin:0; padding: 0;">
             <tr>
-				<td>By <a href="{% url profile_detail response.user.username %}">{{ response.user.visible_name }}</a>, {{ response.date_submitted|date }}</td>
+				<td>By <a href="{% url profile_detail response.user.username %}">{{ response.user.visible_name }}</a> on {{ response.date_submitted|date }}  at {{ response.date_submitted|time }}</td>
             </tr>
             </table>
         </div>

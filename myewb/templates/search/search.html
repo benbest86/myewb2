@@ -5,6 +5,7 @@
 {% load pagination_tags %}
 {% load base_groups_tags %}
 {% load group_tags %}
+{% load events_tags %}
 {% load whiteboard_tags %}
 
 {% block extra_head %}
@@ -27,7 +28,7 @@
 
 <ul class="segmented" id="groupheader" style="float: none;">
         <li id="li-group-postsearch" class="current"><a href="#post-search" id="show-postsearch">Search posts and events</a></li>
-        <li id="li-group-peoplesearch"><a href="#people-search" id="show-peoplesearch">People Search</a></li>
+        <li id="li-group-peoplesearch"><a href="{% url profiles_index %}?search=" id="show-peoplesearch">People Search</a></li>
 
     </ul>
 
@@ -49,16 +50,7 @@
 
     </div>
     
-    <div id="div-people-search" class="group-subsection">
 
-<form id="search-profile" method="GET" action="{% url profiles_index %}">
-	<input type="text" name="search" value="{{ search_terms }}" style="width: 150px;"/>
-	<input type="submit" value="{% trans "search" %}"/>
-</form>
-
-
-
-    </div>
 
 
         <h1>Results</h1>
@@ -75,16 +67,46 @@
 				    {% endwith %}
 				{% else %}
 					{% ifequal result.model_name "whiteboard" %}
+<div class="post">
+	<div class="postheader orange {# some way of checking if this is a chapter or a community? #}" style="position: relative;"> <!-- header row -->
+    <a class="postheaderlink" href="{{ result.object.parent_group.get_absolute_url }}#group-whiteboard">Whiteboard for {{ result.object.parent_group }}</a>
+	</div>
+	
+    <div class="postcontent orange-border">
+					    
 				        {% get_membership result.object.parent_group request.user as member %}
 				        {% show_whiteboard_force result.object result.object.parent_group member %}
+    </div>
+</div>		    
+				        
 					{% else %}
 						{% ifequal result.model_name "event" %}
 							{# I so wish they had elif in django templates... #}
-							<div style="border: solid 1px; padding: 15px; margin: 15px;">
-								<strong>Event</strong>: 
-								<a href="{{ result.object.get_absolute_url }}">{{ result.object.title }}</a><br/>
-								{{ result.object.start|date:"D, M j \a\t P" }}
-							</div>
+							
+<div class="post">
+	<div class="postheader red" style="position: relative;"> <!-- header row -->
+    <a class="postheaderlink" href="{{ result.object.get_absolute_url }}">Event: {{ result.object.title }}</a>
+	</div>
+	
+    <div class="postcontent red-border">
+					    
+<p><span class="lighter">Starts: </span>{{result.object.start|date:"D, M j \a\t P"}} &nbsp;
+<span class="lighter">Ends: </span>{{result.object.end|date:"D, M j \a\t\ P"}}</p>
+
+{% if result.object.location %}<p>Location: {{result.object.location}}</p>{% endif %}
+
+<p>{{result.object.description|safe}}</p>
+
+    <div class="whiteboard-editing-box">
+<a href="{% link_to_events_for result.object.content_object 'css_class' 1 %}">More events for {{result.object.content_object.visible_name}}</a>
+    </div>
+    <br class="clear"/>
+
+    </div>
+</div>		  
+							
+							
+							
 						{% else %}
 		                <p>
 		                    <a href="{{ result.object.get_absolute_url }}">{{ result.object.title }}</a>
@@ -109,6 +131,18 @@
   <script type="text/javascript">
   $(document).ready(function(){
     var datepicker = $("input#id_start_date, input#id_end_date").datepicker({});
+    
+    
+    // maintain search term state
+    $('#id_q').change(function() {
+        
+        $('#show-peoplesearch').attr('href', '{% url profiles_index %}?search=' + $(this).val());
+        
+    });
+    // initial load
+    $('#show-peoplesearch').attr('href', '{% url profiles_index %}?search=' + $('#id_q').val());
+
+    
   });
   </script>
   
