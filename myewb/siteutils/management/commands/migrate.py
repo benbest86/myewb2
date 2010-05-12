@@ -532,11 +532,16 @@ class Command(NoArgsCommand):
     def migrate_posts(self, c, c2):
         # ./manage.py reset --noinput topics group_topics threadedcomments mythreadedcomments ; ./manage.py migrate | tee posts.log
         
-        # get the base_group content type
+        # get various content types
         c2.execute("""SELECT id FROM django_content_type WHERE name='base group'
                         AND app_label='base_groups' AND model='basegroup'""")
         row = c2.fetchone()
         bgtype = row[0]
+        
+        c2.execute("""SELECT id FROM django_content_type
+                        WHERE app_label='group_topics' AND model='grouptopic'""")
+        row = c2.fetchone()
+        gttype = row[0]
         
         # get all posts 
         c.execute("SELECT * FROM posts")
@@ -563,6 +568,8 @@ class Command(NoArgsCommand):
                     fullbody = row[2]
                     if fullbody[:-3] == "...":
                         fullbody = fullbody[0:-3]
+                    else:
+                        fullbody = fullbody + "\n\n"
                 if row[3]:
                     if row[3][0:3] == "...":
                         fullbody = fullbody + row[3][3:]
@@ -592,4 +599,16 @@ class Command(NoArgsCommand):
                 
             # is a reply
             else:
-                pass
+                c2.execute("""INSERT INTO threadedcomments_threadedcomment
+                            SET id=%s,
+                                content_type_id=%s,
+                                object_id=%s,
+                                user_id=%s,
+                                date_submitted=%s,
+                                date_modified=%s,
+                                comment=%s,
+                                is_public=1,
+                                is_approved=0,
+                                converted=0""",
+                                (row[0], gttype, row[5], row[6], row[4], row[4], row[3]))
+                

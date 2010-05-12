@@ -158,18 +158,7 @@ class GroupTopic(Topic):
         
         # wiki parse if needed
         if self.pk and not self.converted and self.body:
-            bold_exp = re.compile(r'(.*?)\*\*(.+?)\*\*(.*?)', re.S)
-            self.body = bold_exp.sub(r"\1<strong>\2</strong>\3", self.body)
-    
-            italic_exp = re.compile(r'(.*?)\^\^(.+?)\^\^(.*?)', re.S)
-            self.body = italic_exp.sub(r"\1<em>\2</strong>\3", self.body)
-    
-            heading_exp = re.compile(r'(.*?)==(.+?)==(.*?)', re.S)
-            self.body = heading_exp.sub(r"\1<h3>\2</h3>\3", self.body)
-            
-            self.body = re.sub(r'-{4,}', "<hr/>", self.body)
-            self.body = self.body.replace("\n", "<br/>")
-            
+            self.body = wiki_convert(self.body)
             self.converted = True
             self.save()
     
@@ -299,3 +288,20 @@ class Watchlist(models.Model):
             return True
         else:
             return False
+
+def wiki_convert(text):
+    bold_exp = re.compile(r'(.*?)\*\*(.+?)\*\*(.*?)', re.S)
+    text = bold_exp.sub(r"\1<strong>\2</strong>\3", text)
+
+    italic_exp = re.compile(r'(.*?)\^\^(.+?)\^\^(.*?)', re.S)
+    text = italic_exp.sub(r"\1<em>\2</strong>\3", text)
+
+    heading_exp = re.compile(r'(.*?)==(.+?)==(.*?)', re.S)
+    text = heading_exp.sub(r"\1<h3>\2</h3>\3", text)
+    
+    text = re.sub(r'-{4,}', "<hr/>", text)
+    text = text.replace("\n", "<br/>")
+    
+    return text
+
+    

@@ -11,12 +11,13 @@ from datetime import datetime
 
 from django.contrib.auth.models import User
 from django.core.mail import EmailMessage
+from django.db import models
 from django.db.models.signals import post_save
 from django.template import Context, loader
 from threadedcomments.models import ThreadedComment, FreeThreadedComment
 
 from attachments.models import Attachment
-from group_topics.models import GroupTopic, Watchlist
+from group_topics.models import GroupTopic, Watchlist, wiki_convert
 
 def send_to_watchlist(sender, instance, **kwargs):
     """
@@ -103,3 +104,18 @@ def update_reply_date(sender, instance, **kwargs):
     topic.last_reply = datetime.now()
     topic.save()
 post_save.connect(update_reply_date, sender=ThreadedComment, dispatch_uid='updatetopicreplydate')
+
+
+# add an the coniverted field directly to the ThreadedComment model
+ThreadedComment.add_to_class('converted', models.BooleanField(default=True))
+
+# and do wiki-to-HTML conversion as needed
+def threadedcomment_init(self, *args, **kwargs):
+    super(ThreadedComment, self).__init__(*args, **kwargs)
+    
+    # wiki parse if needed
+    if self.pk and not self.converted and self.comment:
+        self.comment = wiki_convert(self.comment)
+        self.converted = True
+        self.save()
+ThreadedComment.__init__ = threadedcomment_init
