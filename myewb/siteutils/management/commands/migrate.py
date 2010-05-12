@@ -87,7 +87,7 @@ class Command(NoArgsCommand):
         print datetime.now()
         print "==============="
         print ""
-        self.migrate_events(c, c2)
+        #self.migrate_events(c, c2)
         
         print ""
         print "finished events at", datetime.now()
@@ -99,7 +99,7 @@ class Command(NoArgsCommand):
         print datetime.now()
         print "==============="
         print ""
-        #self.migrate_whiteboards(c, c2)
+        self.migrate_whiteboards(c, c2)
         
         print ""
         print "finished whiteboards at", datetime.now()
@@ -765,14 +765,59 @@ class Command(NoArgsCommand):
         evtype = row[0]
 
         # get all whiteboards
-        c.execute("SELECT * FROM whiteboard")
+        c.execute("SELECT * FROM whiteboard WHERE enabled=1")
         for row in c.fetchall():
+            # skip empty whiteboards
+            if not row[1] or row[0] == 91:
+                continue
+            
+            if row[6]:
+                ctype = evtype
+                oid = row[6]
+                title = "Event%d" % row[6] 
+            elif row[7]:
+                ctype = gttype
+                oid = row[7]
+                title = "Post%d" % row[7]
+            elif row[8]:
+                ctype = bgtype
+                oid = row[8]
+                title = "Whiteboard"
+            else:
+                continue
+            
             c2.execute("""INSERT INTO wiki_article
                         SET id=%s,
-                        title=%s,
-                        content=%s,
-                        created_at=%s,
-                        last_update=%s,
-                        content_type_id=%s,
-                        object_id=%s""",
-                        ())
+                            title=%s,
+                            content=%s,
+                            created_at=%s,
+                            last_update=%s,
+                            content_type_id=%s,
+                            object_id=%s,
+                            removed=0,
+                            tags=''""",
+                        (row[0], title, row[1], datetime.now(), row[2], ctype, oid))
+            
+            c2.execute("""INSERT INTO whiteboard_whiteboard
+                        SET article_ptr_id=%s,
+                            parent_group_id=%s""",
+                        (row[0], row[10]))
+            
+            c2.execute("""INSERT INTO wiki_changeset
+                        SET article_id=%s,
+                            editor_id=%s,
+                            editor_ip='',
+                            revision=1,
+                            old_title=%s,
+                            content_diff='',
+                            comment='',
+                            modified=%s,
+                            reverted=0""",
+                            (row[0], row[9], title, row[2]))
+            try:
+                print "whiteboard", row[0], "named", title, "attached to", row[10]
+            except:
+                print "meh, couldn't print", row[0]
+                
+            
+            
