@@ -50,10 +50,34 @@ class Command(NoArgsCommand):
         print datetime.now()
         print "==============="
         print ""
-        self.migrate_groups(c, c2)
+        #self.migrate_groups(c, c2)
         
         print ""
         print "finished groups at", datetime.now()
+        print ""
+        print ""
+        
+        print "==============="
+        print "Migrating tags"
+        print datetime.now()
+        print "==============="
+        print ""
+        #self.migrate_tags(c, c2)
+        
+        print ""
+        print "finished tags at", datetime.now()
+        print ""
+        print ""
+        
+        print "==============="
+        print "Migrating posts"
+        print datetime.now()
+        print "==============="
+        print ""
+        self.migrate_posts(c, c2)
+        
+        print ""
+        print "finished posts at", datetime.now()
         print ""
         print ""
         
@@ -384,26 +408,26 @@ class Command(NoArgsCommand):
                                                      imported=True)
                     """
                     c2.execute("""INSERT INTO base_groups_groupmemberrecord  
-                                    SET is_admin='%d', 
-                                        admin_title='%s', 
-                                        joined='%s', 
-                                        group_id='%d',  
-                                        user_id='%d', 
-                                        datetime='%s', 
-                                        membership_start='%d', 
-                                        membership_end='%d',
-                                        imported='%d'""" %
+                                    SET is_admin=%d, 
+                                        admin_title=%s, 
+                                        joined=%s, 
+                                        group_id=%d,  
+                                        user_id=%d, 
+                                        datetime=%s, 
+                                        membership_start=%d, 
+                                        membership_end=%d,
+                                        imported=%d""",
                                         (is_admin, title, start, row[6], row[5],
                                          start, True, False, True))
                     c2.execute("""INSERT INTO base_groups_groupmemberrecord  
-                                    SET is_admin='%d',
-                                        joined='%s', 
-                                        group_id='%d',  
-                                        user_id='%d', 
-                                        datetime='%s', 
-                                        membership_start='%d', 
-                                        membership_end='%d',
-                                        imported='%d'""" %
+                                    SET is_admin=%d,
+                                        joined=%s, 
+                                        group_id=%d,  
+                                        user_id=%d, 
+                                        datetime=%s, 
+                                        membership_start=%d, 
+                                        membership_end=%d,
+                                        imported=%d""",
                                         (is_admin, start, row[6], row[5],
                                          end, False, True, True))
                 else:
@@ -423,43 +447,131 @@ class Command(NoArgsCommand):
                     gm.save()
                     """
                     c2.execute("""SELECT id FROM base_groups_groupmember
-                                    WHERE group_id=%d AND user_id=%d""" %
+                                    WHERE group_id=%d AND user_id=%d""",
                                     (row[6], row[5]))
                     id = c2.fetchone()
                     if id:
                         c2.execute("""UPDATE base_groups_groupmember
-                                        SET is_admin='%d',
-                                            admin_title='%s'
-                                        WHERE id='%d'""" % 
+                                        SET is_admin=%d,
+                                            admin_title=%s
+                                        WHERE id=%d""", 
                                             (is_admin, title, id[0]))
                         c2.execute("""INSERT INTO base_groups_groupmemberrecord  
-                                        SET is_admin='%d',
-                                            joined='%s', 
-                                            group_id='%d',  
-                                            user_id='%d', 
-                                            datetime='%s', 
-                                            membership_start='%d', 
-                                            membership_end='%d',
-                                            imported='%d'""" %
+                                        SET is_admin=%d,
+                                            joined=%s, 
+                                            group_id=%d,  
+                                            user_id=%d, 
+                                            datetime=%s, 
+                                            membership_start=%d, 
+                                            membership_end=%d,
+                                            imported=%d""",
                                             (is_admin, start, row[6], row[5],
                                              start, False, False, True))
                     else:
                         c2.execute("""INSERT INTO base_groups_groupmember
-                                        SET is_admin='%d',
-                                            admin_title='%s',
-                                            joined='%s',
-                                            imported='%d',
-                                            group_id='%d',    
-                                            user_id='%d'""" % 
+                                        SET is_admin=%d,
+                                            admin_title=%s,
+                                            joined=%s,
+                                            imported=%d,
+                                            group_id=%d,    
+                                            user_id=%d""", 
                                             (is_admin, title, start, True, row[6], row[5]))
                         c2.execute("""INSERT INTO base_groups_groupmemberrecord  
-                                        SET is_admin='%d',
-                                            joined='%s', 
-                                            group_id='%d',  
-                                            user_id='%d', 
-                                            datetime='%s', 
-                                            membership_start='%d', 
-                                            membership_end='%d',
-                                            imported='%d'""" %
+                                        SET is_admin=%d,
+                                            joined=%s, 
+                                            group_id=%d,  
+                                            user_id=%d, 
+                                            datetime=%s, 
+                                            membership_start=%d, 
+                                            membership_end=%d,
+                                            imported=%d""",
                                             (is_admin, start, row[6], row[5],
                                              start, True, False, True))
+
+
+    def migrate_tags(self, c, c2):
+        # ./manage.py reset --noinput tagging tag_threadedcomments mythreadedcomments ; ./manage.py migrate | tee tags.log
+        
+        # get all tags
+        c.execute("SELECT * FROM tags")
+        for row in c.fetchall():
+            print "tag", row[0], "-", row[2] 
+            # see if this tag already exists
+            c2.execute("""SELECT id FROM tagging_tag WHERE name=%s""",
+                       row[2])
+            oldid = c2.fetchone()
+
+            # doesn't exist? insert it
+            if not oldid:
+                c2.execute("""INSERT INTO tagging_tag
+                            SET id=%s, name=%s""",
+                                (row[0], row[2]))
+                
+            # this is an actual tag
+            if row[1] == row[2]:
+                # if a tag with this name already existed, update it to match the IDs.
+                if oldid:
+                    c2.execute("""UPDATE tagging_tag
+                                SET id=%s
+                                WHERE id=%s""",
+                                    (row[0], oldid[0]))
+                    c2.execute("""UPDATE tag_app_tagalias
+                                SET tag_id=%s
+                                WHERE tag_id=%s""",
+                                    (row[0], oldid[0]))
+                    
+            # this is just an alias
+            else:
+                if not oldid:
+                    oldid = [row[0]]
+                c2.execute("""INSERT INTO tag_app_tagalias
+                            SET id=%s, tag_id=%s, alias=%s""",
+                            (row[0], oldid[0], row[1]))
+
+    def migrate_posts(self, c, c2):
+        # ./manage.py reset --noinput topics group_topics threadedcomments mythreadedcomments ; ./manage.py migrate | tee posts.log
+        
+        # get the base_group content type
+        c2.execute("""SELECT id FROM django_content_type WHERE name='base group'
+                        AND app_label='base_groups' AND model='basegroup'""")
+        row = c2.fetchone()
+        bgtype = row[0]
+        
+        # get all posts 
+        c.execute("SELECT * FROM posts")
+        for row in c.fetchall():
+            print "post", row[0], "date", row[4], "parent", row[5], "group", row[7], "subject", row[1]
+            
+            # do some data cleanup
+            title = row[1]
+            if len(title) > 50:
+                title = title[0:49]
+                
+            # check for invalid posts
+            if not row[6] or not row[7]:
+                continue
+            
+            # is a post
+            if not row[5]:
+                c2.execute("""INSERT INTO topics_topic
+                            SET id=%s,
+                                content_type_id=%s,
+                                object_id=%s,
+                                title=%s,
+                                creator_id=%s,
+                                created=%s,
+                                modified=%s,
+                                body=%s,
+                                tags=%s""",
+                            (row[0], bgtype, row[7], title, row[6], row[4], row[4], row[3], ""))
+                c2.execute("""INSERT INTO group_topics_grouptopic
+                            SET topic_ptr_id=%s,
+                                parent_group_id=%s,
+                                send_as_email=%s,
+                                last_reply=%s,
+                                score=0, score_modifier=0""",
+                                (row[0], row[7], row[9], row[12]))
+                
+            # is a reply
+            else:
+                pass
