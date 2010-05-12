@@ -35,7 +35,7 @@
     </div>
 
 
-		{% if member %}
+		{% if member and wb.latest_changeset %}
     <div class="whiteboard-editing-box">
             <span class="lighter">Last edited by <a href="{% url profile_detail  wb.latest_changeset.editor.username %}" class="nodeco">{{ wb.latest_changeset.editor.visible_name }}</a>  on {{ wb.last_update|date }} at {{ wb.last_update|date }}.</span> | 
 			<a href="{% groupurl wiki_edit group title=wb.title %}">{% trans "Edit this article" %}</a>

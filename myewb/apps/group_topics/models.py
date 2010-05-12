@@ -8,6 +8,7 @@ Created on: 2009-08-13
 @author: Joshua Gorner
 """
 
+import re
 from datetime import datetime
 from django.db import models
 from django.db.models import Q
@@ -148,7 +149,28 @@ class GroupTopic(Topic):
     score = models.IntegerField(editable=False, default=0, db_index=True)
     score_modifier = models.IntegerField(_("score modifier"), default=100)
     
+    converted = models.BooleanField(default=False)
+    
     objects = GroupTopicManager()
+    
+    def __init__(self, *args, **kwargs):
+        super(GroupTopic, self).__init__(*args, **kwargs)
+        
+        # wiki parse if needed
+        if not self.converted:
+            bold_exp = re.compile(r'(.*?)\*\*(.+?)\*\*(.*?)', re.S)
+            self.body = bold_exp.sub(r"\1<strong>\2</strong>\3", self.body)
+    
+            italic_exp = re.compile(r'(.*?)\^\^(.+?)\^\^(.*?)', re.S)
+            self.body = italic_exp.sub(r"\1<em>\2</strong>\3", self.body)
+    
+            heading_exp = re.compile(r'(.*?)==(.+?)==(.*?)', re.S)
+            self.body = heading_exp.sub(r"\1<h3>\2</h3>\3", self.body)
+            
+            self.body = re.sub(r'-{4,}', "<hr/>", self.body)
+            self.body = self.body.replace("\n", "<br/>")
+            
+            self.converted = True
     
     def get_absolute_url(self, group=None):
         kwargs = {"topic_id": self.pk}

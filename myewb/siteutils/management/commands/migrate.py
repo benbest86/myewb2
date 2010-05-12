@@ -1,4 +1,5 @@
 import MySQLdb
+import re
 
 from datetime import date, datetime
 from django.core.management.base import NoArgsCommand
@@ -540,7 +541,10 @@ class Command(NoArgsCommand):
         # get all posts 
         c.execute("SELECT * FROM posts")
         for row in c.fetchall():
-            print "post", row[0], "date", row[4], "parent", row[5], "group", row[7], "subject", row[1]
+            try:
+                print "post", row[0], "date", row[4], "parent", row[5], "group", row[7], "subject", row[1]
+            except:
+                print "eh, can't print", row[0]
             
             # do some data cleanup
             title = row[1]
@@ -553,6 +557,19 @@ class Command(NoArgsCommand):
             
             # is a post
             if not row[5]:
+                # stitch intro & body together
+                fullbody = ""
+                if row[2]:
+                    fullbody = row[2]
+                    if fullbody[:-3] == "...":
+                        fullbody = fullbody[0:-3]
+                if row[3]:
+                    if row[3][0:3] == "...":
+                        fullbody = fullbody + row[3][3:]
+                    else:
+                        fullbody = fullbody + row[3] 
+                        
+                # create the post
                 c2.execute("""INSERT INTO topics_topic
                             SET id=%s,
                                 content_type_id=%s,
@@ -563,13 +580,14 @@ class Command(NoArgsCommand):
                                 modified=%s,
                                 body=%s,
                                 tags=%s""",
-                            (row[0], bgtype, row[7], title, row[6], row[4], row[4], row[3], ""))
+                            (row[0], bgtype, row[7], title, row[6], row[4], row[4], fullbody, ""))
                 c2.execute("""INSERT INTO group_topics_grouptopic
                             SET topic_ptr_id=%s,
                                 parent_group_id=%s,
                                 send_as_email=%s,
                                 last_reply=%s,
-                                score=0, score_modifier=0""",
+                                score=0, score_modifier=0,
+                                converted=0""",
                                 (row[0], row[7], row[9], row[12]))
                 
             # is a reply
