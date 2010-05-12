@@ -522,6 +522,7 @@ margin-bottom: 1em;
 
 div.createaccount {
 float:right;
+margin-right:20%;
 }
 
 div#content div.createaccount input[type="button"] {
