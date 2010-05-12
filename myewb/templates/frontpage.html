@@ -13,6 +13,41 @@
     <link rel="alternate" type="application/rss+xml" title="myEWB Front Page" href="{% url topic_feed_all %}" />
 	<link rel="stylesheet" href="{{ STATIC_URL }}css/toolbars.css" />   
 	
+	
+	
+	
+	
+	{# JS here for the frontpage ajax updates #}
+<script type="text/javascript">
+// Frontpage Ajax updates
+	$(document).ready(function() {
+		$('.frontpage-update').click(function() {
+		
+		    // do stuff
+		    var groupSlug = $(this).attr("id").substring(17);
+		    
+		    $('#maincolumn').load('/groups/' + groupSlug + '/posts #maincolumn');  // jQuery is the most ludicrous thing ever.
+		  
+		  $('.frontpage-reset').show();
+		  
+		  {# @@@ this should be updated at some point in time. #}
+		  
+			return false;
+		});
+		
+		
+		$('.frontpage-reset').click(function() {
+		  $('#maincolumn').load('/ #maincolumn');
+		  
+		  $('.frontpage-reset').hide();
+		  
+		  return false;
+        });
+		
+	});
+ 
+ </script>
+ 
  
 {% endblock %}
 
@@ -140,13 +175,23 @@
         <div class="toolbarheader bkgd" id="box-frontpage-mygroups">{% trans "My groups" %}</div>
         <div class="toolbarcontent">
              	{% for group in user.get_networks %}
-	                <div class="frontpage-mygroups-div"><a href="{% url group_detail group.slug %}">{{ group.name }}</a><br/>
-	                <span class="frontpage-mygroups-actions">x new posts<br/><a href="{% groupurl topic_new group %}">New post &raquo;</a></span></div>
+	                <div class="frontpage-mygroups-div"><a href="#" class="frontpage-update" id="frontpage-update-{{ group.slug }}">{{ group.name }}</a><br/>
+	                <span class="frontpage-mygroups-actions">x new posts<br/><a href="{% groupurl topic_new group %}">New post &raquo;</a><br/><a href="{% url group_detail group.slug %}">View group info &raquo;</a></span></div>
             	{% endfor %}
+            	
+            	
+            	{# these should be combined, and sorted by # of new posts. #}
+            	
+            	
             	{% for group in user.get_communities %}
-	                <a href="{% url group_detail group.slug %}">{{ group.name }}</a><br/>
-	                <span class="frontpage-mygroups-actions">x new posts<br/><a href="{% groupurl topic_new group %}">New post &raquo;</a></span><br/>
+<div class="frontpage-mygroups-div"><a href="#" class="frontpage-update" id="frontpage-update-{{ group.slug }}">{{ group.name }}</a><br/>
+	                <span class="frontpage-mygroups-actions">x new posts<br/><a href="{% groupurl topic_new group %}">New post &raquo;</a><br/><a href="{% url group_detail group.slug %}">View group info &raquo;</a></span></div>
+
             	{% endfor %}
+
+
+            <div class="frontpage-mygroups-div"><a href="#" class="frontpage-reset" style="display:none;">Show all posts (reset page)</a>&nbsp;{# to stop the divs below from moving #}</div>
+
 
  
         </div>
