@@ -1,5 +1,5 @@
 {# is there something better to be extending? #}
-{% extends "base_groups/base.html" %}
+{% extends "communities/base.html" %}
 {% load group_tags %}
 {% load i18n %}
 {% load uni_form %}
@@ -60,3 +60,9 @@
 	</p>
 
 {% endblock %}
+
+{% block toolbar_left %}
+{% endblock %}
+{% block toolbar_right %}
+{% endblock %}
+
