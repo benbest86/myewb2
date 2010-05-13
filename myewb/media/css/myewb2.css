@@ -44,6 +44,11 @@ body, body#bodybackground {
 }
 
 
+body div#maincontainer {
+max-width: 1220px;
+margin: 0 auto;
+}
+
 /* standard text blocks */
 div.postcontent, div.message-body {
 font-size:12px;

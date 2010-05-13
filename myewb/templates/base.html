@@ -25,6 +25,9 @@
         <h1 class="debug">myEWB dev version -- {% git_date %} (<a href="http://github.com/ewbcanada/myewb2/tree/{% git_rev %}">git rev {% git_rev %}</a>)</h1>
         <br/>
         
+        
+    <div id="maincontainer">
+        
         <div id="tabhead">
             {% block login %}{% endblock %}
             {% block logo_link_image %}{% endblock %}
@@ -139,5 +142,8 @@
         		}
         	});
         </script>
+        
+    </div>
+        
     </body>
 </html>
