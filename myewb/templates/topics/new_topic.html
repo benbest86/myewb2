@@ -24,7 +24,7 @@ The {% if group %} checks are left in just in case, and should be removed eventu
        	<h2>{{group.name}}</h2>
     {% endifnotequal %}
         
-    <form class="uniForm" method="POST" enctype="multipart/form-data" action="">
+    <form class="uniForm wideform" method="POST" enctype="multipart/form-data" action="">
         <fieldset class="inlineLabels">
             {{ topic_form|as_uni_form }}
             <div id="attachFiles">

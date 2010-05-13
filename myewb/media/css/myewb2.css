@@ -570,6 +570,14 @@ display: none;
 }
 
 
+div.latest-activity-stats {
+
+margin-left:10px;
+}
+
+
+
+
 div.site_wide_announcements, div#messages {
 margin-bottom: 1em;
 }

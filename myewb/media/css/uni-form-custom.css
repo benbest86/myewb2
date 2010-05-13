@@ -26,12 +26,12 @@ background-color:#F8F8F8;
 }
 
 
-.inlineLabels input[type="text"], .inlineLabels input[type="password"], table.standard input[type="text"]  {
+.wideform .inlineLabels input[type="text"], .wideform .inlineLabels input[type="password"], table.standard.wideform input[type="text"]  {
 width: 586px;  /* probably not consistent between browsers - tinyMCE is set to a 600px width, and this is 600 - 4px left/right padding and 3px l/r borders */
 }
 
 .uniForm .inlineLabels textarea {
-clear:both;
+/* clear:both; */
 width:600px;
 height:380px;
 }
