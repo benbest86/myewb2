@@ -554,12 +554,15 @@ margin-bottom:0.2em;
 
 
 div.frontpage-mygroups-div {
-padding-bottom:10px;
+margin:0 -5px 0 -10px;
+padding:5px 10px;
 }
 
-span.frontpage-mygroups-actions {
+
+
+.frontpage-mygroups-actions {
 margin-left: 10px;
-display: block;
+display: none;
 }
 
 

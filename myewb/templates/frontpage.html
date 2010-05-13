@@ -23,6 +23,15 @@
 	$(document).ready(function() {
 		$('.frontpage-update').click(function() {
 		
+		
+		  $('.frontpage-mygroups-actions').hide();
+		  $('.frontpage-mygroups-actions').parent().removeClass('bkgd-light');
+		  
+		  
+		  $(this).parent().addClass('bkgd-light');
+		  
+		  $(this).siblings('.frontpage-mygroups-actions').show();
+		
 		    // do stuff
 		    var groupSlug = $(this).attr("id").substring(17);
 		    
@@ -37,7 +46,13 @@
 		
 		
 		$('.frontpage-reset').click(function() {
+		  
+		  $('.frontpage-mygroups-actions').hide();
+		  $('.frontpage-mygroups-actions').parent().removeClass('bkgd-light');
+		  
 		  $('#maincolumn').load('/ #maincolumn');
+		  
+		  
 		  
 		  $('.frontpage-reset').hide();
 		  
@@ -175,8 +190,8 @@
         <div class="toolbarheader bkgd" id="box-frontpage-mygroups">{% trans "My groups" %}</div>
         <div class="toolbarcontent">
              	{% for group in user.get_networks %}
-	                <div class="frontpage-mygroups-div"><a href="#" class="frontpage-update" id="frontpage-update-{{ group.slug }}">{{ group.name }}</a><br/>
-	                <span class="frontpage-mygroups-actions">x new posts<br/><a href="{% groupurl topic_new group %}">New post &raquo;</a><br/><a href="{% url group_detail group.slug %}">View group info &raquo;</a></span></div>
+	                <div class="frontpage-mygroups-div"><a href="#" class="frontpage-update" id="frontpage-update-{{ group.slug }}">{{ group.name }}</a>
+	                <div class="frontpage-mygroups-actions">x new posts<br/><a href="{% groupurl topic_new group %}">New post &raquo;</a><br/><a href="{% url group_detail group.slug %}">View group info &raquo;</a></div></div>
             	{% endfor %}
             	
             	
@@ -185,12 +200,12 @@
             	
             	{% for group in user.get_communities %}
 <div class="frontpage-mygroups-div"><a href="#" class="frontpage-update" id="frontpage-update-{{ group.slug }}">{{ group.name }}</a><br/>
-	                <span class="frontpage-mygroups-actions">x new posts<br/><a href="{% groupurl topic_new group %}">New post &raquo;</a><br/><a href="{% url group_detail group.slug %}">View group info &raquo;</a></span></div>
+	                <div class="frontpage-mygroups-actions">x new posts<br/><a href="{% groupurl topic_new group %}">New post &raquo;</a><br/><a href="{% url group_detail group.slug %}">View group info &raquo;</a></div></div>
 
             	{% endfor %}
 
 
-            <div class="frontpage-mygroups-div"><a href="#" class="frontpage-reset" style="display:none;">Show all posts (reset page)</a>&nbsp;{# to stop the divs below from moving #}</div>
+            <div class="frontpage-mygroups-div"><a href="#" class="frontpage-reset" style="display:none;">Show all posts (reset page)</a></div>
 
 
  
