@@ -337,10 +337,30 @@ table.standard td {
 
 }
 
-td.right {
+table.standard tbody tr {
+    border-bottom: 1px solid #ccc;
+}
+
+td.right, table.standard-right th  {
     text-align: right;
 }
 
+table.standard-right th, table.standard-right td {
+ padding:6px 14px;
+}
+table.standard-right th {
+padding-left: 22px;
+}
+
+table.search-form ul {
+list-style:none outside none;
+margin:0;
+padding:0;
+}
+table.search-form ul li label {
+display:block;
+padding:2px 7px;
+}
 /*
 tr:nth-child(odd) {
     background: #eee;
@@ -435,7 +455,10 @@ input[type="reset"]
 }
 
 
-.inlineLabels input[type="text"], .inlineLabels input[type="password"] {
+.inlineLabels input[type="text"], .inlineLabels input[type="password"],
+table.standard input[type="text"]
+
+ {
 padding: 4px;
 }
 /*
