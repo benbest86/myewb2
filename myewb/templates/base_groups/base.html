@@ -13,7 +13,6 @@
 {% load avatar_tags %}
 {% load threadedcommentstags %}
 {% load pagination_tags %}
-{% load extra_tagging_tags %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{{ STATIC_URL }}pinax/css/topics.css" />
@@ -92,11 +91,19 @@
                     {% show_topic_with_user topic %}
                     <br/>
                 {% endfor %}
-                <p><a href="{% groupurl topic_list group %}">{% trans "more..." %}</a></p>
+                <p><a href="{% groupurl topic_list group %}">{% trans "More posts..." %}</a></p>
             {% else %}
                 {% groupurl topic_list group as new_topic_url %}
                 <p>
-                    {% trans "No posts." %}
+                    {% trans "No posts. " %}
+                    
+	    {% if is_member %}
+	    	<a href="{% groupurl topic_new group %}">Create a new post</a>
+	    {% else %}
+	    	You need to join this group before you can post to it.
+	    {% endif %}
+                    
+                    
                 </p>
             {% endif %}
         {% endwith %}

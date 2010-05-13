@@ -39,7 +39,7 @@ The {% if group %} checks are left in just in case, and should be removed eventu
         <h1>{% blocktrans with group.get_absolute_url as group_url and group.name as group_name %}Posts for <a href="{{ group_url }}">{{ group_name }}</a>{% endblocktrans %}</h1>
 
 		<p style="font-size: 14px;">
-	    {% if is_member %}
+	    {% if member %}
 	    	<a href="{% groupurl topic_new group %}">Create a new post</a>
 	    {% else %}
 	    	You need to join this group before you can post to it.
