@@ -54,7 +54,7 @@
   $(document).ready(function(){
   
   	{# set up javascript widgets... #}
-    var datepicker = $("input#id_start_0, input#id_end_0").datepicker({});
+    var datepicker = $("input#id_start_0, input#id_end_0").datepicker({dateFormat: 'yy-mm-dd'});
 
     var timepicker = $('input#id_start_1, input#id_end_1').timepickr({
         handle: '#trigger-test',

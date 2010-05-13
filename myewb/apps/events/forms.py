@@ -9,17 +9,8 @@ from events.models import Event
 
 class EventForm(forms.ModelForm):
 
-    start = forms.DateTimeField(('%m/%d/%Y %H:%M',),
-           widget=forms.SplitDateTimeWidget
-            #widget=forms.SplitDateTimeWidget(
-                #date_format='%m/%d/%Y',
-                #time_format='%H:%M',
-            #)
-    )
-
-    end = forms.DateTimeField(('%m/%d/%Y %H:%M',),
-           widget=forms.SplitDateTimeWidget
-           )
+    start = forms.DateTimeField(widget=forms.SplitDateTimeWidget)
+    end = forms.DateTimeField(widget=forms.SplitDateTimeWidget)
     
     postal_code = forms.CharField(required=False,
                                   help_text='This will not be publicly visible, but will eventually be used to determine events near a user')
