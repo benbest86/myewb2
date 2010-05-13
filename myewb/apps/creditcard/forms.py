@@ -15,11 +15,11 @@ import re, datetime, time, urllib, pycountry
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.formtools.preview import FormPreview
-from django.core.mail import EmailMessage
 from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
 from django.template import Context, loader, RequestContext
 from django.utils.safestring import mark_safe
+from mailer import send_mail
 from apps.creditcard.utils import *
 from apps.creditcard.models import Payment, Product
 from siteutils.forms import AddressField
@@ -302,16 +302,13 @@ class PaymentFormPreview(FormPreview):
                          'amount': product.amount})
             body = message.render(c)
 
-            msg = EmailMessage(subject='Credit Card Receipt', 
-                               body=body, 
-                               from_email='Engineers Without Borders Canada <system@my.ewb.ca>', 
-                               to=[cleaned_data['email']],
-                               bcc=['monitoring@ewb.ca'],
-                               )
-            #msg.content_subtype = "html"
-            
-            msg.send(fail_silently=False)
-            
+            send_mail(subject='Credit Card Receipt',
+                      txtMessage=body,
+                      htmlMessage=None,
+                      fromemail='Engineers Without Borders Canada <system@my.ewb.ca>',
+                      recipients=[cleaned_data['email']],
+                      use_template=False)
+        
             # return success
             return None
         else:

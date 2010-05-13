@@ -7,13 +7,13 @@ Copyright 2010 Engineers Without Borders Canada
 """
 
 from django.contrib.auth.decorators import permission_required
-from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext, Context, loader, Template
 from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
+from mailer import send_mail
 
 from profiles.models import MemberProfile
 from profile_query.forms.email import EmailForm
@@ -92,17 +92,13 @@ def send(request):
             for r in recipients:
                 emails.append(r.user.email)
 
-            msg = EmailMessage(
-                    subject=form.cleaned_data['subject'], 
-                    body=form.cleaned_data['body'], 
-                    from_email=sender, 
-                    to=['mail@my.ewb.ca'],      # one day we'll do individual sending with click tracking
-                    bcc=emails,
-                    )
-            msg.content_subtype = "html"
+            send_mail(subject=form.cleaned_data['subject'],
+                      txtMessage=None,
+                      htmlMessage=form.cleaned_data['body'],
+                      fromemail=sender,
+                      recipients=emails,
+                      use_template=False)
 
-            msg.send(fail_silently=False)
-            
             request.user.message_set.create(message='Email sent')
             return HttpResponseRedirect(reverse('profile_query'))
         

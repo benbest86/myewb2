@@ -15,9 +15,9 @@ from django.db.models import Q
 from django.db.models.signals import post_save
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
-from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
 from django.template import Context, loader
+from mailer import send_mail
 
 from attachments.models import Attachment
 from base_groups.models import BaseGroup
@@ -191,30 +191,27 @@ class GroupTopic(Topic):
     def send_email(self, sender=None):
         attachments = Attachment.objects.attachments_for_object(self)
         
-        tmpl = loader.get_template("email_template.html")
-        c = Context({'group': self.group,
-                     'title': self.title,
-                     'body': self.body,
-                     'topic_id': self.pk,
-                     'event': None,
-                     'attachments': attachments
-                     })
-        message = tmpl.render(c)
-    
+        c = {'group': self.group,
+             'title': self.title,
+             'topic_id': self.pk,
+             'event': None,
+             'attachments': attachments
+            }
+            
         if self.send_as_email:
-            self.group.send_mail_to_members(self.title, message, sender=sender)
+            self.group.send_mail_to_members(self.title, self.body, sender=sender, context=c)
         
         for list in self.watchlists.all():
             user = list.owner
             # TODO: for user in list.subscribers blah blah
             sender = 'myEWB <notices@my.ewb.ca>'
     
-            msg = EmailMessage(subject=self.title,
-                               body=message,
-                               from_email=sender, 
-                               to=user.email
-                              )
-            msg.send(fail_silently=False)
+            send_mail(subject=self.title,
+                      txtMessage=None,
+                      htmlMessage=self.body,
+                      fromemail=sender,
+                      recipients=[user.email],
+                      context=c)
         
     def num_whiteboard_edits(self):
         if self.whiteboard:

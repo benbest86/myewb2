@@ -17,9 +17,9 @@ from django.contrib.auth.models import  User
 from django.utils.translation import ugettext_lazy as _
 from django.db import models, connection
 from django.db.models.signals import post_save, pre_delete
-from django.core.mail import EmailMessage
 from django.conf import settings
 
+from mailer import send_mail
 from emailconfirmation.models import EmailAddress
 
 from siteutils.helpers import get_email_user
@@ -163,8 +163,9 @@ class BaseGroup(Group):
         for m in member:
             m.delete()
             
-    def send_mail_to_members(self, subject, body, html=True,
-                             fail_silently=False, sender=None):
+    def send_mail_to_members(self, subject, htmlBody,
+                             fail_silently=False, sender=None,
+                             context=None):
         """
         Creates and sends an email to all members of a network using Django's
         EmailMessage.
@@ -179,17 +180,12 @@ class BaseGroup(Group):
         if sender == None:
             sender = '%s <%s@ewb.ca>' % (self.name, self.slug)
 
-        msg = EmailMessage(
-                subject=subject, 
-                body=body, 
-                from_email=sender, 
-                to=['list-%s@ewb.ca' % self.slug],
-                bcc=self.get_member_emails(),
-                )
-        if html:
-            msg.content_subtype = "html"
-         
-        msg.send(fail_silently=fail_silently)
+        send_mail(subject=subject,
+                  txtMessage=None,
+                  htmlMessage=htmlBody,
+                  fromemail=sender,
+                  recipients=self.get_member_emails(),
+                  context=context)
     
     def save(self, force_insert=False, force_update=False):
         # if we are updating a group, don't change the slug (for consistency)
@@ -391,17 +387,17 @@ def send_welcome_email(sender, instance, created, **kwargs):
         sender = '"%s" <%s>' % (group.from_name, group.from_email)
 
         # TODO: template-ize
-        msg = EmailMessage(
-                subject="Welcome to '%s'" % group.name, 
-                body="""You have been added to the %s group on myEWB, the Engineers Without Borders online community.
+        txtMessage = """You have been added to the %s group on myEWB, the Engineers Without Borders online community.
 
 "%s"
-""" % (group.name, group.welcome_email),
-                from_email=sender, 
-                to=[user.email]
-                )
+""" % (group.name, group.welcome_email)
          
-        msg.send(fail_silently=True)
+        send_mail(subject="Welcome to '%s'" % group.name,
+                  txtMessage=txtMessage, # TODO: make this text-only!
+                  htmlMessage=None,
+                  fromemail=sender,
+                  recipients=[user.email])
+        
 post_save.connect(send_welcome_email, sender=GroupMember, dispatch_uid='groupmemberwelcomeemail')
         
 
