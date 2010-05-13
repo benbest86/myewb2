@@ -62,14 +62,20 @@ table.messages tbody tr {
     border-bottom: 1px solid #ccc;
 }
 
-table.messages tr th, table.messages tr td {
-    text-align: left;
+/* being reworked in myewb2.css - line ~321 */
+
+/* table.messages tr th,  table.messages tr td {
+
     padding: 5px;
-}
+}*/
 
 table.messages tr th {
+/*
     font-weight:bold;
     border-bottom: 1px solid #999;
+*/
+
+
 }
 dl.message-headers {
     border-top:1px solid #CCC;

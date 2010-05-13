@@ -313,9 +313,28 @@ form.filter select {
 	height: 2.4em;
 }
 
-th {
-    background: black;
+table {
+border-collapse:collapse;  /* @@@ will this do crazy things? */
+}
+
+
+table.standard th {
+    /*
+background: black;
     color: white;
+*/
+    color:black;
+    font-weight: bold;
+    background: url(/site_media/static/css/images/ui-bg_highlight-soft_75_cccccc_1x100.png) repeat-x center center #ccc;
+    border-bottom:1px solid #999999;
+    border-right:1px solid #999999;
+    padding:9px 14px;
+    text-align: left;
+}
+
+table.standard td {
+    padding:9px 14px;
+
 }
 
 td.right {
