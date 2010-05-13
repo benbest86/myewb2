@@ -4,9 +4,9 @@
 {% load timezone_filters %}
 {% load pagination_tags %}
 
-{% block li-trash %}current{% endblock %}
+{% block li-trash %}current ui-tabs-selected ui-state-active{% endblock %}
 
-{% block msgheader %}<h1>{% trans "Trash" %}</h1>{% endblock %}
+{% block msgheader %}{% trans "Trash" %}{% endblock %}
 
 {% block msgbody %}
     

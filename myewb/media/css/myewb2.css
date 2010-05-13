@@ -19,8 +19,8 @@ div { border: 0px solid #000000; }
 .blue .bkgd-light   { background: #c2d1ff; }
 .green .bkgd-light  { background: #bce2bc; }
 .yellow .bkgd-light { background: #fcf2bd; }
-.orange .bkgd-light { background: #ffcf9f; }
-.red .bkgd-light    { background: #efcaca; }
+.orange .bkgd-light, .orange.bkgd-light { background: #ffcf9f; }
+.red .bkgd-light, .red.bkgd-light    { background: #efcaca; }
 .purple .bkgd-light { background: #d9c1e5; }
 
 /* Dark colours (ie for subnav text) */
@@ -522,6 +522,7 @@ margin-bottom: 1em;
 
 div.createaccount {
 float:right;
+margin-right:20%;
 }
 
 div#content div.createaccount input[type="button"] {
@@ -555,4 +556,16 @@ padding:0 15px;
 
 form.inline-form-button {
 display: inline; margin-right: 10px;
+}
+
+
+
+/* Messaging pages */
+.msgtitle {
+margin-top:0;
+
+}
+h2.msgheader {
+margin-top:0;
+/* do these need a set margin-bottom? :) */
 }

@@ -10,7 +10,17 @@
         <ul class="subnav">
         
 {% if object.content_object %} {# shows on a specific event's page #}
-<li><a href="{% link_to_events_for object.content_object 'css_class' 1 %} ">{{object.content_object }}</a></li>
+
+    {% if object.content_object.visible_name %}
+        {# then it's a user, but not necessarily yourself?? #}
+        {#<li><a href="{% link_to_events_for object.content_object 'css_class' 1 %} ">{{object.content_object.visible_name }}'s events</a></li> #}  {# @@@ For now, we'll just hide this. Not sure how you view someone else's events, the only case that would require this. #}
+        
+    {% else %}
+        {# is a chapter or community #}
+        <li><a href="{% link_to_events_for object.content_object 'css_class' 1 %} ">{{object.content_object }}</a></li>
+
+    {% endif %}
+
 {% else %}
     {% if parent.name %}  {# shows on the list page for that chapter or community #}
         <li><a href="{% link_to_events_for parent 'css_class' 1 %} ">{{parent.name }}</a></li>

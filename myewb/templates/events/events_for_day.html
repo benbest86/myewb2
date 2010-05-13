@@ -1,13 +1,62 @@
 {% extends 'events/base.html' %}
 
+{% load events_tags %}
+
 {% block body %}
 <div id="for_day">
 {% for e in events %}
-	<p>
-		<a href="{{e.get_absolute_url}}">{{e.title}}</a><br/>
-		{{e.start|date:"P" }} - {{e.end|date:"P"}}<br/>
-		{{e.location}}
-	</p>
+	
+	
+<div class="post">
+	<div class="postheader red" style="position: relative;"> <!-- header row -->
+    <a class="postheaderlink" href="{{ e.get_absolute_url }}">{{ e.title }}</a>
+	</div>
+	
+	
+<div class="postsubheader red red-border bkgd-light"> <!-- stat row -->
+    		<table width="100%" style="margin:0; padding: 0;">
+    			<tr>
+    				<td>
+    <span class="lighter">Starts: </span>{{e.start|date:"D, M j \a\t P"}} &nbsp;
+    <span class="lighter">Ends: </span>{{e.end|date:"D, M j \a\t\ P"}}
+    				</td>
+    				<td align="right" width="50%">
+    <a href="{% link_to_events_for e.content_object 'css_class' 1 %}">More events for 
+    
+    {% if e.content_object.visible_name %}
+    {{e.content_object.visible_name}}
+    {% else %}
+    {{e.content_object }}
+    {% endif %}
+    </a>
+    
+    				</td>
+    			</tr>
+    		</table>
+    	</div>
+
+	
+	
+	
+    <div class="postcontent red-border">
+					    
+
+{% if e.location %}<p>Location: {{e.location}}</p>{% endif %}
+
+<p>{{e.description|safe}}</p>
+
+    <div class="whiteboard-editing-box">
+<a href="{{ e.get_absolute_url }}">See full event details &raquo;</a>
+
+    </div>
+    <br class="clear"/>
+
+    </div>
+</div>		  
+
+	
+	
+	
 {% endfor %}
 </div>
 

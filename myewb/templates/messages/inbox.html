@@ -4,9 +4,9 @@
 {% load timezone_filters %}
 {% load pagination_tags %}
 
-{% block li-inbox %}current{% endblock %}
+{% block li-inbox %}current ui-tabs-selected ui-state-active{% endblock %} {# last 2 added for new UI tabs look #}
 
-{% block msgheader %}<h1>{% trans "Inbox" %}</h1>{% endblock %}
+{% block msgheader %}{% trans "Inbox" %}{% endblock %}
 
 {% block msgbody %}
     

@@ -7,31 +7,84 @@
 <div type="text" id="datepicker"></div>
 
 <div id="event-details">
-
-<h2>{{object.title}}</h2>
-
-{% if can_edit %}
-<p>
-	<a href="{% url events_change object.pk %}">edit</a> | <a href="{% url events_delete object.pk %}">delete</a>
-	{% if can_send %}
-		| <a href="{% url events_email object.pk %}">send email</a>
-	{% endif %}
-</p>
-{% endif %}
-
-<p>Start: {{object.start|date:"D, M j \a\t P"}}<br/>
-End: {{object.end|date:"D, M j \a\t\ P"}}</p>
-
-<p>Location: {{object.location}}</p>
-
-<p>{{object.description|safe}}</p>
+    
+    <h1>Events</h1>
+    
+    
+    <div class="post">
+    	<div class="postheader red" style="position: relative;"> <!-- header row -->
+        <a class="postheaderlink" href="{{ object.get_absolute_url }}">Event: {{ object.title }}</a>
+    	</div>
+    	
+    <div class="postsubheader red red-border bkgd-light"> <!-- stat row -->
+    		<table width="100%" style="margin:0; padding: 0;">
+    			<tr>
+    				<td>
+    <span class="lighter">Starts: </span>{{object.start|date:"D, M j \a\t P"}} &nbsp;
+    <span class="lighter">Ends: </span>{{object.end|date:"D, M j \a\t\ P"}}
+    				</td>
+    				<td align="right" width="50%">
+    <a href="{% link_to_events_for object.content_object 'css_class' 1 %}">More events for 
+    
+    {% if object.content_object.visible_name %}
+    {{object.content_object.visible_name}}
+    {% else %}
+    {{object.content_object }}
+    {% endif %}
+    </a>
+    
+    				</td>
+    			</tr>
+    		</table>
+    	</div>
+    	
+    	
+        <div class="postcontent red-border">
+    					    
+    
+    
+    {% if object.location %}<p>Location: {{object.location}}</p>{% endif %}
+    
+    <p>{{object.description|safe}}</p>
+    
+    
+    
+    
 
 {% show_whiteboard object.whiteboard object.content_object member %}
 
-<p>Created by: {{object.creator.visible_name}}<br/>
-Visible to {{object.content_object}}</p>
 
-<p><a href="{% url events_feed_for_event object.id %}">export to ical</a></p>
+    
+    
+    
+        <div class="whiteboard-editing-box">
+        
+<p class="lighter">{% if object.creator.visible_name %}
+Created by: {{object.creator.visible_name}}<br/>
+
+{% endif %}
+Visible to: {{object.content_object}}
+</p>
+        
+<p><a href="{% url events_feed_for_event object.id %}">Export to iCal</a></p>
+
+        
+    {% if can_edit %}
+    	<a href="{% url events_change object.pk %}">Edit this event</a><br/><a href="{% url events_delete object.pk %}">Delete event</a>
+    	{% if can_send %}
+    		<br/><a href="{% url events_email object.pk %}">Send email invites</a> {# is that what this does? :)  @@@ #}
+    	{% endif %}
+    {% endif %}
+    
+    
+        </div>
+        <br class="clear"/>
+    
+        </div>
+    </div>		  
+    			
+
+
 
 </div>
 

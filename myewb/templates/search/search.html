@@ -26,31 +26,36 @@
     <h1>Search</h1>
 
 
-<ul class="segmented" id="groupheader" style="float: none;">
-        <li id="li-group-postsearch" class="current"><a href="#post-search" id="show-postsearch">Search posts and events</a></li>
-        <li id="li-group-peoplesearch"><a href="{% url profiles_index %}?search=" id="show-peoplesearch">People Search</a></li>
+<div id="search-tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all">
+
+<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+        <li id="li-group-postsearch" class="ui-corner-top ui-state-default ui-tabs-selected ui-state-active"><a href="#post-search" id="show-postsearch">Search posts and events</a></li>
+        <li id="li-group-peoplesearch" class="ui-corner-top ui-state-default "><a href="{% url profiles_index %}?search=" id="show-peoplesearch">People Search</a></li>
 
     </ul>
-
-    <div id="div-post-search" class="group-subsection" style="display: block;">
-
-
-
-    <form method="get" action=".">
-        <table>
-            {{ form.as_table }}
-            <tr>
-                <td>&nbsp;</td>
-                <td>
-                    <input type="submit" value="Search">
-                </td>
-            </tr>
-        </table>
-    </form>
-
-    </div>
     
+    <div class="ui-tabs-panel ui-widget-content ui-corner-bottom">
 
+        <div id="div-post-search" class="group-subsection" style="display: block;">
+    
+    
+    
+        <form method="get" action=".">
+            <table>
+                {{ form.as_table }}
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>
+                        <input type="submit" value="Search">
+                    </td>
+                </tr>
+            </table>
+        </form>
+    
+        </div>
+    
+    </div>
+</div>
 
 
         <h1>Results</h1>
@@ -63,9 +68,12 @@
 	          	{# is there a better way? #}
 	          	{% ifequal result.model_name "grouptopic" %}
 				    {% with result.object as topic %}
+{# POSTS #}
 				        {% include "topics/topic_item.html" %}
+{# end posts #}
 				    {% endwith %}
 				{% else %}
+{# WHITEBOARDS #}
 					{% ifequal result.model_name "whiteboard" %}
 <div class="post">
 	<div class="postheader orange {# some way of checking if this is a chapter or a community? #}" style="position: relative;"> <!-- header row -->
@@ -78,34 +86,63 @@
 				        {% show_whiteboard_force result.object result.object.parent_group member %}
     </div>
 </div>		    
+
+{# end whiteboards #}
 				        
 					{% else %}
 						{% ifequal result.model_name "event" %}
 							{# I so wish they had elif in django templates... #}
+
+{# EVENTS #}
+					
+		{# this should really be template-ized and loaded. currently this search version is the most up-to-date, and is being copied to the other locations (events_for_day, and event_detail) #}
 							
 <div class="post">
 	<div class="postheader red" style="position: relative;"> <!-- header row -->
     <a class="postheaderlink" href="{{ result.object.get_absolute_url }}">Event: {{ result.object.title }}</a>
 	</div>
 	
+<div class="postsubheader red red-border bkgd-light"> <!-- stat row -->
+		<table width="100%" style="margin:0; padding: 0;">
+			<tr>
+				<td>
+<span class="lighter">Starts: </span>{{result.object.start|date:"D, M j \a\t P"}} &nbsp;
+<span class="lighter">Ends: </span>{{result.object.end|date:"D, M j \a\t\ P"}}
+				</td>
+				<td align="right" width="50%">
+<a href="{% link_to_events_for result.object.content_object 'css_class' 1 %}">More events for 
+
+{% if result.object.content_object.visible_name %}
+{{result.object.content_object.visible_name}}
+{% else %}
+{{result.object.content_object }}
+{% endif %}
+</a>
+
+				</td>
+			</tr>
+		</table>
+	</div>
+	
+	
     <div class="postcontent red-border">
 					    
-<p><span class="lighter">Starts: </span>{{result.object.start|date:"D, M j \a\t P"}} &nbsp;
-<span class="lighter">Ends: </span>{{result.object.end|date:"D, M j \a\t\ P"}}</p>
+
 
 {% if result.object.location %}<p>Location: {{result.object.location}}</p>{% endif %}
 
 <p>{{result.object.description|safe}}</p>
 
     <div class="whiteboard-editing-box">
-<a href="{% link_to_events_for result.object.content_object 'css_class' 1 %}">More events for {{result.object.content_object.visible_name}}</a>
+<a href="{{ result.object.get_absolute_url }}">See full event details &raquo;</a>
+
     </div>
     <br class="clear"/>
 
     </div>
 </div>		  
 							
-							
+{# end events #}
 							
 						{% else %}
 		                <p>

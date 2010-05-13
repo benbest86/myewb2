@@ -4,23 +4,43 @@
 
 {% block extra_head %}
 {# TODO: move this into an appropriate CSS file #}
+
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui.css" />
+{# this page uses jquery UI css, but not the actual javascript since the tabs lead to different pages #}
+
 <style type="text/css" media="all">
     .msg-subsection { display: none; }
 </style>
 {% endblock %}
 
 {% block body %}
-	{% block msgheader %}
-	{% endblock %}
 
-    <ul class="segmented" id="messagesheader" style="float: none;">
-		<li id="li-msg-inbox" class="{% block li-inbox %}{% endblock %}"><a href="{% url messages_inbox %} ">{% trans "Inbox" %}</a></li>
-		<li id="li-msg-outbox" class="{% block li-outbox %}{% endblock %}"><a href="{% url messages_outbox %} ">{% trans "Sent Messages" %}</a></li>
-		<li id="li-msg-compose" class="{% block li-compose %}{% endblock %}"><a href="{% url messages_compose %} ">{% trans "New Message" %}</a></li>
-		<li id="li-msg-trash" class="{% block li-trash %}{% endblock %}"><a href="{% url messages_trash %} ">{% trans "Trash" %}</a></li>
+{# moved the header underneath the tab bar #}
+
+<div id="messages-tabs" class="ui-tabs ui-widget ui-widget-content ui-corner-all">
+
+<h1 class="msgtitle">Messages</h1>
+
+	<ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
+	
+		<li id="li-msg-inbox" class="ui-corner-top ui-state-default {% block li-inbox %}{% endblock %}"><a href="{% url messages_inbox %} ">{% trans "Inbox" %}</a></li>
+		<li id="li-msg-outbox" class="ui-corner-top ui-state-default {% block li-outbox %}{% endblock %}"><a href="{% url messages_outbox %} ">{% trans "Sent Messages" %}</a></li>
+		<li id="li-msg-compose" class="ui-corner-top ui-state-default {% block li-compose %}{% endblock %}"><a href="{% url messages_compose %} ">{% trans "New Message" %}</a></li>
+		<li id="li-msg-trash" class="ui-corner-top ui-state-default {% block li-trash %}{% endblock %}"><a href="{% url messages_trash %} ">{% trans "Trash" %}</a></li>
     </ul>
+
     
-    {% block msgbody %}
-    {% endblock %}
+    <div class="ui-tabs-panel ui-widget-content ui-corner-bottom">
+    
+    
+	<h2 class="msgheader">{% block msgheader %}
+	{% endblock %}</h2>
+    
+        {% block msgbody %}
+        {% endblock %}
+        
+    </div>
+    
+</div>
     
 {% endblock %}
