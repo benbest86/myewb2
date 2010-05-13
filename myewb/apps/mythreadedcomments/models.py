@@ -32,13 +32,12 @@ def send_to_watchlist(sender, instance, **kwargs):
     topic = instance.content_object
     attachments = Attachment.objects.attachments_for_object(topic)
     
-    c = {'group': topic.group,
-         'title': topic.title,
-         'body': instance.comment,
-         'topic_id': topic.pk,
-         'event': None,
-         'attachments': attachments
-         }
+    ctx = {'group': topic.group,
+           'title': topic.title,
+           'topic_id': topic.pk,
+           'event': None,
+           'attachments': attachments
+          }
     sender = 'myEWB <notices@my.ewb.ca>'
     
     # loop through watchlists and send emails
@@ -52,7 +51,7 @@ def send_to_watchlist(sender, instance, **kwargs):
                       htmlMessage=instance.comment,
                       fromemail=sender,
                       recipients=[user.email],
-                      context=c)
+                      context=ctx)
             
     # send email to original post creator
     if topic.creator.get_profile().replies_as_emails:
@@ -61,7 +60,7 @@ def send_to_watchlist(sender, instance, **kwargs):
                   htmlMessage=instance.comment,
                   fromemail=sender,
                   recipients=[topic.creator.email],
-                  context=c)
+                  context=ctx)
         
     # send email to participants
     participants = []
@@ -78,7 +77,7 @@ def send_to_watchlist(sender, instance, **kwargs):
                   htmlMessage=instance.comment,
                   fromemail=sender,
                   recipients=participants,
-                  context=c)
+                  context=ctx)
         
     # TODO: option to email anyone else who has repied to this thread too
     # (or could be implemented as an "add to watchlist" checkbox on the reply form)
