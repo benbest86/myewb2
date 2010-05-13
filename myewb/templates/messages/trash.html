@@ -21,7 +21,9 @@
                 <tr class="{% cycle "" "bkgd-light" %}">
                     <td>{{ message.sender.visible_name }}</td>
                     <td>
-                        {{ message.subject }}
+{% if message.subject.strip %}{{ message.subject }}{% else %}(No subject.){% endif %}
+
+{# no link to see it - how interesting. #}
                     </td>
                     <td>{{ message.sent_at|localtime:account.timezone|date:_("DATETIME_FORMAT") }}</td>
                     <td><a href="{% url messages_undelete message.id %}">{% trans "undelete" %}</a></td>

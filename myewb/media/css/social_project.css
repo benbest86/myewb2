@@ -74,9 +74,19 @@ table.messages tr th {
     font-weight:bold;
     border-bottom: 1px solid #999;
 */
-
-
 }
+
+a.message-link {
+display:block;
+font-weight:bold;
+letter-spacing:0.05em;  /* too gratuitous? */
+/* min-width:15em; */
+min-width: 150px;
+
+margin:-10px;
+padding:10px; /* test this in all browsers. */
+}
+
 dl.message-headers {
     border-top:1px solid #CCC;
     border-bottom:1px solid #CCC;

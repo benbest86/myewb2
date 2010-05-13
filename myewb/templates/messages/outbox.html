@@ -21,7 +21,7 @@
                 <tr class="{% cycle "" "bkgd-light" %}">
                     <td>{{ message.recipient.visible_name }}</td>
                     <td>
-                        <a href="{{ message.get_absolute_url }}">{{ message.subject }}</a>
+                        <a class="message-link" href="{{ message.get_absolute_url }}">{% if message.subject.strip %}{{ message.subject }}{% else %}(No subject.){% endif %}</a>
                     </td>
                     <td>{{ message.sent_at|localtime:account.timezone|date:_("DATETIME_FORMAT") }}</td>
                     <td><a href="{% url messages_delete message.id %}?next={% url messages_outbox %}">{% trans "delete" %}</a></td>
