@@ -10,6 +10,10 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}pinax/css/tabs.css" />
  -->
 		<link rel="stylesheet" href="{{ STATIC_URL }}uni_form/uni-form.css" />
+		
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/uni-form-custom.css" />    
+		
+		
 		<link rel="stylesheet" href="{{ STATIC_URL }}pinax/css/facebox.css" />
 		<link rel="stylesheet" href="{{ STATIC_URL }}pinax/css/accounts.css" />
         <link rel="stylesheet" href="{{ STATIC_URL }}css/toolbars.css" />    
@@ -24,6 +28,9 @@
     <body id="bodybackground" class="{% block body_class %}{% endblock %}">
         <h1 class="debug">myEWB dev version -- {% git_date %} (<a href="http://github.com/ewbcanada/myewb2/tree/{% git_rev %}">git rev {% git_rev %}</a>)</h1>
         <br/>
+        
+        
+    <div id="maincontainer">
         
         <div id="tabhead">
             {% block login %}{% endblock %}
@@ -139,5 +146,8 @@
         		}
         	});
         </script>
+        
+    </div>
+        
     </body>
 </html>

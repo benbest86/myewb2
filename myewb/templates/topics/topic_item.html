@@ -89,7 +89,7 @@
 	
 		<table width="100%" style="margin:0; padding: 0; margin-top: 6px;"> <!-- tags and drill-in link table -->
 			<tr>
-			<td align="right" valign="top" colspan="2" style="font-size: 10px; padding-right: 10px;">
+			<td align="right" valign="top" colspan="2" style="font-size: 10px; padding-right: 10px; line-height:14px;">
 		        {% if num_comments %}
 					<a href="{{ topic.get_absolute_url }}#reply-{{ latest.0.id }}">Latest reply</a> by <a href="{% url profile_detail latest.0.user.username %}" class="nodeco">{{ latest.0.user.visible_name }}</a><br/> on {{ latest.0.date_submitted|date }} at {{ latest.0.date_submitted|time }}
 
@@ -103,11 +103,11 @@
     		</tr>
 
     		<tr>
-		    <td valign="top" style="padding-left: 15px; font-size: 10px;">
+		    <td valign="top" style="font-size: 10px;">
 				
 				{% if user.is_authenticated %}
 					{% topic_on_watchlist user topic as on_list %}
-					<br/>
+					
 					<span id="toggle_watchlist_container-{{ topic.pk }}">
 					{% if on_list %}
 	    				<a href="#" id="toggle_watchlist-{{ topic.pk }}" class="more watchlist-toggle toggle-remove">[remove from watch-list]</a>
@@ -120,7 +120,7 @@
                 {% show_tags_for topic %}
 		    </td>
 
-			<td align="right" valign="top" width="300" style="font-size: 10px; padding-right: 10px;">
+			<td align="right" valign="top" width="250" style="font-size: 10px; padding-right: 10px;">
 				<a href="{{ topic.get_absolute_url }}" class="more">read more and reply &raquo;</a>
 			</td>
     		</tr>

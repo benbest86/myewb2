@@ -23,6 +23,15 @@
 	$(document).ready(function() {
 		$('.frontpage-update').click(function() {
 		
+		
+		  $('.frontpage-mygroups-actions').hide();
+		  $('.frontpage-mygroups-actions').parent().removeClass('bkgd-light');
+		  
+		  
+		  $(this).parent().addClass('bkgd-light');
+		  
+		  $(this).siblings('.frontpage-mygroups-actions').show();
+		
 		    // do stuff
 		    var groupSlug = $(this).attr("id").substring(17);
 		    
@@ -37,7 +46,13 @@
 		
 		
 		$('.frontpage-reset').click(function() {
+		  
+		  $('.frontpage-mygroups-actions').hide();
+		  $('.frontpage-mygroups-actions').parent().removeClass('bkgd-light');
+		  
 		  $('#maincolumn').load('/ #maincolumn');
+		  
+		  
 		  
 		  $('.frontpage-reset').hide();
 		  
@@ -114,7 +129,8 @@
     {% if user.is_authenticated %}
         <div class="toolbarheader bkgd" id="box-latestactivity">{% trans "Latest Activity" %}</div>
         <div class="toolbarcontent">
-        	Since you last signed in {{ user.get_profile.previous_login|timesince}} ago:<br/><br/>
+        	Since you last signed in {{ user.get_profile.previous_login|timesince}} ago:
+        	<div class="latest-activity-stats">
         	
         	{% if posts_since_login %}
 				<a href="{% url topic_since_login %}">
@@ -140,7 +156,7 @@
 			{% else %}
 				no new replies
 			{% endif %}
-			<br/>
+			</div>
 
             {% if can_adminovision %}
                 <p style="margin-bottom: 0; text-align: right;">
@@ -175,8 +191,8 @@
         <div class="toolbarheader bkgd" id="box-frontpage-mygroups">{% trans "My groups" %}</div>
         <div class="toolbarcontent">
              	{% for group in user.get_networks %}
-	                <div class="frontpage-mygroups-div"><a href="#" class="frontpage-update" id="frontpage-update-{{ group.slug }}">{{ group.name }}</a><br/>
-	                <span class="frontpage-mygroups-actions">x new posts<br/><a href="{% groupurl topic_new group %}">New post &raquo;</a><br/><a href="{% url group_detail group.slug %}">View group info &raquo;</a></span></div>
+	                <div class="frontpage-mygroups-div"><a href="#" class="frontpage-update" id="frontpage-update-{{ group.slug }}">{{ group.name }}</a>
+	                <div class="frontpage-mygroups-actions">x new posts<br/><a href="{% groupurl topic_new group %}">New post &raquo;</a><br/><a href="{% url group_detail group.slug %}">View group info &raquo;</a></div></div>
             	{% endfor %}
             	
             	
@@ -185,12 +201,12 @@
             	
             	{% for group in user.get_communities %}
 <div class="frontpage-mygroups-div"><a href="#" class="frontpage-update" id="frontpage-update-{{ group.slug }}">{{ group.name }}</a><br/>
-	                <span class="frontpage-mygroups-actions">x new posts<br/><a href="{% groupurl topic_new group %}">New post &raquo;</a><br/><a href="{% url group_detail group.slug %}">View group info &raquo;</a></span></div>
+	                <div class="frontpage-mygroups-actions">x new posts<br/><a href="{% groupurl topic_new group %}">New post &raquo;</a><br/><a href="{% url group_detail group.slug %}">View group info &raquo;</a></div></div>
 
             	{% endfor %}
 
 
-            <div class="frontpage-mygroups-div"><a href="#" class="frontpage-reset" style="display:none;">Show all posts (reset page)</a>&nbsp;{# to stop the divs below from moving #}</div>
+            <div class="frontpage-mygroups-div"><a href="#" class="frontpage-reset" style="display:none;">Show all posts (reset page)</a></div>
 
 
  

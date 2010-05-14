@@ -17,15 +17,48 @@
 
 {% block groupbody %}
     
-    <p>
-        {% trans "Slug:" %} <tt>{{ group.slug }}</tt><br />
-        {% trans "Creator:" %} <a href="{% url profile_detail group.creator.username %}">{{ group.creator.visible_name }}</a><br />
-        {% trans "Created:" %} {{ group.created|date }}
-        <br />
-        {% show_tags_for group %}
-    </p>
+<table class="standard standard-right search-form">
+    <tbody>
+
+        {% comment %}<tr>
+            <th>label</th>
+            <td>content</td>
+        </tr>
+        {% endcomment %}
         
-    <p>{{ group.description }}</p>
+        <tr>
+            <th>{% trans "Description" %}</th>
+            <td>
+                <p>{{ group.description }}</p>
+            </td>
+        </tr> 
+  
+        <tr>
+            <th>{% trans "Date created" %}</th>
+            <td>{{ group.created|date }}</td>
+        </tr>
+  
+        <tr>
+            <th>{% trans "Created by" %}</th>
+            <td><a href="{% url profile_detail group.creator.username %}">{{ group.creator.visible_name }}</a></td>
+        </tr>
+        
+
+        
+        {% if group.tags %}
+        <tr>
+            <th>{% trans "Tags" %}</th>
+            <td>{% show_tags_for group %}</td>
+        </tr>    
+        {% endif %}
+        {# @@@ currently not used. #}
+        
+   
+        
+    </tbody>
+</table>
+
+
 
 	{% if group.parent %}
 		<p>{% trans "Parent:" %} <a href="{{ group.parent.get_absolute_url }}">{{ group.parent.name }}</a></p>

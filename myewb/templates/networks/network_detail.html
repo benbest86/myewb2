@@ -33,44 +33,95 @@
 
 {% block groupbody %}
 
-    <p>({{ group.slug }})</p>
+    {#<p>({{ group.slug }})</p>#}
             
     {% if group.is_chapter %}
-        <p>
-            <strong>{% trans "Mailing address" %}</strong><br/>
+    
+    
+<table class="standard standard-right search-form">
+    <tbody>
+
+        {% comment %}<tr>
+            <th>label</th>
+            <td>content</td>
+        </tr>
+        {% endcomment %}
+        
+        
+        <tr>
+            <th>{% trans "Mailing address" %}</th>
+            <td>
+                <div>
             {{ group.chapter_info.street_address }}<br/>
             {% if group.chapter_info.street_address_two %}{{ group.chapter_info.street_address_two }}<br/>{% endif %}
             {{ group.chapter_info.city }}, {{ group.chapter_info.province }}<br/>
-            {{ group.chapter_info.postal_code }}<br/>
-        </p>
+            {{ group.chapter_info.postal_code }}
+                </div>
+            </td>
+        </tr>    
         
-        <p>
-            <strong>{% trans "Phone:" %}</strong>&nbsp;{{ group.chapter_info.phone }}
-        </p>
         
-        {% if group.chapter_info.fax %}
-            <p>
-                <strong>{% trans "Fax:" %}</strong>&nbsp;{{ group.chapter_info.fax }}
-            </p>
-        {% endif %}
+        <tr>
+            <th>{% trans "Phone:" %}</th>
+            <td>{{ group.chapter_info.phone }}</td>
+        </tr>   
+        
 
-        <p>
-            <strong>{% trans "Email:" %}</strong>&nbsp;
-                <a href="mailto:{{ group.slug }}@ewb.ca">{{ group.slug }}@ewb.ca</a>
-        </p>
+{% if group.chapter_info.fax %}
+        <tr>
+            <th>{% trans "Fax:" %}</th>
+            <td>{{ group.chapter_info.fax }}</td>
+        </tr>   
+{% endif %}
         
-        <p>
-            <strong>{% trans "Website:" %}</strong>&nbsp;<a href="http://{{ group.slug }}.ewb.ca/">http://{{ group.slug }}.ewb.ca/</a>
-        </p>
+        <tr>
+            <th>{% trans "Email:" %}</th>
+            <td><a href="mailto:{{ group.slug }}@ewb.ca">{{ group.slug }}@ewb.ca</a></td>
+        </tr>
+        
+
+        <tr>
+            <th>{% trans "Website:" %}</th>
+            <td><a href="http://{{ group.slug }}.ewb.ca/">http://{{ group.slug }}.ewb.ca/</a></td>
+        </tr>
+   
+
+        
+    </tbody>
+</table>
+        
     {% else %}
+
+
+<table class="standard standard-right search-form">
+    <tbody>
+
+        {% comment %}<tr>
+            <th>label</th>
+            <td>content</td>
+        </tr>
+        {% endcomment %}
+        
+  
+        <tr>
+            <th>{% trans "Created by" %}</th>
+            <td><a href="{% url profile_detail group.creator.username %}">{{ group.creator.visible_name }}</a></td>
+        </tr>
+        
+        <tr>
+            <th>{% trans "Date created" %}</th>
+            <td>{{ group.created|date }}</td>
+        </tr>
+    </tbody>
+</table>
         <p>
-            {% trans "Creator:" %} <a href="{% url profile_detail group.creator.username %}">{{ group.creator.visible_name }}</a><br />
-            {% trans "Created:" %} {{ group.created|date }}
-            <br />
             {% show_tags_for group %}
         </p>
             
         <p>{{ group.description }}</p>
+        
+
+        
     {% endif %}
 
 	<br/>
