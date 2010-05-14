@@ -8,7 +8,6 @@ Created on: 2009-08-13
 @author: Joshua Gorner
 """
 
-import re
 from datetime import datetime
 from django.db import models
 from django.db.models import Q
@@ -22,6 +21,7 @@ from mailer import send_mail
 from attachments.models import Attachment
 from base_groups.models import BaseGroup
 from base_groups.helpers import user_can_adminovision, user_can_execovision
+from siteutils.helpers import wiki_convert
 from topics.models import Topic
 from whiteboard.models import Whiteboard
 
@@ -285,20 +285,3 @@ class Watchlist(models.Model):
             return True
         else:
             return False
-
-def wiki_convert(text):
-    bold_exp = re.compile(r'(.*?)\*\*(.+?)\*\*(.*?)', re.S)
-    text = bold_exp.sub(r"\1<strong>\2</strong>\3", text)
-
-    italic_exp = re.compile(r'(.*?)\^\^(.+?)\^\^(.*?)', re.S)
-    text = italic_exp.sub(r"\1<em>\2</strong>\3", text)
-
-    heading_exp = re.compile(r'(.*?)==(.+?)==(.*?)', re.S)
-    text = heading_exp.sub(r"\1<h3>\2</h3>\3", text)
-    
-    text = re.sub(r'-{4,}', "<hr/>", text)
-    text = text.replace("\n", "<br/>")
-    
-    return text
-
-    

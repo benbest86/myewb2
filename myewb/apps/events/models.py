@@ -10,7 +10,7 @@ from lxml.html.clean import clean_html, autolink_html, Cleaner
 
 from base_groups.helpers import user_can_adminovision, user_can_execovision
 from base_groups.models import BaseGroup
-from group_topics.models import wiki_convert
+from siteutils.helpers import wiki_convert
 from whiteboard.models import Whiteboard
 
 class EventManager(models.Manager):
