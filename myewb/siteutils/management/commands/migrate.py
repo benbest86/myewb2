@@ -318,7 +318,7 @@ class Command(NoArgsCommand):
                     print "meh. couldn't print", row[0]
                 
             # what kind of group do we need?
-            if row[7]:
+            if row[7] or row[0] == 3:
                 type = Network
             elif row[8]:
                 type = ExecList
@@ -340,6 +340,8 @@ class Command(NoArgsCommand):
                 invite_only = True
             if row[0] == 1:
                 slug = "ewb"
+            elif row[0] == 3:
+                slug = "natloffice"
             elif row[12] is None:
                 slug = row[10]
             else:
@@ -427,6 +429,8 @@ class Command(NoArgsCommand):
                 if end is not None:
                     user.is_active = False
                 user.save()
+            elif row[5] == 3:
+                is_admin = True
             else:
                 # find admin level
                 if level == 'l':
