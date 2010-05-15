@@ -99,10 +99,22 @@ class Command(NoArgsCommand):
         print datetime.now()
         print "==============="
         print ""
-        self.migrate_whiteboards(c, c2)
+        #self.migrate_whiteboards(c, c2)
         
         print ""
         print "finished whiteboards at", datetime.now()
+        print ""
+        print ""
+        
+        print "==============="
+        print "Migrating CHAMP"
+        print datetime.now()
+        print "==============="
+        print ""
+        self.migrate_champ(c, c2)
+        
+        print ""
+        print "finished CHAMP at", datetime.now()
         print ""
         print ""
         
@@ -843,3 +855,124 @@ class Command(NoArgsCommand):
                 print "whiteboard", row[0], "named", title, "attached to", row[10]
             except:
                 print "meh, couldn't print", row[0]
+
+    def migrate_champ(self, c, c2):
+        # ./manage.py reset --noinput champ ; ./manage.py migrate | tee champ.log
+
+        c.execute("SELECT * FROM activities")
+        for row in c.fetchall():
+            c2.execute("""INSERT INTO champ_activity
+                        SET id=%s,
+                            name=%s,
+                            date=%s,
+                            created_date=%s,
+                            modified_date=%s,
+                            creator_id=%s,
+                            editor_id=%s,
+                            group_id=%s,
+                            visible=%s,
+                            confirmed=%s,
+                            prepHours=%s,
+                            execHours=%s,
+                            numVolunteers=%s""",
+                            (row[0], row[1], row[2], row[3], row[4], row[92],
+                             row[91], row[93], row[5], row[6], row[8], row[9], row[7]))
+            
+            c2.execute("""INSERT INTO champ_metrics
+                        SET activity_id=%s, metric_type=%s""",
+                        (row[0], "impactmetrics"))
+            
+            c2.execute("""INSERT INTO champ_impactmetrics
+                        SET metrics_ptr_id=LAST_INSERT_ID(),
+                            description=%s,
+                            goals=%s,
+                            outcome=%s,
+                            notes=%s,
+                            changes=%s,
+                            repeat=%s""",
+                            (row[10], row[11], row[12], row[13], row[14], row[15]))
+            
+            if row[16]:
+                c2.execute("""INSERT INTO champ_functioningmetrics
+                            SET metrics_ptr_id=LAST_INSERT_ID(),
+                                type=%s,
+                                location=%s,
+                                purpose=%s,
+                                attendance=%s,
+                                duration=%s""",
+                                (row[49], row[50], row[51], row[52], row[53]))
+                
+            if row[17]:
+                c2.execute("""INSERT INTO champ_memberlearningmetrics
+                            SET metrics_ptr_id=LAST_INSERT_ID(),
+                                type=%s,
+                                learning_partner=%s,
+                                curriculum=%s,
+                                resources_by=%s,
+                                duration=%s,
+                                attendance=%s,
+                                new_attendance=%s""",
+                                (row[27], row[28], row[29], row[30], row[31],
+                                 row[32], row[33]))
+                
+            if row[18]:
+                c2.execute("""INSERT INTO champ_publicengagementmetrics
+                            SET metrics_ptr_id=LAST_INSERT_ID(),
+                                type=%s,
+                                location=%s,
+                                purpose=%s,
+                                subject=%s,
+                                level1=%s,
+                                level2=%s,
+                                level3=%s""",
+                                (row[54], row[55], row[56], row[57], row[58], row[59], row[60]))
+                
+            if row[19]:
+                c2.execute("""INSERT INTO champ_publicadvocacymetrics
+                            SET metrics_ptr_id=LAST_INSERT_ID(),
+                                type=%s,
+                                units=%s,
+                                decision_maker=%s,
+                                position=%s,
+                                ewb=%s,
+                                purpose=%s,
+                                learned=%s""",
+                                (row[61], row[62], row[63], row[64], row[65], row[66], row[67]))
+                
+            if row[20]:
+                c2.execute("""INSERT INTO champ_workplaceoutreachmetrics
+                            SET metrics_ptr_id=LAST_INSERT_ID(),
+                                company=%s,
+                                city=%s,
+                                presenters=%s,
+                                ambassador=%s,
+                                email=%s,
+                                phone=%s,
+                                presentations=%s,
+                                attendance=%s,
+                                type=%s""",
+                                (row[76], row[77], row[78], row[79], row[80],
+                                 row[81], row[82], row[83], row[84]))
+            
+            if row[21]:
+                c2.execute("""INSERT INTO champ_schooloutreachmetrics
+                            SET metrics_ptr_id=LAST_INSERT_ID(),
+                                school_name=%s,
+                                teacher_name=%s,
+                                teacher_email=%s,
+                                teacher_phone=%s,
+                                presentations=%s,
+                                students=%s,
+                                grades=%s,
+                                subject=%s,
+                                workshop=%s,
+                                facilitators=%s,
+                                new_facilitators=%s,
+                                notes=%s""",
+                                (row[34], row[37], row[38], row[39], row[40],
+                                 row[41], row[42], row[43], row[44], row[45],
+                                 row[46], row[48]))
+                
+            # if row[22]: continued...
+                            
+                            ")
