@@ -51,6 +51,9 @@
 {#       			<a href="{% url edit_network group.slug %}">{% trans "Edit network details" %}</a><br/><br/> #}
        			<a href="{% url edit_network group.slug %}">{% trans "Edit chapter details" %}</a><br/><br/> 
 		        <a href="{% url network_stats group.slug %}">{% trans "Group statistics" %}</a><br/>
+		        
+		        <a href="/champ/{{ group.slug }}">{% trans "CHAMP" %}</a><br/>{# @@@ two questions: should this be here, and should it be under is_admin? #}
+		        
                 
                 {% if perms.base_groups and not group.is_chapter %}
                     <a href="{% url new_chapter %}?network={{ group.slug }}">{% trans "Convert to chapter" %}</a><br/>
