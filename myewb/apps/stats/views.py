@@ -35,8 +35,10 @@ def main_dashboard(request):
         today.users = 1
 
     # ---- Daily usage ----
-    averageusage = DailyStats.objects.order_by('day')
-    max_signins = 0
+    enddate = date.today()
+    #startdate = enddate - timedelta(weeks=60)
+    startdate = enddate - timedelta(weeks=4)
+    averageusage = DailyStats.objects.filter(day__range=(startdate, enddate)).order_by('day')
     days = []
     signins = []
     posts = []
@@ -68,8 +70,8 @@ def main_dashboard(request):
         regdowngrades.append(s.regdowngrades)
 
     xaxis = []
-    for i in range(0, len(days), 1):    # this will make limited test data look better
-    #for i in range(0, len(days), len(days)/8):
+    #for i in range(0, len(days), 1):    # this will make limited test data look better
+    for i in range(0, len(days), len(days)/8):
         xaxis.append(days[i])
 
     # ---- Daily usage ----
@@ -85,7 +87,7 @@ def main_dashboard(request):
     dailyUsageChart.set_legend_position('b')
 
     #yaxis = range(0, max_signins + 1, 2)    # this will make limited test data look better
-    yaxis = range(0, max_signins + 1, 50)
+    yaxis = range(0, max(signins), max(signins)/10)
     yaxis[0] = ''
     dailyUsageChart.set_axis_labels(Axis.LEFT, yaxis)
     dailyUsageChart.set_axis_labels(Axis.BOTTOM, xaxis)
@@ -104,7 +106,7 @@ def main_dashboard(request):
     accountChangesChart.set_legend_position('b')
 
     #yaxis = range(0, 25, 2)    # this will make limited test data look better
-    yaxis = range(0, 25, 50)
+    yaxis = range(0, max(listsignups), max(listsignups)/10)
     yaxis[0] = ''
     accountChangesChart.set_axis_labels(Axis.LEFT, yaxis)
     accountChangesChart.set_axis_labels(Axis.BOTTOM, xaxis)
@@ -141,7 +143,9 @@ def main_dashboard(request):
     membershipChangesChart.set_legend_position('b')
 
     #yaxis = range(0, 25, 2)    # the same.
-    yaxis = range(0, 25, 50)
+    yaxis = range(0,
+                  max(max(regupgrades), max(regdowngrades), max(renewals)),
+                  max(max(max(regupgrades), max(regdowngrades), max(renewals))/10, 1))
     yaxis[0] = ''
     membershipChangesChart.set_axis_labels(Axis.LEFT, yaxis)
     membershipChangesChart.set_axis_labels(Axis.BOTTOM, xaxis)
@@ -263,9 +267,9 @@ def main_dashboard(request):
     malelogins = []
     femalelogins = []
     for i in range(0,30):
-        logincount.append(MemberProfile.objects.filter(login_count=i).count())
-        malelogins.append(MemberProfile.objects.filter(login_count=i, gender='M').count())
-        femalelogins.append(MemberProfile.objects.filter(login_count=i, gender='F').count())
+        logincount.append(MemberProfile.objects.filter(login_count__gte=i).count())
+        malelogins.append(MemberProfile.objects.filter(login_count__gte=i, gender='M').count())
+        femalelogins.append(MemberProfile.objects.filter(login_count__gte=i, gender='F').count())
     
     loginDistribution = SimpleLineChart(600, 450, y_range=(0, 9000))
     loginDistribution.add_data(logincount)
