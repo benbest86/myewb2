@@ -75,7 +75,7 @@ class Command(NoArgsCommand):
         print datetime.now()
         print "==============="
         print ""
-        #self.migrate_posts(c, c2)
+        self.migrate_posts(c, c2)
         
         print ""
         print "finished posts at", datetime.now()
@@ -111,7 +111,7 @@ class Command(NoArgsCommand):
         print datetime.now()
         print "==============="
         print ""
-        self.migrate_champ(c, c2)
+        #self.migrate_champ(c, c2)
         
         print ""
         print "finished CHAMP at", datetime.now()
@@ -706,6 +706,29 @@ class Command(NoArgsCommand):
         c2.execute("ALTER TABLE  `topics_topic` ADD INDEX (  `object_id` )")
         c2.execute("ALTER TABLE  `topics_topic` ADD INDEX (  `created` )")
         
+        # watchlists too
+        c.execute("SELECT * FROM flaggedposts")
+        for row in c.fetchall():
+            c2.execute("""SELECT id FROM group_topics_watchlist
+                        WHERE owner_id=%s""",
+                        (row[1]))
+            listid = c2.fetchone()
+            if not listid:
+                c2.execute("""INSERT INTO group_topics_watchlist
+                            SET name='watchlist',
+                                owner_id=%s""",
+                                (row[1]))
+                c2.execute("SELECT LAST_INSERT_ID()")
+                listid = c2.fetchone()
+                print "watchlist - post", row[0], "to user", row[1], "(creating", listid[0], ")"
+            else:
+                print "watchlist - post", row[0], "to user", row[1], "(found", listid[0], ")"
+                
+            c2.execute("""INSERT INTO group_topics_watchlist_posts
+                        SET watchlist_id=%s,
+                            grouptopic_id=%s""",
+                            (listid[0], row[0]))
+                
     def migrate_events(self, c, c2):
         # ./manage.py reset --noinput events ; ./manage.py migrate | tee events.log
 
