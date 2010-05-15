@@ -76,13 +76,19 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
             
             </td>
         </tr>
-        
+    </tbody>
+</table>
 
 
 
 
         
 	{% if is_me or is_friend or perms.profiles %}
+
+<table class="standard standard-right search-form">
+    <tbody>
+	
+	
 		{% if regular %}
         <tr>
             <th>{% trans "Membership status" %}</th>
@@ -90,7 +96,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
                 Regular member, expiring on {{ other_user.get_profile.membership_expiry }}
             </td>
         </tr>
-	{% endif %}
+	   {% endif %}
 		
 		
 		{% comment %}
