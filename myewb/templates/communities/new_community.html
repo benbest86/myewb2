@@ -9,10 +9,10 @@
 {% load communities_tags %}
 {% load base_groups_tags %}
 
-{% block head_title %}{% blocktrans %}Create Mailing List{% endblocktrans %}{% endblock %}
+{% block head_title %}{% blocktrans %}Create a new Community{% endblocktrans %}{% endblock %}
 
 {% block body %}
-    <h1>{% trans "Create Mailing List" %}</h1>
+    <h1>{% trans "Create a new Community" %}</h1>
     
     {% if user.is_authenticated %}
         <form class="uniForm" id="community_form" method="POST" action="">

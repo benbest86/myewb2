@@ -30,7 +30,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
             	{% endfor %}
             </p>
 			<p>
-				<strong>Mailing Lists</strong><br/>
+				<strong>Communities</strong><br/>
             	{% for group in other_user.get_communities %}
 	                <a href="{% url group_detail group.slug %}">{{ group.name }}</a><br/>
             	{% endfor %}
