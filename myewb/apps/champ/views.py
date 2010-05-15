@@ -40,9 +40,12 @@ def run_stats(filters):
     ml_metrics = run_query(MemberLearningMetrics.objects.all(), filters)
     ml_hours = 0
     ml_attendance = 0
+    ml_num = ml_metrics.count()
     for m in ml_metrics:
         ml_hours += m.duration * m.attendance
         ml_attendance += m.attendance
+    if ml_num:
+        ml_attendance = ml_attendance / ml_num
         
     pe_metrics = run_query(PublicEngagementMetrics.objects.all(), filters)
     pe_people = 0
@@ -86,6 +89,7 @@ def run_stats(filters):
     context = {}
     context['ml_hours'] = ml_hours
     context['ml_attendance'] = ml_attendance
+    context['pe_people'] = pe_people
     context['po_contacts'] = po_contacts
     context['ce_students'] = ce_students
     context['ce_hours'] = ce_hours
