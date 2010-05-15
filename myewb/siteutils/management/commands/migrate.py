@@ -1026,3 +1026,47 @@ class Command(NoArgsCommand):
                                 (row[73], row[74]))
                 print "   fundraising"
 
+        c.execute("SELECT * FROM reflections")
+        for row in c.fetchall():
+            print "champ reflection", row[0]
+            c2.execute("""INSERT INTO champ_journal
+                        SET id=%s,
+                            date=%s,
+                            creator_id=%s,
+                            group_id=%s,
+                            private=%s,
+                            snapshot=%s,
+                            highlight=%s,
+                            challenge=%s,
+                            leadership=%s,
+                            learning=%s,
+                            innovation=%s,
+                            yearplan=%s,
+                            office=%s""",
+                            (row[0], row[10], row[11], row[12],row[9], row[1],
+                             row[2], row[3], row[4], row[5], row[6], row[7],row[8]))
+            
+        c.execute("SELECT * FROM yearplans")
+        for row in c.fetchall():
+            print "champ yearplan", row[0], row[1], row[4]
+            c2.execute("""INSERT INTO champ_yearplan
+                        SET id=%s,
+                            year=%s,
+                            group_id=%s,
+                            modified_date=%s,
+                            last_editor_id=%s,
+                            ml_average_attendance=%s,
+                            ml_total_hours=%s,
+                            adv_contacts=%s,
+                            eng_people_reached=%s,
+                            fund_total=%s,
+                            pub_media_hits=%s,
+                            ce_hours=%s,
+                            ce_students=%s,
+                            so_presentations=%s,
+                            so_reached=%s,
+                            wo_presentations=%s,
+                            wo_reached=%s""",
+                            (row[0], row[1], row[4], row[2], row[3], row[5], row[6],
+                             row[7], row[8], row[9], row[10], row[11], row[12], row[13],
+                             row[14], row[15], row[16]))

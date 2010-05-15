@@ -78,7 +78,8 @@ class Activity(models.Model):
 class YearPlan(models.Model):
     year = models.IntegerField()
     group = models.ForeignKey(BaseGroup, unique_for_year="year")
-    modified_date = models.DateField(auto_now=True)
+    #modified_date = models.DateTimeField(auto_now=True)
+    modified_date = models.DateTimeField()
     last_editor = models.ForeignKey(User)
     
     ml_average_attendance = models.IntegerField(null=True, blank=True)
