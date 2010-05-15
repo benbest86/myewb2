@@ -335,8 +335,8 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
     
     {% if perms.profiles %}
         <h2>{% trans "myEWB History" %}</h2>
-        we'll add a neat-o search &amp; sort feature and stuff soon
-        <table id="user-history">
+        {#we'll add a neat-o search &amp; sort feature and stuff soon#}
+        <table id="user-history" class="standard">
             <thead>
             <tr>
                 <th>{% trans "Date" %}</th>
@@ -348,7 +348,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
             </thead>
             <tbody>
             {% for record in other_user.group_records.all %}
-            <tr style="{% cycle 'background: #ffffff;' 'background: #d0d0d0;' %}">
+            <tr style="{% cycle 'background: #ffffff;' 'background: #eee;' %}">
                 <td>{{ record.datetime|date:"d M Y" }}</td>
                 <td>{{ record.group }}</td>
                 <td>

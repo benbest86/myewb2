@@ -1,12 +1,14 @@
 /* Profiles - user history */
 
 #user-history {
+/*
     width: 100%;
     border: solid 2px grey;
     text-align: center;
+*/
 }
 
 #user-history th {
-    background: lightgrey;
+/*     background: lightgrey; */
 }
 
