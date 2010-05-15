@@ -75,7 +75,7 @@ class Command(NoArgsCommand):
         print datetime.now()
         print "==============="
         print ""
-        self.migrate_posts(c, c2)
+        #self.migrate_posts(c, c2)
         
         print ""
         print "finished posts at", datetime.now()
@@ -118,6 +118,17 @@ class Command(NoArgsCommand):
         print ""
         print ""
         
+        print "==============="
+        print "Migrating stats"
+        print datetime.now()
+        print "==============="
+        print ""
+        self.migrate_stats(c, c2)
+        
+        print ""
+        print "finished stats at", datetime.now()
+        print ""
+        print ""
         
     def migrate_users(self, c):
         # ./manage.py reset --noinput account auth profiles siteutils ; ./manage.py migrate | tee users.log
@@ -1093,3 +1104,40 @@ class Command(NoArgsCommand):
                             (row[0], row[1], row[4], row[2], row[3], row[5], row[6],
                              row[7], row[8], row[9], row[10], row[11], row[12], row[13],
                              row[14], row[15], row[16]))
+            
+    def migrate_stats(self, c, c2):
+        # ./manage.py reset --noinput stats ; ./manage.py migrate | tee stats.log
+        
+        c.execute("SELECT * FROM dailystats")
+        for row in c.fetchall():
+            print "stats", row[0], row[1]
+            c2.execute("""INSERT INTO stats_dailystats
+                        SET id=%s,
+                            day=%s,
+                            signups=%s,
+                            mailinglistsignups=%s,
+                            signins=%s,
+                            posts=%s,
+                            events=%s,
+                            eventMailings=%s,
+                            replies=%s,
+                            whiteboardEdits=%s,
+                            regupgrades=%s,
+                            regdowngrades=%s,
+                            deletions=%s,
+                            renewals=%s,
+                            mailinglistupgrades=%s,
+                            users=%s,
+                            regularmembers=%s,
+                            associatemembers=%s,
+                            activityCreations=%s,
+                            activityEdits=%s,
+                            activityConfirmations=%s,
+                            activityDeletions=%s,
+                            reflections=%s,
+                            filesAdded=%s""",
+                            (row[0], row[1], row[2], row[3], row[4], row[5],
+                             row[12], row[13], row[6], row[14], row[7], row[8],
+                             row[9], row[10], row[11], 0, 0, 0,
+                             row[15], row[16], row[17], row[18], row[19], row[20]))
+            
