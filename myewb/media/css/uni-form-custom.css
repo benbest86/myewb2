@@ -35,3 +35,31 @@ width: 586px;  /* probably not consistent between browsers - tinyMCE is set to a
 width:600px;
 height:380px;
 }
+
+
+
+
+.settings-page-special.uniForm .inlineLabels label
+{
+width:43%;
+}
+
+.settings-page-special.uniForm .inlineLabels .formHint {
+/* width:20%; */
+margin-left: 0;
+text-align: right;
+
+}
+
+.settings-page-special ul {
+list-style: none;
+margin:0; padding:0;
+}
+
+.settings-page-special.uniForm .inlineLabels ul  li label {
+width:auto;
+}
+.settings-page-special.uniForm .inlineLabels ul  li {
+display: block;
+clear:right;
+}
