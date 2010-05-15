@@ -28,8 +28,10 @@ class Activity(models.Model):
     name = models.CharField(_('Event name'), max_length=255)
     
     date = models.DateField(null=True, blank=True)
-    created_date = models.DateField(auto_now_add=True)
-    modified_date = models.DateField(auto_now=True)
+    #created_date = models.DateTimeField(auto_now_add=True)
+    #modified_date = models.DateTimeField(auto_now=True)
+    created_date = models.DateTimeField()
+    modified_date = models.DateTimeField()
     
     creator = models.ForeignKey(User, related_name="activities_created")
     editor = models.ForeignKey(User, related_name="activities_edited")

@@ -861,6 +861,23 @@ class Command(NoArgsCommand):
 
         c.execute("SELECT * FROM activities")
         for row in c.fetchall():
+            if not row[93]:
+                continue
+            
+            try:
+                print "champ", row[0], "-", row[1]
+            except:
+                print "meh, couldn't print", row[0]
+            
+            if row[5]:
+                visible = True
+            else:
+                visible = False
+            if row[6]:
+                confirmed = True
+            else:
+                confirmed = False 
+            
             c2.execute("""INSERT INTO champ_activity
                         SET id=%s,
                             name=%s,
@@ -876,7 +893,7 @@ class Command(NoArgsCommand):
                             execHours=%s,
                             numVolunteers=%s""",
                             (row[0], row[1], row[2], row[3], row[4], row[92],
-                             row[91], row[93], row[5], row[6], row[8], row[9], row[7]))
+                             row[91], row[93], visible, confirmed, row[8], row[9], row[7]))
             
             c2.execute("""INSERT INTO champ_metrics
                         SET activity_id=%s, metric_type=%s""",
@@ -887,12 +904,12 @@ class Command(NoArgsCommand):
                             description=%s,
                             goals=%s,
                             outcome=%s,
-                            notes=%s,
-                            changes=%s,
-                            repeat=%s""",
+                            `notes`=%s,
+                            `changes`=%s,
+                            `repeat`=%s""",
                             (row[10], row[11], row[12], row[13], row[14], row[15]))
             
-            if row[16]:
+            if row[16] == 1:
                 c2.execute("""INSERT INTO champ_functioningmetrics
                             SET metrics_ptr_id=LAST_INSERT_ID(),
                                 type=%s,
@@ -901,8 +918,9 @@ class Command(NoArgsCommand):
                                 attendance=%s,
                                 duration=%s""",
                                 (row[49], row[50], row[51], row[52], row[53]))
+                print "   functioning"
                 
-            if row[17]:
+            if row[17] == 1:
                 c2.execute("""INSERT INTO champ_memberlearningmetrics
                             SET metrics_ptr_id=LAST_INSERT_ID(),
                                 type=%s,
@@ -914,8 +932,9 @@ class Command(NoArgsCommand):
                                 new_attendance=%s""",
                                 (row[27], row[28], row[29], row[30], row[31],
                                  row[32], row[33]))
+                print "   member learning"
                 
-            if row[18]:
+            if row[18] == 1:
                 c2.execute("""INSERT INTO champ_publicengagementmetrics
                             SET metrics_ptr_id=LAST_INSERT_ID(),
                                 type=%s,
@@ -926,8 +945,9 @@ class Command(NoArgsCommand):
                                 level2=%s,
                                 level3=%s""",
                                 (row[54], row[55], row[56], row[57], row[58], row[59], row[60]))
+                print "   public engagement"
                 
-            if row[19]:
+            if row[19] == 1:
                 c2.execute("""INSERT INTO champ_publicadvocacymetrics
                             SET metrics_ptr_id=LAST_INSERT_ID(),
                                 type=%s,
@@ -938,8 +958,9 @@ class Command(NoArgsCommand):
                                 purpose=%s,
                                 learned=%s""",
                                 (row[61], row[62], row[63], row[64], row[65], row[66], row[67]))
+                print "   public advocacy"
                 
-            if row[20]:
+            if row[20] == 1:
                 c2.execute("""INSERT INTO champ_workplaceoutreachmetrics
                             SET metrics_ptr_id=LAST_INSERT_ID(),
                                 company=%s,
@@ -953,8 +974,9 @@ class Command(NoArgsCommand):
                                 type=%s""",
                                 (row[76], row[77], row[78], row[79], row[80],
                                  row[81], row[82], row[83], row[84]))
+                print "   workplace outreach"
             
-            if row[21]:
+            if row[21] == 1:
                 c2.execute("""INSERT INTO champ_schooloutreachmetrics
                             SET metrics_ptr_id=LAST_INSERT_ID(),
                                 school_name=%s,
@@ -972,7 +994,35 @@ class Command(NoArgsCommand):
                                 (row[34], row[37], row[38], row[39], row[40],
                                  row[41], row[42], row[43], row[44], row[45],
                                  row[46], row[48]))
+                print "   school outreach"
                 
-            # if row[22]: continued...
-                            
-                            ")
+            if row[22] == 1:
+                c2.execute("""INSERT INTO champ_curriculumenhancementmetrics
+                            SET metrics_ptr_id=LAST_INSERT_ID(),
+                                name=%s,
+                                code=%s,
+                                students=%s,
+                                hours=%s,
+                                professor=%s,
+                                ce_activity=%s""",
+                                (row[85], row[86], row[87], row[88], row[89], row[90]))
+                print "   curriculum"
+                
+            if row[23] == 1:
+                c2.execute("""INSERT INTO champ_publicationmetrics
+                            SET metrics_ptr_id=LAST_INSERT_ID(),
+                                outlet=%s,
+                                type=%s,
+                                location=%s,
+                                circulation=%s""",
+                                (row[68], row[69], row[70], row[72]))
+                print "   publication"
+            
+            if row[24] == 1:
+                c2.execute("""INSERT INTO champ_fundraisingmetrics
+                            SET metrics_ptr_id=LAST_INSERT_ID(),
+                                goal=%s,
+                                revenue=%s""",
+                                (row[73], row[74]))
+                print "   fundraising"
+
