@@ -51,7 +51,7 @@ class Command(NoArgsCommand):
         print datetime.now()
         print "==============="
         print ""
-        #self.migrate_groups(c, c2)
+        self.migrate_groups(c, c2)
         
         print ""
         print "finished groups at", datetime.now()
@@ -63,7 +63,7 @@ class Command(NoArgsCommand):
         print datetime.now()
         print "==============="
         print ""
-        #self.migrate_tags(c, c2)
+        self.migrate_tags(c, c2)
         
         print ""
         print "finished tags at", datetime.now()
@@ -75,7 +75,7 @@ class Command(NoArgsCommand):
         print datetime.now()
         print "==============="
         print ""
-        #self.migrate_posts(c, c2)
+        self.migrate_posts(c, c2)
         
         print ""
         print "finished posts at", datetime.now()
@@ -87,7 +87,7 @@ class Command(NoArgsCommand):
         print datetime.now()
         print "==============="
         print ""
-        #self.migrate_events(c, c2)
+        self.migrate_events(c, c2)
         
         print ""
         print "finished events at", datetime.now()
@@ -99,7 +99,7 @@ class Command(NoArgsCommand):
         print datetime.now()
         print "==============="
         print ""
-        #self.migrate_whiteboards(c, c2)
+        self.migrate_whiteboards(c, c2)
         
         print ""
         print "finished whiteboards at", datetime.now()
@@ -111,7 +111,7 @@ class Command(NoArgsCommand):
         print datetime.now()
         print "==============="
         print ""
-        #self.migrate_champ(c, c2)
+        self.migrate_champ(c, c2)
         
         print ""
         print "finished CHAMP at", datetime.now()
@@ -386,29 +386,30 @@ class Command(NoArgsCommand):
 
             # create chapter-specific info
             if type == Network:
-                if chapterinfo[row[0]]['professional']:
+                if not chapterinfo.get(row[0], None) or chapterinfo[row[0]]['professional']:
                     grp.network_type = 'R'
                 else:
                     grp.network_type = 'U'
                 grp.save
                 
-                addr2 = ""
-                if chapterinfo[row[0]]['suite']:
-                    addr2 += "Apt " + chapterinfo[row[0]]['suite'] + "|n"
-                if chapterinfo[row[0]]['address2']:
-                    addr2 += chapterinfo[row[0]]['address2']
-                ch = ChapterInfo.objects.create(network=grp,
-                                                chapter_name=row[1],
-                                                street_address=chapterinfo[row[0]]['address1'],
-                                                street_address_two=addr2,
-                                                city=chapterinfo[row[0]]['city'],
-                                                province=chapterinfo[row[0]]['province'],
-                                                postal_code=chapterinfo[row[0]]['postalcode'],
-                                                phone=chapterinfo[row[0]]['phone'],
-                                                fax=chapterinfo[row[0]]['fax'],
-                                                francophone=chapterinfo[row[0]]['francophone'],
-                                                student= not chapterinfo[row[0]]['professional']
-                                               )
+                if chapterinfo.get(row[0], None):
+                    addr2 = ""
+                    if chapterinfo[row[0]]['suite']:
+                        addr2 += "Apt " + chapterinfo[row[0]]['suite'] + "|n"
+                    if chapterinfo[row[0]]['address2']:
+                        addr2 += chapterinfo[row[0]]['address2']
+                    ch = ChapterInfo.objects.create(network=grp,
+                                                    chapter_name=row[1],
+                                                    street_address=chapterinfo[row[0]]['address1'],
+                                                    street_address_two=addr2,
+                                                    city=chapterinfo[row[0]]['city'],
+                                                    province=chapterinfo[row[0]]['province'],
+                                                    postal_code=chapterinfo[row[0]]['postalcode'],
+                                                    phone=chapterinfo[row[0]]['phone'],
+                                                    fax=chapterinfo[row[0]]['fax'],
+                                                    francophone=chapterinfo[row[0]]['francophone'],
+                                                    student= not chapterinfo[row[0]]['professional']
+                                                   )
                 
         # assign parent groups separately, since using a parent that comes later
         # in the dump will cause an error
@@ -480,26 +481,26 @@ class Command(NoArgsCommand):
                                                      imported=True)
                     """
                     c2.execute("""INSERT INTO base_groups_groupmemberrecord  
-                                    SET is_admin=%d, 
+                                    SET is_admin=%s, 
                                         admin_title=%s, 
                                         joined=%s, 
-                                        group_id=%d,  
-                                        user_id=%d, 
+                                        group_id=%s,  
+                                        user_id=%s, 
                                         datetime=%s, 
-                                        membership_start=%d, 
-                                        membership_end=%d,
-                                        imported=%d""",
+                                        membership_start=%s, 
+                                        membership_end=%s,
+                                        imported=%s""",
                                         (is_admin, title, start, row[6], row[5],
                                          start, True, False, True))
                     c2.execute("""INSERT INTO base_groups_groupmemberrecord  
-                                    SET is_admin=%d,
+                                    SET is_admin=%s,
                                         joined=%s, 
-                                        group_id=%d,  
-                                        user_id=%d, 
+                                        group_id=%s,  
+                                        user_id=%s, 
                                         datetime=%s, 
-                                        membership_start=%d, 
-                                        membership_end=%d,
-                                        imported=%d""",
+                                        membership_start=%s, 
+                                        membership_end=%s,
+                                        imported=%s""",
                                         (is_admin, start, row[6], row[5],
                                          end, False, True, True))
                 else:
@@ -519,44 +520,44 @@ class Command(NoArgsCommand):
                     gm.save()
                     """
                     c2.execute("""SELECT id FROM base_groups_groupmember
-                                    WHERE group_id=%d AND user_id=%d""",
+                                    WHERE group_id=%s AND user_id=%s""",
                                     (row[6], row[5]))
                     id = c2.fetchone()
                     if id:
                         c2.execute("""UPDATE base_groups_groupmember
-                                        SET is_admin=%d,
+                                        SET is_admin=%s,
                                             admin_title=%s
-                                        WHERE id=%d""", 
+                                        WHERE id=%s""", 
                                             (is_admin, title, id[0]))
                         c2.execute("""INSERT INTO base_groups_groupmemberrecord  
-                                        SET is_admin=%d,
+                                        SET is_admin=%s,
                                             joined=%s, 
-                                            group_id=%d,  
-                                            user_id=%d, 
+                                            group_id=%s,  
+                                            user_id=%s, 
                                             datetime=%s, 
-                                            membership_start=%d, 
-                                            membership_end=%d,
-                                            imported=%d""",
+                                            membership_start=%s, 
+                                            membership_end=%s,
+                                            imported=%s""",
                                             (is_admin, start, row[6], row[5],
                                              start, False, False, True))
                     else:
                         c2.execute("""INSERT INTO base_groups_groupmember
-                                        SET is_admin=%d,
+                                        SET is_admin=%s,
                                             admin_title=%s,
                                             joined=%s,
-                                            imported=%d,
-                                            group_id=%d,    
-                                            user_id=%d""", 
+                                            imported=%s,
+                                            group_id=%s,    
+                                            user_id=%s""", 
                                             (is_admin, title, start, True, row[6], row[5]))
                         c2.execute("""INSERT INTO base_groups_groupmemberrecord  
-                                        SET is_admin=%d,
+                                        SET is_admin=%s,
                                             joined=%s, 
-                                            group_id=%d,  
-                                            user_id=%d, 
+                                            group_id=%s,  
+                                            user_id=%s, 
                                             datetime=%s, 
-                                            membership_start=%d, 
-                                            membership_end=%d,
-                                            imported=%d""",
+                                            membership_start=%s, 
+                                            membership_end=%s,
+                                            imported=%s""",
                                             (is_admin, start, row[6], row[5],
                                              start, True, False, True))
 
