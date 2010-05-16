@@ -85,8 +85,9 @@ class Whiteboard(Article):
         
         # validate HTML content
         # Additional options at http://codespeak.net/lxml/lxmlhtml.html#cleaning-up-html
-        self.content = clean_html(self.content)
-        self.content = autolink_html(self.content)
+        if self.content:
+            self.content = clean_html(self.content)
+            self.content = autolink_html(self.content)
         
         super(Whiteboard, self).save(force_insert, force_update)
     
