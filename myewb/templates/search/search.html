@@ -1,6 +1,7 @@
 {% extends 'topics/base.html' %}
 
 {% load i18n %}
+{% load avatar_tags %}
 {% load uni_form %}
 {% load pagination_tags %}
 {% load base_groups_tags %}
@@ -71,91 +72,111 @@
  
 	        {% for result in results %}
 	          	{# is there a better way? #}
+
+				{# POSTS #}
 	          	{% ifequal result.model_name "grouptopic" %}
 				    {% with result.object as topic %}
-{# POSTS #}
 				        {% include "topics/topic_item.html" %}
-{# end posts #}
 				    {% endwith %}
-				{% else %}
-{# WHITEBOARDS #}
-					{% ifequal result.model_name "whiteboard" %}
-<div class="post">
-	<div class="postheader orange {# some way of checking if this is a chapter or a community? #}" style="position: relative;"> <!-- header row -->
-    <a class="postheaderlink" href="{{ result.object.parent_group.get_absolute_url }}#group-whiteboard">Whiteboard for {{ result.object.parent_group }}</a>
-	</div>
+				{% endifequal %}
+
+				{# REPLIES #}
+	          	{% ifequal result.model_name "threadedcomment" %}
+				{# this should really be template-ized and loaded. currently this search version is the most up-to-date, and is being copied to the other locations (events_for_day, and event_detail) #}
+				<div class="post">
+					<div class="postheader blue" style="position: relative;"> <!-- header row -->
+    					<a class="postheaderlink" href="{{ result.object.get_absolute_url }}">Reply: {{ result.object.content_object.title }}</a>
+					</div>
 	
-    <div class="postcontent orange-border">
+					<div class="postsubheader blue blue-border bkgd-light"> <!-- stat row -->
+						<table width="100%" style="margin:0; padding: 0;">
+							<tr>
+								<td>By <a href="{% url profile_detail result.object.user.username %}">{{ result.object.user.visible_name }}</a> on {{ result.object.date_submitted|date }} at {{ result.object.date_submitted|time }}</td>
+								<td align="right" width="50%">
+									{% ifnotequal result.object.content_object.parent.slug "ewb" %}
+								    	<a href="{{ result.object.content_object.parent.get_absolute_url }}#group-posts">{{ result.object.content_object.parent }}</a>
+								    {% endifnotequal %}
+								</td>
+							</tr>
+						</table>
+					</div>
+	
+			    	<div class="postcontent blue-border">
+						<a href="{% url profile_detail result.object.user.username %}">
+						    {# {% avatar topic.creator 40 %} #}
+						    <img src="{% avatar_url result.object.user 40 %}" style="border: 1px solid #CCC; float:right; margin: 10px; margin-left:14px; padding:5px;" title="{{result.object.visible_name}}" alt="{{result.object.user.visible_name}}"/>
+						</a>
+				
+				        {{ result.object.comment|safe }}
+				        
+    					<br class="clear"/>
+						<div class="whiteboard-editing-box" style="font-size: 10px; padding-right: 10px;">
+							<a href="{{ result.object.content_object.get_absolute_url }}#reply-{{ result.object.id }}">See full post &raquo;</a>
+				    	</div>
+    					<br class="clear"/>
+					</div>
+				</div>		  
+				{% endifequal %}
+
+				{# WHITEBOARDS #}
+				{% ifequal result.model_name "whiteboard" %}
+				<div class="post">
+					<div class="postheader orange {# some way of checking if this is a chapter or a community? #}" style="position: relative;"> <!-- header row -->
+    					<a class="postheaderlink" href="{{ result.object.parent_group.get_absolute_url }}#group-whiteboard">Whiteboard for {{ result.object.parent_group }}</a>
+					</div>
+	
+    				<div class="postcontent orange-border">
 					    
 				        {% get_membership result.object.parent_group request.user as member %}
 				        {% show_whiteboard_force result.object result.object.parent_group member %}
-    </div>
-</div>		    
-
-{# end whiteboards #}
+    				</div>
+				</div>
+				{% endifequal %}		    
 				        
-					{% else %}
-						{% ifequal result.model_name "event" %}
-							{# I so wish they had elif in django templates... #}
-
-{# EVENTS #}
+				{# EVENTS #}
+				{% ifequal result.model_name "event" %}
 					
-		{# this should really be template-ized and loaded. currently this search version is the most up-to-date, and is being copied to the other locations (events_for_day, and event_detail) #}
-							
-<div class="post">
-	<div class="postheader red" style="position: relative;"> <!-- header row -->
-    <a class="postheaderlink" href="{{ result.object.get_absolute_url }}">Event: {{ result.object.title }}</a>
-	</div>
+				{# this should really be template-ized and loaded. currently this search version is the most up-to-date, and is being copied to the other locations (events_for_day, and event_detail) #}
+				<div class="post">
+					<div class="postheader red" style="position: relative;"> <!-- header row -->
+    					<a class="postheaderlink" href="{{ result.object.get_absolute_url }}">Event: {{ result.object.title }}</a>
+					</div>
 	
-<div class="postsubheader red red-border bkgd-light"> <!-- stat row -->
-		<table width="100%" style="margin:0; padding: 0;">
-			<tr>
-				<td>
-<span class="lighter">Starts: </span>{{result.object.start|date:"D, M j \a\t P"}} &nbsp;
-<span class="lighter">Ends: </span>{{result.object.end|date:"D, M j \a\t\ P"}}
-				</td>
-				<td align="right" width="50%">
-<a href="{% link_to_events_for result.object.content_object 'css_class' 1 %}">More events for 
-
-{% if result.object.content_object.visible_name %}
-{{result.object.content_object.visible_name}}
-{% else %}
-{{result.object.content_object }}
-{% endif %}
-</a>
-
-				</td>
-			</tr>
-		</table>
-	</div>
+					<div class="postsubheader red red-border bkgd-light"> <!-- stat row -->
+						<table width="100%" style="margin:0; padding: 0;">
+						<tr>
+						<td>
+							<span class="lighter">Starts: </span>{{result.object.start|date:"D, M j \a\t P"}} &nbsp;
+							<span class="lighter">Ends: </span>{{result.object.end|date:"D, M j \a\t\ P"}}
+						</td>
+						<td align="right" width="50%">
+							<a href="{% link_to_events_for result.object.content_object 'css_class' 1 %}">More events for 
 	
+							{% if result.object.content_object.visible_name %}
+								{{result.object.content_object.visible_name}}
+							{% else %}
+								{{result.object.content_object }}
+							{% endif %}
+							</a>
+
+						</td>
+						</tr>
+						</table>
+					</div>
 	
-    <div class="postcontent red-border">
-					    
+			    	<div class="postcontent red-border">
+						{% if result.object.location %}<p>Location: {{result.object.location}}</p>{% endif %}
 
+						<p>{{result.object.description|safe}}</p>
 
-{% if result.object.location %}<p>Location: {{result.object.location}}</p>{% endif %}
-
-<p>{{result.object.description|safe}}</p>
-
-    <div class="whiteboard-editing-box">
-<a href="{{ result.object.get_absolute_url }}">See full event details &raquo;</a>
-
-    </div>
-    <br class="clear"/>
-
-    </div>
-</div>		  
-							
-{# end events #}
-							
-						{% else %}
-		                <p>
-		                    <a href="{{ result.object.get_absolute_url }}">{{ result.object.title }}</a>
-		                </p>
-			            {% endifequal %}
-	                {% endifequal %}
-			    {% endifequal %}
+						<div class="whiteboard-editing-box">
+							<a href="{{ result.object.get_absolute_url }}">See full event details &raquo;</a>
+				    	</div>
+    					<br class="clear"/>
+					</div>
+				</div>		  
+				{% endifequal %}
+				
             {% endfor %}
 
 	        {% paginate %}
