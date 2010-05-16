@@ -139,7 +139,6 @@ def topics(request, group_slug=None, form_class=GroupTopicForm,
         can_execovision = False
         adminovision = False
         
-    print "member?", is_member
     return render_to_response(template_name, {
         "group": group,
         "topic_form": topic_form,
