@@ -30,8 +30,13 @@
 
 <ul class="ui-tabs-nav ui-helper-reset ui-helper-clearfix ui-widget-header ui-corner-all">
         <li id="li-group-postsearch" class="ui-corner-top ui-state-default ui-tabs-selected ui-state-active"><a href="#post-search" id="show-postsearch">Search posts and events</a></li>
+        
+        
+{% if user.is_authenticated %}
+
         <li id="li-group-peoplesearch" class="ui-corner-top ui-state-default "><a href="{% url profiles_index %}?search=" id="show-peoplesearch">People Search</a></li>
 
+{% endif %}
     </ul>
     
     <div class="ui-tabs-panel ui-widget-content ui-corner-bottom">

@@ -125,13 +125,13 @@
     {% endif %}
 
 	<br/>
-    <h2>{% trans "Mailing Lists" %}</h2>
+    <h2>{% trans "Chapter communities" %}</h2>
     {% for child in children %}
            <a href="{{ child.get_absolute_url }}">{{ child.name }}</a><br/>
     {% endfor %}
     
     {% if is_admin %}
-        <p><a href="{% url new_community %}?parent={{group.slug}}">create a mailing list</a></p>
+        <p><a href="{% url new_community %}?parent={{group.slug}}">Create a chapter community/mailing list</a></p>
 	{% endif %}	    
 
 {% endblock %}

@@ -35,27 +35,69 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 		<br/>
     {% endif %}
     
-    <p class="profile_info" style="text-align: center;">
-	    Account created {{ other_user.date_joined|timesince }} ago
-		<br/>
-		Last signed in {{ other_user.get_profile.current_login|timesince }} ago
-		<br/>
-		{{ other_user.get_profile.login_count }} logins
-		<br/>
-		<a href="{% url topic_list_by_user other_user %}">
-			{% num_topics_for_user other_user %} posts/replies
-		</a>
-	</p>
-
+    
     {% if other_user.get_profile.about %}
-        <h2>{% trans "About" %}</h2>
-        <p class="profile_info">
+        <p class="profile_info profile_about_p">
             {{ other_user.get_profile.about }}
         </p>
     {% endif %}
+    
+    
+{#start main content info table#}
+<h2>{% trans "About" %}</h2>
+    
+    
+<table class="standard standard-right search-form">
+    <tbody>
+
+        {% comment %}
+        <tr>
+            <th>label</th>
+            <td>content</td>
+        </tr>
+        {% endcomment %}
+        
+        
+        <tr>
+            <th>Profile Info</th>
+            <td>
+            
+                <p class="profile_info">
+            	    Account created {{ other_user.date_joined|timesince }} ago
+            		<br/>
+            		Last signed in {{ other_user.get_profile.current_login|timesince }} ago
+            		<br/>
+            		{{ other_user.get_profile.login_count }} logins
+            		<br/>
+            		<a href="{% url topic_list_by_user other_user %}">
+            			{% num_topics_for_user other_user %} posts/replies
+            		</a>
+            	</p>
+            
+            </td>
+        </tr>
+    </tbody>
+</table>
+{# @@@ these two tables need some help integrating #}
+
+
+
         
 	{% if is_me or is_friend or perms.profiles %}
-		{% if regular %}regular member, expiring on {{ other_user.get_profile.membership_expiry }}{% endif %}
+
+<table class="standard standard-right search-form">
+    <tbody>
+	
+	
+		{% if regular %}
+        <tr>
+            <th>{% trans "Membership status" %}</th>
+            <td>
+                Regular member, expiring on {{ other_user.get_profile.membership_expiry }}
+            </td>
+        </tr>
+	   {% endif %}
+		
 		
 		{% comment %}
         <h2>{% trans "Contact Information" %}</h2>
@@ -80,113 +122,133 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 		{% endif %}
 		{% endcomment %}
 		
-		<div style="width: 33%; float: left; text-align: center; text-align: right;">
-	        <b>{% trans "Emails" %}</b>
-		</div>
-		<div style="margin-left: 33%; padding-left: 10px;">
-		    {{ user.email }}
-			{% for address in other_user.get_profile.email_addresses %}
-				<br/>{{ address.email }}
-			{% endfor %}
+		
+        <tr>
+            <th>{% trans "Emails" %}</th>
+            <td>
+                {{ user.email }}
+    			{% for address in other_user.get_profile.email_addresses %}
+    				<br/>{{ address.email }}
+    			{% endfor %}
+    			
+    			{% if is_me %}
+    			    <br/>
+    	            (<a href="{% url acct_email %}">{% trans "edit emails" %}</a>)<br/>
+    	        {% else %}
+    	        	{% if perms.profiles %}
+    				    <br/>
+    		            (<a href="{% url acct_email_user other_user.username %}">{% trans "edit emails" %}</a>)<br/>
+    	        	{% endif %}
+    			{% endif %}
+    			
+            </td>
+        </tr>
+		
 
-			{% if is_me %}
-			    <br/>
-	            (<a href="{% url acct_email %}">{% trans "edit emails" %}</a>)<br/>
-	        {% else %}
-	        	{% if perms.profiles %}
-				    <br/>
-		            (<a href="{% url acct_email_user other_user.username %}">{% trans "edit emails" %}</a>)<br/>
-	        	{% endif %}
-			{% endif %}
-		</div>
-		<br/>
-	
-		<div style="width: 33%; float: left; text-align: center; text-align: right;">
-	        <b>{% trans "Phone numbers" %}</b>
-		</div>
-		<div style="margin-left: 33%; padding-left: 10px;">
-			{% for phone in other_user.get_profile.phone_numbers.all %}
-				<div>
-					{{ phone.label }}: {{ phone.number }}
-				</div>
-			{% endfor %}
+        <tr>
+            <th>{% trans "Phone numbers" %}</th>
+            <td>
+                {% for phone in other_user.get_profile.phone_numbers.all %}
+    				<div>
+    					{{ phone.label }}: {{ phone.number }}
+    				</div>
+    			{% endfor %}
+    
+    			{% if is_me %}
+    			    <br/>
+    	            (<a href="{% url profile_edit %}#phone">{% trans "edit phone numbers" %}</a>)<br/>
+    	        {% comment %}
+    	        {% else %}
+    	        	{% if perms.profiles %}
+    				    <br/>
+    		            (<a href="{% url acct_email_user other_user.username %}">{% trans "edit phone numbers" %}</a>)<br/>
+    	        	{% endif %}
+    	        {% endcomment %}
+    			{% endif %}
+            
+            </td>
+        </tr>
 
-			{% if is_me %}
-			    <br/>
-	            (<a href="{% url profile_edit %}#phone">{% trans "edit phone numbers" %}</a>)<br/>
-	        {% comment %}
-	        {% else %}
-	        	{% if perms.profiles %}
-				    <br/>
-		            (<a href="{% url acct_email_user other_user.username %}">{% trans "edit phone numbers" %}</a>)<br/>
-	        	{% endif %}
-	        {% endcomment %}
-			{% endif %}
-		</div>
-		<br/>
 	
-		<div style="width: 33%; float: left; text-align: center; text-align: right;">
-	        <b>{% trans "Addresses" %}</b>
-		</div>
-		<div style="margin-left: 33%; padding-left: 10px;">
-			{% for address in other_user.get_profile.addresses.all %}
-				<div>
-					<a href="#" onclick="$('#profile-address-{{address.pk}}').slideToggle(); return false;">{{ address.label }}</a> ({{address.city}})
-					<div style="display: none; padding-left: 10px;" id="profile-address-{{ address.pk}}">
-						{{ address.street}}<br/>
-						{{ address.city }}, {{ address.province }}<br/>
-						{{ address.postal_code }}<br/>
-						{{ address.country }}<br/>
-					</div>
-				</div>
-			{% endfor %}
+	
 
-			{% if is_me %}
-			    <br/>
-	            (<a href="{% url profile_edit %}#address">{% trans "edit addresses" %}</a>)<br/>
-	        {% comment %}
-	        {% else %}
-	        	{% if perms.profiles %}
-				    <br/>
-		            (<a href="{% url acct_email_user other_user.username %}">{% trans "edit addresses" %}</a>)<br/>
-	        	{% endif %}
-	        {% endcomment %}
-			{% endif %}
-		</div>
-		<br/>
-	
+        <tr>
+            <th>{% trans "Addresses" %}</th>
+            <td>
+                {% for address in other_user.get_profile.addresses.all %}
+    				<div>
+    					<a href="#" onclick="$('#profile-address-{{address.pk}}').slideToggle(); return false;">{{ address.label }}</a> ({{address.city}})
+    					<div style="display: none; padding-left: 10px;" id="profile-address-{{ address.pk}}">
+    						{{ address.street}}<br/>
+    						{{ address.city }}, {{ address.province }}<br/>
+    						{{ address.postal_code }}<br/>
+    						{{ address.country }}<br/>
+    					</div>
+    				</div>
+    			{% endfor %}
+    
+    			{% if is_me %}
+    			    <br/>
+    	            (<a href="{% url profile_edit %}#address">{% trans "edit addresses" %}</a>)<br/>
+    	        {% comment %}
+    	        {% else %}
+    	        	{% if perms.profiles %}
+    				    <br/>
+    		            (<a href="{% url acct_email_user other_user.username %}">{% trans "edit addresses" %}</a>)<br/>
+    	        	{% endif %}
+    	        {% endcomment %}
+    			{% endif %}
+            </td>
+        </tr>
+
+
 		{% if other_user.get_profile.website %}
-			<div style="width: 33%; float: left; text-align: center; text-align: right;">
-		        <b>{% trans "Website" %}</b>
-			</div>
-			<div style="margin-left: 33%; padding-left: 10px;">
-                <a href="{{ other_user.get_profile.website }}">{{ other_user.get_profile.website }}</a>
-            </div>
-            <br/>
+            <tr>
+                <th>{% trans "Website" %}</th>
+                <td>
+                    <a href="{{ other_user.get_profile.website }}">{{ other_user.get_profile.website }}</a>
+                </td>
+            </tr>
         {% endif %}
                 
+                
+
+    </tbody>
+</table>
+
+{# end main profile info content table #}
+                
+                
+                
         <h2>{% trans "School/Work History" %}</h2>
-		<div style="width: 33%; float: left; text-align: center; text-align: right;">
-	        <b>{% trans "School History" %}</b>
-		</div>
-		<div style="margin-left: 33%; padding-left: 10px;">
-			{% show_student_records other_user is_me %}
+        
+<table class="standard standard-right search-form">
+    <tbody>
+
+        <tr>
+            <th>{% trans "School History" %}</th>
+            <td>{% show_student_records other_user is_me %}
 			{% if is_me %}
 			    <a href="{% url new_student_record other_user.username %}">Add a school</a>
 			{% endif %}
-        </div>
-        <br/>
-	
-		<div style="width: 33%; float: left; text-align: center; text-align: right;">
-	        <b>{% trans "Work History" %}</b>
-		</div>
-		<div style="margin-left: 33%; padding-left: 10px;">
-			{% show_work_records other_user is_me %}
+			</td>
+        </tr>
+
+
+        <tr>
+            <th>{% trans "Work History" %}</th>
+            <td>{% show_work_records other_user is_me %}
 			{% if is_me %}
 			    <a href="{% url new_work_record other_user.username %}">Add a workplace</a>
-			{% endif %}
-        </div>
-        <br/>
+			{% endif %}</td>
+        </tr>        
+        
+</tbody>
+</table>
+        
+        
+        
+        
 	{% endif %}
         
     	{% comment %}
@@ -279,8 +341,8 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
     
     {% if perms.profiles %}
         <h2>{% trans "myEWB History" %}</h2>
-        we'll add a neat-o search &amp; sort feature and stuff soon
-        <table id="user-history">
+        {#we'll add a neat-o search &amp; sort feature and stuff soon#}
+        <table id="user-history" class="standard">
             <thead>
             <tr>
                 <th>{% trans "Date" %}</th>
@@ -292,7 +354,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
             </thead>
             <tbody>
             {% for record in other_user.group_records.all %}
-            <tr style="{% cycle 'background: #ffffff;' 'background: #d0d0d0;' %}">
+            <tr style="{% cycle 'background: #ffffff;' 'background: #eee;' %}">
                 <td>{{ record.datetime|date:"d M Y" }}</td>
                 <td>{{ record.group }}</td>
                 <td>
