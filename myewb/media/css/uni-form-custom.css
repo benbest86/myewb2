@@ -17,7 +17,7 @@ font-weight: bold;
 form.uniForm fieldset.inlineLabels {
 margin:0 auto;
 max-width:1000px;
-min-width:700px;
+/* min-width:700px; */
 }
 
 
