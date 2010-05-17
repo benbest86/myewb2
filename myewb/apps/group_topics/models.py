@@ -149,7 +149,7 @@ class GroupTopic(Topic):
     score = models.IntegerField(editable=False, default=0, db_index=True)
     score_modifier = models.IntegerField(_("score modifier"), default=100)
     
-    converted = models.BooleanField(default=False)
+    converted = models.BooleanField(default=True)
     
     objects = GroupTopicManager()
     

@@ -27,12 +27,14 @@ class Command(NoArgsCommand):
                              db='myewbdeploy',
                              charset="utf8")
         c = db.cursor()
+        c.execute("SET foreign_key_checks=0;")
 
         db2 = MySQLdb.connect(user='root',
                              passwd='',
-                             db='myewb2-migration',
+                             db='myewb2',
                              charset="utf8")
         c2 = db2.cursor()
+        c2.execute("SET foreign_key_checks=0;")
 
         print "==============="
         print "Migrating users"
@@ -51,7 +53,7 @@ class Command(NoArgsCommand):
         print datetime.now()
         print "==============="
         print ""
-        self.migrate_groups(c, c2)
+        #self.migrate_groups(c, c2)
         
         print ""
         print "finished groups at", datetime.now()
@@ -63,7 +65,7 @@ class Command(NoArgsCommand):
         print datetime.now()
         print "==============="
         print ""
-        self.migrate_tags(c, c2)
+        #self.migrate_tags(c, c2)
         
         print ""
         print "finished tags at", datetime.now()
@@ -75,7 +77,8 @@ class Command(NoArgsCommand):
         print datetime.now()
         print "==============="
         print ""
-        self.migrate_posts(c, c2)
+        #self.migrate_posts(c, c2)
+        self.migrate_watchlists(c, c2)
         
         print ""
         print "finished posts at", datetime.now()
@@ -87,7 +90,7 @@ class Command(NoArgsCommand):
         print datetime.now()
         print "==============="
         print ""
-        self.migrate_events(c, c2)
+        #self.migrate_events(c, c2)
         
         print ""
         print "finished events at", datetime.now()
@@ -99,7 +102,7 @@ class Command(NoArgsCommand):
         print datetime.now()
         print "==============="
         print ""
-        self.migrate_whiteboards(c, c2)
+        #self.migrate_whiteboards(c, c2)
         
         print ""
         print "finished whiteboards at", datetime.now()
@@ -111,7 +114,7 @@ class Command(NoArgsCommand):
         print datetime.now()
         print "==============="
         print ""
-        self.migrate_champ(c, c2)
+        #self.migrate_champ(c, c2)
         
         print ""
         print "finished CHAMP at", datetime.now()
@@ -123,7 +126,7 @@ class Command(NoArgsCommand):
         print datetime.now()
         print "==============="
         print ""
-        self.migrate_stats(c, c2)
+        #self.migrate_stats(c, c2)
         
         print ""
         print "finished stats at", datetime.now()
@@ -292,13 +295,13 @@ class Command(NoArgsCommand):
         for row in c.fetchall():
             print "email address", row[1], "for", row[0]
             c2.execute("""INSERT INTO emailconfirmation_emailaddress
-                        SET user_id=%s,
-                            email=%s,
-                            `primary`=0,
-                            verified=1""",
-                            (row[0], row[1]))
+                        SET `user_id`=%s,
+                            `email`=%s,
+                            `primary`=%s,
+                            `verified`=%s""",
+                            (row[0], row[1], 0, 1))
             
-        print "setting primary addresses"
+        #print "setting primary addresses"
         c2.execute("""UPDATE emailconfirmation_emailaddress e, auth_user u
                     SET e.`primary`=1
                     WHERE e.user_id=u.id AND e.email=u.email""")
@@ -717,7 +720,8 @@ class Command(NoArgsCommand):
         c2.execute("ALTER TABLE  `threadedcomments_threadedcomment` ADD INDEX (  `is_public` ,  `is_approved` ) ;")
         c2.execute("ALTER TABLE  `topics_topic` ADD INDEX (  `object_id` )")
         c2.execute("ALTER TABLE  `topics_topic` ADD INDEX (  `created` )")
-        
+
+    def migrate_watchlists(self, c, c2):        
         # watchlists too
         c.execute("SELECT * FROM flaggedposts")
         for row in c.fetchall():

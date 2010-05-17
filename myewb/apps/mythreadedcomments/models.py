@@ -92,13 +92,14 @@ def update_scores(sender, instance, **kwargs):
     topic.update_score(settings.FEATURED_REPLY_SCORE)
 post_save.connect(update_scores, sender=ThreadedComment, dispatch_uid='updatetopicreplyscore')
 
-def update_reply_date(sender, instance, **kwargs):
+def update_reply_date(sender, instance, created, **kwargs):
     """
     Updates the parent topic's "last reply" date
     """
-    topic = instance.content_object
-    topic.last_reply = datetime.now()
-    topic.save()
+    if created:
+        topic = instance.content_object
+        topic.last_reply = datetime.now()
+        topic.save()
 post_save.connect(update_reply_date, sender=ThreadedComment, dispatch_uid='updatetopicreplydate')
 
 
