@@ -126,9 +126,12 @@
 
 	<br/>
     <h2>{% trans "Chapter communities" %}</h2>
+    <ul class="chapter-communities-list linker-list">
     {% for child in children %}
-           <a href="{{ child.get_absolute_url }}">{{ child.name }}</a><br/>
+           <li><a href="{{ child.get_absolute_url }}">{{ child.name }}</a></li>
     {% endfor %}
+    
+    </ul>
     
     {% if is_admin %}
         <p><a href="{% url new_community %}?parent={{group.slug}}">Create a chapter community/mailing list</a></p>

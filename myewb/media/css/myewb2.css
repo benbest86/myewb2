@@ -62,6 +62,9 @@ margin:0 0 0.3em;
 
 }
 
+ul {
+list-style-type: square;
+}
 
 
 div#footer {
@@ -650,6 +653,12 @@ padding:0 15px;
 
 form.inline-form-button {
 display: inline; margin-right: 10px;
+}
+
+
+ul.linker-list li a {
+display: block;
+padding:0.2em;
 }
 
 
