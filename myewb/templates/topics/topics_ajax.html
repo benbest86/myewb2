@@ -1,0 +1,39 @@
+{% load i18n %}
+{% load pagination_tags %}
+{% load group_tags %}
+
+{% if group %}
+	<h1>{% blocktrans with group.get_absolute_url as group_url and group.name as group_name %}Posts for <a href="{{ group_url }}">{{ group_name }}</a>{% endblocktrans %}</h1>
+	
+	<p style="font-size: 14px;">
+	{% if is_member %}
+		<a href="{% groupurl topic_new group %}">Create a new post</a>
+	{% else %}
+		You need to join this group before you can post to it.
+	{% endif %}
+	</p>
+
+{% else  %}
+
+	{% ifequal mode "newposts" %}
+		<h2>{% trans "New posts since last sign-in" %}</h2>
+	{% endifequal %}
+
+	{% ifequal mode "newreplies" %}
+		<h2>{% trans "New replies since last sign-in" %}</h2>
+	{% endifequal %}
+
+	{% ifequal mode "featured" %}
+		<h2>{% trans "Featured Posts" %}</h2>
+	{% endifequal %}
+
+{% endif %}
+
+
+{% autopaginate topics 10 %}
+
+{% for topic in topics %}
+	{% include "topics/topic_item.html" %}
+{% endfor %}
+
+{% paginate %}
