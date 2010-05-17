@@ -12,7 +12,11 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 	{% if record.institution %}
 		{# TODO: use proper CSS classes instead of hardcoding here #}
 		<div class="student_record" style="padding-bottom: 10px;">
-			<a href="{% url network_detail record.network.slug %}">{{ record.institution }}</a>
+			{% if record.network %}
+				<a href="{% url network_detail record.network.slug %}">{{ record.institution }}</a>
+			{% else %}
+				{{ record.institution }}
+			{% endif %}
 			{% if is_me %}
 				(<a href="{% url edit_student_record user.username record.id %}"><small>edit</small></a>)
 			{% endif %}

@@ -10,6 +10,7 @@ from lxml.html.clean import clean_html, autolink_html, Cleaner
 
 from base_groups.helpers import user_can_adminovision, user_can_execovision
 from base_groups.models import BaseGroup
+from siteutils.helpers import wiki_convert
 from whiteboard.models import Whiteboard
 
 class EventManager(models.Manager):
@@ -70,7 +71,18 @@ class Event(models.Model):
     
     whiteboard = models.ForeignKey(Whiteboard, related_name="event", verbose_name=_('whiteboard'), null=True)
     
+    converted = models.BooleanField(default=True)
+    
     objects = EventManager()
+
+    def __init__(self, *args, **kwargs):
+        super(Event, self).__init__(*args, **kwargs)
+        
+        # wiki parse if needed
+        if self.pk and not self.converted and self.description:
+            self.description = wiki_convert(self.description)
+            self.converted = True
+            self.save()
 
     def __unicode__(self):
         return "%s, %s" % (self.slug, self.start.date())

@@ -1,3 +1,6 @@
+import re
+from lxml.html.clean import clean_html, autolink_html, Cleaner
+
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.db.models.signals import post_init
@@ -80,7 +83,7 @@ class SQLLogToConsoleMiddleware:
             for q in connection.queries:
               if q['sql'].find("django_session") == -1:
                 clean_queries.append(q)
-            t = Template("{% load sql_keyword_filters %}{% autoescape off %}{% if count %}{{ count }} quer{{ count|pluralize:\"y,ies\" }} in {{ time }} seconds:\n\n{% for sql in sqllog %}[{{ forloop.counter }}] {{ sql.time }}s: {{ sql.sql|safe|colorsql }}{% if not forloop.last %}\n\n{% endif %}{% endfor %}{% endif %}{% endautoescape %}")
+            t = Template("{% load sql_keyword_filters %}{% autoescape off %}{% if count %}{{ count }} quer{{ count|pluralize:\"y,ies\" }} in {{ time }} seconds:\n\n{% for sql in sqllog %}[{{ forloop.counter }}] {{ sql.time }}s: {{ sql.sql|safe }}{% if not forloop.last %}\n\n{% endif %}{% endfor %}{% endif %}{% endautoescape %}")
             print t.render(Context({'sqllog':clean_queries,'count':len(clean_queries),'time':time}))                
         return response
 
@@ -99,3 +102,24 @@ def visible_name(self):
         #return "Unknown user"
 User.add_to_class("visible_name", visible_name)
 
+def wiki_convert(text):
+    text = text.replace("<", "&lt;")
+    text = text.replace(">", "&gt;")
+    
+    text = re.sub(r'-{4,}', "<hr/>", text)
+    text = re.sub(r'={4,}', "<hr/>", text)
+
+#    bold_exp = re.compile(r'(.*?)\*\*(.+?)\*\*(.*?)', re.S)
+    bold_exp = re.compile(r'(.*?)\*{2,}(.+?)\*{2,}(.*?)', re.S)
+    text = bold_exp.sub(r"\1<strong>\2</strong>\3", text)
+
+#    italic_exp = re.compile(r'(.*?)\^\^(.+?)\^\^(.*?)', re.S)
+    italic_exp = re.compile(r'(.*?)\^{2,}(.+?)\^{2,}(.*?)', re.S)
+    text = italic_exp.sub(r"\1<em>\2</strong>\3", text)
+
+    heading_exp = re.compile(r'(.*?)={2,}(.+?)={2,}(.*?)', re.S)
+    text = heading_exp.sub(r"\1<h3>\2</h3>\3", text)
+    
+    text = text.replace("\n", "<br/>")
+    
+    return text

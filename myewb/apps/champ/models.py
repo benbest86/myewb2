@@ -6,6 +6,7 @@ Copyright 2010 Engineers Without Borders Canada
 @author Francis Kung
 """
 
+from datetime import datetime
 from django.contrib.auth.models import User
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
@@ -28,8 +29,10 @@ class Activity(models.Model):
     name = models.CharField(_('Event name'), max_length=255)
     
     date = models.DateField(null=True, blank=True)
-    created_date = models.DateField(auto_now_add=True)
-    modified_date = models.DateField(auto_now=True)
+    #created_date = models.DateTimeField(auto_now_add=True)
+    #modified_date = models.DateTimeField(auto_now=True)
+    created_date = models.DateTimeField()
+    modified_date = models.DateTimeField()
     
     creator = models.ForeignKey(User, related_name="activities_created")
     editor = models.ForeignKey(User, related_name="activities_edited")
@@ -76,7 +79,8 @@ class Activity(models.Model):
 class YearPlan(models.Model):
     year = models.IntegerField()
     group = models.ForeignKey(BaseGroup, unique_for_year="year")
-    modified_date = models.DateField(auto_now=True)
+    #modified_date = models.DateTimeField(auto_now=True, editable=False)
+    modified_date = models.DateTimeField(editable=False, default=datetime.now())
     last_editor = models.ForeignKey(User)
     
     ml_average_attendance = models.IntegerField(null=True, blank=True)

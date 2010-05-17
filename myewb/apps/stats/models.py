@@ -30,6 +30,12 @@ class DailyStats(models.Model):
     users = models.IntegerField(default=0)
     regularmembers = models.IntegerField(default=0)
     associatemembers = models.IntegerField(default=0)
+    activityCreations = models.IntegerField(default=0)
+    activityEdits = models.IntegerField(default=0)
+    activityConfirmations = models.IntegerField(default=0)
+    activityDeletions = models.IntegerField(default=0)
+    reflections = models.IntegerField(default=0)
+    filesAdded = models.IntegerField(default=0)
     
 def record(action):
     stats, created = DailyStats.objects.get_or_create(day=date.today())

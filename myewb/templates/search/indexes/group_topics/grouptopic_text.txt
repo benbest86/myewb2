@@ -2,8 +2,9 @@
 
 {{ object.title }}
 {{ object.creator.visible_name }}
-{{ object.body }}
+{{ object.body|striptags }}
 
+{% comment %}
 {% get_threaded_comment_tree for object as responses %}
 {% for response in responses %}
     -----
@@ -11,3 +12,4 @@
     {{ response.comment }}
 
 {% endfor %}
+{% endcomment %}

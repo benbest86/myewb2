@@ -14,13 +14,14 @@ from django.db.models import Q
 from django.db.models.signals import post_save
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User
-from django.core.mail import EmailMessage
 from django.core.urlresolvers import reverse
 from django.template import Context, loader
+from mailer import send_mail
 
 from attachments.models import Attachment
 from base_groups.models import BaseGroup
 from base_groups.helpers import user_can_adminovision, user_can_execovision
+from siteutils.helpers import wiki_convert
 from topics.models import Topic
 from whiteboard.models import Whiteboard
 
@@ -35,6 +36,7 @@ class GroupTopicManager(models.Manager):
         member is a part of. Handles AnonymousUser instances
         transparently
         """
+        
         filter_q = Q(parent_group__visibility='E') | Q(parent_group__slug='ewb')
         order = '-created'
         if user is not None and not user.is_anonymous():
@@ -49,14 +51,20 @@ class GroupTopicManager(models.Manager):
                               parent_group__parent__members__is_admin=True)
             
             # everyone else only sees stuff from their own groups
-            filter_q |= Q(parent_group__member_users=user)
+            groups = user.basegroup_set.all()
+            filter_q |= Q(parent_group__in=groups)
+                # doing this is MUCH MUCH quicker than trying to do a dynamic
+                # join based on member records, ie, Q(parent_group__member_users=user),
+                # and then needing to call distinct() later. 
+                # it's in the order of, 15-minute query vs 0.01s query! 
 
             if user.get_profile().sort_by == 'r':
                 order = '-last_reply'
 
         # would it be more efficient to remove the OR query above and just write
         # two different queries, instead of using distinct() here?
-        return self.get_query_set().filter(filter_q).distinct().order_by(order)
+        #return self.get_query_set().filter(filter_q).distinct().order_by(order)
+        return self.get_query_set().filter(filter_q).order_by(order)
     
     def get_for_group(self, group):
         """
@@ -141,7 +149,18 @@ class GroupTopic(Topic):
     score = models.IntegerField(editable=False, default=0, db_index=True)
     score_modifier = models.IntegerField(_("score modifier"), default=100)
     
+    converted = models.BooleanField(default=False)
+    
     objects = GroupTopicManager()
+    
+    def __init__(self, *args, **kwargs):
+        super(GroupTopic, self).__init__(*args, **kwargs)
+        
+        # wiki parse if needed
+        if self.pk and not self.converted and self.body:
+            self.body = wiki_convert(self.body)
+            self.converted = True
+            self.save()
     
     def get_absolute_url(self, group=None):
         kwargs = {"topic_id": self.pk}
@@ -172,30 +191,27 @@ class GroupTopic(Topic):
     def send_email(self, sender=None):
         attachments = Attachment.objects.attachments_for_object(self)
         
-        tmpl = loader.get_template("email_template.html")
-        c = Context({'group': self.group,
-                     'title': self.title,
-                     'body': self.body,
-                     'topic_id': self.pk,
-                     'event': None,
-                     'attachments': attachments
-                     })
-        message = tmpl.render(c)
-    
+        c = {'group': self.group,
+             'title': self.title,
+             'topic_id': self.pk,
+             'event': None,
+             'attachments': attachments
+            }
+            
         if self.send_as_email:
-            self.group.send_mail_to_members(self.title, message, sender=sender)
+            self.group.send_mail_to_members(self.title, self.body, sender=sender, context=c)
         
         for list in self.watchlists.all():
             user = list.owner
             # TODO: for user in list.subscribers blah blah
             sender = 'myEWB <notices@my.ewb.ca>'
     
-            msg = EmailMessage(subject=self.title,
-                               body=message,
-                               from_email=sender, 
-                               to=user.email
-                              )
-            msg.send(fail_silently=False)
+            send_mail(subject=self.title,
+                      txtMessage=None,
+                      htmlMessage=self.body,
+                      fromemail=sender,
+                      recipients=[user.email],
+                      context=c)
         
     def num_whiteboard_edits(self):
         if self.whiteboard:

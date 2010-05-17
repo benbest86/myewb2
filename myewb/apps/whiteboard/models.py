@@ -7,9 +7,11 @@ Copyright 2009 Engineers Without Borders Canada
 from django.db import models
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
+from lxml.html.clean import clean_html, autolink_html, Cleaner
 
 from base_groups.models import BaseGroup
 from base_groups.helpers import user_can_adminovision, user_can_execovision
+from siteutils.helpers import wiki_convert
 from wiki.models import Article, QuerySetManager
 
 class WhiteboardManager(QuerySetManager):
@@ -58,6 +60,8 @@ class Whiteboard(Article):
     """
     
     parent_group = models.ForeignKey(BaseGroup, related_name="whiteboards", verbose_name=_('parent'))
+    converted = models.BooleanField(default=True)
+    
     objects = WhiteboardManager()
     non_removed_objects = NonRemovedWhiteboardManager()
 
@@ -65,10 +69,25 @@ class Whiteboard(Article):
         verbose_name = _(u'Whiteboard')
         verbose_name_plural = _(u'Whiteboards')
 
+    def __init__(self, *args, **kwargs):
+        super(Whiteboard, self).__init__(*args, **kwargs)
+        
+        # wiki parse if needed
+        if self.pk and not self.converted and self.content:
+            self.content = wiki_convert(self.content)
+            self.converted = True
+            self.save()
+
     def save(self, force_insert=False, force_update=False):
         # set parent group
         group = BaseGroup.objects.get(id=self.object_id)
         self.parent_group = group
+        
+        # validate HTML content
+        # Additional options at http://codespeak.net/lxml/lxmlhtml.html#cleaning-up-html
+        if self.content:
+            self.content = clean_html(self.content)
+            self.content = autolink_html(self.content)
         
         super(Whiteboard, self).save(force_insert, force_update)
     

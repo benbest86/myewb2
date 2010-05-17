@@ -40,9 +40,12 @@ def run_stats(filters):
     ml_metrics = run_query(MemberLearningMetrics.objects.all(), filters)
     ml_hours = 0
     ml_attendance = 0
+    ml_num = ml_metrics.count()
     for m in ml_metrics:
         ml_hours += m.duration * m.attendance
         ml_attendance += m.attendance
+    if ml_num:
+        ml_attendance = ml_attendance / ml_num
         
     pe_metrics = run_query(PublicEngagementMetrics.objects.all(), filters)
     pe_people = 0
@@ -86,6 +89,7 @@ def run_stats(filters):
     context = {}
     context['ml_hours'] = ml_hours
     context['ml_attendance'] = ml_attendance
+    context['pe_people'] = pe_people
     context['po_contacts'] = po_contacts
     context['ce_students'] = ce_students
     context['ce_hours'] = ce_hours
@@ -99,8 +103,8 @@ def run_stats(filters):
     return context
 
 def build_filters(year=None, month=None, term=None):
-    activity_filters = [{'visible': True}]
-    metric_filters = [{'activity__visible': True}]
+    activity_filters = []
+    metric_filters = []
     
     if year:
         year = int(year)
@@ -138,24 +142,27 @@ def build_filters(year=None, month=None, term=None):
 @login_required()
 def dashboard(request, year=None, month=None, term=None,
               group_slug=None):
+
     activity_filters, metric_filters = build_filters(year, month, term)
     
     if group_slug:
         activity_filters.append({'group__slug': group_slug})
         metric_filters.append({'activity__group__slug': group_slug})
+        journals = run_query(Journal.objects.all(), activity_filters).count()
         
         grp = get_object_or_404(Network, slug=group_slug)
     else:
         grp = None
 
+    activity_filters.append({'visible': True})
+    metric_filters.append({'activity__visible': True})
     metric_filters.append({'activity__confirmed': True})
     context = run_stats(metric_filters)
 
-    if grp:
-        context['journals'] = Journal.objects.filter(group=grp).count()
     context['unconfirmed'] = run_query(Activity.objects.filter(confirmed=False), activity_filters).count()
     context['confirmed'] = run_query(Activity.objects.filter(confirmed=True), activity_filters).count()
-
+    context['journals'] = journals
+    
     context['group'] = None
     context['yearplan'] = None    
     context['is_group_admin'] = False

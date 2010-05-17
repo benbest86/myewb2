@@ -7,6 +7,7 @@ from django.contrib.auth import login as auth_login
 from django.contrib.auth.views import logout as pinaxlogout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.forms import fields
 from django.template import RequestContext
 from django.utils.translation import ugettext, ugettext_lazy as _
@@ -64,7 +65,10 @@ def signup(request, form_class=EmailSignupForm,
     
 def logout(request):
     online_middleware.remove_user(request)
-    return pinaxlogout(request, template_name="account/logout.html")
+    # TODO: leave a message saying "you've been logged out".
+    # currently not possible (can't set messages for guest user) but will be
+    # possible in django 1.2 
+    return pinaxlogout(request, next_page=reverse('home'))
 
 @login_required
 def email(request, form_class=AddEmailForm, template_name="account/email.html",

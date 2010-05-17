@@ -367,15 +367,19 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
                 <td>
                     {% if record.admin_title %}
                         {{ record.admin_title }}
+                    {% comment %}
                     {% else %}
                         {% trans "N/A" %}
+                    {% endcomment %}
                     {% endif %}
                 </td>
                 <td>
-                    {% ifequal record.datetime|date:"d M Y" record.joined|date:"d M Y" %}
+                    {# {% ifequal record.datetime|date:"d M Y" record.joined|date:"d M Y" %} #}
+                    {% if record.membership_start %}
                         {% trans "joined" %}
-                    {% endifequal %}
-                    {% if record.membership_ended %}
+                    {% endif %}
+                    {# {% endifequal %} #}
+                    {% if record.membership_end %}
                         {% trans "left" %}
                     {% endif %}
                 </td>

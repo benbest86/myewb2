@@ -17,7 +17,11 @@ class chapter_president_required(object):
     """
     def __call__(self, f):
         def newf(request, *args, **kwargs):            
-            user = request.user            
+            user = request.user
+                        
+            if user.has_module_perms("base_groups"):
+                return f(request, *args, **kwargs)
+            
             group_slug = kwargs.get('group_slug', None) or (len(args) > 0 and args[0])
             if not user.is_authenticated():
                 # deny access - would set this to redirect

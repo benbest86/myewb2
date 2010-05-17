@@ -41,6 +41,16 @@ def get_comments_since(since):
     else:
         return "&nbsp;&nbsp;(%d new)" % comments
 
+@register.simple_tag
+def get_comments_for_topic_since(topic, since):
+    if topic == None or since == None:
+        return ""
+    comments = ThreadedComment.objects.all_for_object(topic).filter(date_submitted__gt=since).count()
+    if comments == 0:
+        return ""
+    else:
+        return "&nbsp;&nbsp;(%d new)" % comments
+
 def do_get_latest_comments_for(parser, token):
     """
     Gets the latest comments by date_submitted, for a particular object

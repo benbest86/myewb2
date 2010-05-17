@@ -9,14 +9,14 @@ Copyright 2010 Engineers Without Borders Canada
 import settings
 from datetime import datetime
 
+from mailer import send_mail
 from django.contrib.auth.models import User
-from django.core.mail import EmailMessage
+from django.db import models
 from django.db.models.signals import post_save
-from django.template import Context, loader
 from threadedcomments.models import ThreadedComment, FreeThreadedComment
 
 from attachments.models import Attachment
-from group_topics.models import GroupTopic, Watchlist
+from group_topics.models import GroupTopic, Watchlist, wiki_convert
 
 def send_to_watchlist(sender, instance, **kwargs):
     """
@@ -32,15 +32,12 @@ def send_to_watchlist(sender, instance, **kwargs):
     topic = instance.content_object
     attachments = Attachment.objects.attachments_for_object(topic)
     
-    tmpl = loader.get_template("email_template.html")
-    c = Context({'group': topic.group,
-                 'title': topic.title,
-                 'body': instance.comment,
-                 'topic_id': topic.pk,
-                 'event': None,
-                 'attachments': attachments
-                 })
-    message = tmpl.render(c)
+    ctx = {'group': topic.group,
+           'title': topic.title,
+           'topic_id': topic.pk,
+           'event': None,
+           'attachments': attachments
+          }
     sender = 'myEWB <notices@my.ewb.ca>'
     
     # loop through watchlists and send emails
@@ -49,21 +46,21 @@ def send_to_watchlist(sender, instance, **kwargs):
         # TODO: for user in list.subscribers blah blah
 
         if user.get_profile().watchlist_as_emails:
-            msg = EmailMessage(subject=topic.title,
-                               body=message,
-                               from_email=sender, 
-                               to=[user.email]
-                              )
-            msg.send(fail_silently=False)
+            send_mail(subject=topic.title,
+                      txtMessage=None,
+                      htmlMessage=instance.comment,
+                      fromemail=sender,
+                      recipients=[user.email],
+                      context=ctx)
             
     # send email to original post creator
     if topic.creator.get_profile().replies_as_emails:
-        msg = EmailMessage(subject=topic.title,
-                           body=message,
-                           from_email=sender, 
-                           to=[topic.creator.email]
-                          )
-        msg.send(fail_silently=False)
+        send_mail(subject=topic.title,
+                  txtMessage=None,
+                  htmlMessage=instance.comment,
+                  fromemail=sender,
+                  recipients=[topic.creator.email],
+                  context=ctx)
         
     # send email to participants
     participants = []
@@ -75,13 +72,13 @@ def send_to_watchlist(sender, instance, **kwargs):
     if topic.creator.get_profile().replies_as_emails:   # remove creator if they already received an email
         participants.remove(topic.creator.email)
     if len(participants):
-        msg = EmailMessage(subject=topic.title,
-                           body=message,
-                           from_email=sender, 
-                           to=participants
-                          )
-        msg.send(fail_silently=False)
-
+        send_mail(subject=topic.title,
+                  txtMessage=None,
+                  htmlMessage=instance.comment,
+                  fromemail=sender,
+                  recipients=participants,
+                  context=ctx)
+        
     # TODO: option to email anyone else who has repied to this thread too
     # (or could be implemented as an "add to watchlist" checkbox on the reply form)
      
@@ -103,3 +100,18 @@ def update_reply_date(sender, instance, **kwargs):
     topic.last_reply = datetime.now()
     topic.save()
 post_save.connect(update_reply_date, sender=ThreadedComment, dispatch_uid='updatetopicreplydate')
+
+
+# add an the coniverted field directly to the ThreadedComment model
+ThreadedComment.add_to_class('converted', models.BooleanField(default=True))
+
+# and do wiki-to-HTML conversion as needed
+def threadedcomment_init(self, *args, **kwargs):
+    super(ThreadedComment, self).__init__(*args, **kwargs)
+    
+    # wiki parse if needed
+    if self.pk and not self.converted and self.comment:
+        self.comment = wiki_convert(self.comment)
+        self.converted = True
+        self.save()
+ThreadedComment.__init__ = threadedcomment_init
