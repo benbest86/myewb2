@@ -586,6 +586,12 @@ padding-left:38px;
 }
 
 
+.posts-title, .posts-parent-partof {
+margin:0 0 0.2em;
+}
+.posts-parent-partof { 
+font-size: 1.1em;
+}
 
 
 div.latest-activity-stats {
