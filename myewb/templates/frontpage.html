@@ -31,16 +31,18 @@
 		  $(this).parent().addClass('bkgd-light');
 		  
 		  $(this).siblings('.frontpage-mygroups-actions').show();
-		  
+
+		  $('#topiclisting').hide();
 		  $('.frontpage-loading').show();
 		
 		    // do stuff
 		    var groupSlug = $(this).attr("id").substring(17);
 		    
-		    $('#maincolumn').load('/groups/' + groupSlug + '/posts/ #maincolumn', 
+		    //$('#maincolumn').load('/groups/' + groupSlug + '/posts/ #maincolumn', 
+		    $('#topiclisting').load('/groups/' + groupSlug + '/posts/',
 		      function() {
           		  $('.frontpage-loading').hide();
-
+				  $('#topiclisting').show();
                 }
 		    
 		    );  // jQuery is the most ludicrous thing ever.
@@ -55,18 +57,25 @@
 		
 		$('.frontpage-reset').click(function() {
 		  
+		  $('#topiclisting').hide();
+		  $('.frontpage-loading').show();
+			
 		  $('.frontpage-mygroups-actions').hide();
 		  $('.frontpage-mygroups-actions').parent().removeClass('bkgd-light');
 		  
-		  $('#maincolumn').load('/ #maincolumn');
-		  
-		  
+		  $('#topiclisting').load('{{request.url}}',
+			function() {
+      		  $('.frontpage-loading').hide();
+			  $('#topiclisting').show();
+            }
+		  );				  
 		  
 		  $('.frontpage-reset').hide();
 		  
 		  return false;
         });
 		
+		$('.frontpage-reset').click();
 	});
  
  </script>
@@ -111,25 +120,31 @@
 
 {% block body %}
 
-	{% ifequal mode "newposts" %}
-		<h2>{% trans "New posts since last sign-in" %}</h2>
-	{% endifequal %}
+	<div class="frontpage-loading">Loading...</div>     
+ 
+ 	<div id="topiclisting">
+ 		{% comment %}
+		{% ifequal mode "newposts" %}
+			<h2>{% trans "New posts since last sign-in" %}</h2>
+		{% endifequal %}
 
-	{% ifequal mode "newreplies" %}
-		<h2>{% trans "New replies since last sign-in" %}</h2>
-	{% endifequal %}
+		{% ifequal mode "newreplies" %}
+			<h2>{% trans "New replies since last sign-in" %}</h2>
+		{% endifequal %}
 
-	{% ifequal mode "featured" %}
-		<h2>{% trans "Featured Posts" %}</h2>
-	{% endifequal %}
+		{% ifequal mode "featured" %}
+			<h2>{% trans "Featured Posts" %}</h2>
+		{% endifequal %}
 
-    {% autopaginate topics 10 %}
+	    {% autopaginate topics 10 %}
     
-    {% for topic in topics %}
-        {% include "topics/topic_item.html" %}
-    {% endfor %}
+	    {% for topic in topics %}
+        	{% include "topics/topic_item.html" %}
+    	{% endfor %}
     
-    {% paginate %}
+    	{% paginate %}
+    	{% endcomment %}
+    </div>
             
 {% endblock %}
 
@@ -195,13 +210,14 @@
            	{% endif %}
         </div>
         
+		{% ifnotequal mode "newposts" %}
+			{% ifnotequal mode "newreplies" %}
+				{% ifnotequal mode "featured" %}
         {# my groups #}
         <div class="toolbarheader bkgd" id="box-frontpage-mygroups">{% trans "My groups" %}</div>
         <div class="toolbarcontent">
         
-
-        
-<a href="#" class="frontpage-reset" style="display:none;">Show all posts (reset page)</a>
+				<a href="#" class="frontpage-reset" style="display:none;">Show all posts (reset page)</a>
         
              	{% for group in user.get_networks %}
 	                <div class="frontpage-mygroups-div"><a href="#" class="frontpage-update" id="frontpage-update-{{ group.slug }}">{{ group.name }}</a>
@@ -217,13 +233,17 @@
 	                <div class="frontpage-mygroups-actions">x new posts<br/><a href="{% groupurl topic_new group %}">New post &raquo;</a><br/><a href="{% url group_detail group.slug %}">View group info &raquo;</a></div></div>
 
             	{% endfor %}
-
-
-<div class="frontpage-loading" style="display:none;">Loading...</div>     
-
-
- 
         </div>
+        {# such a hack.  i am embarrassed. #}
+        {% else %}
+        	<a href="#" class="frontpage-reset" style="display:none;">Show all posts (reset page)</a>
+        {% endifnotequal %}
+        {% else %}
+        	<a href="#" class="frontpage-reset" style="display:none;">Show all posts (reset page)</a>
+        {% endifnotequal %}
+        {% else %}
+        	<a href="#" class="frontpage-reset" style="display:none;">Show all posts (reset page)</a>
+        {% endifnotequal %}
         
         
     {% else %}

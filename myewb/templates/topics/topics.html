@@ -35,6 +35,7 @@ The {% if group %} checks are left in just in case, and should be removed eventu
 {% endspaceless %}{% endblock %}
 
 {% block body %}
+	{% comment %}
     {% if group %}
         <h1>{% blocktrans with group.get_absolute_url as group_url and group.name as group_name %}Posts for <a href="{{ group_url }}">{{ group_name }}</a>{% endblocktrans %}</h1>
 
@@ -56,6 +57,9 @@ The {% if group %} checks are left in just in case, and should be removed eventu
     {% endfor %}
     
     {% paginate %}
+    {% endcomment %}
+    
+    {% include "topics/topics_ajax.html" %}
     
 {% endblock %}
 
