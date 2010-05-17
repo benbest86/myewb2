@@ -21,7 +21,7 @@ class CommunityForm(BaseGroupForm):
 
     permissions = ( ('P', _("Public group: shows up in listings, and anyone can join")),
                     ('I', _("Invite-only group: shows up in listings, but membership must be approved")),
-                    ('R', _("Private group: does not show up in listings, and memberhsip must be approved"))
+                    ('R', _("Private group: does not show up in listings, and membership must be approved"))
                   )
                   # could also do "parent only" - "only members of the parent group can see or join this group"?
 

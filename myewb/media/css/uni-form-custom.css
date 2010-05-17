@@ -17,7 +17,7 @@ font-weight: bold;
 form.uniForm fieldset.inlineLabels {
 margin:0 auto;
 max-width:1000px;
-min-width:700px;
+/* min-width:700px; */
 }
 
 
@@ -51,7 +51,7 @@ text-align: right;
 
 }
 
-.settings-page-special ul {
+.settings-page-special ul, .inlineLabels ul {
 list-style: none;
 margin:0; padding:0;
 }
@@ -59,7 +59,7 @@ margin:0; padding:0;
 .settings-page-special.uniForm .inlineLabels ul  li label {
 width:auto;
 }
-.settings-page-special.uniForm .inlineLabels ul  li {
+.settings-page-special.uniForm .inlineLabels ul  li, .inlineLabels ul {
 display: block;
 clear:right;
 }
