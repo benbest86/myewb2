@@ -115,7 +115,7 @@ def wiki_convert(text):
 
 #    italic_exp = re.compile(r'(.*?)\^\^(.+?)\^\^(.*?)', re.S)
     italic_exp = re.compile(r'(.*?)\^{2,}(.+?)\^{2,}(.*?)', re.S)
-    text = italic_exp.sub(r"\1<em>\2</strong>\3", text)
+    text = italic_exp.sub(r"\1<em>\2</em>\3", text)
 
     heading_exp = re.compile(r'(.*?)={2,}(.+?)={2,}(.*?)', re.S)
     text = heading_exp.sub(r"\1<h3>\2</h3>\3", text)
