@@ -102,7 +102,7 @@ MIDDLEWARE_CLASSES = (
     'siteutils.online_middleware.OnlineUsers',
     # 'djangologging.middleware.LoggingMiddleware',
     'siteutils.helpers.SQLLogToConsoleMiddleware',
-    'siteutils.profile_middleware.ProfileMiddleware',
+    #'siteutils.profile_middleware.ProfileMiddleware',
 )
 
 ROOT_URLCONF = 'urls'
