@@ -90,6 +90,8 @@ def group_search_filter(groups, search_terms):
         return groups
         
 def get_counts(groups, model):
+    return groups
+
     name = model._meta.verbose_name
     plural = model._meta.verbose_name_plural
     content_type = ContentType.objects.get_for_model(model)
@@ -108,6 +110,9 @@ def enforce_visibility(groups, user):
     visible_groups = groups.filter(visibility='E') | groups.filter(member_users=user) \
         | groups.filter(visibility='P', parent__member_users=user)
     return visible_groups.distinct()
+#    visible_groups = groups.filter(visibility='E') | groups.filter(member_users=user) \
+#        | groups.filter(visibility='P', parent__member_users=user)
+#    return visible_groups
     
 def get_valid_parents(user, group=None, model=BaseGroup):
     if user.has_module_perms("base_groups"):

@@ -36,11 +36,14 @@ class WhiteboardManager(QuerySetManager):
                               parent_group__parent__members__is_admin=True)
             
             # everyone else only sees stuff from their own groups
-            filter_q |= Q(parent_group__member_users=user)
+            #filter_q |= Q(parent_group__member_users=user)
+            groups = user.basegroup_set.all()
+            filter_q |= Q(parent_group__in=groups)
 
         # would it be more efficient to remove the OR query above and just write
         # two different queries, instead of using distinct() here?
-        return self.get_query_set().filter(filter_q).distinct()
+        #return self.get_query_set().filter(filter_q).distinct()
+        return self.get_query_set().filter(filter_q)
     
     def get_for_group(self, group):
         """

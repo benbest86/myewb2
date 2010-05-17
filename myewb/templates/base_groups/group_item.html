@@ -6,10 +6,12 @@
     <div class="group_stats">
 		{% trans "Type:" %} <b>{{ group.model }}</b>
         <br />
+        {% comment %}
         {% trans "Members:" %} <b>{{ group.member_count }}</b>
         <br />
         {% trans "Topics:" %} <b>{{ group.topic_count }}</b>
         <br />
         {% show_tags_for group %} {# @@@ #}
+        {% endcomment %}
     </div>
 </dd>

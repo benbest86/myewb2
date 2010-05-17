@@ -232,17 +232,15 @@ class BaseGroup(Group):
         
     def get_visible_children(self, user):
         if not user.is_authenticated():
-            print "not authenticated."
             return self.children.filter(visibility='E')
         elif user.has_module_perms("base_groups") | self.user_is_admin(user):
-            print "returning all, you're an admin"
             return self.children.all()
         else:
-            print "doing the long check"
             children = self.children.filter(visibility='E') | self.children.filter(member_users=user)
             if self.user_is_member(user):
                 children = children | self.children.filter(visibility='P')
             return children.distinct()
+            #return children
             
     def get_accepted_members(self):
         """
