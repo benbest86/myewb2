@@ -1,22 +1,27 @@
 ul.segmented {
   margin: 1em;
-  height: 2.7em;
+/*   height: 2.7em; */
   float: left;
   padding-left: 0;
   margin-left: 0;
+  list-style: none;
 }
 
 ul.segmented li {
-  display: inline;
+display: inline;
+}
+
+ul.segmented li a, ul.segmented li span {
+  display: block;
   background: #eee;
-  padding: 0.5em;
+padding:0.5em 0.7em;
   margin: 0;
   border: 0.1em solid #ccc;
   border-left: none;
   float: left;
 }
 
-ul.segmented li:hover {
+ul.segmented li a:hover {
   background: #fff;
 }
 
@@ -25,29 +30,35 @@ ul.segmented li.current a:visited {
   color: #000;
 }
 
-ul.segmented li.label {
+ul.segmented li a.label {
   font-weight: bold;
   background-color: inherit;
   border: inherit;
 }
 
-ul.segmented li:first-child {
+
+
+ul.segmented li:first-child a, ul.segmented li:first-child span {
   border-left: 1px solid #ccc;
+
   -webkit-border-top-left-radius: 0.8em;
   -webkit-border-bottom-left-radius: 0.8em;
 
   -moz-border-radius-topleft: 0.8em;
   -moz-border-radius-bottomleft: 0.8em;
+
 }
 
-ul.segmented li.current {
+ul.segmented li.current span, ul.segmented li.current a {
   font-weight: bold;
   background: #aaa;
 }
 
-ul.segmented li:last-child {
+ul.segmented li:last-child a, ul.segmented li:last-child span {
+
   -webkit-border-top-right-radius: 0.8em;
   -webkit-border-bottom-right-radius: 0.8em;
   -moz-border-radius-topright: 0.8em;
   -moz-border-radius-bottomright: 0.8em;
+
 }
