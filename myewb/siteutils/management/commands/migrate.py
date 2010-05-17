@@ -712,6 +712,12 @@ class Command(NoArgsCommand):
                             (tagname[0], row[0]))
             else:
                 print "post", row[0], "tag", row[1], " - found as", thetag[0]
+                
+        # set visibility
+        c2.execute("SELECT id FROM base_groups_basegroup WHERE (visibility='E' and invite_only=0) or slug='ewb'")
+        for row in c2.fetchall():
+            c2.execute("UPDATE group_topics_grouptopic SET visible=True WHERE parent_group_id=%s",
+                       (row[0]))
 
         # this is a Good Idea.
         c2.execute("ALTER TABLE  `group_topics_grouptopic` ADD INDEX (  `last_reply` )")

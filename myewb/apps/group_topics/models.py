@@ -37,7 +37,7 @@ class GroupTopicManager(models.Manager):
         transparently
         """
         
-        filter_q = Q(parent_group__visibility='E') | Q(parent_group__slug='ewb')
+        filter_q = Q(visible=True)
         order = '-created'
         if user is not None and not user.is_anonymous():
             
@@ -150,6 +150,7 @@ class GroupTopic(Topic):
     score_modifier = models.IntegerField(_("score modifier"), default=100)
     
     converted = models.BooleanField(default=True)
+    visible = models.BooleanField(editable=False)
     
     objects = GroupTopicManager()
     
@@ -184,6 +185,7 @@ class GroupTopic(Topic):
         # set parent group
         group = BaseGroup.objects.get(id=self.object_id)
         self.parent_group = group
+        self.visible = (group.visibility == 'E' and group.invite_only == False) or group.slug == 'ewb'
         
         super(GroupTopic, self).save(force_insert, force_update)
         post_save.send(sender=Topic, instance=GroupTopic.objects.get(id=self.id))
@@ -259,6 +261,12 @@ class GroupTopic(Topic):
         ordering = ('-modified', )
         verbose_name = "post"
         
+def update_post_visibility(sender, instance, created, **kwargs):
+    visible = (instance.visibility == 'E' and instance.invite_only == False) or instance.slug == 'ewb'
+    GroupTopic.objects.filter(parent_group=instance).update(visible=visible)
+post_save.connect(update_post_visibility, sender=BaseGroup)
+
+
 class Watchlist(models.Model):
     name = models.CharField(_('name'), max_length=255)
     owner = models.ForeignKey(User, related_name="watchlists", verbose_name=_('owner'))

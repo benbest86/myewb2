@@ -189,7 +189,9 @@ class BaseGroup(Group):
     
     def save(self, force_insert=False, force_update=False):
         # if we are updating a group, don't change the slug (for consistency)
+        created = False
         if not self.id:
+            created = True
             slug = self.slug
             slug = slug.replace(' ', '-')
             
@@ -226,6 +228,7 @@ class BaseGroup(Group):
             self.from_email = "%s@my.ewb.ca" % self.slug
         
         super(BaseGroup, self).save(force_insert=force_insert, force_update=force_update)
+        post_save.send(sender=BaseGroup, instance=self, created=created)
 
     def get_url_kwargs(self):
         return {'group_slug': self.slug}
@@ -490,6 +493,9 @@ def clean_up_bulk_users(sender, instance, created, **kwargs):
 post_save.connect(clean_up_bulk_users, sender=EmailAddress)
 
 def add_creator_to_group(sender, instance, created, **kwargs):
+    pass
+    """
+    # Not needed, I think?
     if created:
         try:
             GroupMember.objects.create(
@@ -500,4 +506,5 @@ def add_creator_to_group(sender, instance, created, **kwargs):
                     admin_order = 1)
         except:
             pass
+    """
 post_save.connect(add_creator_to_group, sender=BaseGroup)
