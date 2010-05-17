@@ -36,6 +36,10 @@ width:600px;
 height:380px;
 }
 
+.centerwidth .uniForm .inlineLabels textarea {
+width: 400px;
+height: 250px;
+}
 
 
 
