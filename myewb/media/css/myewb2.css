@@ -559,7 +559,7 @@ margin-bottom:0.2em;
 }
 
 
-div.frontpage-mygroups-div {
+div.frontpage-mygroups-div, div.frontpage-loading {
 margin:0 -5px 0 -10px;
 padding:5px 10px;
 }
@@ -570,6 +570,22 @@ padding:5px 10px;
 margin-left: 10px;
 display: none;
 }
+
+
+a.frontpage-reset {
+background-color:#EEEEEE;
+display:block;
+margin:0 -5px 5px -10px;
+padding:5px 10px;
+
+}
+
+div.frontpage-loading {
+background:url("images/ajax-loader-eee.gif") no-repeat scroll 12px center #EEEEEE;
+padding-left:38px;
+}
+
+
 
 
 div.latest-activity-stats {
