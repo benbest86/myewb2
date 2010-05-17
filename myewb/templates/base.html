@@ -18,7 +18,8 @@
 		<link rel="stylesheet" href="{{ STATIC_URL }}pinax/css/accounts.css" />
         <link rel="stylesheet" href="{{ STATIC_URL }}css/toolbars.css" />    
 		<script src="{{ STATIC_URL }}pinax/js/jquery.js" type="text/javascript"></script>
-		<script src="{{ STATIC_URL }}uni_form/uni-form.jquery.js" type="text/javascript"></script>
+		{#<script src="{{ STATIC_URL }}uni_form/uni-form.jquery.js" type="text/javascript"></script>#}
+		{# commenting out the above because it crashes firefox/mac consistently, when used with select menus nested inside other labels (Eg. on the messageing search slidedown.) Sean - 2010-05-17 #}
 		<script type="text/javascript" charset="utf-8" src="{{ STATIC_URL }}pinax/js/facebox.js"></script>
 		{% block extra_head_base %}
 		{% block extra_head %}{% endblock %}
