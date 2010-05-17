@@ -56,6 +56,14 @@ line-height: 18px;
 }
 /* also used in tinymce-content.css - be sure to copy changes there */
 
+
+#maincolumn h1 {
+margin:0 0 0.3em;
+
+}
+
+
+
 div#footer {
     padding: 0;
 }

@@ -37,10 +37,9 @@ The {% if group %} checks are left in just in case, and should be removed eventu
 {% block body %}
     {% if group %}
         <h1 class="posts-title">{% blocktrans with group.get_absolute_url as group_url and group.name as group_name %}Posts for <a href="{{ group_url }}">{{ group_name }}</a>{% endblocktrans %}</h1>
+        
         {% if group.parent %}
-		<h2 class="posts-parent-partof lighter">{% trans "Part of the " %} <a href="{{ group.parent.get_absolute_url }}">{{ group.parent.name }}</a>
-		{% if group.parent.is_chapter or 1 %} chapter {% endif %}{# @@@ fix this later #}
-		
+		<h2 class="posts-parent-partof lighter">{% trans "Part of the " %} <a href="{{ group.parent.get_absolute_url }}">{{ group.parent.name }}</a>		
 		</h2>
 	{% endif %}
 

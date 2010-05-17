@@ -53,7 +53,16 @@
     {% endcomment %}
     
     {% block grouptitle %}
-        <h1>{{ group.name }}</h1>
+        <h1 class="posts-title">{{ group.name }}</h1>
+        
+{% if group.parent %}
+		<h2 class="posts-parent-partof lighter">{% trans "Part of the " %} <a href="{{ group.parent.get_absolute_url }}">{{ group.parent.name }}</a>
+		
+		</h2>
+	{% endif %}
+
+        
+        
     {% endblock %}
 
 
