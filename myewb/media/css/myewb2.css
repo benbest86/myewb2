@@ -422,18 +422,20 @@ div.message-header {
 }
 
 div.message-close {
-    position: relative;
-    top: -1.6em;
-    right: 15px;
-    height: 0;
-    text-align: right;
+height:0;
+position:relative;
+right:8px;
+text-align:right;
+top:-2em;
 }
 
 div.message-close a {
-    color: #ffffff;
-    font-weight: bold;
-    text-decoration: none;
-    padding: 0 2px;
+color:#FFFFFF;
+display:block;
+float:right;
+font-weight:bold;
+padding:4px 8px;
+text-decoration:none;
 }
 
 div.message {
