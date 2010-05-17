@@ -194,9 +194,16 @@
                     {% ifequal user group.creator %}
                         <p>{% trans "You are the creator of this group so can't leave (yet)." %}</p>
                     {% else %}
+                        <p>You're currently a member of this group.</p>
+                        
+                        <a href="{% groupurl delete_member group username=user.username %}">Leave group</a>
+                        
+						{% comment %}
 						<form method="POST" action="{% groupurl delete_member group username=user.username %}">
                         	<input type="submit" value="{% trans "Leave group" %}" />
 						</form><br/>
+						
+						{% endcomment %}
                     {% endifequal %}                        
                 {% endif %}
                 
