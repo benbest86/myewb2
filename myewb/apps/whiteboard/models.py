@@ -88,7 +88,7 @@ class Whiteboard(Article):
         
         # validate HTML content
         # Additional options at http://codespeak.net/lxml/lxmlhtml.html#cleaning-up-html
-        if self.content:
+        if self.content and self.content.strip():
             self.content = clean_html(self.content)
             self.content = autolink_html(self.content)
         
