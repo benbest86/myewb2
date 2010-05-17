@@ -101,7 +101,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.transaction.TransactionMiddleware',
     'siteutils.online_middleware.OnlineUsers',
     # 'djangologging.middleware.LoggingMiddleware',
-    #'siteutils.helpers.SQLLogToConsoleMiddleware',
+    'siteutils.helpers.SQLLogToConsoleMiddleware',
+    'siteutils.profile_middleware.ProfileMiddleware',
 )
 
 ROOT_URLCONF = 'urls'
