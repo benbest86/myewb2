@@ -12,6 +12,8 @@
 {% load whiteboard_tags %}
 {% load icon_tags %}
 {% load filesize_tags %}
+{% load cache %}
+
 {% block head_title %}{% trans "Post" %} : {{ topic.title }}{% endblock %}
 
 {% block extra_head %}
@@ -23,6 +25,7 @@
 {% block body %}
 
 <div class="post">
+	{% cache CACHE_TIMEOUT "postbody" topic.id %}
 	<div class="postheader bkgd" style="position: relative;"> <!-- header row -->
 		
         {% get_attachments_for topic as "attachments" %}
@@ -91,6 +94,8 @@
                     </ul>
                 {% endif %}
 		    </td>
+		    
+		    {% endcache %}
 
 			<td align="right" valign="top" width="300" style="font-size: 10px; padding-right: 10px;">
 				{# TODO: toggle watchlists, hot list, etc, etc #}
@@ -146,22 +151,28 @@
 			</td>
     		</tr>
 
+			{% cache CACHE_TIMEOUT "posttags" topic.id %}
             <tr>
 			<td align="left" valign="top" colspan="2" style="font-size: 10px; padding-right: 10px;">
                 {% show_tags_for topic %}
 			</td>
 			</tr>
+			{% endcache %}
 			
 		</table> <!-- end tags and drill-in link table -->	
 
 	</div>
 </div>
 
+
+{% cache CACHE_TIMEOUT "postwbreplies" topic.id %}
 <p>
 {% show_whiteboard topic.whiteboard topic.group member %}
 </p>
     
 {% attachablecomments topic %}
+
+{% endcache %}
 
 {% endblock %}
 

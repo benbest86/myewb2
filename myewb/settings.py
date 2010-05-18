@@ -130,6 +130,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "messages.context_processors.inbox",
     "friends_app.context_processors.invitations",
     "context_processors.combined_inbox_count",
+    "siteutils.context_processors.myewb_settings",
     "siteutils.online_middleware.context",
     "group_topics.context_processors.newposts",
     "communities.context_processors.is_exec",
