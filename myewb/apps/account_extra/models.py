@@ -86,7 +86,7 @@ User.get_networks = get_networks
 def get_groups(self):
     # un-hardcode the LogisticalGroup bit.  shoudl probably subclass BaseGroup to VisibleGroup first.
     grps = BaseGroup.objects.filter(member_users=self).exclude(model="LogisticalGroup")
-    return get_counts(grps, BaseGroup).order_by('-recent_topic_count')
+    return get_recent_counts(grps, BaseGroup).order_by('-recent_topic_count')
 User.get_groups = get_groups
 
 def get_communities(self):

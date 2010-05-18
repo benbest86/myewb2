@@ -107,7 +107,16 @@ def get_counts(groups, model):
     groups = groups.extra(select=SortedDict([
         ('member_count', MEMBER_COUNT_SQL),
         ('topic_count', TOPIC_COUNT_SQL),
-#    ]), select_params=(content_type.id,))
+    ]), select_params=(content_type.id,))
+    
+    return groups
+    
+def get_recent_counts(groups, model):
+    name = model._meta.verbose_name
+    plural = model._meta.verbose_name_plural
+    content_type = ContentType.objects.get_for_model(model)
+
+    groups = groups.extra(select=SortedDict([
         ('recent_topic_count', RECENT_TOPIC_COUNT_SQL),
     ]), select_params=(content_type.id,
                        content_type.id,

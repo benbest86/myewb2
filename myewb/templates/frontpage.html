@@ -221,7 +221,7 @@
 			{% ifnotequal mode "newreplies" %}
 				{% ifnotequal mode "featured" %}
         {# my groups #}
-        {# {% cache CACHE_TIMEOUT "frontpagegroups2" user.username LATEST_POST %} #} 
+        {% cache CACHE_TIMEOUT "frontpagegroups" user.username LATEST_POST %} 
         <div class="toolbarheader bkgd" id="box-frontpage-mygroups">{% trans "My groups" %}</div>
         <div class="toolbarcontent">
         
@@ -241,7 +241,7 @@
             		<a href="#" onclick="$('.frontpage-mygroups-nonew').slideDown(); $(this).hide(); return false;">show all</a>
             	</div>
         </div>
-        {# {% endcache %} #}
+        {% endcache %}
         {% endifnotequal %}
         {% endifnotequal %}
         {% endifnotequal %}
