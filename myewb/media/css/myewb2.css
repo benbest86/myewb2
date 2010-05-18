@@ -683,3 +683,26 @@ h2.msgheader {
 margin-top:0;
 /* do these need a set margin-bottom? :) */
 }
+
+ul.users-search-list {
+padding: 0;
+}
+
+ul.users-search-list li {
+list-style: none;
+float:left;
+width:250px;
+/* border:1px solid; */
+}
+ul.chapter-info-member-list li {
+width:200px;
+}
+
+ul.users-search-list li img {
+border:0;
+float: left; 
+/* width: 30px; height: 30px; */
+margin-right: 10px;
+margin-bottom: 10px;
+
+}
