@@ -6,6 +6,7 @@
 {% load group_tags %}
 {% load tagging_tags %}
 {% load events_tags %}
+{% load cache %}
 
 {% block extra_head %}
     {{ block.super }}
@@ -152,6 +153,7 @@
     {% if user.is_authenticated %}
         <div class="toolbarheader bkgd" id="box-latestactivity">{% trans "Latest Activity" %}</div>
         <div class="toolbarcontent">
+        	{% cache 300 "poststats" user.username adminovision %}
         	Since you last signed in {{ user.get_profile.previous_login|timesince}} ago:
         	<div class="latest-activity-stats">
         	
@@ -208,6 +210,8 @@
                 	</p>
                 {% endif %}
            	{% endif %}
+           	
+           	{% endcache %}
         </div>
         
 		{% ifnotequal mode "newposts" %}

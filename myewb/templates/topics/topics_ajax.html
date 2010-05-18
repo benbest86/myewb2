@@ -1,6 +1,7 @@
 {% load i18n %}
 {% load pagination_tags %}
 {% load group_tags %}
+{% load cache %}
 
 {% if group %}
 	<h1>{% blocktrans with group.get_absolute_url as group_url and group.name as group_name %}Posts for <a href="{{ group_url }}">{{ group_name }}</a>{% endblocktrans %}</h1>
@@ -29,6 +30,8 @@
 
 {% endif %}
 
+{# is there some way to invalidate this cache when a new post is created? #}
+{% cache 300 "postlist" user.username request.page group mode %} 
 
 {% autopaginate topics 10 %}
 
@@ -37,3 +40,5 @@
 {% endfor %}
 
 {% paginate %}
+
+{% endcache %}
