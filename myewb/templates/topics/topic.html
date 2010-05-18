@@ -151,13 +151,12 @@
 			</td>
     		</tr>
 
-			{% cache CACHE_TIMEOUT "posttags" topic.id %}
+			{% cache CACHE_TIMEOUT "posttagswbreplies" topic.id topic.last_reply topic.whiteboard.last_update %}
             <tr>
 			<td align="left" valign="top" colspan="2" style="font-size: 10px; padding-right: 10px;">
                 {% show_tags_for topic %}
 			</td>
 			</tr>
-			{% endcache %}
 			
 		</table> <!-- end tags and drill-in link table -->	
 
@@ -165,7 +164,6 @@
 </div>
 
 
-{% cache CACHE_TIMEOUT "postwbreplies" topic.id topic.last_reply topic.whiteboard.last_update %}
 <p>
 {% show_whiteboard topic.whiteboard topic.group member %}
 </p>
