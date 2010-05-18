@@ -663,6 +663,17 @@ padding:0.2em;
 
 
 
+
+.chapter-executive-sidebox-img {
+float: left; 
+padding-bottom:6px;
+padding-right:6px;
+}
+.chapter-executive-sidebox-item {
+padding-bottom: 7px;
+clear: both;
+}
+
 /* Messaging pages */
 .msgtitle {
 margin-top:0;
