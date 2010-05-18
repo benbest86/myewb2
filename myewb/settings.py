@@ -264,6 +264,7 @@ LOGIN_REDIRECT_URLNAME = "home"
 CACHE_BACKEND = 'dummy://'
 CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True      # will do user-based caching manually in the views
 CACHE_MIDDLEWARE_KEY_PREFIX = ''
+CACHE_TIMEOUT = 300             # in seconds... 5 minutes?
 
 INTERNAL_IPS = (
     '127.0.0.1',
