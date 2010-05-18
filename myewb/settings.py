@@ -88,7 +88,7 @@ TEMPLATE_LOADERS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    'django.middleware.cache.UpdateCacheMiddleware',
+#    'django.middleware.cache.UpdateCacheMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -104,7 +104,7 @@ MIDDLEWARE_CLASSES = (
     # 'djangologging.middleware.LoggingMiddleware',
     'siteutils.helpers.SQLLogToConsoleMiddleware',
     #'siteutils.profile_middleware.ProfileMiddleware',
-    'django.middleware.cache.FetchFromCacheMiddleware',
+#    'django.middleware.cache.FetchFromCacheMiddleware',
 )
 
 ROOT_URLCONF = 'urls'
@@ -263,7 +263,7 @@ LOGIN_REDIRECT_URLNAME = "home"
 
 # probably want to make this memcached in local_settings for production use =) 
 CACHE_BACKEND = 'dummy://'
-CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True      # will do user-based caching manually in the views
+#CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True      # will do user-based caching manually in the views
 CACHE_MIDDLEWARE_KEY_PREFIX = ''
 CACHE_TIMEOUT = 300             # in seconds... 5 minutes?
 
