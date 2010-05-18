@@ -71,7 +71,7 @@
                 <td>{% if member.is_admin %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td>
                 <td>{% if member.is_admin %}{{ member.admin_title}}{% endif %}</td>
                 {% if is_admin %}
-                    <td>{{ member.user.email }}</td>
+                    <td>{% if member.user.email %}<a href="mailto:{{ member.user.email }}">{{ member.user.email }}</a>{% endif %}</td>
                     <td>{{ member.joined|date }}</td>
                     {% if member.is_admin %}
                         <td><a href="{% groupurl edit_member group username=member.user.username %}">{% trans "Remove from leaders" %}</a></td>
