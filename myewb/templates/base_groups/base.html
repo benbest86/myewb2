@@ -279,8 +279,8 @@
             </form>
             <br/>
 
-            {# TODO: make this a random listing of 10-ish people #}
-            {% for member in group.get_accepted_members %}
+            {% get_random_members group 10 as randommembers %}
+            {% for member in randommembers %}
                 <div style="float: left; width: 15px; height: 15px;">
                     {% avatar member.user 15 %}
                 </div>

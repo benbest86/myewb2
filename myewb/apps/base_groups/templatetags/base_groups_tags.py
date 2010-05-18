@@ -129,3 +129,33 @@ def do_get_grouptopics_for_group(parser, token):
 
 register.tag('get_grouptopics_for_group', do_get_grouptopics_for_group)
 #end copy
+
+class RandomMemberNode(template.Node):
+    def __init__(self, group_name, number, context_name):
+        self.group = template.Variable(group_name)
+        self.context_name = context_name
+        self.number = number
+
+    def render(self, context):
+        try:
+            group = self.group.resolve(context)
+        except template.VariableDoesNotExist:
+            return u''
+            
+        members = group.get_accepted_members().order_by('?')[:self.number]
+        context[self.context_name] = members
+        return u''
+
+def do_get_random_members(parser, token):
+    """
+    Provides the template tag {% get_random_members GROUP NUMBER as VARIABLE %}
+    """
+    try:
+        _tagname, group_name, number, _as, context_name = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError(u'%(tagname)r tag syntax is as follows: '
+            '{%% %(tagname)r GROUP NUMBER as VARIABLE %%}' % {'tagname': _tagname})
+    return RandomMemberNode(group_name, number, context_name)
+
+register.tag('get_random_members', do_get_random_members)
+

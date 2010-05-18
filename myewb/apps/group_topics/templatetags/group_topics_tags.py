@@ -59,6 +59,7 @@ def show_topic_with_user(context, topic):
         "group": context.get("group"),
         "user": context.get("user"),
         "STATIC_URL": settings.STATIC_URL,
+        "CACHE_TIMEOUT": settings.CACHE_TIMEOUT,
     }
 register.inclusion_tag("topics/topic_item.html", takes_context=True)(show_topic_with_user)
 
