@@ -641,8 +641,8 @@ class Command(NoArgsCommand):
                 fullbody = ""
                 if row[2]:
                     fullbody = row[2]
-                    if fullbody[:-3] == "...":
-                        fullbody = fullbody[0:-3]
+                    if fullbody[-3:] == "...":
+                        fullbody = fullbody[:-3]
                     else:
                         fullbody = fullbody + "\n\n"
                 if row[3]:
