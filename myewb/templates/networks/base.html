@@ -70,10 +70,11 @@
         <div class="toolbarcontent">
             {% get_admins group as admins %}
             {% for admin in admins %}
-                <div style="float: left; width: 30px; height: 30px;">
-                    {% avatar admin.user 30 %}
-                </div>
-                <div style="margin-left: 35px; height: 35px;">
+
+                <div class="chapter-executive-sidebox-item">
+                    <div class="chapter-executive-sidebox-img">
+                        {% avatar admin.user 30 %}
+                    </div>
                     <a href="{% url profile_detail admin.user.username %}">{{ admin.user.visible_name }}</a><br/>
                     {{ admin.admin_title }} {% if is_admin %}<a href="{% url network_edit_member group.slug admin.user.username %}">(edit)</a>{% endif %}
                 </div>
