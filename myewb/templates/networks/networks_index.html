@@ -9,6 +9,7 @@
 {% load networks_tags %}
 {% load base_groups_tags %}
 {% load sorting_tags %}
+{% load cache %}
 
 {% block head_title %}{% blocktrans %}Chapters{% endblocktrans %}{% endblock %}
 
@@ -28,7 +29,8 @@
         {% url acct_login as login_url %}
         <p>{% blocktrans %}<a href="{{ signup_url }}">Sign up</a> and <a href="{{ login_url }}">log in </a> to join a network.{% endblocktrans %}</p>
     {% endif %}
-    
+
+	{% cache CACHE_TIMEOUT "chapterlist" %}    
 
     {% autosort groups %}
     {#{% autopaginate groups 10 %}#}
@@ -322,7 +324,7 @@ var cityArray = new Array();
 
     </script>		
     
-    
+    {% endcache %}
     
     
 {% endblock %}
@@ -334,7 +336,8 @@ var cityArray = new Array();
 
 
     {% if user.is_authenticated and user.get_networks %}
-<div class="toolbarheader bkgd" id="box-my-chapter">{% trans "My Chapter" %}</div>
+    	{% cache CACHE_TIMEOUT "mychapters" user.username %}
+		<div class="toolbarheader bkgd" id="box-my-chapter">{% trans "My Chapter" %}</div>
 		<div class="toolbarcontent">
 	    {% for group in user.get_networks %}
 
@@ -342,6 +345,7 @@ var cityArray = new Array();
 
     	{% endfor %}
 		</div>
+		{% endcache %}
 	{% endif %}
 
 
