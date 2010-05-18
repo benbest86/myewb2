@@ -1,3 +1,4 @@
+from datetime import date, timedelta
 from django.conf.urls.defaults import *
 from django.contrib.contenttypes.models import ContentType
 from django.utils.datastructures import SortedDict
@@ -10,6 +11,14 @@ FROM topics_topic
 WHERE
     topics_topic.object_id = base_groups_basegroup.id AND
     topics_topic.content_type_id = %s
+"""
+RECENT_TOPIC_COUNT_SQL = """
+SELECT COUNT(*)
+FROM topics_topic
+WHERE
+    topics_topic.object_id = base_groups_basegroup.id AND
+    topics_topic.content_type_id = %s AND
+    topics_topic.created > %s
 """
 MEMBER_COUNT_SQL = """
 SELECT COUNT(*)
@@ -89,6 +98,7 @@ def group_search_filter(groups, search_terms):
     else:
         return groups
         
+# really, this should be done in a manager...!!!!
 def get_counts(groups, model):
     name = model._meta.verbose_name
     plural = model._meta.verbose_name_plural
@@ -97,7 +107,11 @@ def get_counts(groups, model):
     groups = groups.extra(select=SortedDict([
         ('member_count', MEMBER_COUNT_SQL),
         ('topic_count', TOPIC_COUNT_SQL),
-    ]), select_params=(content_type.id,))
+#    ]), select_params=(content_type.id,))
+        ('recent_topic_count', RECENT_TOPIC_COUNT_SQL),
+    ]), select_params=(content_type.id,
+                       content_type.id,
+                       date.today() - timedelta(weeks=4)))
     
     return groups
     
