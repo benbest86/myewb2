@@ -182,6 +182,9 @@ class GroupTopic(Topic):
         return user == self.creator or self.parent_group.user_is_admin(user)
         
     def save(self, force_insert=False, force_update=False):
+        if not self.pk:
+            self.last_reply = datetime.now()
+            
         # validate HTML content
         # Additional options at http://codespeak.net/lxml/lxmlhtml.html#cleaning-up-html
         self.body = clean_html(self.body)

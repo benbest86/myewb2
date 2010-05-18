@@ -9,7 +9,7 @@
 {% load helpers %}
 {% load cache %}
 
-{% cache CACHE_TIMEOUT "postpreview" topic.id %}
+{% cache CACHE_TIMEOUT "postpreview" topic.id topic.last_reply %}
 
 <div class="post">
 	<div class="postheader bkgd" style="position: relative;"> <!-- header row -->

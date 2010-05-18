@@ -165,7 +165,7 @@
 </div>
 
 
-{% cache CACHE_TIMEOUT "postwbreplies" topic.id %}
+{% cache CACHE_TIMEOUT "postwbreplies" topic.id topic.last_reply topic.whiteboard.last_update %}
 <p>
 {% show_whiteboard topic.whiteboard topic.group member %}
 </p>
