@@ -19,7 +19,7 @@ from django.template import Context, loader
 from mailer import send_mail
 
 from attachments.models import Attachment
-from base_groups.models import BaseGroup
+from base_groups.models import BaseGroup, GroupMember
 from base_groups.helpers import user_can_adminovision, user_can_execovision
 from siteutils.helpers import wiki_convert
 from topics.models import Topic
@@ -40,15 +40,23 @@ class GroupTopicManager(models.Manager):
         filter_q = Q(visible=True)
         order = '-created'
         if user is not None and not user.is_anonymous():
-            
+            if user.get_profile().sort_by == 'r':
+                order = '-last_reply'
+
             # admins with admin-o-vision on automatically see everything
             if user_can_adminovision(user) and user.get_profile().adminovision == 1:
-                return self.get_query_set()
+                return self.get_query_set().order_by(order)
             
             # and similar for exec-o-vision, except only for your own chapter's groups
             if user_can_execovision(user) and user.get_profile().adminovision == 1:
-                filter_q |= Q(parent_group__parent__members__user=user,
-                              parent_group__parent__members__is_admin=True)
+                admingroups = GroupMember.objects.filter(user=user,
+                                                         is_admin=True,
+                                                         group__model='Network')
+                admingroups = admingroups.values_list('group', flat=True)
+                filter_q |= Q(parent_group__parent__in=admingroups)
+                
+                #filter_q |= Q(parent_group__parent__members__user=user,
+                #              parent_group__parent__members__is_admin=True)
             
             # everyone else only sees stuff from their own groups
             groups = user.basegroup_set.all()
@@ -57,9 +65,6 @@ class GroupTopicManager(models.Manager):
                 # join based on member records, ie, Q(parent_group__member_users=user),
                 # and then needing to call distinct() later. 
                 # it's in the order of, 15-minute query vs 0.01s query! 
-
-            if user.get_profile().sort_by == 'r':
-                order = '-last_reply'
 
         # would it be more efficient to remove the OR query above and just write
         # two different queries, instead of using distinct() here?
