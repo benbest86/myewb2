@@ -32,7 +32,8 @@ class WhiteboardForm(forms.ModelForm):
         model = Whiteboard
         exclude = ('creator', 'creator_ip', 'removed',
                    'group', 'created_at', 'last_update',
-                   'summary', 'title', 'markup', 'tags', 'parent_group')
+                   'summary', 'title', 'markup', 'tags', 'parent_group',
+                   'converted')
 
     def clean_content(self):
         """ Do our usual HTML cleanup.

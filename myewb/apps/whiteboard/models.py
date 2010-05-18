@@ -63,7 +63,7 @@ class Whiteboard(Article):
     """
     
     parent_group = models.ForeignKey(BaseGroup, related_name="whiteboards", verbose_name=_('parent'))
-    converted = models.BooleanField(default=True)
+    converted = models.BooleanField(default=True, editable=False)
     
     objects = WhiteboardManager()
     non_removed_objects = NonRemovedWhiteboardManager()

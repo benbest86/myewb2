@@ -71,7 +71,7 @@ class Event(models.Model):
     
     whiteboard = models.ForeignKey(Whiteboard, related_name="event", verbose_name=_('whiteboard'), null=True)
     
-    converted = models.BooleanField(default=True)
+    converted = models.BooleanField(default=True, editable=False)
     
     objects = EventManager()
 

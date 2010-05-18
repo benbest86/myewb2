@@ -27,7 +27,8 @@ class EventForm(forms.ModelForm):
 
     class Meta:
         model = Event
-        exclude = ('object_id', 'content_type', 'owner', 'whiteboard', 'parent_group')
+        exclude = ('object_id', 'content_type', 'owner', 'whiteboard',
+                   'parent_group', 'converted')
 
 class GroupEventForm(EventForm):
     group = forms.ChoiceField(choices=[(0,'None (my personal calendar)')])
