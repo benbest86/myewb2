@@ -21,32 +21,44 @@
 	{# JS here for the frontpage ajax updates #}
 <script type="text/javascript">
 // Frontpage Ajax updates
+
+	var currentURL = "";
+
+	function load_posts(url)
+	{
+		  currentURL = url
+		  $('#topiclisting').hide();
+		  $('.frontpage-loading').show();
+			
+		  $('#topiclisting').load(url,
+			function() {
+      		  $('.frontpage-loading').hide();
+			  $('#topiclisting').show();
+
+			  $('.pagination a').click(function() {
+				  if (currentURL.indexOf('?') != -1)
+					  currentURL = currentURL.substring(0, currentURL.indexOf('?'));
+				  load_posts(currentURL + $(this).attr('href'));
+				  return false;
+	  		  });
+
+		    }
+		  );				  
+	}
+	
 	$(document).ready(function() {
 		$('.frontpage-update').click(function() {
 		
-		
 		  $('.frontpage-mygroups-actions').hide();
 		  $('.frontpage-mygroups-actions').parent().removeClass('bkgd-light');
-		  
-		  
+			  
 		  $(this).parent().addClass('bkgd-light');
-		  
 		  $(this).siblings('.frontpage-mygroups-actions').show();
 
-		  $('#topiclisting').hide();
-		  $('.frontpage-loading').show();
-		
 		    // do stuff
 		    var groupSlug = $(this).attr("id").substring(17);
-		    
-		    //$('#maincolumn').load('/groups/' + groupSlug + '/posts/ #maincolumn', 
-		    $('#topiclisting').load('/groups/' + groupSlug + '/posts/',
-		      function() {
-          		  $('.frontpage-loading').hide();
-				  $('#topiclisting').show();
-                }
-		    
-		    );  // jQuery is the most ludicrous thing ever.
+
+		    load_posts('/groups/' + groupSlug + '/posts/');
 		  
 		  $('.frontpage-reset').show();
 		  
@@ -57,26 +69,18 @@
 		
 		
 		$('.frontpage-reset').click(function() {
-		  
-		  $('#topiclisting').hide();
-		  $('.frontpage-loading').show();
-			
+
 		  $('.frontpage-mygroups-actions').hide();
 		  $('.frontpage-mygroups-actions').parent().removeClass('bkgd-light');
-		  
-		  $('#topiclisting').load('{{request.url}}',
-			function() {
-      		  $('.frontpage-loading').hide();
-			  $('#topiclisting').show();
-            }
-		  );				  
-		  
+			  
+		  load_posts('{{request.url}}');
 		  $('.frontpage-reset').hide();
 		  
 		  return false;
         });
 		
-		$('.frontpage-reset').click();
+		load_posts('{{request.url}}');
+
 	});
  
  </script>
