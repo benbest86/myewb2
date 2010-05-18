@@ -53,7 +53,16 @@
     {% endcomment %}
     
     {% block grouptitle %}
-        <h1>{{ group.name }}</h1>
+        <h1 class="posts-title">{{ group.name }}</h1>
+        
+{% if group.parent %}
+		<h2 class="posts-parent-partof lighter">{% trans "Part of the " %} <a href="{{ group.parent.get_absolute_url }}">{{ group.parent.name }}</a>
+		
+		</h2>
+	{% endif %}
+
+        
+        
     {% endblock %}
 
 
@@ -185,9 +194,16 @@
                     {% ifequal user group.creator %}
                         <p>{% trans "You are the creator of this group so can't leave (yet)." %}</p>
                     {% else %}
+                        <p>You're currently a member of this group.</p>
+                        
+                        <a href="{% groupurl delete_member group username=user.username %}">Leave group</a>
+                        
+						{% comment %}
 						<form method="POST" action="{% groupurl delete_member group username=user.username %}">
                         	<input type="submit" value="{% trans "Leave group" %}" />
 						</form><br/>
+						
+						{% endcomment %}
                     {% endifequal %}                        
                 {% endif %}
                 

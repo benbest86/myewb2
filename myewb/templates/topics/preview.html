@@ -19,22 +19,24 @@ The {% if group %} checks are left in just in case, and should be removed eventu
 {% block head_title %}{% trans "New Post" %}{% endblock %}
 
 {% block body %}
-    <h2>{% trans "New Post" %}</h2>
+    <h2>{% trans "New Post" %}
+    
 	{% ifnotequal group.slug "ewb" %}
-       	<h2>{{group.name}}</h2>
+       	 to: <a href="{{group.get_absolute_url}}" target="_blank">{{group.name}}</a>
     {% endifnotequal %}
     
-	<div>
-		<strong>Title: {{ data.title }}</strong>
-	</div>
+    </h2>
+
+    
+
+		<h2><span class="lighter">Title: </span>{{ data.title }}</h2>
+
 	
 	{% if data.send_as_email %}
-		<p>
-			<em>(send as email from {{ data.sender }})</em>
-		</p>
+		<h3><span class="lighter">Send as email from: </span>{{ data.sender }}</h3>
 	{% endif %}
 	
-	<div style="padding: 10px; margin: 25px; border: 1px solid;">
+	<div style="padding: 10px; margin: 25px; border: 1px solid #ccc;" class="message-body">
 		{{ data.body|safe }}
 	</div>
 	

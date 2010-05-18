@@ -1,5 +1,12 @@
-{% extends 'site_base.html' %}
+{% extends 'topics/base.html' %}
 
 {% block body %}
-<h1>Denied</h1>
+<div class="access-denied-page">
+    <h1>Access denied</h1>
+    
+    <p>Sorry! You don't have permission to access this page.  <a href="/">Click here</a> to return to the myEWB homepage.</p>
+    <p>If you think this is a bug, please email <a href="mailto:support@my.ewb.ca">support@my.ewb.ca</a> - thanks.</p>
+    
+
+</div>
 {% endblock body %}

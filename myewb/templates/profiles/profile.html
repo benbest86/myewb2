@@ -47,18 +47,15 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 <h2>{% trans "About" %}</h2>
     
     
+
+        
+	{% if is_me or is_friend or perms.profiles %}
+
 <table class="standard standard-right search-form">
     <tbody>
-
-        {% comment %}
-        <tr>
-            <th>label</th>
-            <td>content</td>
-        </tr>
-        {% endcomment %}
-        
-        
-        <tr>
+	
+	
+<tr>
             <th>Profile Info</th>
             <td>
             
@@ -76,17 +73,8 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
             
             </td>
         </tr>
-    </tbody>
-</table>
-{# @@@ these two tables need some help integrating #}
-
-
-
-        
-	{% if is_me or is_friend or perms.profiles %}
-
-<table class="standard standard-right search-form">
-    <tbody>
+	
+	
 	
 	
 		{% if regular %}
@@ -247,7 +235,40 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 </table>
         
         
+	{# end of, is_me or is friend #}
+    {% else %}
+    
+    {# see this if it's not you and not a friend #}
+<table class="standard standard-right search-form">
+    <tbody>
+
+<tr>
+            <th>Profile Info</th>
+            <td>
+            
+                <p class="profile_info">
+            	    Account created {{ other_user.date_joined|timesince }} ago
+            		<br/>
+            		Last signed in {{ other_user.get_profile.current_login|timesince }} ago
+            		<br/>
+            		{{ other_user.get_profile.login_count }} logins
+            		<br/>
+            		<a href="{% url topic_list_by_user other_user %}">
+            			{% num_topics_for_user other_user %} posts/replies
+            		</a>
+            	</p>
+            
+            </td>
+        </tr>
         
+        
+        
+    </tbody>
+</table>
+    
+    
+    
+    
         
 	{% endif %}
         
