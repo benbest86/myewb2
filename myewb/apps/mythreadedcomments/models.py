@@ -18,7 +18,7 @@ from threadedcomments.models import ThreadedComment, FreeThreadedComment
 from attachments.models import Attachment
 from group_topics.models import GroupTopic, Watchlist, wiki_convert
 
-def send_to_watchlist(sender, instance, **kwargs):
+def send_to_watchlist(sender, instance, created, **kwargs):
     """
     Sends an email to everyone who is watching this thread, and/or to post owner.
     
@@ -27,6 +27,9 @@ def send_to_watchlist(sender, instance, **kwargs):
     Will need to change this function if we ever decide to allow comments
     on other types of objects.
     """
+
+    if not created:
+        return
 
     # build email
     topic = instance.content_object
@@ -70,7 +73,8 @@ def send_to_watchlist(sender, instance, **kwargs):
             participants.append(c.user.email)
             
     if topic.creator.get_profile().replies_as_emails:   # remove creator if they already received an email
-        participants.remove(topic.creator.email)
+        if topic.creator.email in participants:
+            participants.remove(topic.creator.email)
     if len(participants):
         send_mail(subject=topic.title,
                   txtMessage=None,
