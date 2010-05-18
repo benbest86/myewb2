@@ -152,6 +152,7 @@ def dashboard(request, year=None, month=None, term=None,
         
         grp = get_object_or_404(Network, slug=group_slug)
     else:
+        journals = 0
         grp = None
 
     activity_filters.append({'visible': True})
