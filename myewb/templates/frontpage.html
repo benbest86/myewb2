@@ -26,10 +26,12 @@
 
 	function load_posts(url)
 	{
+		  if (url == "")
+			  url = "/";
 		  currentURL = url
 		  $('#topiclisting').hide();
 		  $('.frontpage-loading').show();
-			
+
 		  $('#topiclisting').load(url,
 			function() {
       		  $('.frontpage-loading').hide();
