@@ -10,9 +10,10 @@
 {% load group_tags %}
 {% load base_groups_tags %}
 
-<p><a href="{% groupurl detail group %}">{{ group.name }}</a></p>
+{% load avatar_tags %}
 
-<h1>{% trans "Members" %}</h1>
+
+<h1>{% trans "Members of " %}<a href="{% groupurl detail group %}">{{ group.name }}</a></h1>
 
 {% if user.is_authenticated and is_admin %}
     {# <p><a href="{% groupurl new_member group %}">Add</a> a member</p> #}
@@ -48,37 +49,67 @@
     {% endif %}
     {% endcomment %}
     
-    <table id="membersList"  class="standard" width="100%">
-        <tr>
-            <th>{% trans "Name" %}</th>
-            <th>{% trans "Exec / Leader" %}</th>
-            <th>{% trans "Title" %}</th>
-            {% if is_admin %}
-                <th>{% trans "Email" %}</th>
-                <th>{% trans "Joined" %}</th>
-                <th>&nbsp;</th>
-            {% endif %}
-        </tr>
-     {% for member in members %}
-        <tr>
-            <td>
-                <a href="{% url profile_detail member.user.username %}">{{ member.user.visible_name }}</a>
-            </td>
-            <td>{% if member.is_admin %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td>
-            <td>{% if member.is_admin %}{{ member.admin_title}}{% endif %}</td>
-            {% if is_admin %}
-                <td>{{ member.user.email }}</td>
-                <td>{{ member.joined|date }}</td>
-                {% if member.is_admin %}
-                    <td><a href="{% groupurl edit_member group username=member.user.username %}">{% trans "Remove from leaders" %}</a></td>
-                {% else %}
-                    <td><a href="{% groupurl edit_member group username=member.user.username %}">{% trans "Make leader" %}</a></td>
+    
+    {% if is_admin %}
+    
+        <table id="membersList"  class="standard" width="100%">
+            <tr>
+                <th>{% trans "Name" %}</th>
+                <th>{% trans "Exec / Leader" %}</th>
+                <th>{% trans "Title" %}</th>
+                {% if is_admin %}
+                    <th>{% trans "Email" %}</th>
+                    <th>{% trans "Joined" %}</th>
+                    <th>&nbsp;</th>
                 {% endif %}
-            {% endif %}
-		</tr>
-     {% endfor %}
-    </table>
-    {% paginate %}
+            </tr>
+         {% for member in members %}
+            <tr>
+                <td>
+                    <a href="{% url profile_detail member.user.username %}">{{ member.user.visible_name }}</a>
+                </td>
+                <td>{% if member.is_admin %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td>
+                <td>{% if member.is_admin %}{{ member.admin_title}}{% endif %}</td>
+                {% if is_admin %}
+                    <td>{{ member.user.email }}</td>
+                    <td>{{ member.joined|date }}</td>
+                    {% if member.is_admin %}
+                        <td><a href="{% groupurl edit_member group username=member.user.username %}">{% trans "Remove from leaders" %}</a></td>
+                    {% else %}
+                        <td><a href="{% groupurl edit_member group username=member.user.username %}">{% trans "Make leader" %}</a></td>
+                    {% endif %}
+                {% endif %}
+    		</tr>
+         {% endfor %}
+        </table>
+        {% paginate %}
+        
+        
+    {% else %}
+        {# isn't an admin; show the userboxes #}
+        <ul class="users-search-list chapter-info-member-list">
+         {% for member in members %}
+        
+        
+            <li><a href="{% url profile_detail member.user.username %}">
+                    {% avatar member.user 40 %}
+
+                    {{ member.user.visible_name }}</a>
+
+                {% if user.is_authenticated %}
+                <br/>
+                <a href="{% url messages_compose_to member.user.username %}">Send a message</a>
+                
+                {% endif %}
+            </li>
+                   
+         {% endfor %}        
+        </ul>
+                
+        {% paginate %}
+        
+    {% endif %}
+    
 {% endif %}
 {% if is_admin %}
     {% with group.pending_members.all as pending_members %}
