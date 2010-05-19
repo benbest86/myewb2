@@ -205,6 +205,12 @@
     // initial load
     $('#show-peoplesearch').attr('href', '{% url profiles_index %}?search=' + $('#id_q').val());
 
+    var is_checked = false;
+    $('.search-form input:checkbox').each(function() {
+        is_checked = is_checked | $(this).attr('checked');
+    });
+	if (!is_checked)
+	    $('.search-form input:checkbox').attr('checked', 'checked');
     
   });
   </script>

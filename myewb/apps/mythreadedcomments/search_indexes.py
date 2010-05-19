@@ -1,3 +1,4 @@
+"""
 import datetime
 import settings
 from haystack.indexes import *
@@ -22,3 +23,4 @@ class CommentsIndex(index_class):
 #        return GroupTopic.objects.visible()
 
 site.register(ThreadedComment, CommentsIndex)
+"""
