@@ -66,7 +66,10 @@ The {% if group %} checks are left in just in case, and should be removed eventu
             });
             
     $('#id_send_as_email').click(function() {
-    	$('#div_id_sender').slideToggle();
+        if ($('#id_send_as_email').attr('checked'))
+    		$('#div_id_sender').slideDown();
+        else
+    		$('#div_id_sender').slideUp();
     });
     
     $(document).ready(function() {
