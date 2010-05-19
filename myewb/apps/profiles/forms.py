@@ -123,6 +123,9 @@ class SettingsForm(forms.ModelForm):
     watchlist_as_emails = forms.BooleanField(label="When someone replies to a watchlisted post",
                                              required=False,
                                              help_text="Send me an email when someone replies to a post on my watchlist")
+    messages_as_emails = forms.BooleanField(label="When someone sends me a private message",
+                                            required=False,
+                                            help_text="Send me an email when someone sends me a private message")
 
     # for custom uni_form layout
     helper = FormHelper()
@@ -135,6 +138,7 @@ class SettingsForm(forms.ModelForm):
                              'replies_as_emails',
                              'replies_as_emails2',
                              'watchlist_as_emails',
+                             'messages_as_emails',
                              css_class='inlineLabels'),
                     HTML('<p><input type="submit" value="update"/></p>'))
     helper.add_layout(layout)
@@ -146,4 +150,5 @@ class SettingsForm(forms.ModelForm):
                   'sort_by',
                   'replies_as_emails',
                   'replies_as_emails2',
-                  'watchlist_as_emails')
+                  'watchlist_as_emails',
+                  'messages_as_emails')

@@ -124,6 +124,7 @@ class MemberProfile(Profile):
     replies_as_emails = models.BooleanField(_('replies as emails'), null=False, blank=True, default=True)
     replies_as_emails2 = models.BooleanField(_('replies as emails two'), null=False, blank=True, default=True)
     watchlist_as_emails = models.BooleanField(_('watchlist replies as emails'), null=False, blank=True, default=True)
+    messages_as_emails = models.BooleanField(_('private messages as emails'), null=False, blank=True, default=True)
 
     #addresses = generic.GenericRelation(Address)
     addresses = models.ManyToManyField(Address)

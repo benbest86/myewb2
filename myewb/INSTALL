@@ -5,7 +5,7 @@ Generic instructions:
 - install lxml ("easy_install lxml" - if running Linux/Mac, see http://codespeak.net/lxml/installation.html for dependencies)
 - install pycountry ("easy_install pycountry")
 
-edit two files in your Pinax env:
+edit these files in your Pinax env:
 (the pinax installation insturctions recommend installing to pinax-env though you may have chosen a different directory)
 (and replaec python-2.6 with your version)
 
@@ -16,6 +16,13 @@ name = models.CharField(_('name'), max_length=80, unique=False)
 pinax-env/lib/python-2.6/site-packages/pinax/topics/models.py
 line 31, increase the max_length to 255, so it looks like
 title = models.CharField(_('title'), max_length=255)
+
+pinax-env/lib/python-2.6/site-packages/messages/models.py
+at the end of the file, comment out the last three lines: (we do our own email notifications)
+#if "notification" not in settings.INSTALLED_APPS:
+#    from messages.utils import new_message_email
+#    signals.post_save.connect(new_message_email, sender=Message)
+
 
 ==========
 

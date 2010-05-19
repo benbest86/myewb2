@@ -1,4 +1,4 @@
-{{body|safe}}
+{{body|striptags}}
 
 {% if attachments %}There are files associated with this email! (click to download from myEWB)
 {% for file in attachments %}

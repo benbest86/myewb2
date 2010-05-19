@@ -20,6 +20,7 @@ def send_mail(subject=None, txtMessage=None, htmlMessage=None,
         
     if not txtMessage:
         txtMessage = htmlMessage
+        context['do_text_conversion'] = True
         # TODO: do a fancy strip tags thing
             
     subject = force_unicode(subject)
@@ -27,6 +28,9 @@ def send_mail(subject=None, txtMessage=None, htmlMessage=None,
     htmlMessage = force_unicode(htmlMessage)
 
     if use_template:
+        if not context.get('do_text_conversion', None):
+            context['do_text_conversion'] = False
+            
         context['body'] = htmlMessage
         htmlMessage = loader.get_template("email_template.html").render(Context(context))
         
