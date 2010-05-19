@@ -119,7 +119,6 @@ def get_recent_counts(groups, model):
     groups = groups.extra(select=SortedDict([
         ('recent_topic_count', RECENT_TOPIC_COUNT_SQL),
     ]), select_params=(content_type.id,
-                       content_type.id,
                        date.today() - timedelta(weeks=4)))
     
     return groups

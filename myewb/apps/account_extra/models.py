@@ -7,7 +7,7 @@ from avatar.models import Avatar
 from account_extra import signals
 from networks.models import Network
 from communities.models import Community
-from base_groups.helpers import get_counts
+from base_groups.helpers import get_counts, get_recent_counts
 from base_groups.models import BaseGroup
 
 def clean_up_email_addresses(sender, instance, created, **kwargs):

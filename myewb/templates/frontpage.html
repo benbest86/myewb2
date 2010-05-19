@@ -50,39 +50,26 @@
 	
 	$(document).ready(function() {
 		$('.frontpage-update').click(function() {
-		
 		  $('.frontpage-mygroups-actions').hide();
 		  $('.frontpage-mygroups-actions').parent().removeClass('bkgd-light');
 			  
 		  $(this).parent().addClass('bkgd-light');
 		  $(this).siblings('.frontpage-mygroups-actions').show();
-
-		    // do stuff
-		    var groupSlug = $(this).attr("id").substring(17);
-
-		    load_posts('/groups/' + groupSlug + '/posts/');
-		  
+		  var groupSlug = $(this).attr("id").substring(17);
+		  load_posts('/groups/' + groupSlug + '/posts/');
 		  $('.frontpage-reset').show();
-		  
-		  {# @@@ this should be updated at some point in time. #}
-		  
-			return false;
+		  return false;
 		});
 		
-		
-		$('.frontpage-reset').click(function() {
-
+		$('#frontpage-reset').click(function() {
 		  $('.frontpage-mygroups-actions').hide();
 		  $('.frontpage-mygroups-actions').parent().removeClass('bkgd-light');
-			  
 		  load_posts('{{request.url}}');
 		  $('.frontpage-reset').hide();
-		  
 		  return false;
         });
 		
 		load_posts('{{request.url}}');
-
 	});
  
  </script>
@@ -102,7 +89,6 @@
                         action = "close";
                     else
                         action = "show";
-                    
                     
                     $.ajax({
                       url: "{% url profile_toolbar_action %}" + action + "/" + "toolbarcolumn_right_container" + "/",
@@ -225,14 +211,22 @@
         <div class="toolbarheader bkgd" id="box-frontpage-mygroups">{% trans "My groups" %}</div>
         <div class="toolbarcontent">
         
-				<a href="#" class="frontpage-reset" style="display:none;">Show all posts (reset page)</a>
+				<a href="#" class="frontpage-reset" style="display: none;">Show all posts</a>
 
              	{% for group in user.get_groups %}
              		{% if not group.recent_topic_count %}
              		<div class="frontpage-mygroups-nonew" style="display: none;">
              		{% endif %}
-	                <div class="frontpage-mygroups-div"><a href="#" class="frontpage-update" id="frontpage-update-{{ group.slug }}">{{ group.name }}</a>{% if group.recent_topic_count %}&nbsp;&nbsp;<small>({{group.recent_topic_count}} new)</small>{% endif %}
-	                <div class="frontpage-mygroups-actions">{{group.recent_topic_count}} new posts {{group.topic_count}} - {{group.member_count}}<br/><a href="{% groupurl topic_new group %}">New post &raquo;</a><br/><a href="{% url group_detail group.slug %}">View group info &raquo;</a></div></div>
+	                <div class="frontpage-mygroups-div">
+	                	<a href="#" class="frontpage-update" id="frontpage-update-{{ group.slug }}">{{ group.name }}</a>
+	                	{% if group.recent_topic_count %}&nbsp;&nbsp;<small>({{group.recent_topic_count}} recent)</small>{% endif %}
+
+		                <div class="frontpage-mygroups-actions">
+		                	{{group.recent_topic_count}} recent posts<br/>
+		                	<a href="{% groupurl topic_new group %}">New post &raquo;</a><br/>
+		                	<a href="{% url group_detail group.slug %}">View group info &raquo;</a>
+		                </div>
+		            </div>
              		{% if not group.recent_topic_count %}
              		</div>
              		{% endif %}
