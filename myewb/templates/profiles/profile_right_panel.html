@@ -38,10 +38,14 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
         </div>
     {% endif %}
     
-    {% if other_friends %}
+    {% if other_friends or pending_requests %}
 		<div class="toolbarheader bkgd" id="box-friends">{% trans "Friends" %}</div>
 		<div class="toolbarcontent">
-			{# TODO: limit number shown here, maybe add a "see more" page #}
+			{% if is_me and pending_requests %}
+				(<a href="{% url profile_pending_friends other_user.username %}"><em>see {{pending_requests}} pending request{{ pending_requests|pluralize}}</em></a>)
+				<br/><br/>
+			{% endif %}
+			
 	        {% for friend in other_friends %}
 	         <div style="float: left; width: 15px; height: 15px;">
 	             {% avatar friend 15 %}
@@ -49,7 +53,15 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 	         <div style="margin-left: 18px; height: 18px;">
 	             <a href="{% url profile_detail friend.username %}">{{ friend.visible_name }}</a>
 	         </div>
+	         
 	        {% endfor %}
+	        
+	        {% if is_me %}
+	        	<br/>
+	        	<div style="text-align: right;">
+	        		<a href="{% url profile_all_friends other_user.username %}">see all</a>
+	        	</div>
+	        {% endif %}
 	    </div>
     {% endif %}
 {% endif %}

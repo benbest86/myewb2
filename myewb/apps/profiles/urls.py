@@ -43,6 +43,11 @@ urlpatterns = patterns('profiles.views.profile',
 
     url(r'^toolbar/(?P<action>[-\w]+)/(?P<toolbar_id>[-\w]+)/$', 'toolbar_action', name='profile_toolbar_action'),
     url(r'^toolbar/$', 'toolbar_action', name='profile_toolbar_action'), # never called. but needed to hack up with javascript later.
+    )    
+
+urlpatterns += patterns('profiles.views.friend',
+    url(r'^(?P<username>[\w\._-]+)/friends/$', 'list', name='profile_all_friends'),
+    url(r'^(?P<username>[\w\._-]+)/friend_requests/$', 'requests', name='profile_pending_friends'),
     )
 
 urlpatterns += patterns('profiles.views.address',

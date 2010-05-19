@@ -458,28 +458,7 @@ def profile(request, username, template_name="profiles/profile.html", extra_cont
     
     if request.user.is_authenticated():
         is_friend = Friendship.objects.are_friends(request.user, other_user)
-        is_following = Following.objects.is_following(request.user, other_user)
-        #other_friends = Friendship.objects.friends_for_user(other_user)
-        
-        friends_qry = Friendship.objects.filter(Q(from_user=other_user) | Q(to_user=other_user))\
-                                        .select_related(depth=1).order_by('?')[:10]
-        other_friends = []
-        for f in friends_qry:
-            if f.to_user == other_user:
-                other_friends.append(f.from_user)
-            else:
-                other_friends.append(f.to_user)
-        
-        if request.user == other_user:
-            is_me = True
-        else:
-            is_me = False
-    else:
-        other_friends = []
-        is_friend = False
-        is_me = False
-        is_following = False
-    
+
     if is_friend:
         invite_form = None
         previous_invitations_to = None
@@ -512,8 +491,6 @@ def profile(request, username, template_name="profiles/profile.html", extra_cont
                         if invitation.to_user == request.user:
                             invitation.accept()
                             request.user.message_set.create(message=_("You have accepted the friendship request from %(from_user)s") % {'from_user': invitation.from_user.visible_name()})
-                            is_friend = True
-                            other_friends = Friendship.objects.friends_for_user(other_user)
                     except FriendshipInvitation.DoesNotExist:
                         pass
                 elif request.POST.get("action") == "decline": # @@@ perhaps the form should just post to friends and be redirected here
@@ -522,7 +499,6 @@ def profile(request, username, template_name="profiles/profile.html", extra_cont
                         if invitation.to_user == request.user:
                             invitation.decline()
                             request.user.message_set.create(message=_("You have declined the friendship request from %(from_user)s") % {'from_user': invitation.from_user.visible_name()})
-                            other_friends = Friendship.objects.friends_for_user(other_user)
                     except FriendshipInvitation.DoesNotExist:
                         pass
         else:
@@ -531,18 +507,46 @@ def profile(request, username, template_name="profiles/profile.html", extra_cont
                 'message': ugettext("Let's be friends!"),
             })
     
+    if request.user.is_authenticated():
+        is_friend = Friendship.objects.are_friends(request.user, other_user)
+        #is_following = Following.objects.is_following(request.user, other_user)
+        #other_friends = Friendship.objects.friends_for_user(other_user)
+        
+        friends_qry = Friendship.objects.filter(Q(from_user=other_user) | Q(to_user=other_user))\
+                                        .select_related(depth=1).order_by('?')[:10]
+        other_friends = []
+        for f in friends_qry:
+            if f.to_user == other_user:
+                other_friends.append(f.from_user)
+            else:
+                other_friends.append(f.to_user)
+        
+        if request.user == other_user:
+            is_me = True
+        else:
+            is_me = False
+            
+        pending_requests = FriendshipInvitation.objects.filter(to_user=other_user, status=2).count()
+    else:
+        other_friends = []
+        is_friend = False
+        is_me = False
+        is_following = False
+        pending_requests = 0
+    
     previous_invitations_to = FriendshipInvitation.objects.invitations(to_user=other_user, from_user=request.user)
     previous_invitations_from = FriendshipInvitation.objects.invitations(to_user=request.user, from_user=other_user)
     
     return render_to_response(template_name, dict({
         "is_me": is_me,
         "is_friend": is_friend,
-        "is_following": is_following,
+        #"is_following": is_following,
         "other_user": other_user,
         "other_friends": other_friends,
         "invite_form": invite_form,
         "previous_invitations_to": previous_invitations_to,
         "previous_invitations_from": previous_invitations_from,
+        "pending_requests": pending_requests,
     }, **extra_context), context_instance=RequestContext(request))
 
 def pay_membership(request, username):

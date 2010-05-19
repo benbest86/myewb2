@@ -1,0 +1,47 @@
+{% extends "profiles/base.html" %}
+
+{% comment %}
+This file is part of myEWB
+Copyright 2010 Engineers Without Borders Canada
+{% endcomment %}
+
+{% load i18n %}
+{% load avatar_tags %}
+{% load uni_form %}
+{% load profile_tags %}
+{% load group_topics_tags %}
+
+{% block head_title %}{% blocktrans with other_user.visible_name as username %}Friend requests for {{ username }}{% endblocktrans %}{% endblock %}
+
+{% block body %}
+	<br/>
+    <h1>{{ other_user.visible_name }}</h1>
+    <h2>Friendship Requests</h2>
+
+	{% for r in requests %}
+		<div>
+	         <div style="float: left; width: 25px; height: 25px;">
+	             {% avatar r.from_user 25 %}
+	         </div>
+	         <div style="margin-left: 30px; height: 30px;">
+	             <a href="{% url profile_detail r.from_user.username %}" style="font-size: 1.5em;">{{ r.from_user.visible_name }}</a>
+	         </div>
+			
+			<div style="padding-left: 30px;">
+                    <form method="post" action="{% url profile_detail user.username %}" style="float: left;">
+                        <input type="hidden" name="invitation" value="{{ r.id }}"/>
+                        <input type="hidden" name="action" value="accept"/>
+                        <input type="submit" value="{% trans 'accept' %}" />
+                    </form>
+                    <form method="post" action="{% url profile_detail user.username %}">
+                        <input type="hidden" name="invitation" value="{{ r.id }}"/>
+                        <input type="hidden" name="action" value="decline"/>
+                        <input type="submit" value="{% trans 'decline' %}" style="margin-left: 10px;"/>
+                    </form>
+            </div>
+
+		</div>
+		<br/><br/>
+	{% endfor %}
+
+{% endblock %}

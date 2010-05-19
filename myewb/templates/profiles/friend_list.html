@@ -1,0 +1,40 @@
+{% extends "profiles/base.html" %}
+
+{% comment %}
+This file is part of myEWB
+Copyright 2010 Engineers Without Borders Canada
+{% endcomment %}
+
+{% load i18n %}
+{% load avatar_tags %}
+{% load uni_form %}
+{% load profile_tags %}
+{% load group_topics_tags %}
+
+{% block head_title %}{% blocktrans with other_user.visible_name as username %}Friend requests for {{ username }}{% endblocktrans %}{% endblock %}
+
+{% block body %}
+	<br/>
+    <h1>{{ other_user.visible_name }}</h1>
+    <h2>Friends</h2>
+
+	<ul class="users-search-list">
+	    {% for f in friends %}
+	    <li>
+	        <a href="{% url profile_detail f.friend.username %}" style="font-size: 1.2em;">
+	        	{% avatar f.friend 50 %}
+	        	{{ f.friend.visible_name }}
+	        </a>
+	        {% if f.friend.get_profile.chapters %}
+	        	<br/>
+	        	<small>
+	        		({% for chapter in f.friend.get_profile.chapters|slice:":3" %}{% if not forloop.first %}, {% endif %}{{ chapter }}{% endfor %})
+	        	</small>
+	        {% endif %}
+	        <br/>
+	        
+	    </li>
+	    {% endfor %}
+	</ul>
+
+{% endblock %}
