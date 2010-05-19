@@ -93,7 +93,7 @@ def edit_article(request, title,
                 elif new_article.event.count():
                     url = new_article.event.all()[0].get_absolute_url()
                 else:
-                    url = group.get_absolute_url()
+                    url = group.get_absolute_url() + "#group-whiteboard"
                     
                 return redirect_to(request, url)
 
