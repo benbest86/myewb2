@@ -19,14 +19,20 @@ from base_groups.models import BaseGroup
 
 def user_search(request):
     field = request.POST.get('field', '')
-    first_name = request.POST.get('first_name', '')
-    last_name = request.POST.get('last_name', '')
-    chapter = request.POST.get('chapter', '')
+    first_name = request.POST.get('first_name', None)
+    last_name = request.POST.get('last_name', None)
+    chapter = request.POST.get('chapter', None)
     chapters = Network.objects.filter(chapter_info__isnull=False)
     
-    if first_name or last_name or chapter:
-        qry = Q(first_name__icontains=first_name) & Q(last_name__icontains=last_name)
-        if not chapter == 'none':
+    if first_name or last_name:
+        if first_name and last_name:
+            qry = Q(first_name__icontains=first_name) & Q(last_name__icontains=last_name)
+        elif first_name:
+            qry = Q(first_name__icontains=first_name)
+        elif last_name:
+            qry = Q(last_name__icontains=last_name)
+            
+        if chapter and not chapter == 'none':
             qry = qry & Q(member_groups__group__slug=chapter)
         if not request.user.has_module_perms("profiles"):
             # don't show grandfathered users
@@ -39,15 +45,17 @@ def user_search(request):
 
         # build the final query
         users = User.objects.filter(qry).exclude(id=request.user.id).order_by('first_name', 'last_name')
+        usercount = users.count()
     else:
         users = None
+        usercount = 0
         
     if request.is_ajax():
         return render_to_response(
                 'user_search/user_search_ajax_results.html', 
                 {
                     'users': users,
-                    'toomany': (users.count() > 50),
+                    'toomany': (usercount > 50),
                     'field': field
                 }, context_instance=RequestContext(request))
     
