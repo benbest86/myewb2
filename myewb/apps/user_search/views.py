@@ -21,8 +21,8 @@ def user_search(request):
     field = request.POST.get('field', '')
     first_name = request.POST.get('first_name', None)
     last_name = request.POST.get('last_name', None)
-    chapter = request.POST.get('chapter', None)
-    chapters = Network.objects.filter(chapter_info__isnull=False)
+    #chapter = request.POST.get('chapter', None)
+    #chapters = Network.objects.filter(chapter_info__isnull=False)
     
     if first_name or last_name:
         if first_name and last_name:
@@ -32,8 +32,8 @@ def user_search(request):
         elif last_name:
             qry = Q(last_name__icontains=last_name)
             
-        if chapter and not chapter == 'none':
-            qry = qry & Q(member_groups__group__slug=chapter)
+        #if chapter and not chapter == 'none':
+        #    qry = qry & Q(member_groups__group__slug=chapter)
         if not request.user.has_module_perms("profiles"):
             # don't show grandfathered users
             # (this is a huge performance hit, as it adds an outer join... =( )

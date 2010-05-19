@@ -21,14 +21,15 @@ class UserSearchForm(forms.Form):
     first_name = forms.CharField(required=False)
     last_name = forms.CharField(required=False)
     chapters = [('none', _('Any chapter'))]
-    chapter = forms.ChoiceField(choices=chapters, required=False)
+    #chapter = forms.ChoiceField(choices=chapters, required=False)
   
     def __init__(self, *args, **kwargs):
         chapterlist = kwargs.pop('chapters', None)
         
         self.base_fields['first_name'].initial = kwargs.pop('first_name', None)
         self.base_fields['last_name'].initial = kwargs.pop('last_name', None)
-        
+  
+        """
         for chapter in chapterlist:
             try:
                 i = self.base_fields['chapter'].choices.index((chapter.slug, chapter.chapter_info.chapter_name))
@@ -36,6 +37,7 @@ class UserSearchForm(forms.Form):
                 self.base_fields['chapter'].choices.append((chapter.slug, chapter.chapter_info.chapter_name))
         
         self.base_fields['chapter'].initial = kwargs.pop('chapter', None)
+        """
 
         super(UserSearchForm, self).__init__(*args, **kwargs)
         
