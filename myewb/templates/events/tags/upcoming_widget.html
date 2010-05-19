@@ -49,7 +49,7 @@
         hideIfNoPrevNext: true,
         beforeShowDay: checkEvents,
         onSelect: function(dateText, inst) {
-            window.location="{% url events_all %}";
+            window.location="{% url events_all %}?date=" + dateText
         }
 {% comment %}
         onSelect: function(dateText, inst) {

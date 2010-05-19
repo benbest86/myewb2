@@ -1,5 +1,6 @@
 from vobject import iCalendar
 
+import re
 from django.views.generic.list_detail import object_list, object_detail
 from django.views.generic.create_update import create_object, delete_object,\
         update_object
@@ -78,12 +79,20 @@ def all(request, year=None, month=None, day=None):
     else:
         templatename = "events/event_list.html"
         
+    if request.GET.get("date", None):
+        selected_date = request.GET['date']
+        if re.match(r'^\d{4}/\d{2}/\d{2}$', selected_date) is None:    # validation
+            selected_date = ""
+    else:
+        selected_date = ""
+        
     return render_to_response( templatename,
                                { 'events': events,
                                  'parent':None,
                                  'year':year,
                                  'month':month,
-                                 'day':day
+                                 'day':day,
+                                 'selected_date': selected_date
                                },
                                context_instance=RequestContext(request),
                              )

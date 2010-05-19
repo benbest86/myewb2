@@ -85,6 +85,22 @@
        	return a;
     }
 
+	function loadDate(dateText)
+	{
+    	var working = true;
+        $('#detail').slideUp('normal', function() {
+            $('#loading').show();
+        });
+        $('#detail-content').load('{% link_to_events_for parent "css_class" 1 %}' + dateText + '/' + ' #for_day',
+        						  null,
+          						  function() {
+					                  $('#detail').stop(true, true);
+           						  	  $('#loading').hide();
+					                  $('#detail-title').html("Events for " + dateText);
+					                  $('#detail').slideDown();
+								  });
+	}
+
     var datepicker = $("div#calendar").datepicker({
         dateFormat: 'yy/mm/dd',
         changeMonth: true,
@@ -108,20 +124,13 @@
          	}
         },
         onSelect: function(dateText, inst) {
-        	var working = true;
-            $('#detail').slideUp('normal', function() {
-	            $('#loading').show();
-            });
-            $('#detail-content').load('{% link_to_events_for parent "css_class" 1 %}' + dateText + '/' + ' #for_day',
-            						  null,
-              						  function() {
-						                  $('#detail').stop(true, true);
-               						  	  $('#loading').hide();
-						                  $('#detail-title').html("Events for " + dateText);
-						                  $('#detail').slideDown();
-									  });
+            loadDate(dateText);
         }
     });
+    {% if selected_date %}
+		loadDate("{{ selected_date}}");
+	{% endif %} 
+
   });
   </script>
 
