@@ -29,10 +29,12 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
     <br/>
     
     {% if not is_me %}
-	    <div style="text-align: center;">
-			<a href="{% url messages_compose_to other_user.username %}">Send a message to {{ other_user.visible_name}}</a>
-		</div>
-		<br/>
+		{% if is_me or is_friend or perms.profiles %}
+	    	<div style="text-align: center;">
+				<a href="{% url messages_compose_to other_user.username %}">Send a message to {{ other_user.visible_name}}</a>
+			</div>
+			<br/>
+		{% endif %}
     {% endif %}
     
     

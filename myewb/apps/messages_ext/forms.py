@@ -19,6 +19,9 @@ from user_search.forms import MultipleUserField
 from messages.forms import ComposeForm as OriginalComposeForm
 from lxml.html.clean import clean_html, autolink_html
 
+from friends.models import Friendship
+from base_groups.models import BaseGroup, GroupMember
+
 class ComposeForm(OriginalComposeForm):
     """
     A simple default form for private messages.
@@ -27,6 +30,10 @@ class ComposeForm(OriginalComposeForm):
     recipient = MultipleUserField(label=_(u"Recipient"))
     body = forms.CharField(label=_(u"Body"),
         widget=forms.Textarea(attrs={'rows': '12', 'cols':'55', 'class':'tinymce '}))
+
+    def __init__(self, *args, **kwargs):
+        self.sender = kwargs.pop('sender', None)
+        return super(ComposeForm, self).__init__(*args, **kwargs)
     
     def clean_body(self):
         body = self.cleaned_data.get('body', '')
@@ -38,6 +45,26 @@ class ComposeForm(OriginalComposeForm):
     
         self.cleaned_data['body'] = body
         return self.cleaned_data['body']
+
+    def clean(self):
+        if not self.sender:
+            raise forms.ValidationError('Internal error.')
+        
+        super(ComposeForm, self).clean()
+        
+        recipients = self.cleaned_data['recipient']
+        
+        for r in recipients:
+            if not Friendship.objects.are_friends(self.sender, r):
+                # should be in BaseGroup manager, not here and also account_extra.models (ie, User.get_groups())
+                grps = BaseGroup.objects.filter(member_users=self.sender).exclude(model="LogisticalGroup")
+                
+                # should probably also be in a BaseGroup manager somewhere...!
+                gm = GroupMember.objects.filter(user=r, group__in=grps).count()
+                if gm == 0:
+                    raise forms.ValidationError('You can only send messages to friends or people in the same chapter')
+            
+        return self.cleaned_data
     
     """
     #recipient = CommaSeparatedUserField(label=_(u"Recipient"))

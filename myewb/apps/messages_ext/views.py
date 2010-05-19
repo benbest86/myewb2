@@ -1,4 +1,7 @@
-from django.http import Http404
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
+from django.http import Http404, HttpResponseRedirect
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.utils.translation import ugettext as _
@@ -8,11 +11,31 @@ from messages.utils import format_quote
 from messages.views import  compose as pinaxcompose, reply as pinaxreply
 from messages_ext.forms import ComposeForm
 
+# almost all copied from the original messaging app, but passes the current
+# user to a custom ComposeForm (so we can verify friends-only messaging)
 def compose(request, recipient=None, form_class=ComposeForm,
         template_name='messages/compose.html', success_url=None, recipient_filter=None):
-    return pinaxcompose(request, recipient=recipient, form_class=form_class,
-                        template_name=template_name, success_url=success_url,
-                        recipient_filter=recipient_filter)
+    if request.method == "POST":
+        sender = request.user
+        form = form_class(request.POST, recipient_filter=recipient_filter, sender=request.user)
+        if form.is_valid():
+            form.save(sender=request.user)
+            request.user.message_set.create(
+                message=_(u"Message successfully sent."))
+            if success_url is None:
+                success_url = reverse('messages_inbox')
+            if request.GET.has_key('next'):
+                success_url = request.GET['next']
+            return HttpResponseRedirect(success_url)
+    else:
+        form = form_class()
+        if recipient is not None:
+            recipients = [u for u in User.objects.filter(username__in=[r.strip() for r in recipient.split('+')])]
+            form.fields['recipient'].initial = recipients
+    return render_to_response(template_name, {
+        'form': form,
+    }, context_instance=RequestContext(request))
+compose = login_required(compose)
 
 def reply(request, message_id, form_class=ComposeForm,
         template_name='messages/compose.html', success_url=None, recipient_filter=None):
