@@ -52,17 +52,17 @@ class ComposeForm(OriginalComposeForm):
         
         super(ComposeForm, self).clean()
         
-        recipients = self.cleaned_data['recipient']
-        
-        for r in recipients:
-            if not Friendship.objects.are_friends(self.sender, r):
-                # should be in BaseGroup manager, not here and also account_extra.models (ie, User.get_groups())
-                grps = BaseGroup.objects.filter(member_users=self.sender).exclude(model="LogisticalGroup")
-                
-                # should probably also be in a BaseGroup manager somewhere...!
-                gm = GroupMember.objects.filter(user=r, group__in=grps).count()
-                if gm == 0:
-                    raise forms.ValidationError('You can only send messages to friends or people in the same chapter')
+        if not self.sender.has_module_perms("profiles"):
+            recipients = self.cleaned_data['recipient']
+            for r in recipients:
+                if not Friendship.objects.are_friends(self.sender, r):
+                    # should be in BaseGroup manager, not here and also account_extra.models (ie, User.get_groups())
+                    grps = BaseGroup.objects.filter(member_users=self.sender).exclude(model="LogisticalGroup")
+                    
+                    # should probably also be in a BaseGroup manager somewhere...!
+                    gm = GroupMember.objects.filter(user=r, group__in=grps).count()
+                    if gm == 0:
+                        raise forms.ValidationError('You can only send messages to friends or people in the same chapter')
             
         return self.cleaned_data
     
