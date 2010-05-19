@@ -25,6 +25,9 @@ class CommunityForm(BaseGroupForm):
                   )
                   # could also do "parent only" - "only members of the parent group can see or join this group"?
 
+    #parent = forms.ChoiceField(label='Chapter',
+    #                           help_text="If a chapter set, this community will show up on the chapter's info page and chapter execs will also have access to it.")
+
     group_permissions = forms.ChoiceField(label='Visibility',
                                           choices=permissions,
                                           widget=forms.RadioSelect,
@@ -47,6 +50,8 @@ class CommunityForm(BaseGroupForm):
             group = kwargs.get('instance', None)
             valid_parents = get_valid_parents(user, group=group, model=Network)     # only networks may be parent to a community
             self.fields['parent'].queryset = valid_parents
+            self.fields['parent'].label = "Chapter"
+            self.fields['parent'].help_text = "If a chapter set, this community will show up on the chapter's info page and chapter execs will also have access to it."
             
         # set the initial visibility state (since it's not a direct mapping to 
         # a model field, it isn't done automatically)        
