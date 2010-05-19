@@ -24,13 +24,17 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 			
 			<br/>
 			
-			({% if record.start_date %}{% trans "from" %} <em>{{ record.start_date }}</em>{% endif %}
-			{% if record.graduation_date %}{% trans "until" %} <em>{{ record.graduation_date }}</em>{% endif %})
+			{% if record.start_date and record.graduation_date %}
+				(<em>{{record.start_date}} until {{record.graduation_date}}</em>)
+			{% else %}
+				{% if record.start_date %}(<em>started on {{ record.start_date }}</em>){% endif %}
+				{% if record.graduation_date %}(<em>finished on {{ record.graduation_date }}</em>){% endif %}
+			{% endif %}
 			
-			<div id="student_record_{{ record.id }}" style="display: none; margin-left: 15px; border: 1px solid; background: #d0d0d0; padding: 3px;">
-				{% if record.level %}<p><b>{% trans "Level of education" %}</b>: {{ record.get_level_display }}</p>{% endif %}
-				{% if record.field %}<p><b>{% trans "Field" %}</b>: {{ record.field }}</p>{% endif %}
-				{% if record.student_number %}<p><b>{% trans "Student number" %}</b>: {{ record.student_number }}</p>{% endif %}
+			<div id="student_record_{{ record.id }}" style="display: none; margin-left: 15px; margin-top: 5px; border: 1px solid; background: #d0d0d0; padding: 5px;">
+				{% if record.level %}<b>{% trans "Level of education" %}</b>: {{ record.get_level_display }}<br/>{% endif %}
+				{% if record.field %}<b>{% trans "Field" %}</b>: {{ record.field }}<br/>{% endif %}
+				{% if record.student_number %}<b>{% trans "Student number" %}</b>: {{ record.student_number }}<br/>{% endif %}
 			</div>
 	
 		</div>

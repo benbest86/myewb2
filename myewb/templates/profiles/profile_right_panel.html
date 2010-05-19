@@ -26,13 +26,17 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 			<p>
 				<strong>Chapters</strong><br/>
             	{% for group in other_user.get_networks %}
-	                <a href="{% url group_detail group.slug %}">{{ group.name }}</a><br/>
+            		<div style="padding-bottom: 3px;">
+	                	<a href="{% url group_detail group.slug %}">{{ group.name }}</a>
+	                </div>
             	{% endfor %}
             </p>
 			<p>
 				<strong>Communities</strong><br/>
             	{% for group in other_user.get_communities %}
-	                <a href="{% url group_detail group.slug %}">{{ group.name }}</a><br/>
+            		<div style="padding-bottom: 3px;">
+	                	<a href="{% url group_detail group.slug %}">{{ group.name }}</a>
+	                </div>
             	{% endfor %}
             </p>
         </div>

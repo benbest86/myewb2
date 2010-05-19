@@ -25,14 +25,18 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 
 			<br/>
 			
-			({% if record.start_date %}{% trans "from" %} <em>{{ record.start_date }}</em>{% endif %}
-			{% if record.end_date %}{% trans "until" %} <em>{{ record.end_date }}</em>{% endif %})
-	
-			<div id="work_record_{{ record.id }}" style="display: none; margin-left: 15px; border: 1px solid; background: #d0d0d0; padding: 3px;">
-				{% if record.sector %}<p><b>{% trans "Sector" %}</b>: {{ record.sector }}</p>{% endif %}
-				{% if record.position %}<p><b>{% trans "Position" %}</b>: {{ record.position }}</p>{% endif %}
-				{% if record.company_size %}<p><b>{% trans "Company size" %}</b>: {{ record.get_company_size_display }}</p>{% endif %}
-				{% if record.income_level %}<p><b>{% trans "Income level" %}</b>: {{ record.get_income_level_display }}</p>{% endif %}
+			{% if record.start_date and record.end_date %}
+				(<em>{{record.start_date}} until {{record.end_date}}</em>)
+			{% else %}
+				{% if record.start_date %}(<em>started on {{ record.start_date }}</em>){% endif %}
+				{% if record.end_date %}(<em>finished on {{ record.end_date }}</em>){% endif %}
+			{% endif %}
+			
+			<div id="work_record_{{ record.id }}" style="display: none; margin-left: 15px; margin-top: 5px; border: 1px solid; background: #d0d0d0; padding: 5px;">
+				{% if record.sector %}<b>{% trans "Sector" %}</b>: {{ record.sector }}<br/>{% endif %}
+				{% if record.position %}<b>{% trans "Position" %}</b>: {{ record.position }}<br/>{% endif %}
+				{% if record.company_size %}<b>{% trans "Company size" %}</b>: {{ record.get_company_size_display }}<br/>{% endif %}
+				{% if record.income_level %}<b>{% trans "Income level" %}</b>: {{ record.get_income_level_display }}<br/>{% endif %}
 			</div>
 	
 		</div>
