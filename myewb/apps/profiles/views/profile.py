@@ -21,6 +21,7 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import permission_required
 from django.contrib.admin.views.decorators import staff_member_required
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
 from siteutils import online_middleware
@@ -458,7 +459,17 @@ def profile(request, username, template_name="profiles/profile.html", extra_cont
     if request.user.is_authenticated():
         is_friend = Friendship.objects.are_friends(request.user, other_user)
         is_following = Following.objects.is_following(request.user, other_user)
-        other_friends = Friendship.objects.friends_for_user(other_user)
+        #other_friends = Friendship.objects.friends_for_user(other_user)
+        
+        friends_qry = Friendship.objects.filter(Q(from_user=other_user) | Q(to_user=other_user))\
+                                        .select_related(depth=1).order_by('?')[:10]
+        other_friends = []
+        for f in friends_qry:
+            if f.to_user == other_user:
+                other_friends.append(f.from_user)
+            else:
+                other_friends.append(f.to_user)
+        
         if request.user == other_user:
             is_me = True
         else:

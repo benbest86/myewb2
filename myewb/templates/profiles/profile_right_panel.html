@@ -42,12 +42,12 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 		<div class="toolbarheader bkgd" id="box-friends">{% trans "Friends" %}</div>
 		<div class="toolbarcontent">
 			{# TODO: limit number shown here, maybe add a "see more" page #}
-	        {% for friendship in other_friends %}
+	        {% for friend in other_friends %}
 	         <div style="float: left; width: 15px; height: 15px;">
-	             {% avatar friendship.friend 15 %}
+	             {% avatar friend 15 %}
 	         </div>
 	         <div style="margin-left: 18px; height: 18px;">
-	             <a href="{% url profile_detail friendship.friend.username %}">{{ friendship.friend.visible_name }}</a>
+	             <a href="{% url profile_detail friend.username %}">{{ friend.visible_name }}</a>
 	         </div>
 	        {% endfor %}
 	    </div>
