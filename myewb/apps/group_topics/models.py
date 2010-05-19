@@ -75,7 +75,7 @@ class GroupTopicManager(models.Manager):
         """
         Returns all posts belonging to a given group
         """
-        return self.get_query_set().filter(parent_group=group)
+        return self.get_query_set().filter(parent_group=group).order_by('-last_reply')
     
     def get_for_user(self, user, qs=None):
         """
@@ -100,7 +100,7 @@ class GroupTopicManager(models.Manager):
         if qs == None:
             qs = self.get_query_set()
         
-        return qs.filter(watchlists=watchlist)
+        return qs.filter(watchlists=watchlist).order_by('-last_reply')
     
     def featured(self, qs=None, user=None):
         """
