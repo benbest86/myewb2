@@ -67,7 +67,9 @@
 		<div class="toolbarcontent">
 	    {% for group in user.get_communities %}
 
-			 <a href="{% url group_detail group.slug %}">{{ group.name }}</a><br/>
+			<div style="padding-bottom: 4px;">
+				<a href="{% url group_detail group.slug %}">{{ group.name }}</a>
+			</div>
 
     	{% endfor %}
 		</div>
@@ -92,10 +94,11 @@
 		<div class="toolbarcontent orderlistbox">
     
         {% trans "Order communities by:" %}
-            {% anchor topic_count Topics %}
+            {% anchor recent_topic_count "Recent Posts" %}
+            {% anchor topic_count "Total Posts" %}
             {% anchor member_count Members %}
             {% anchor name Name %}
-            {% anchor created Date %}
+            {# {% anchor created Date %} #}
         
 </div>
 

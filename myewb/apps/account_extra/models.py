@@ -80,7 +80,7 @@ def softdelete(self, *args, **kwargs):
 User.softdelete = softdelete
 
 def get_networks(self):
-    return Network.objects.filter(member_users=self)
+    return Network.objects.filter(member_users=self).order_by('name')
 User.get_networks = get_networks
 
 def get_groups(self):
@@ -90,5 +90,5 @@ def get_groups(self):
 User.get_groups = get_groups
 
 def get_communities(self):
-    return Community.objects.filter(member_users=self)
+    return Community.objects.filter(member_users=self).order_by('name')
 User.get_communities = get_communities

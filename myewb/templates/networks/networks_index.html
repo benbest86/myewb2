@@ -337,11 +337,13 @@ var cityArray = new Array();
 
     {% if user.is_authenticated and user.get_networks %}
     	{% cache CACHE_TIMEOUT "mychapters" user.username %}
-		<div class="toolbarheader bkgd" id="box-my-chapter">{% trans "My Chapter" %}</div>
+		<div class="toolbarheader bkgd" id="box-my-chapter">{% trans "My Chapters" %}</div>
 		<div class="toolbarcontent">
 	    {% for group in user.get_networks %}
 
-			 <a href="{% url group_detail group.slug %}">{{ group.name }}</a><br/>
+			<div style="padding-bottom: 4px;">
+				<a href="{% url group_detail group.slug %}">{{ group.name }}</a>
+			</div>
 
     	{% endfor %}
 		</div>

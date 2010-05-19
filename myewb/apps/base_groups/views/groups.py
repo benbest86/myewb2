@@ -19,7 +19,7 @@ from django.utils.datastructures import SortedDict
 import pycountry
 
 from base_groups.models import BaseGroup
-from base_groups.helpers import group_search_filter, get_counts, enforce_visibility 
+from base_groups.helpers import group_search_filter, get_counts, get_recent_counts, enforce_visibility 
 from base_groups.forms import GroupLocationForm, GroupAddEmailForm
 from base_groups.decorators import group_admin_required, visibility_required
 
@@ -61,7 +61,7 @@ def groups_index(request, model=None, member_model=None, form_class=None,
         groups = enforce_visibility(groups, user)
         
     # add some meta-data
-    groups = get_counts(groups, model)
+    groups = get_recent_counts(get_counts(groups, BaseGroup), BaseGroup).order_by('-recent_topic_count')
     
     # and throw in a province list (useful for the chapter listing)
     provinces = []

@@ -7,14 +7,13 @@ More info &raquo;</a>
 
 <br/><a class="networks-chaptersite-link" href="http://{{ network.slug }}.ewb.ca/">http://{{ network.slug }}.ewb.ca/</a>   {# @@@ make sure each chapter has a website #}
 
-
-
-
+	{% comment %}
     <div class="network_stats">
         {% trans "Members:" %} <b>{{ network.member_count }}</b>
         <br />
-        {% trans "Topics:" %} <b>{{ network.topic_count }}</b>
+        {% trans "Posts:" %} <b>{{ network.topic_count }}</b> ({{network.recent_topic_count}} recent)
         <br />
         {% show_tags_for network %} {# @@@ #}
     </div>
+    {% endcomment %}
 </dd>
