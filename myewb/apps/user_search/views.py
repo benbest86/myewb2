@@ -9,12 +9,13 @@ from django.template import RequestContext, Context, loader
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
 from forms import UserSearchForm, SampleUserSearchForm, SampleMultiUserSearchForm
 
 from networks.models import Network
-from base_groups.models import GroupMember
+from base_groups.models import BaseGroup
 
 def user_search(request):
     field = request.POST.get('field', '')
@@ -24,11 +25,20 @@ def user_search(request):
     chapters = Network.objects.filter(chapter_info__isnull=False)
     
     if first_name or last_name or chapter:
-        users = User.objects.filter(first_name__icontains=first_name, last_name__icontains=last_name)
+        qry = Q(first_name__icontains=first_name) & Q(last_name__icontains=last_name)
         if not chapter == 'none':
-            users = users.filter(member_groups__group__slug=chapter)
+            qry = qry & Q(member_groups__group__slug=chapter)
         if not request.user.has_module_perms("profiles"):
-            users = users.filter(memberprofile__grandfathered=False)
+            # don't show grandfathered users
+            # (this is a huge performance hit, as it adds an outer join... =( )
+            qry = qry & Q(memberprofile__grandfathered=False)
+            
+            # restrict results to friends or people in your chapter, too
+            mygrps = BaseGroup.objects.filter(member_users=request.user).exclude(model="LogisticalGroup")
+            qry = qry & (Q(member_groups__group__in=mygrps) | Q(friends=request.user) | Q(_unused_=request.user))
+
+        # build the final query
+        users = User.objects.filter(qry).exclude(id=request.user.id).order_by('first_name', 'last_name')
     else:
         users = None
         
@@ -37,6 +47,7 @@ def user_search(request):
                 'user_search/user_search_ajax_results.html', 
                 {
                     'users': users,
+                    'toomany': (users.count() > 50),
                     'field': field
                 }, context_instance=RequestContext(request))
     

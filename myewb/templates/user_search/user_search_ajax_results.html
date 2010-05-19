@@ -11,30 +11,40 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% load avatar_tags %}
 
 {% if users %}
-<h3>Search results</h3>
-<ul class="users-search-list">
-
-    {% for result_user in users %}
-    {# FIXME: remove usernames once UI is such that we know users will have real name listed in profile #}
-    <li>
-        <a class="userSearchChoice" id="usr-{{ field }}-{{ result_user.username}}" href="#">
-        
-                    {% avatar result_user 50 %}
-        
-        
-        {{ result_user.visible_name }}</a>
-        {% if result_user.get_profile.chapters %}
-        <br/>
-        <small>({% for chapter in result_user.get_profile.chapters|slice:":3" %}{% if not forloop.first %}, {% endif %}{{ chapter }}{% endfor %})</small>
-        {% endif %}
-        
-        
-        <br/><a target="_blank" href="{% url profile_detail result_user.username %}">Show profile</a>{# hyphens required for JS to work #}
-        
-    </li>
-    {% endfor %}
-</ul>
-<br class="clear"/>
+	<h3>Search results</h3>
+	<ul class="users-search-list">
+	
+		{% if toomany %}
+			Too many results - please try a more specific search.
+		{% else %}
+	
+		    {% for result_user in users %}
+			    <li>
+			    	<a class="userSearchChoice" id="usr-{{ field }}-{{ result_user.username}}" href="#">
+			    		{% avatar result_user 50 %}
+			    		{{ result_user.visible_name }}
+			    	</a>
+			    	
+			    	{% comment %}
+			    	Removed to improve performance... sorry =(
+			    	{% if result_user.get_profile.chapters %}
+			    		<br/>
+			        	<small>({% for chapter in result_user.get_profile.chapters|slice:":3" %}{% if not forloop.first %}, {% endif %}{{ chapter }}{% endfor %})</small>
+			        {% endif %}
+			        {% endcomment %}
+			        
+			        <br/>
+			        <a target="_blank" href="{% url profile_detail result_user.username %}">
+			        	<small>Show profile</small>
+			        </a>
+			        
+			    </li>
+		    {% endfor %}
+	    
+	    {% endif %}
+	    
+	</ul>
+	<br class="clear"/>
 {% else %}
 	No results
 {% endif %}
