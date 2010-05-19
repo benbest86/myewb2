@@ -114,7 +114,6 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
         <tr>
             <th>{% trans "Emails" %}</th>
             <td>
-                {{ user.email }}
     			{% for address in other_user.get_profile.email_addresses %}
     				<br/>{{ address.email }}
     			{% endfor %}
