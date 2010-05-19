@@ -38,10 +38,10 @@ class GroupTopicManager(models.Manager):
         """
         
         filter_q = Q(visible=True)
-        order = '-created'
+        order = '-last_reply'
         if user is not None and not user.is_anonymous():
-            if user.get_profile().sort_by == 'r':
-                order = '-last_reply'
+            if user.get_profile().sort_by == 'p':
+                order = '-created'
 
             # admins with admin-o-vision on automatically see everything
             if user_can_adminovision(user) and user.get_profile().adminovision == 1:
@@ -85,11 +85,7 @@ class GroupTopicManager(models.Manager):
         if qs == None:
             qs = self.get_query_set()
 
-        if user.get_profile().sort_by == 'r':
-            order = '-last_reply'
-        else:
-            order = '-created'
-
+        order = '-created'
         return qs.filter(creator=user).order_by(order)
     
     def get_for_watchlist(self, watchlist, qs=None):
@@ -193,7 +189,7 @@ class GroupTopic(Topic):
         # set parent group
         group = BaseGroup.objects.get(id=self.object_id)
         self.parent_group = group
-        self.visible = (group.visibility == 'E' and group.invite_only == False) or group.slug == 'ewb'
+        self.visible = group.slug == 'ewb'
         
         super(GroupTopic, self).save(force_insert, force_update)
         post_save.send(sender=Topic, instance=GroupTopic.objects.get(id=self.id))
@@ -270,7 +266,7 @@ class GroupTopic(Topic):
         verbose_name = "post"
         
 def update_post_visibility(sender, instance, created, **kwargs):
-    visible = (instance.visibility == 'E' and instance.invite_only == False) or instance.slug == 'ewb'
+    visible = instance.slug == 'ewb'
     GroupTopic.objects.filter(parent_group=instance).update(visible=visible)
 post_save.connect(update_post_visibility, sender=BaseGroup)
 
