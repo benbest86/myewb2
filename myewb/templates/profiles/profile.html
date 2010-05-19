@@ -293,18 +293,18 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 		{% endcomment %}
 		                
 	{% if not is_me and user.is_authenticated %}
-		{# is there a better section heading than "sharing"? =) #}
-		<h2>{% trans "Sharing" %}</h2>
+		<h2>{% trans "Friends" %}</h2>
 	    {% if is_friend %}
 	        <p>
-	        	{% blocktrans %}You are sharing contact information with{% endblocktrans %} {{ other_user.visible_name }}.
+	        	{% blocktrans %}You are friends with{% endblocktrans %} {{ other_user.visible_name }}.
 	            <form method="POST" action="">
-	                <input type="hidden" name="action" value="remove" /><input type="submit" value="{% trans "stop sharing" %}"/>
+	                <input type="hidden" name="action" value="remove" /><input type="submit" value="{% trans "remove" %}"/>
 	            </form>
 	        </p>
 	    {% else %}
 	        {% if previous_invitations_from %}
-	            <p>{{ other_user.visible_name }} {% blocktrans %}has requested to share contact information with you.{% endblocktrans %}</p>
+	            <p>{{ other_user.visible_name }} {% blocktrans %}wants to be friends.{% endblocktrans %}</p>
+	            <p>{% blocktrans %]If you accept this invitation, {{ other_user.visible_name }} will be able to see your contact information and send you messages through myEWB.</p>
 	            {% for invitation in previous_invitations_from %}
 	            	{% comment %}
 	            	I've disabled the message on the request form, so no need to display it here either.
@@ -340,17 +340,17 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 	            {% endfor %}
 	        {% else %}
 	            {% if previous_invitations_to %}
-	                <p>{% trans "You have requested to share contact information." %}</p>
+	                <p>{{ other_user.visible_name }} {% trans "has not yet responded to your friendship request" %}.</p>
 	            {% else %}
+	            	<p>Do you know {{ other_user.visible_name }}?</p>
+	            	<p>If you become friends, you will be able to send messages to each other through myEWB and see each others' contact information.</p>
 	                <form class="uniForm" method="POST" action="">
 	                    <fieldset class="inlineLabels">  
 	                        {#{{ invite_form|as_uni_form }} #}
 	                        <div class="form_block">
-	                            You can request to share contact information.  If {{ other_user.visible_name }} agrees,
-	                            you will be able to see each others' full profiles (email address, phone number, etc).<br/>
 	                            <input type="hidden" name="to_user" value="{{other_user.username}}" />
 	                            <input type="hidden" name="action" value="invite" />
-	                            <input type="submit" value="{% trans "send request" %}"/>
+	                            <input type="submit" value="{% trans "send friendship request" %}"/>
 	                        </div>
 	                    </fieldset>
 	                </form>

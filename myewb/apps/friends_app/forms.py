@@ -56,7 +56,7 @@ class InviteFriendForm(UserForm):
             # TODO: templatize this
             # TODO: i18n this (trying to causes db errors right now)
             Message.objects.create(subject="Friendship request from %s" % self.user.visible_name(),
-                                   body="%s has requested to share contact information.<br/><br/>" % self.user.visible_name() +
+                                   body="You have received a friendship request from %s.<br/><br/>" % self.user.visible_name() +
                                    "<a href='%s'>click here to respond</a>" % reverse('profile_detail', kwargs={'username': self.user.username}),
                                    sender=self.user,
                                    recipient=to_user)
