@@ -27,7 +27,7 @@
                         {% if message.replied %}</em>{% endif %}
                         {% if message.new %}</strong>{% endif %}</td>
                     <td>{{ message.sent_at|localtime:account.timezone|date:_("DATETIME_FORMAT") }}</td>
-                    <td><a href="{% url messages_delete message.id %}">{% trans "delete" %}</a></td>
+                    <td><a href="{% url messages_delete message.id %}" class="deletemessage">{% trans "delete" %}</a></td>
                 </tr>
             {% endfor %}
         </tbody>
@@ -35,4 +35,18 @@
 
     {% paginate %}
 
+{% endblock %}
+
+{% block extra_body %}
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$('a.deletemessage').click(function() {
+				var confirmed = confirm("Are you sure you want to delete this message?");
+				if (confirmed)
+					return true;
+				else
+					return false;
+			});
+		})
+	</script>
 {% endblock %}
