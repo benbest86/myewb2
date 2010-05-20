@@ -140,6 +140,10 @@ def new_group(request, model=None, member_model=None, form_class=None,
                               context_instance=RequestContext(request)
                              )
 
+def group_detail_by_id(request, group_id,):
+    bg = get_object_or_404(BaseGroup, id=group_id)
+    return HttpResponseRedirect(reverse("%s_detail" % bg.model.lower(), kwargs={'group_slug': bg.slug}))
+
 @visibility_required()
 def group_detail(request, group_slug, model=None, member_model=None,
                  form_class=None,  template_name=None, edit_template_name=None,

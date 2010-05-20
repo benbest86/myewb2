@@ -292,6 +292,10 @@ def for_user(request, username, year=None, month=None, day=None):
                                context_instance=RequestContext(request),
                              )
 
+def for_instance_slug(request, app_label, model_name, group_slug):
+    obj = helpers.get_obj(app_label=app_label, model_name=model_name, slug=group_slug)
+    return for_instance(request, app_label, model_name, id=obj.id)
+    
 def for_instance(request, app_label, model_name, id, year=None, month=None, day=None):
     ''' Returns the events associated with the model instance
 
@@ -342,6 +346,10 @@ def feed_for_user(request, username, year=None, month=None, day=None):
     # visibility check not needed - implicit (only finding events owned by user)
 
     return build_ical(events)
+
+def feed_for_instance_slug(request, app_label, model_name, group_slug):
+    obj = helpers.get_obj(app_label=app_label, model_name=model_name, slug=group_slug )
+    return feed_for_instance(request, app_label, model_name, id=obj.id) 
 
 def feed_for_instance(request, app_label, model_name, id, year=None, month=None, day=None):
     """

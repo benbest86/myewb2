@@ -36,6 +36,8 @@ urlpatterns = patterns('',
     # my regex isn't up to snuff... is it possible to do this in one line instad of four?
     url(r'^for/(?P<app_label>[-\w]+)/(?P<model_name>[-\w]+)/(?P<id>\d+)/$',\
             view='events.views.for_instance', name='events_for_instance'),
+    url(r'^for/(?P<app_label>[-\w]+)/(?P<model_name>[-\w]+)/slug/(?P<group_slug>[-\w]+)/$',\
+            view='events.views.for_instance_slug', name='events_for_instance_slug'),
 
     url(r'^for/(?P<app_label>[-\w]+)/(?P<model_name>[-\w]+)/(?P<id>\d+)/(?P<year>\d{4})/$',\
             view='events.views.for_instance', name='events_for_instance'),
@@ -50,6 +52,8 @@ urlpatterns = patterns('',
             view='events.views.feed_for_user', name='events_feed_for_user'),
     url(r'^ical/for/(?P<app_label>[-\w]+)/(?P<model_name>[-\w]+)/(?P<id>\d+)/$',\
             view='events.views.feed_for_instance', name='events_feed_for_instance'),
+    url(r'^ical/for/(?P<app_label>[-\w]+)/(?P<model_name>[-\w]+)/slug/(?P<group_slug>[-\w]+)/$',\
+            view='events.views.feed_for_instance_slug', name='events_feed_for_instance_slug'),
     url(r'^ical/event/(?P<eventid>\d+)/$',\
             view='events.views.feed_for_event', name='events_feed_for_event'),
             
