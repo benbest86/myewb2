@@ -1,3 +1,5 @@
+@import url("tinymce-content.css");
+
 
 /* Standard colours (ie toolbar header backgrounds & borders) */
 .blue, .blue .bkgd  { background: #0049ee; }
@@ -481,7 +483,8 @@ input[type="reset"]
 table.standard input[type="text"]
 
  {
-padding: 4px;
+
+padding:7px;
 }
 /*
 Adding padding just for main content section forms
@@ -515,7 +518,7 @@ width:288px;
 min-height:95px;
 }
 div.communitieslist dl {
-min-height:121px;
+min-height:130px;
 }
 
 
