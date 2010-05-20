@@ -32,6 +32,13 @@ class Network(BaseGroup):
         
     def save(self, force_insert=False, force_update=False):
         self.model = "Network"
+        
+        # also give from_name and from_email reasonable defaults if needed
+        if not self.from_name:
+            self.from_name = "EWB " + self.name
+        if not self.from_email:
+            self.from_email = "%s@ewb.ca" % self.slug
+        
         return super(Network, self).save(force_insert, force_update)
         
     def is_chapter(self):

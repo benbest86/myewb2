@@ -223,9 +223,9 @@ class BaseGroup(Group):
             
         # also give from_name and from_email reasonable defaults if needed
         if not self.from_name:
-            self.from_name = self.name
+            self.from_name = "myEWB notices"
         if not self.from_email:
-            self.from_email = "%s@my.ewb.ca" % self.slug
+            self.from_email = "notices@my.ewb.ca"
         
         super(BaseGroup, self).save(force_insert=force_insert, force_update=force_update)
         post_save.send(sender=BaseGroup, instance=self, created=created)
