@@ -83,6 +83,15 @@ urlpatterns = patterns('',
     url(r'^feeds/posts/all/$', 'group_topics.views.feed.all', name="topic_feed_all"),
     
     url(r'^newpost/$', 'group_topics.views.topics.new_topic', name="topic_new"),
+    
+    # legacy URLs from myEWB 1
+    url(r'^home/', include('legacy_urls.home')),
+    url(r'^profile/', include('legacy_urls.profile')),
+    url(r'^chapter/', include('legacy_urls.chapter')),
+    url(r'^mailing/', include('legacy_urls.mailing')),
+    url(r'^events/', include('legacy_urls.events')),
+    url(r'^volunteering/', include('legacy_urls.volunteering')),
+    url(r'^api/', include('legacy_urls.api')),
 )
 
 ## @@@ for now, we'll use friends_app to glue this stuff together
