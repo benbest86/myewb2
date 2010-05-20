@@ -632,6 +632,14 @@ def pay_membership2(request, username):
                                           {'form': form},
                                            context_instance=RequestContext(request)
                                            )
+            else:    
+                f.helper.action = reverse('profile_pay_membership2', kwargs={'username': username})
+            
+                return render_to_response(
+                    'creditcard/new_payment.html',
+                    {'form': f},
+                    context_instance=RequestContext(request)
+                    )
                 
         # what kind of error to throw...?
          

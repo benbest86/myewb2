@@ -20,8 +20,8 @@ from django.utils.translation import ugettext_lazy as _
 from profiles.models import MemberProfile, StudentRecord, WorkRecord
 from creditcard.forms import PaymentForm, PaymentFormPreview, ProductWidget
 from creditcard.models import Product
-from uni_form.helpers import FormHelper, Submit, Reset
-from uni_form.helpers import Layout, Fieldset, Row, HTML
+from contrib.uni_form.helpers import FormHelper, Submit, Reset
+from contrib.uni_form.helpers import Layout, Fieldset, Row, HTML
 from siteutils.models import Address, PhoneNumber
 
 class ProfileForm(forms.ModelForm):
@@ -92,7 +92,7 @@ class MembershipFormPreview(PaymentFormPreview):
     		request.user.get_profile().pay_membership()
         	
         	message = loader.get_template("profiles/member_upgraded.html")
-        	c = Context({'user': self.username.visible_name()})
+        	c = Context({'user': request.user.visible_name()})
         	request.user.message_set.create(message=message.render(c))
         	
         	return HttpResponseRedirect(reverse('profile_detail', kwargs={'username': self.username }))

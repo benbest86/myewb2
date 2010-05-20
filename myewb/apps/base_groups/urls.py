@@ -29,6 +29,8 @@ urlpatterns = patterns('base_groups.views.groups',
     # GET - retrieve group detail
     # POST - update group
     url(r'^(?P<group_slug>[-\w]+)/$', 'group_detail', name='group_detail',),
+    url(r'^id/(?P<group_id>\d+)/$', 'group_detail_by_id', name='group_detail_by_id',),
+
     # GET - edit group form
     # POST - update group (redirects to 'group_detail'
     url(r'^(?P<group_slug>[-\w]+)/edit/$', 'edit_group', name='edit_group',),

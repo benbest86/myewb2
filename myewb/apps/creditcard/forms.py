@@ -25,8 +25,8 @@ from apps.creditcard.models import Payment, Product
 from siteutils.forms import AddressField
 from siteutils.models import Address
 
-from uni_form.helpers import FormHelper, Submit, Reset
-from uni_form.helpers import Layout, Fieldset, Row, HTML
+from contrib.uni_form.helpers import FormHelper, Submit, Reset
+from contrib.uni_form.helpers import Layout, Fieldset, Row, HTML
 import settings
 from datetime import datetime
 

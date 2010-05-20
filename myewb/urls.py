@@ -89,7 +89,7 @@ urlpatterns = patterns('',
     url(r'^profile/', include('legacy_urls.profile')),
     url(r'^chapter/', include('legacy_urls.chapter')),
     url(r'^mailing/', include('legacy_urls.mailing')),
-    url(r'^events/', include('legacy_urls.events')),
+    url(r'^events/', include('legacy_urls.eventsurls')),
     url(r'^volunteering/', include('legacy_urls.volunteering')),
     url(r'^api/', include('legacy_urls.api')),
 )
