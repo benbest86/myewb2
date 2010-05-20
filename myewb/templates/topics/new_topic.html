@@ -31,9 +31,11 @@ The {% if group %} checks are left in just in case, and should be removed eventu
                 {% for af in attach_forms %}
                     {{ af|as_uni_form }}
                 {% endfor %}
-                <div id="attachLink">
-                    <a class="getAttachForm" href="{% url topic_get_attachment_form %}">{% trans "Attach a file to this post" %}</a>
-                </div>
+
+				<div id="attachLink" class="ctrlHolder">
+				<label>&nbsp;</label>
+					<a class="getAttachForm" href="{% url topic_get_attachment_form %}">{% trans "Attach a file to this post" %}</a>
+				</div>
             </div>
             {% ifequal group.slug "ewb" %}
             	<p>

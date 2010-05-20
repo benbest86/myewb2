@@ -3,6 +3,13 @@
 {% load uni_form %}
 
 {{ attach_form|as_uni_form }}
+<div id="attachLink" class="ctrlHolder">
+<label>&nbsp;</label>
+	<a class="getAttachForm" href="{% url topic_get_attachment_form %}">{% trans "Attach a file to this post" %}</a>
+</div>
+
+{% comment %}
 <div id="attachLink">
     <a class="getAttachForm" href="{% url topic_get_attachment_form %}">{% trans "Attach a file to this post" %}</a>
 </div>
+{% endcomment %}
