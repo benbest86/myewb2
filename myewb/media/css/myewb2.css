@@ -716,7 +716,7 @@ border-top:1px solid #ccc;
 padding-top:1em;
 }
 
-.whiteboard-attachments ul {
+.whiteboard-attachments ul, .post-attachments ul {
 list-style: none;
 padding-left:1em;
 }
