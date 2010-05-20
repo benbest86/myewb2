@@ -49,7 +49,10 @@ def groups_index(request, model=None, member_model=None, form_class=None,
 
     # retrieve basic objects
     user = request.user
-    groups = model.objects.all()
+    if hasattr(model.objects, 'listing'):
+        groups = model.objects.listing()
+    else:
+        groups = model.objects.all()
 
     # if running a search, filter by search term
     search_terms = request.GET.get('search', '')

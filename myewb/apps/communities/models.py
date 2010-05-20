@@ -13,7 +13,13 @@ from django.db.models.signals import post_save
 from django.utils.translation import ugettext_lazy as _
 from base_groups.models import BaseGroup, GroupMember, add_creator_to_group
 
+class CommunityManager(models.Manager):
+    def listing(self):
+        return self.get_query_set().filter(parent__isnull=True)
+        
 class Community(BaseGroup):
+    objects = CommunityManager()
+    
     def get_absolute_url(self):
         return reverse('community_detail', kwargs={'group_slug': self.slug})
        
