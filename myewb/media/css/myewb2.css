@@ -1,3 +1,5 @@
+@import url("tinymce-content.css");
+
 
 /* Standard colours (ie toolbar header backgrounds & borders) */
 .blue, .blue .bkgd  { background: #0049ee; }

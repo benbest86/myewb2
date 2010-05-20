@@ -2,3 +2,9 @@ body {
 font-size:12px;
 line-height: 18px;
 }
+
+blockquote {
+border-left:1px solid #CCCCCC;
+margin-left:0.4em;
+padding-left:0.7em;
+}
