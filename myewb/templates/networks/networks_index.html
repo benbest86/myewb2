@@ -233,6 +233,8 @@ var cityArray = new Array();
 	        {% endifequal %}
         {% endfor %}
 
+    	
+    	{% comment %}
     	<h2 id="other">Other</h2>
         {% for group in groups %}
         	{% if not group.chapter_info.province %}
@@ -244,6 +246,10 @@ var cityArray = new Array();
 		        
 	        {% endif %}
         {% endfor %}
+        
+        
+        {% endcomment %}
+        
         
 	</div>
 
@@ -370,7 +376,7 @@ var cityArray = new Array();
 	<a href="#NB">New Brunswick</a>
 	<a href="#NS">Nova Scotia</a>
 	<a href="#NL">Newfoundland and Labrador</a>
-	<a href="#other">Others</a>
+	<!-- <a href="#other">Others</a> -->
 </div>
 
 
