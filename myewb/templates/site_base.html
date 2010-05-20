@@ -121,7 +121,7 @@
     {% if user.is_authenticated %}
 		Signed in as <a class="username" href="{% url profile_detail user %}"><strong>{{ user.visible_name }}</strong></a>.
 		<br/>
-		<a href="{% url messages_inbox %}">{{ messages_inbox_count }} unread messages</a>
+		<a href="{% url messages_inbox %}">{{ messages_inbox_count }} unread message{% ifnotequal messages_inbox_count 1 %}s{% endifnotequal %}</a>
 		
 		<a class="signout" href="{% url acct_logout %}">{% trans "sign out" %}</a>
     {% else %}
