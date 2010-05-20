@@ -1,13 +1,14 @@
 <script type="text/javascript">
 
-(function($) {
+$(function() {
 
 
 
 	$('textarea.tinymce').each(function() {
 		$(this).tinymce({
        	// Location of TinyMCE script
-        	script_url : '{{STATIC_URL}}tiny_mce/tiny_mce.js',
+        	//script_url : '{{STATIC_URL}}tiny_mce/tiny_mce.js',
+        	// preloaded as of 2010-05-20
 
 
 
@@ -57,6 +58,6 @@
     
     
     
-})(jQuery);
+});
 
 </script>
