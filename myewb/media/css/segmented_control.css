@@ -5,6 +5,7 @@ ul.segmented {
   padding-left: 0;
   margin-left: 0;
   list-style: none;
+  clear:both;
 }
 
 ul.segmented li {
