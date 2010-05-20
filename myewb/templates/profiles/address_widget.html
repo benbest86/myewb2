@@ -9,7 +9,7 @@
 </span>
 
 <div id="addresses">
-    <ul>
+    <ul style="width: 100%;">
 	    {% for address in user.get_profile.addresses.all %}
 	        <li>
 	            <a href="{% url profile_address_detail user.username address.label %}">
