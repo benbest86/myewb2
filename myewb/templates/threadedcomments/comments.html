@@ -48,11 +48,14 @@
                             <span class="attach-label lighter">attached files:</span>
                             <ul>
                                 {% for att in attachments %}
-                                    <li class="attachmentItem">
-                                        {% icon_for_filename att.filename %} <a href="{{ STATIC_URL }}{{ att.attachment_file.name }}">{{ att.filename }}</a>
-                                        {% image_preview att.attachment_file.name att.filename response.pk %} 
-                                        {% filesize_for_filename att.attachment_file.name %}
-                                    </li>
+                                
+<li class="file_$file.extension attachmentItem">
+                                {% icon_for_filename att.filename %}<a href="{% get_STATIC_URL %}{{ att.attachment_file.name }}" target="_blank">{{ att.filename }}</a>
+                                {% image_preview att.attachment_file.name att.filename response.pk %}
+                                {% filesize_for_filename att.attachment_file.name %}
+                                </li>
+                
+                                    
                                 {% endfor %}
                             </ul>
                         </div>

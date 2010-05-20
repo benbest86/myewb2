@@ -87,7 +87,7 @@
                         <ul>
                             {% for att in attachments %}
                                 <li class="attachmentItem">
-                                    {% icon_for_filename att.filename %} <a href="{{ STATIC_URL }}{{ att.attachment_file.name }}">{{ att.filename }}</a>
+                                    {% icon_for_filename att.filename %} <a href="{{ STATIC_URL }}{{ att.attachment_file.name }}" target="_blank">{{ att.filename }}</a>
                                     {% image_preview att.attachment_file.name att.filename topic.pk %} 
                                     {% filesize_for_filename att.attachment_file.name %}
                                 </li>
