@@ -26,7 +26,11 @@
 
 	<script type="text/javascript">
 	$(function() {
-		$("#chapter-tabs").tabs();
+		$("#chapter-tabs").tabs({
+			show: function(event, ui) {
+				parent.location.hash = ui.panel.id;
+			}
+		});
 	});
 	</script>
 
