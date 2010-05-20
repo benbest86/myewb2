@@ -44,16 +44,18 @@
                     {% get_attachments_for response as "attachments" %}
 
                     {% if attachments.count %}
-                        attached files:
-                        <ul style="margin-top: 0px; margin-bottom: 5px; margin-left: 25px;">
-                            {% for att in attachments %}
-                                <li class="file_$file.extension">
-                                {% icon_for_filename att.filename %}<a href="{% get_STATIC_URL %}{{ att.attachment_file.name }}">{{ att.filename }}</a>
-                                {% image_preview att.attachment_file.name att.filename response.pk %} 
-                                {% filesize_for_filename att.attachment_file.name %} 
-                                </li>
-                            {% endfor %}
-                        </ul>
+                        <div class="post-attachments">
+                            <span class="attach-label lighter">attached files:</span>
+                            <ul>
+                                {% for att in attachments %}
+                                    <li class="attachmentItem">
+                                        {% icon_for_filename att.filename %} <a href="{{ STATIC_URL }}{{ att.attachment_file.name }}">{{ att.filename }}</a>
+                                        {% image_preview att.attachment_file.name att.filename response.pk %} 
+                                        {% filesize_for_filename att.attachment_file.name %}
+                                    </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
                     {% endif %}
                 <td align="right" valign="top" width="300" style="font-size: 10px; padding-right: 10px;">
                     {% if grpadmin %}

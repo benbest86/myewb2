@@ -16,21 +16,24 @@
 	
 	<div class="whiteboard-box">
 		{# we ignore the markup field, and assume it's html, since we've hacked it up... #}
+		<div class="whiteboard-contents">
 		{{ wb.content|safe }}
+        </div>
 
         {% get_attachments_for wb as "attachments" %}
         {% if attachments.count %}
-        	<hr/>
-            attached files:
-            <ul style="margin-top: 0px; margin-bottom: 5px; margin-left: 25px;">
-                {% for att in attachments %}
-                    <li class="attachmentItem">
-                        {% icon_for_filename att.filename %} <a href="{{ STATIC_URL }}{{ att.attachment_file.name }}">{{ att.filename }}</a>
-                        {% image_preview att.attachment_file.name att.filename wb.pk %} 
-                        {% filesize_for_filename att.attachment_file.name %}
-                    </li>
-                {% endfor %}
-            </ul>
+            <div class="whiteboard-attachments">
+                <span class="attach-label lighter">attached files:</span>
+                <ul>
+                    {% for att in attachments %}
+                        <li class="attachmentItem">
+                            {% icon_for_filename att.filename %} <a href="{{ STATIC_URL }}{{ att.attachment_file.name }}">{{ att.filename }}</a>
+                            {% image_preview att.attachment_file.name att.filename wb.pk %} 
+                            {% filesize_for_filename att.attachment_file.name %}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
         {% endif %}
     </div>
 
