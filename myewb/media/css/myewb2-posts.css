@@ -81,3 +81,10 @@ div#maincolumn div.whiteboard-editing-box {
 float:right;
 padding:10px;
 }
+
+/* more on attachments in the main CSS */
+
+/* post profile pic thumbnails */
+img.posthumbnail {
+border: 1px solid #CCC; float:right; margin: 10px; margin-left:14px; padding:5px;
+}

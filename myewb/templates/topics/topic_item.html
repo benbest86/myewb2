@@ -79,7 +79,7 @@
 
 		<a href="{% url profile_detail topic.creator.username %}">
 		    {# {% avatar topic.creator 40 %} #}
-		    <img src="{% avatar_url topic.creator 40 %}" style="border: 1px solid #CCC; float:right; margin: 10px; margin-left:14px; padding:5px;" title="{{topic.creator.visible_name}}" alt="{{topic.creator.visible_name}}"/>
+		    <img src="{% avatar_url topic.creator 40 %}" class="posthumbnail" title="{{topic.creator.visible_name}}" alt="{{topic.creator.visible_name}}"/>
 		</a>
 
         {{ topic.intro|safe }}
@@ -100,7 +100,7 @@
 				{% endif %}
 					
 		        {% if topic.num_whiteboard_edits %}
-		            Lastest whiteboard edit by <a href="{% url profile_detail topic.whiteboard.latest_changeset.editor.username %}">{{ topic.whiteboard.latest_changeset.editor.visible_name }}</a> on {{ topic.whiteboard.latest_changeset.modified|date }}
+		            <a href="{{ topic.get_absolute_url }}#post-whiteboard">Latest whiteboard edit</a> by <a href="{% url profile_detail topic.whiteboard.latest_changeset.editor.username %}">{{ topic.whiteboard.latest_changeset.editor.visible_name }}</a><br/> on {{ topic.whiteboard.latest_changeset.modified|date }} at {{ topic.whiteboard.latest_changeset.modified|time }}
 		        {% endif %}
 		    </td>
     		</tr>

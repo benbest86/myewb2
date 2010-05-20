@@ -31,7 +31,7 @@
 
         <div class="postcontent" style="width: 98%;"> <!-- main row -->
     		<a href="{% url profile_detail response.user.username %}">
-    		    <img src="{% avatar_url response.user 40 %}" style="border: 1px solid #CCC; float:right; margin: 10px; margin-left:14px; padding:5px;" title="{{response.user.visible_name}}" alt="{{response.user.visible_name}}"/>
+    		    <img src="{% avatar_url response.user 60 %}" class="posthumbnail" title="{{response.user.visible_name}}" alt="{{response.user.visible_name}}"/>
     		</a>
 
             {{ response.comment|safe }}
