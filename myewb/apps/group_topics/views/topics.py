@@ -352,7 +352,9 @@ def topics_by_user(request, username):
         topics = GroupTopic.objects.get_for_user(user, topics)
             
     return render_to_response("topics/topics.html",
-                              {"topics": topics},
+                              {"topics": topics,
+                               "group": None,
+                               "mode": None},
                               context_instance=RequestContext(request)
                              )
 
