@@ -99,13 +99,13 @@ div.clear {
 }
 
 div.login {
-    background: #CECECE;
-    border: 1px solid black;
-    -webkit-border-radius: 0.5em;
-    -moz-border-radius: 0.5em;
+    background: #DEDEDE;
+    /* border: 1px solid black; */
+    -webkit-border-radius: 0.7em;
+    -moz-border-radius: 0.7em;
     font-size: 0.7em;
 /*    width: 33em;	*/
-    padding: 1em 3em 1em 5em;
+    padding: 1em 3em 1em 3em;
     float: right;
     text-align: right;
 }
