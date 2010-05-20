@@ -348,7 +348,7 @@ class Command(NoArgsCommand):
                 type = Network
             elif row[8]:
                 type = ExecList
-            elif row[13] and row[13] != '0':
+            elif row[13] and (row[13] == 's' or row[13] == 'p' or row[13] == 'b'):
                 type = NationalRepList
             elif row[0] == 5 or row[0] == 593 or row[0] == 254:        # all-exec lists
                 type = ExecList
