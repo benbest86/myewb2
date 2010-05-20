@@ -31,6 +31,11 @@
 		{% block extra_head_base %}
 		{% block extra_head %}{% endblock %}
 		{% endblock %}
+		
+		
+		<script type="text/javascript" src="{{ STATIC_URL }}tiny_mce/jquery.tinymce.js"></script> 
+		{# didn't seem to work well with browser caching when added down the page #}
+		
     </head>
 
     <body id="bodybackground" class="{% block body_class %}{% endblock %}">
