@@ -1,0 +1,12 @@
+<p>Hello {{ message.recipient.visible_name}},</p>        
+
+<p>
+{{ message.sender.visible_name}} has sent you a message on myEWB:
+</p>
+
+<p><strong>{{ message.subject }}</strong></p>
+
+<div style="margin: 10px; padding: 10px; border: 1px solid;">
+	{{ message.body|safe }}
+</div>
+
