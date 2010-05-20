@@ -103,10 +103,12 @@
         {% endcomment %}
         
   
+  		{% ifnotequal group.creator.id 1 %}
         <tr>
             <th>{% trans "Created by" %}</th>
             <td><a href="{% url profile_detail group.creator.username %}">{{ group.creator.visible_name }}</a></td>
         </tr>
+        {% endifnotequal %}
         
         <tr>
             <th>{% trans "Date created" %}</th>
