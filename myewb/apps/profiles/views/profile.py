@@ -130,6 +130,7 @@ def create_student_record(request, username, object=None):
         student_record = form.save(commit=False)
         student_record.user = other_user
         
+        """
         # find network ID (based on name they entered)
         # TODO: remove from network when someone ends their employment
         institution = form.cleaned_data['institution']
@@ -152,6 +153,7 @@ def create_student_record(request, username, object=None):
             network_member.save()
 
         student_record.network = network
+        """
         
         student_record.save()
         return HttpResponseRedirect(reverse('profile_detail', kwargs={'username': other_user.username }))
@@ -277,6 +279,8 @@ def create_work_record(request, username, object=None):
         work_record.user = other_user
         
         employer = form.cleaned_data['employer']
+        
+        """
         # find network ID (based on name they entered)
         # TODO: remove from network when someone ends their employment
         networks = Network.objects.filter(name=employer)
@@ -301,6 +305,7 @@ def create_work_record(request, username, object=None):
             network_member.save()
 
         work_record.network = network
+        """
         
         work_record.save()
         return HttpResponseRedirect(reverse('profile_detail', kwargs={'username': other_user.username }))
