@@ -222,7 +222,7 @@
 	                	{% if group.recent_topic_count %}&nbsp;&nbsp;<small>({{group.recent_topic_count}} recent)</small>{% endif %}
 
 		                <div class="frontpage-mygroups-actions">
-		                	{{group.recent_topic_count}} recent posts<br/>
+		                	{# {{group.recent_topic_count}} recent posts<br/> #}
 		                	<a href="{% groupurl topic_new group %}">New post &raquo;</a><br/>
 		                	<a href="{% url group_detail group.slug %}">View group info &raquo;</a>
 		                </div>
