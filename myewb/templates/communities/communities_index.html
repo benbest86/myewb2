@@ -15,7 +15,7 @@
 
 {% block body %}
 
-{% cache CACHE_TIMEOUT "communitylist" user request.page request.field %}
+{% cache CACHE_TIMEOUT "communitylist" user request.page request.field search_terms %}
 
     <h1>{% trans "Communities" %}</h1>
     
