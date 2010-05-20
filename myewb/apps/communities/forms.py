@@ -78,6 +78,9 @@ class CommunityForm(BaseGroupForm):
             except:
                 pass
             
+            # and don't let people change chapters after a community is created
+            del self.fields['parent']
+            
     def clean(self):
         perms = self.cleaned_data.get('group_permissions', None)
         
