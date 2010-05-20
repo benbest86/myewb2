@@ -29,32 +29,34 @@ The {% if group %} checks are left in just in case, and should be removed eventu
 
     
 
-		<h2><span class="lighter">Title: </span>{{ data.title }}</h2>
+		<h2><span class="lighter">Title: </span>{{ topic.title }}</h2>
 
 	
-	{% if data.send_as_email %}
-		<h3><span class="lighter">Send as email from: </span>{{ data.sender }}</h3>
+	{% if sender %}
+		<h3><span class="lighter">Send as email from: </span>{{ sender }}</h3>
 	{% endif %}
 	
 	<div style="padding: 10px; margin: 25px; border: 1px solid #ccc;" class="message-body">
-		{{ data.body|safe }}
+		{{ topic.body|safe }}
 	</div>
 	
 	<div>
-		<strong>Tags: </strong> {{ data.tags }}
+		<strong>Tags: </strong> {{ topic.tags }}
 	</div>
 	<br/>
+	{% if attachments %}
+		<div>
+			<strong>Attachments: </strong><br/>
+			{% for aname in attachments %}
+				{{ aname }}<br/>
+			{% endfor %}
+		</div>
+		<br/>
+	{% endif %}
 	
-    <form class="uniForm" method="POST" enctype="multipart/form-data" action="">
-    	<div style="display: none;">
-            {{ topic_form|as_uni_form }}
-            {% for af in attach_forms %}
-                {{ af|as_uni_form }}
-            {% endfor %}
-        </div>
+    <form class="uniForm" method="POST" action="">
         <p class="form_block">
-            <input type="hidden" id="attachCount" name="attach_count" value="{{ attach_count }}">
-            <input type="hidden" name="next" value="{{ request.path }}" />
+            <input type="hidden" name="postid" value="{{ topic.id }}" />
             <input type="submit" name="goback" value="{% trans "Go back and edit" %}" />
             <input type="submit" name="previewed" value="{% trans "Create New Post" %}" />
         </p>

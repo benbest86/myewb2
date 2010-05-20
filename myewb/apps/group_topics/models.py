@@ -45,7 +45,7 @@ class GroupTopicManager(models.Manager):
 
             # admins with admin-o-vision on automatically see everything
             if user_can_adminovision(user) and user.get_profile().adminovision == 1:
-                return self.get_query_set().order_by(order)
+                return self.get_query_set().filter(pending=False).order_by(order)
             
             # and similar for exec-o-vision, except only for your own chapter's groups
             if user_can_execovision(user) and user.get_profile().adminovision == 1:
@@ -69,13 +69,13 @@ class GroupTopicManager(models.Manager):
         # would it be more efficient to remove the OR query above and just write
         # two different queries, instead of using distinct() here?
         #return self.get_query_set().filter(filter_q).distinct().order_by(order)
-        return self.get_query_set().filter(filter_q).order_by(order)
+        return self.get_query_set().filter(pending=False).filter(filter_q).order_by(order)
     
     def get_for_group(self, group):
         """
         Returns all posts belonging to a given group
         """
-        return self.get_query_set().filter(parent_group=group).order_by('-last_reply')
+        return self.get_query_set().filter(pending=False, parent_group=group).order_by('-last_reply')
     
     def get_for_user(self, user, qs=None):
         """
@@ -83,7 +83,7 @@ class GroupTopicManager(models.Manager):
         qs parameter, it will filter that queryset instead of creating a new one.
         """
         if qs == None:
-            qs = self.get_query_set()
+            qs = self.get_query_set().filter(pending=False)
 
         order = '-created'
         return qs.filter(creator=user).order_by(order)
@@ -94,7 +94,7 @@ class GroupTopicManager(models.Manager):
         qs parameter, it will filter that queryset instead of creating a new one.
         """
         if qs == None:
-            qs = self.get_query_set()
+            qs = self.get_query_set().filter(pending=False)
         
         return qs.filter(watchlists=watchlist).order_by('-last_reply')
     
@@ -152,6 +152,7 @@ class GroupTopic(Topic):
     
     converted = models.BooleanField(default=True)
     visible = models.BooleanField(editable=False)
+    pending = models.BooleanField(default=False, editable=False, db_index=True)
     
     objects = GroupTopicManager()
     

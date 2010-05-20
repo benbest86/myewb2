@@ -17,6 +17,7 @@ from django.utils.html import escape
 from django.contrib.auth.models import User
 from django.shortcuts import get_object_or_404, render_to_response
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.files.uploadhandler import TemporaryFileUploadHandler
 from django.core.urlresolvers import reverse
 from django.template import RequestContext
 from django.db.models import Q
@@ -178,57 +179,27 @@ def new_topic(request, group_slug=None, bridge=None):
             attach_count = 0
             
         if group.slug == "ewb" or is_member:
-            topic_form = GroupTopicForm(request.POST, user=request.user, group=group)
-            attach_forms = [AttachmentForm(request.POST, request.FILES, prefix=str(x), instance=Attachment()) for x in range(0,attach_count)]
-            
-            # do not take blank attachment forms into account
-            for af in attach_forms:
-                if not af.is_valid() and not af['attachment_file'].data:
-                    attach_forms.remove(af)
-                    attach_count = attach_count - 1
-            
-            # all good.  save it!
-            if topic_form.is_valid() and all([af.is_valid() for af in attach_forms]) and not request.POST.get("goback", None):
-                
-                if not request.POST.get("previewed", None):
-                    return render_to_response("topics/preview.html",
-                                              {"group": group,
-                                               "topic_form": topic_form,
-                                               "attach_forms": attach_forms,
-                                               "attach_count": attach_count,
-                                               "is_member": is_member,
-                                               "data": request.POST,
-                                              },
-                                              context_instance=RequestContext(request))
-                    
-                topic = topic_form.save(commit=False)
-                if group:
-                    group.associate(topic, commit=False)
-                topic.creator = request.user
+            # has been previewed.  mark it as good to go!
+            if request.POST.get("previewed", None) and request.POST.get("postid", None):
+                topic = GroupTopic.objects.get(id=request.POST['postid'], pending=True, creator=request.user)
+                topic.pending = False
                 topic.save()
                 
-                # save the attachment.
-                # We need the "Topic" object in order to retrieve attachments properly
-                # since other functions only get the Topic object
-                base_topic = GroupTopic.objects.get(id=topic.id)
-                for af in attach_forms:
-                    attachment = af.save(request, base_topic)
-    
                 # extra security check that sender isn't forged.
                 # can't hurt...
                 sender_valid = False
-                if group.user_is_admin(request.user) and topic_form.cleaned_data.get('sender', None):
-                    if topic_form.cleaned_data['sender'] == group.from_email:
+                if group.user_is_admin(request.user) and request.POST.get('sender', None):
+                    if request.POST['sender'] == group.from_email:
                         sender_valid = True
                         sender = '"%s" <%s>' % (group.from_name, group.from_email)
                         
-                    elif get_object_or_none(EmailAddress, email=topic_form.cleaned_data['sender']) in request.user.get_profile().email_addresses():
+                    elif get_object_or_none(EmailAddress, email=request.POST['sender']) in request.user.get_profile().email_addresses():
                         sender_valid = True
                         sender = '"%s %s" <%s>' % (request.user.get_profile().first_name,
                                                    request.user.get_profile().last_name,
-                                                   topic_form.cleaned_data['sender'])
+                                                   request.POST['sender'])
                         
-                    elif request.user.is_staff and topic_form.cleaned_data['sender'] == "info@ewb.ca":
+                    elif request.user.is_staff and request.POST['sender'] == "info@ewb.ca":
                         sender_valid = True
                         sender = '"EWB-ISF Canada" <info@ewb.ca>'
                         
@@ -242,6 +213,53 @@ def new_topic(request, group_slug=None, bridge=None):
                 # redirect out.
                 request.user.message_set.create(message=_("You have started the topic %(topic_title)s") % {"topic_title": topic.title})
                 return HttpResponseRedirect(topic.get_absolute_url())
+            
+            # confirmation was cancelled, so delete the temp post and bump back to edit screen
+            elif request.POST.get("goback", None) and request.POST.get("postid", None):
+                topic = GroupTopic.objects.get(id=request.POST['postid'], pending=True, creator=request.user)
+                topic_form = GroupTopicForm(instance=topic, user=request.user, group=group)
+                attach_forms = []
+                topic.delete()
+            
+            # validate form and show preview...
+            else:
+                topic_form = GroupTopicForm(request.POST, user=request.user, group=group)
+                attach_forms = [AttachmentForm(request.POST, request.FILES, prefix=str(x), instance=Attachment()) for x in range(0,attach_count)]
+            
+                # do not take blank attachment forms into account
+                for af in attach_forms:
+                    if not af.is_valid() and not af['attachment_file'].data:
+                        attach_forms.remove(af)
+                        attach_count = attach_count - 1
+                
+                # all good.  save it!
+                if topic_form.is_valid() and all([af.is_valid() for af in attach_forms]) and not request.POST.get("goback", None):
+                    # save the post but mark it as "pending".... and display a confirmation.
+                    topic = topic_form.save(commit=False)
+                    if group:
+                        group.associate(topic, commit=False)
+                    topic.creator = request.user
+                    topic.pending = True
+                    topic.save()
+                    
+                    # save the attachments.
+                    # We need the "Topic" object in order to retrieve attachments properly
+                    # since other functions only get the Topic object
+                    base_topic = GroupTopic.objects.get(id=topic.id)
+                    attachments = []
+                    for af in attach_forms:
+                        attachment = af.save(request, base_topic)
+                        attachments.append(af.cleaned_data['attachment_file'].name)
+        
+                    sender = topic_form.cleaned_data.get('sender', None)
+                    return render_to_response("topics/preview.html",
+                                              {"group": group,
+                                               "topic": topic,
+                                               "is_member": is_member,
+                                               "sender": sender,
+                                               "attachments": attachments
+                                              },
+                                              context_instance=RequestContext(request))
         else:
             # if they can't start a topic, why are we still loading up a form?
             request.user.message_set.create(message=_("You are not a member and so cannot start a new topic"))
