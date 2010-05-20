@@ -125,16 +125,19 @@
     {% endif %}
 
 	<br/>
-    <h2>{% trans "Chapter communities" %}</h2>
-    <ul class="chapter-communities-list linker-list">
-    {% for child in children %}
-           <li><a href="{{ child.get_absolute_url }}">{{ child.name }}</a></li>
-    {% endfor %}
+	{% if children or is_admin %}
+    	<h2>{% trans "Chapter communities" %}</h2>
+    	<ul class="chapter-communities-list linker-list">
+    		{% for child in children %}
+           		<li><a href="{{ child.get_absolute_url }}">{{ child.name }}</a></li>
+    		{% endfor %}
     
-    </ul>
+    	</ul>
     
-    {% if is_admin %}
-        <p><a href="{% url new_community %}?parent={{group.slug}}">Create a chapter community/mailing list</a></p>
+    	{% if is_admin %}
+	        <p><a href="{% url new_community %}?parent={{group.slug}}">Create a chapter community/mailing list</a></p>
+		{% endif %}
+		
 	{% endif %}	    
 
 {% endblock %}
