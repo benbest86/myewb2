@@ -409,6 +409,10 @@ def delete_work_record(request, username, work_record_id, object=None):
         work_record.delete()
         return HttpResponseRedirect(reverse('work_record_index', kwargs={'username': username}))
 
+def profile_by_id(request, profile_id):
+    user = get_object_or_404(User, id=profile_id)
+    return HttpResponseRedirect(reverse('profile_detail', kwargs={'username': user.username}))
+
 # override default "save" function so we can prompt people to join networks
 def profile(request, username, template_name="profiles/profile.html", extra_context=None):
     other_user = User.objects.get(username=username)

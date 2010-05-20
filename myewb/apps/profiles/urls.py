@@ -19,6 +19,7 @@ urlpatterns = patterns('profiles.views.profile',
     url(r'^settings/$', 'settings', name='profile_settings'),
     url(r'^(?P<username>[\w\._-]+)/settings/$', 'settings', name='profile_settings'),
     
+    url(r'^(?P<profile_id>\d+)/$', 'profile_by_id', name='profile_detail_by_id'),
     url(r'^(?P<username>[\w\._-]+)/$', 'profile', name='profile_detail'),
     url(r'^(?P<username>[\w\._-]+)/membership/$', 'pay_membership', name='profile_pay_membership'),
     url(r'^(?P<username>[\w\._-]+)/membership2/$', 'pay_membership2', name='profile_pay_membership2'),
