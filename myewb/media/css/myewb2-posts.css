@@ -68,7 +68,21 @@ div.topic-numberofreplies {
 
 float: right; /* margin-top: -8px; */ margin-right: 15px; font-size: 10px; font-weight: normal; text-align: right; width: 150px;
 }
+div.topic-numberofreplies.topic-nor-two {
+margin-top: -7px;
+}
 
+.posts-icon-paperclip {
+float: right; margin: 0px 10px 0 0; padding: 0;
+}
+
+.posts-icon-whiteboard {
+float: right; margin-top: 1px; margin-left: 10px; padding: 0;
+}
+
+div.topic-numberofreplies.topic-nor-two .posts-icon-whiteboard {
+margin-top: 7px;
+}
 
 div#maincolumn div.whiteboard-box {
 border-width:1px;

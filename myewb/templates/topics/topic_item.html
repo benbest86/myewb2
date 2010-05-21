@@ -18,15 +18,17 @@
 		{# TODO: display the icon if any replies have an attachment, too #}
         {% get_attachments_for topic as "attachments" %}
         {% if attachments.count %}
-		<a href="{{ topic.get_absolute_url }}"><img src="{{ STATIC_URL }}images/post_icons/paperclip.gif" style="float: right; margin: -5px 10px 0 0; padding: 0;" border="0"/></a>
+		<a href="{{ topic.get_absolute_url }}"><img src="{{ STATIC_URL }}images/post_icons/paperclip.gif" class="posts-icon-paperclip" border="0"/></a>
 		{% endif %}
 
-		<div class="topic-numberofreplies">
-			{% get_comment_count for topic as num_comments %}
-            {% get_latest_comments_for 1 as latest for topic %}
+
+		{% get_comment_count for topic as num_comments %}
+        {% get_latest_comments_for 1 as latest for topic %}
+		<div class="topic-numberofreplies {% if num_comments and topic.num_whiteboard_edits %} topic-nor-two{% endif %}">
+
             
 			{% if topic.num_whiteboard_edits %}
-    			<a href="{{ topic.get_absolute_url }}" style="float: right; margin-top: 3px; margin-left: 10px; padding: 0;" border="0"><img src="{{ STATIC_URL }}images/post_icons/whiteboard.gif" border="0"/></a>
+    			<a href="{{ topic.get_absolute_url }}#post-whiteboard" class="posts-icon-whiteboard" border="0"><img src="{{ STATIC_URL }}images/post_icons/whiteboard.gif" border="0"/></a>
     		{% endif %}
 
 			{% if num_comments %}
@@ -42,9 +44,10 @@
     			{% endif %}
     			</a>
 			{% else %}
-					&nbsp;
+					{#&nbsp;#}
 			{% endif %}
-			<br/>
+			
+			{% if num_comments and topic.num_whiteboard_edits %}<br/>{% endif %}
 
 			{% if topic.num_whiteboard_edits %}
  				<a href="{{ topic.get_absolute_url }}" style="color: white;" class="nodeco">{{topic.num_whiteboard_edits}} whiteboard edits</a>
