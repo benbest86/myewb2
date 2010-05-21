@@ -39,6 +39,7 @@ color: #777;
 }
 
 body, body#bodybackground {
+    /* background: #eee url(images/page_bg_gradient.gif) repeat-x; */
     background: #C1C1C3;
     font-family: verdana, sans serif;
     min-width: 59.3em;
