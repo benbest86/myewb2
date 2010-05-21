@@ -92,6 +92,7 @@ urlpatterns = patterns('',
     url(r'^events/', include('legacy_urls.eventsurls')),
     url(r'^volunteering/', include('legacy_urls.volunteering')),
     url(r'^api/', include('legacy_urls.api')),
+    url(r'^cal/', include('legacy_urls.cal')),
 )
 
 ## @@@ for now, we'll use friends_app to glue this stuff together
