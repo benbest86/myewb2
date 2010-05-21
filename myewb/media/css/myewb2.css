@@ -729,3 +729,8 @@ padding-left:1em;
 .whiteboard-attachments ul li {
 
 }
+
+li.attachmentItem img {
+width:16px;
+max-height: 16px;
+}
