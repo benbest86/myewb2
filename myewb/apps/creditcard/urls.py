@@ -8,9 +8,8 @@ Last modified: 2009-08-12
 @author: Francis Kung
 """
 from django.conf.urls.defaults import *
-from creditcard.forms import PaymentForm, PaymentFormPreview
 
 urlpatterns = patterns('creditcard.views',
     url(r'^$', 'payment', name='payments_index'),    
-    url(r'^preview/$', PaymentFormPreview(PaymentForm), name='payment_preview'),
+    url(r'^preview/$', 'payment_preview', name='payment_preview'),
 )

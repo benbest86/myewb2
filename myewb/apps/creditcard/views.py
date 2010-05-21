@@ -18,7 +18,9 @@ from django.contrib.auth.models import User
 from creditcard.views import *
 from creditcard.forms import *
 from creditcard.utils import *
+from siteutils.decorators import secure_required
 
+@secure_required
 def payment(request):
     form = PaymentForm(request.POST)
     if False: #form.is_valid():
@@ -32,3 +34,7 @@ def payment(request):
                 },
                 context_instance=RequestContext(request)
                 )
+
+@secure_required
+def payment_preview(request):
+    return PaymentFormPreview(PaymentForm) 

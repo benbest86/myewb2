@@ -46,7 +46,7 @@ $(function() {
 		
 		
 		$("#feedback-dialog-send").click(function() {
-    		$.post("test.php{# @@@ change this URL #}", $("#feedback-dialog form").serialize(),
+    		$.post("{% url feedback_email %}", $("#feedback-dialog form").serialize(),
     		function(data){
                //alert("Data Loaded: " + data);
                $("#feedback-dialog").dialog('close');

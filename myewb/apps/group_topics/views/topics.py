@@ -267,8 +267,7 @@ def new_topic(request, group_slug=None, bridge=None):
             attach_forms = [AttachmentForm(prefix=str(x), instance=Attachment()) for x in range(0,attach_count)]
             
     else:
-        topic_form = GroupTopicForm(instance=GroupTopic(), user=request.user, group=group,
-                                    initial={'send_as_email': True})
+        topic_form = GroupTopicForm(instance=GroupTopic(), user=request.user, group=group)
         attach_forms = []
 
     return render_to_response("topics/new_topic.html", {
@@ -382,7 +381,9 @@ def watchlist(request, list_id):
     topics = GroupTopic.objects.get_for_watchlist(list)
             
     return render_to_response("topics/topics.html",
-                              {"topics": topics},
+                              {"topics": topics,
+                               "group": None,
+                               "mode": None},
                               context_instance=RequestContext(request)
                              )
     

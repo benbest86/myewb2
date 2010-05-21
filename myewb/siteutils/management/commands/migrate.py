@@ -114,7 +114,7 @@ class Command(NoArgsCommand):
         print datetime.now()
         print "==============="
         print ""
-        #self.migrate_champ(c, c2)
+        #self.migrate_champ(c, c2, db2)
         
         print ""
         print "finished CHAMP at", datetime.now()
@@ -901,7 +901,7 @@ class Command(NoArgsCommand):
             except:
                 print "meh, couldn't print", row[0]
 
-    def migrate_champ(self, c, c2):
+    def migrate_champ(self, c, c2, db2):
         # ./manage.py reset --noinput champ ; ./manage.py migrate | tee champ.log
 
         c.execute("SELECT * FROM activities")
@@ -955,6 +955,10 @@ class Command(NoArgsCommand):
                             (row[10], row[11], row[12], row[13], row[14], row[15]))
             
             if row[16] == 1:
+                c2.execute("""INSERT INTO champ_metrics
+                            SET activity_id=%s, metric_type=%s""",
+                            (row[0], "functioningmetrics"))
+                
                 c2.execute("""INSERT INTO champ_functioningmetrics
                             SET metrics_ptr_id=LAST_INSERT_ID(),
                                 type=%s,
@@ -966,6 +970,10 @@ class Command(NoArgsCommand):
                 print "   functioning"
                 
             if row[17] == 1:
+                c2.execute("""INSERT INTO champ_metrics
+                            SET activity_id=%s, metric_type=%s""",
+                            (row[0], "memberlearningmetrics"))
+                
                 c2.execute("""INSERT INTO champ_memberlearningmetrics
                             SET metrics_ptr_id=LAST_INSERT_ID(),
                                 type=%s,
@@ -980,6 +988,10 @@ class Command(NoArgsCommand):
                 print "   member learning"
                 
             if row[18] == 1:
+                c2.execute("""INSERT INTO champ_metrics
+                            SET activity_id=%s, metric_type=%s""",
+                            (row[0], "publicengagementmetrics"))
+                
                 c2.execute("""INSERT INTO champ_publicengagementmetrics
                             SET metrics_ptr_id=LAST_INSERT_ID(),
                                 type=%s,
@@ -993,6 +1005,10 @@ class Command(NoArgsCommand):
                 print "   public engagement"
                 
             if row[19] == 1:
+                c2.execute("""INSERT INTO champ_metrics
+                            SET activity_id=%s, metric_type=%s""",
+                            (row[0], "publicadvocacymetrics"))
+                
                 c2.execute("""INSERT INTO champ_publicadvocacymetrics
                             SET metrics_ptr_id=LAST_INSERT_ID(),
                                 type=%s,
@@ -1006,6 +1022,10 @@ class Command(NoArgsCommand):
                 print "   public advocacy"
                 
             if row[20] == 1:
+                c2.execute("""INSERT INTO champ_metrics
+                            SET activity_id=%s, metric_type=%s""",
+                            (row[0], "workplaceoutreachmetrics"))
+                
                 c2.execute("""INSERT INTO champ_workplaceoutreachmetrics
                             SET metrics_ptr_id=LAST_INSERT_ID(),
                                 company=%s,
@@ -1022,6 +1042,10 @@ class Command(NoArgsCommand):
                 print "   workplace outreach"
             
             if row[21] == 1:
+                c2.execute("""INSERT INTO champ_metrics
+                            SET activity_id=%s, metric_type=%s""",
+                            (row[0], "schooloutreachmetrics"))
+                
                 c2.execute("""INSERT INTO champ_schooloutreachmetrics
                             SET metrics_ptr_id=LAST_INSERT_ID(),
                                 school_name=%s,
@@ -1042,6 +1066,10 @@ class Command(NoArgsCommand):
                 print "   school outreach"
                 
             if row[22] == 1:
+                c2.execute("""INSERT INTO champ_metrics
+                            SET activity_id=%s, metric_type=%s""",
+                            (row[0], "curriculumenhancementmetrics"))
+                
                 c2.execute("""INSERT INTO champ_curriculumenhancementmetrics
                             SET metrics_ptr_id=LAST_INSERT_ID(),
                                 name=%s,
@@ -1054,6 +1082,10 @@ class Command(NoArgsCommand):
                 print "   curriculum"
                 
             if row[23] == 1:
+                c2.execute("""INSERT INTO champ_metrics
+                            SET activity_id=%s, metric_type=%s""",
+                            (row[0], "publicationmetrics"))
+                
                 c2.execute("""INSERT INTO champ_publicationmetrics
                             SET metrics_ptr_id=LAST_INSERT_ID(),
                                 outlet=%s,
@@ -1064,12 +1096,18 @@ class Command(NoArgsCommand):
                 print "   publication"
             
             if row[24] == 1:
+                c2.execute("""INSERT INTO champ_metrics
+                            SET activity_id=%s, metric_type=%s""",
+                            (row[0], "fundraisingmetrics"))
+                
                 c2.execute("""INSERT INTO champ_fundraisingmetrics
                             SET metrics_ptr_id=LAST_INSERT_ID(),
                                 goal=%s,
                                 revenue=%s""",
                                 (row[73], row[74]))
                 print "   fundraising"
+                
+        db2.commit()
 
         c.execute("SELECT * FROM reflections")
         for row in c.fetchall():
@@ -1091,6 +1129,8 @@ class Command(NoArgsCommand):
                             (row[0], row[10], row[11], row[12],row[9], row[1],
                              row[2], row[3], row[4], row[5], row[6], row[7],row[8]))
             
+        db2.commit()
+        
         c.execute("SELECT * FROM yearplans")
         for row in c.fetchall():
             print "champ yearplan", row[0], row[1], row[4]
@@ -1115,6 +1155,7 @@ class Command(NoArgsCommand):
                             (row[0], row[1], row[4], row[2], row[3], row[5], row[6],
                              row[7], row[8], row[9], row[10], row[11], row[12], row[13],
                              row[14], row[15], row[16]))
+        db2.commit()
             
     def migrate_stats(self, c, c2):
         # ./manage.py reset --noinput stats ; ./manage.py migrate | tee stats.log

@@ -195,7 +195,8 @@ def group_detail(request, group_slug, model=None, member_model=None,
     return render_to_response(
         template_name,
         {
-            'group': group,                
+            'group': group,
+            'member': member,                
             'children': group.get_visible_children(request.user),
             'is_admin': group.user_is_admin(request.user),
             'requests_outstanding': requests_outstanding,

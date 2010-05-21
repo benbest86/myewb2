@@ -57,13 +57,18 @@ class Payment(models.Model):
     Most uses will probably extend this to add additional fields.
     """
 
-    cc_type = models.CharField(_('credit card type'), max_length=2, choices=CC_TYPES)
-    cc_number = models.CharField(_('credit card number'), max_length=20)
-    cc_expiry = models.DateField(_('expiry date'))
+    cc_type = models.CharField(_('credit card type'), max_length=2, choices=CC_TYPES, null=True, blank=False)
+    cc_number = models.CharField(_('credit card number'), max_length=20, null=True, blank=False)
+    cc_expiry = models.DateField(_('expiry date'), null=True, blank=False)
 
     billing_name = models.CharField(_('billing name'), max_length=255)
     phone = models.CharField(_('phone number'), max_length=20)
     email = models.EmailField(_('email address'))
+
+    date = models.DateTimeField(auto_now=True, editable=False)
+    amount = models.CharField(_('amount'), max_length=50, editable=False, blank=True, null=True)
+    approved = models.CharField(_('approved'), max_length=1, editable=False, blank=True, null=True)
+    response = models.TextField(_('response'), editable=False, blank=True, null=True)
     
     # well, really, many-to-one at the moment.
     products = models.ManyToManyField('Product')

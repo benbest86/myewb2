@@ -73,7 +73,7 @@ class GroupMembershipQueryWidget(forms.MultiWidget):
     """
     def __init__(self, *args, **kwargs):
         groups = {}
-        for g in BaseGroup.objects.all():
+        for g in BaseGroup.objects.filter(is_active=True):
             groups[g.slug] = g.name
         
         """

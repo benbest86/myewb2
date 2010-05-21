@@ -26,10 +26,10 @@ from django.utils.translation import ugettext_lazy as _
 
 from siteutils import online_middleware
 from siteutils.helpers import get_email_user
-from siteutils.decorators import owner_required
+from siteutils.decorators import owner_required, secure_required
 from siteutils.models import PhoneNumber
 from profiles.models import MemberProfile, StudentRecord, WorkRecord, ToolbarState
-from profiles.forms import StudentRecordForm, WorkRecordForm, MembershipForm, PhoneNumberForm, SettingsForm
+from profiles.forms import StudentRecordForm, WorkRecordForm, MembershipForm, MembershipFormPreview, PhoneNumberForm, SettingsForm 
 
 from networks.models import Network
 from networks.forms import NetworkBulkImportForm
@@ -42,8 +42,8 @@ from friends_app.forms import InviteFriendForm
 def profiles(request, template_name="profiles/profiles.html"):
     search_terms = request.GET.get('search', '')
     if search_terms:
-        users = User.objects.filter(profile__name__icontains=search_terms) | \
-                        User.objects.filter(username__icontains=search_terms)
+        qry = Q(profile__name__icontains=search_terms) | Q(username__icontains=search_terms)
+        users = User.objects.filter(is_active=True).filter(qry)
         if not request.user.has_module_perms("profiles"):
             users = users.filter(memberprofile__grandfathered=False)
         users = users.order_by("profile__name")
@@ -562,13 +562,15 @@ def profile(request, username, template_name="profiles/profile.html", extra_cont
         "pending_requests": pending_requests,
     }, **extra_context), context_instance=RequestContext(request))
 
+@secure_required
 def pay_membership(request, username):
     other_user = User.objects.get(username=username)
     
     # Show payment form if you are upgrading yourself
     if request.user == other_user:
         chapters = Network.objects.filter(chapter_info__isnull=False,
-                                          member_users=request.user)
+                                          member_users=request.user,
+                                          is_active=True)
         form = MembershipForm(chapters=chapters)
         form.helper.action = reverse('profile_pay_membership2', kwargs={'username': username})
     
@@ -590,7 +592,7 @@ def pay_membership(request, username):
     else:
         return render_to_response('denied.html', context_instance=RequestContext(request))
     
-    
+@secure_required
 def pay_membership2(request, username):
     other_user = User.objects.get(username=username)
     
@@ -598,7 +600,8 @@ def pay_membership2(request, username):
     if request.user == other_user:
         if request.method == 'POST':
             chapters = Network.objects.filter(chapter_info__isnull=False,
-                                              member_users=request.user)
+                                              member_users=request.user,
+                                              is_active=True)
             f = MembershipForm(request.POST, chapters=chapters)
             
             if f.is_valid():
@@ -654,19 +657,27 @@ def pay_membership2(request, username):
     # should not happen.. duh duh duh!
     else:
         return render_to_response('denied.html', context_instance=RequestContext(request))
+
+@secure_required
+def pay_membership_preview(request, username):        
+    return MembershipFormPreview(PaymentForm)(request, username=username)
         
 @staff_member_required   
 def impersonate (request, username):
     user = get_object_or_404(User, username=username)
-
-    logout(request)
-    online_middleware.remove_user(request)
-    user.backend = "django.contrib.auth.backends.ModelBackend"
-    login(request, user)
     
-    request.user.message_set.create(message="Welcome, %s impersonator!" % user.visible_name())
+    if user.get_profile().grandfathered:
+        request.user.message_set.create(message="%s has not logged into the new myewb yet; you can't impersonate them." % user.visible_name())
+        
+    else:
+        logout(request)
+        online_middleware.remove_user(request)
+        user.backend = "django.contrib.auth.backends.ModelBackend"
+        login(request, user)
+    
+        request.user.message_set.create(message="Welcome, %s impersonator!" % user.visible_name())
 
-    return HttpResponseRedirect(reverse(settings.LOGIN_REDIRECT_URLNAME))
+    return HttpResponseRedirect(reverse('home'))
 
 # is there a decorator that uses user.has_module_perms instead of user.has_perms ?
 @permission_required('profiles.admin')

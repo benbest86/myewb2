@@ -40,10 +40,11 @@ def user_search(request):
             qry = qry & Q(memberprofile__grandfathered=False)
             
             # restrict results to friends or people in your chapter, too
-            mygrps = BaseGroup.objects.filter(member_users=request.user).exclude(model="LogisticalGroup")
+            mygrps = BaseGroup.objects.filter(member_users=request.user, is_active=True).exclude(model="LogisticalGroup")
             qry = qry & (Q(member_groups__group__in=mygrps) | Q(friends=request.user) | Q(_unused_=request.user))
 
         # build the final query
+        qry = qry & Q(is_active=True)
         users = User.objects.filter(qry).exclude(id=request.user.id).order_by('first_name', 'last_name')
         usercount = users.count()
     else:

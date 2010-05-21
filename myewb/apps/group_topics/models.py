@@ -160,7 +160,7 @@ class GroupTopic(Topic):
         super(GroupTopic, self).__init__(*args, **kwargs)
         
         # wiki parse if needed
-        if self.pk and not self.converted and self.body:
+        if self.pk and not self.converted and self.body.strip():
             self.body = wiki_convert(self.body)
             self.converted = True
             self.save()
@@ -227,11 +227,11 @@ class GroupTopic(Topic):
             return 0
             
     def intro(self):
-        if len(self.body) < 600:
+        if len(self.body) < 400:
             return self.body
 
         # thanks http://stackoverflow.com/questions/250357/smart-truncate-in-python
-        intro = self.body[:600].rsplit(' ', 1)[0]
+        intro = self.body[:400].rsplit(' ', 1)[0]
 
         intro = Cleaner(scripts=False,      # disable it all except page_structure
                         javascript=False,   # as proper cleaning is done on save;
@@ -250,7 +250,7 @@ class GroupTopic(Topic):
         return intro
     
     def intro_has_more(self):
-        return (len(self.body) >= 600)
+        return (len(self.body) >= 400)
     
     def update_score(self, amount):
         self.score += int(amount * (self.score_modifier / float(100)))

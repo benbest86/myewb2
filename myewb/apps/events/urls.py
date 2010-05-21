@@ -30,7 +30,7 @@ urlpatterns = patterns('',
     url(r'^change/(?P<id>\d+)/', view='events.views.change',
         name='events_change'),
 
-    url(r'^user/(?P<username>[-\w]+)/$',\
+    url(r'^user/(?P<username>[\w\._-]+)/$',\
             view='events.views.for_user', name='events_for_user'),
 
     # my regex isn't up to snuff... is it possible to do this in one line instad of four?
@@ -48,7 +48,7 @@ urlpatterns = patterns('',
     url(r'^for/(?P<app_label>[-\w]+)/(?P<model_name>[-\w]+)/(?P<id>\d+)/(?P<year>\d{4})/(?P<month>\d{2})/(?P<day>\d{2})/$',\
             view='events.views.for_instance', name='events_for_instance'),
             
-    url(r'^ical/user/(?P<username>[-\w]+)/$',\
+    url(r'^ical/user/(?P<username>[\w\._-]+)/$',\
             view='events.views.feed_for_user', name='events_feed_for_user'),
     url(r'^ical/for/(?P<app_label>[-\w]+)/(?P<model_name>[-\w]+)/(?P<id>\d+)/$',\
             view='events.views.feed_for_instance', name='events_feed_for_instance'),

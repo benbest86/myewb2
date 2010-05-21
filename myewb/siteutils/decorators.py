@@ -1,3 +1,4 @@
+import settings
 from django.http import HttpResponseForbidden, Http404
 from django.shortcuts import render_to_response
 from django.template import RequestContext
@@ -36,3 +37,18 @@ class owner_required(object):
                 # deny access
                 return render_to_response('denied.html', context_instance=RequestContext(request))
         return newf
+
+# huge thanks to
+#http://www.redrobotstudios.com/blog/2009/02/18/securing-django-with-ssl/
+def secure_required(view_func):
+    """Decorator makes sure URL is accessed over https."""
+    def _wrapped_view_func(request, *args, **kwargs):
+        if not request.is_secure():
+            request_url = request.build_absolute_uri(request.get_full_path())
+            secure_url = request_url.replace('http://', 'https://')
+            if not settings.DEBUG:
+                return HttpResponseRedirect(secure_url)
+            else:
+                print "would have forced SSL:", secure_url
+        return view_func(request, *args, **kwargs)
+    return _wrapped_view_func

@@ -40,13 +40,15 @@ class GroupEventForm(EventForm):
 
         if user:
             if user.has_module_perms("basegroups"):
-                networks = Network.objects.all()
-                communities = Community.objects.all()
+                networks = Network.objects.filter(is_active=True)
+                communities = Community.objects.filter(is_active=True)
             else:
                 networks = Network.objects.filter(members__user=user,
-                                                  members__is_admin=True)
+                                                  members__is_admin=True,
+                                                  is_active=True)
                 communities = Community.objects.filter(members__user=user,
-                                                       members__is_admin=True)
+                                                       members__is_admin=True,
+                                                       is_active=True)
             groups = []
             for n in networks:
                 groups.append(("n%d" % n.pk, n.name))

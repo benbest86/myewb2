@@ -62,7 +62,7 @@
 
 
     {% if user.is_authenticated and user.get_networks %}
-    	{% cache CACHE_TIMEOUT "mycommunities" user.username %}  
+    	{#{% cache CACHE_TIMEOUT "mycommunities" user.username %}#}  
 		<div class="toolbarheader bkgd" id="box-my-communities">{% trans "My Communities" %}</div>
 		<div class="toolbarcontent">
 	    {% for group in user.get_communities %}
@@ -73,7 +73,7 @@
 
     	{% endfor %}
 		</div>
-		{% endcache %}
+		{#{% endcache %}#}
 	{% endif %}
 
 

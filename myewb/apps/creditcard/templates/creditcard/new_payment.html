@@ -22,7 +22,9 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 		{% if form.non_field_errors %}
 			<div class="uniForm">
 				{% for e in form.non_field_errors %}
-					<div class="errorField"">{{ e }} </div>
+					<div class="ctrlHolder error">
+						<p class="errorField">{{ e }}</p>
+					</div>
 				{% endfor %}
 			</div>
 		{% endif %}

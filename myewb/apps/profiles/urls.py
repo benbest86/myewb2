@@ -23,7 +23,7 @@ urlpatterns = patterns('profiles.views.profile',
     url(r'^(?P<username>[\w\._-]+)/$', 'profile', name='profile_detail'),
     url(r'^(?P<username>[\w\._-]+)/membership/$', 'pay_membership', name='profile_pay_membership'),
     url(r'^(?P<username>[\w\._-]+)/membership2/$', 'pay_membership2', name='profile_pay_membership2'),
-    url(r'^(?P<username>[\w\._-]+)/membership/preview/$', MembershipFormPreview(PaymentForm), name='profile_pay_preview'),
+    url(r'^(?P<username>[\w\._-]+)/membership/preview/$', 'pay_membership_preview', name='profile_pay_preview'),
 
     url(r'^(?P<username>[\w\._-]+)/impersonate/$', 'impersonate', name='profile_impersonate'),
     url(r'^(?P<username>[\w\._-]+)/delete/$', 'softdelete', name='account_delete'),

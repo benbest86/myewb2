@@ -52,8 +52,13 @@
                 <div id="ewbbc">
                 <div id="ewbbc-flash">
 
+{% if not grandfathered %}
+
 <object width="280" height="172"><param name="movie" value="http://www.youtube.com/v/sq_nLBOmrZY&hl=en_US&fs=1&color1=0xe1600f&color2=0xfebd01"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/sq_nLBOmrZY&hl=en_US&fs=1&color1=0xe1600f&color2=0xfebd01" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="280" height="172"></embed></object>
 {#youtube here (removed cuz it takes a while to load!)#}
+
+{% endif %}
+
                 </div> <!-- ewbbc-flash -->
             </div> <!-- ewbbc -->
 {% comment %}
@@ -149,14 +154,63 @@
 {% endcomment %}
 
         <div>
-                <div class="toolbarheader_right"><a href="http://twitter.com/ewb" class="barheaderlink">Follow us on twitter</a></div>
-                <div class="toolbarcontent_right">
+                <div class="toolbarheader_right"><a href="http://twitter.com/ewb" class="barheaderlink">Across the country</a></div>
+                <div class="toolbarcontent_right" style="padding: 0px;">
 
-                    <ul id="twitter_update_list" class="postlinklist">
-                    <li>Twitter here.  Back online soon.</li>
-                    </ul>
+				<div id="twitterbar" style="margin-left: -1px;">
+				<style>
+				.twtr-hd
+				{
+				  display: none;
+				}
+				.twtr-doc, .twtr-timeline
+				{
+				  -moz-border-radius-bottomleft:0px;
+				  -moz-border-radius-bottomright:0px;
+				  -moz-border-radius-topleft:0px;
+				  -moz-border-radius-topright:0px;
+				}
+				#twtr-widget-1 p
+				{
+				  font-size: 12px;
+				}
+				</style>
+				<script src="http://widgets.twimg.com/j/2/widget.js"></script>
+				<script>
+				new TWTR.Widget({
+				  version: 2,
+				  type: 'search',
+				  search: '#ewb',
+				  interval: 2000,
+				  title: 'What are you doing? Tweet it with #ewb',
+				  subject: 'Across The Country',
+				  width: 301,
+				  height: 750,
+				  theme: {
+				    shell: {
+				      background: '#001f65',
+				      color: '#ffffff'
+				    },
+				    tweets: {
+				      background: '#ffffff',
+				      color: '#444444',
+				      links: '#0047ee'
+				    }
+				  },
+				  features: {
+				    scrollbar: true,
+				    loop: false,
+				    live: true,
+				    hashtags: true,
+				    timestamp: true,
+				    avatars: true,
+				    behavior: 'all'
+				  }
+				}).render().start();
+				</script>
+				
+				</div>
 
-                    <p style="text-align: right; padding-top: 0; margin-top: 0; padding-right: 0px; margin-right: 6px;"><a href="http://twitter.com/ewb" class="more" id="twitter-link" target="_blank">follow us on Twitter &raquo;</a></p>
                 </div>
         </div>
 {# </div> #}

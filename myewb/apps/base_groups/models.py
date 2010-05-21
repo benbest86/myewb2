@@ -342,8 +342,8 @@ class GroupMemberRecord(BaseGroupMember):
     # See http://docs.djangoproject.com/en/dev/topics/db/models/#be-careful-with-related-name
     group = models.ForeignKey(BaseGroup, related_name="member_records", verbose_name=_('group'))
     user = models.ForeignKey(User, related_name="group_records", verbose_name=_('user'))
-    #datetime = models.DateTimeField(auto_now_add=True)
-    datetime = models.DateTimeField(default=datetime.datetime.now())
+    datetime = models.DateTimeField(auto_now_add=True)
+    #datetime = models.DateTimeField(default=datetime.datetime.now())
     membership_start = models.BooleanField(default=False, help_text=_('Whether this record signifies the start of a membership or not.'))
     membership_end = models.BooleanField(default=False, help_text=_('Whether this record signifies the end of a membership or not.'))
 
@@ -493,9 +493,6 @@ def clean_up_bulk_users(sender, instance, created, **kwargs):
 post_save.connect(clean_up_bulk_users, sender=EmailAddress)
 
 def add_creator_to_group(sender, instance, created, **kwargs):
-    pass
-    """
-    # Not needed, I think?
     if created:
         try:
             GroupMember.objects.create(
@@ -506,5 +503,4 @@ def add_creator_to_group(sender, instance, created, **kwargs):
                     admin_order = 1)
         except:
             pass
-    """
 post_save.connect(add_creator_to_group, sender=BaseGroup)

@@ -166,7 +166,7 @@ def main_dashboard(request):
     statusBreakdown = statusBreakdownChart.get_url()
     
     # ---- Membership breakdown ----
-    chapters = Network.objects.filter(chapter_info__isnull=False)
+    chapters = Network.objects.filter(chapter_info__isnull=False, is_active=True)
     chapternames = []
     chaptermembers = []
     for chapter in chapters:

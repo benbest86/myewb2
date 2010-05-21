@@ -60,10 +60,5 @@
     </tbody>
 </table>
 
-
-
-	{% if group.parent %}
-		<p>{% trans "Parent:" %} <a href="{{ group.parent.get_absolute_url }}">{{ group.parent.name }}</a></p>
-	{% endif %}
 {% endblock %}
 

@@ -127,6 +127,7 @@ def ajax_search(request, network_type):
     if search_term:
         # TODO: implement public/private visibility
         networks = Network.objects.all()
+        networks = networks.filter(is_active=True)
         networks = networks.filter(name__icontains=search_term)
         networks = networks.filter(network_type__iexact=network_type)
         networks = networks.order_by("name")
@@ -253,7 +254,8 @@ def update_magic_lists(request, group_slug, username, form_class):
                         # member_users=other_user membership check
                         # and the exclusion ensures it's a different chapter's list
                         otherexec = ExecList.objects.filter(parent__isnull=False,
-                                                            member_users=other_user)
+                                                            member_users=other_user,
+                                                            is_active=True)
                         otherexec = otherexec.exclude(parent=group)
                         
                         if otherexec.count() > 0:
@@ -295,12 +297,12 @@ def update_magic_lists(request, group_slug, username, form_class):
                 # code is only run if they have been downgraded from this
                 # chapter's exec (not being added to a different chapter's regular list)
                 elif member and member.is_admin:
-                    execlists = ExecList.objects.filter(member_users=other_user)
+                    execlists = ExecList.objects.filter(member_users=other_user, is_active=True)
                     for list in execlists:
                         list.remove_member(other_user)
 
                 # build list of Natl Rep objects that user should be in
-                currentlists = NationalRepList.objects.filter(member_users=other_user)
+                currentlists = NationalRepList.objects.filter(member_users=other_user, is_active=True)
                 newlists = []
                 
                 if form.cleaned_data['is_admin'] == True:
