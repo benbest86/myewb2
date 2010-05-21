@@ -15,7 +15,11 @@ from group_topics.feeds import TopicFeedAll, TopicFeedGroup, TopicFeedFeatured, 
 
 def group(request, group_slug):
     try:
-        group = BaseGroup.objects.get(slug=group_slug)
+        try:
+            group = BaseGroup.objects.get(slug=group_slug)
+        except:
+            group = BaseGroup.objects.get(id=int(group_slug))
+            group_slug = group.slug
         
         # concept of a RSS feed for a logged-in user is weird, but OK...
         if group.is_visible(request.user):
