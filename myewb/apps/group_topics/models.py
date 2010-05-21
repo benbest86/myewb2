@@ -160,7 +160,7 @@ class GroupTopic(Topic):
         super(GroupTopic, self).__init__(*args, **kwargs)
         
         # wiki parse if needed
-        if self.pk and not self.converted and self.body:
+        if self.pk and not self.converted and self.body.strip():
             self.body = wiki_convert(self.body)
             self.converted = True
             self.save()
