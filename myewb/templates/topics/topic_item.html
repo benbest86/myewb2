@@ -32,6 +32,7 @@
     		{% endif %}
 
 			{% if num_comments %}
+			  {% spaceless %}
 				<a href="{{ topic.get_absolute_url }}" style="color: white;" class="nodeco">
 				{% ifequal num_comments 1 %}
 					1 reply
@@ -43,6 +44,7 @@
 					<em>{% get_comments_for_topic_since topic user.get_profile.previous_login %}</em>
     			{% endif %}
     			</a>
+			  {% endspaceless %}
 			{% else %}
 					{#&nbsp;#}
 			{% endif %}
@@ -50,7 +52,7 @@
 			{% if num_comments and topic.num_whiteboard_edits %}<br/>{% endif %}
 
 			{% if topic.num_whiteboard_edits %}
- 				<a href="{{ topic.get_absolute_url }}" style="color: white;" class="nodeco">{{topic.num_whiteboard_edits}} whiteboard edits</a>
+ 				<a href="{{ topic.get_absolute_url }}#post-whiteboard" style="color: white;" class="nodeco">{{topic.num_whiteboard_edits}} whiteboard edit{% ifnotequal topic.num_whiteboard_edits 1 %}s{% endifnotequal %}</a>
             {% else %}
  				&nbsp;
 			{% endif %}
