@@ -26,10 +26,10 @@ from django.utils.translation import ugettext_lazy as _
 
 from siteutils import online_middleware
 from siteutils.helpers import get_email_user
-from siteutils.decorators import owner_required
+from siteutils.decorators import owner_required, secure_required
 from siteutils.models import PhoneNumber
 from profiles.models import MemberProfile, StudentRecord, WorkRecord, ToolbarState
-from profiles.forms import StudentRecordForm, WorkRecordForm, MembershipForm, PhoneNumberForm, SettingsForm
+from profiles.forms import StudentRecordForm, WorkRecordForm, MembershipForm, MembershipFormPreview, PhoneNumberForm, SettingsForm 
 
 from networks.models import Network
 from networks.forms import NetworkBulkImportForm
@@ -562,6 +562,7 @@ def profile(request, username, template_name="profiles/profile.html", extra_cont
         "pending_requests": pending_requests,
     }, **extra_context), context_instance=RequestContext(request))
 
+@secure_required
 def pay_membership(request, username):
     other_user = User.objects.get(username=username)
     
@@ -590,7 +591,7 @@ def pay_membership(request, username):
     else:
         return render_to_response('denied.html', context_instance=RequestContext(request))
     
-    
+@secure_required
 def pay_membership2(request, username):
     other_user = User.objects.get(username=username)
     
@@ -654,6 +655,10 @@ def pay_membership2(request, username):
     # should not happen.. duh duh duh!
     else:
         return render_to_response('denied.html', context_instance=RequestContext(request))
+
+@secure_required
+def pay_membership_preview(request, username):        
+    return MembershipFormPreview(PaymentForm)(request, username=username)
         
 @staff_member_required   
 def impersonate (request, username):
