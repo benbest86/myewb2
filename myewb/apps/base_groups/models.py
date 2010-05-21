@@ -493,9 +493,6 @@ def clean_up_bulk_users(sender, instance, created, **kwargs):
 post_save.connect(clean_up_bulk_users, sender=EmailAddress)
 
 def add_creator_to_group(sender, instance, created, **kwargs):
-    pass
-    """
-    # Not needed, I think?
     if created:
         try:
             GroupMember.objects.create(
@@ -506,5 +503,4 @@ def add_creator_to_group(sender, instance, created, **kwargs):
                     admin_order = 1)
         except:
             pass
-    """
 post_save.connect(add_creator_to_group, sender=BaseGroup)
