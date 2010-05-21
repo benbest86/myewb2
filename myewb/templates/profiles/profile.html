@@ -306,7 +306,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 	    {% else %}
 	        {% if previous_invitations_from %}
 	            <p>{{ other_user.visible_name }} {% blocktrans %}wants to be friends.{% endblocktrans %}</p>
-	            <p>{% blocktrans %]If you accept this invitation, {{ other_user.visible_name }} will be able to see your contact information and send you messages through myEWB.</p>
+	            <p>If you accept this invitation, {{ other_user.visible_name }} will be able to see your contact information and send you messages through myEWB.</p>
 	            {% for invitation in previous_invitations_from %}
 	            	{% comment %}
 	            	I've disabled the message on the request form, so no need to display it here either.
