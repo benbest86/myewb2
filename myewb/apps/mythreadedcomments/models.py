@@ -42,50 +42,37 @@ def send_to_watchlist(sender, instance, created, **kwargs):
            'attachments': attachments
           }
     sender = 'myEWB <notices@my.ewb.ca>'
+    recipients = set()
     
     # loop through watchlists and send emails
     for list in topic.watchlists.all():
         user = list.owner
         # TODO: for user in list.subscribers blah blah
-
         if user.get_profile().watchlist_as_emails:
-            send_mail(subject="Re: %s" % topic.title,
-                      txtMessage=None,
-                      htmlMessage=instance.comment,
-                      fromemail=sender,
-                      recipients=[user.email],
-                      context=ctx)
+            recipients.add(user.email)
             
     # send email to original post creator
     if topic.creator.get_profile().replies_as_emails:
-        send_mail(subject="Re: %s" % topic.title,
-                  txtMessage=None,
-                  htmlMessage=instance.comment,
-                  fromemail=sender,
-                  recipients=[topic.creator.email],
-                  context=ctx)
+        recipients.add(topic.creator.email)
         
     # send email to participants
     participants = []
     allcomments = ThreadedComment.objects.all_for_object(topic)
     for c in allcomments:
-        if c.user.get_profile().replies_as_emails2 and c.user.email not in participants:
-            participants.append(c.user.email)
+        if c.user.get_profile().replies_as_emails2:
+            recipients.add(c.user.email)
             
-    if topic.creator.get_profile().replies_as_emails:   # remove creator if they already received an email
-        if topic.creator.email in participants:
-            participants.remove(topic.creator.email)
-    if len(participants):
+    # but remove original poster
+    recipients.remove(instance.user.email)
+            
+    if len(recipients):
         send_mail(subject="Re: %s" % topic.title,
                   txtMessage=None,
                   htmlMessage=instance.comment,
                   fromemail=sender,
-                  recipients=participants,
+                  recipients=recipients,
                   context=ctx)
         
-    # TODO: option to email anyone else who has repied to this thread too
-    # (or could be implemented as an "add to watchlist" checkbox on the reply form)
-     
 post_save.connect(send_to_watchlist, sender=ThreadedComment, dispatch_uid='sendreplytowatchlist')
 
 def update_scores(sender, instance, **kwargs):
