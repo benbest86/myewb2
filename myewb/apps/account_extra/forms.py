@@ -120,7 +120,7 @@ class EmailSignupForm(forms.Form):
     def __init__(self, *args, **kwargs):
         #chapterlist = kwargs.pop('chapters', None)
         
-        chapterlist = Network.objects.filter(chapter_info__isnull=False).order_by('name')
+        chapterlist = Network.objects.filter(chapter_info__isnull=False, is_active=True).order_by('name')
         for chapter in chapterlist:
             #try:
             #    i = self.base_fields['chapter'].choices.index((chapter.slug, chapter.chapter_info.chapter_name))

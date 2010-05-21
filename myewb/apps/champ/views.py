@@ -205,7 +205,7 @@ def dashboard(request, year=None, month=None, term=None,
         context['prevterm'] = schoolyear.prevterm(term, year)
         context['nextterm'] = schoolyear.nextterm(term, year)
     
-    context['allgroups'] = Network.objects.filter(chapter_info__isnull=False).order_by('name')
+    context['allgroups'] = Network.objects.filter(chapter_info__isnull=False, is_active=True).order_by('name')
     
     return render_to_response('champ/dashboard.html',
                               context,

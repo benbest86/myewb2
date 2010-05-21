@@ -569,7 +569,8 @@ def pay_membership(request, username):
     # Show payment form if you are upgrading yourself
     if request.user == other_user:
         chapters = Network.objects.filter(chapter_info__isnull=False,
-                                          member_users=request.user)
+                                          member_users=request.user,
+                                          is_active=True)
         form = MembershipForm(chapters=chapters)
         form.helper.action = reverse('profile_pay_membership2', kwargs={'username': username})
     
@@ -599,7 +600,8 @@ def pay_membership2(request, username):
     if request.user == other_user:
         if request.method == 'POST':
             chapters = Network.objects.filter(chapter_info__isnull=False,
-                                              member_users=request.user)
+                                              member_users=request.user,
+                                              is_active=True)
             f = MembershipForm(request.POST, chapters=chapters)
             
             if f.is_valid():

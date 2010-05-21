@@ -57,7 +57,7 @@ class ComposeForm(OriginalComposeForm):
             for r in recipients:
                 if not Friendship.objects.are_friends(self.sender, r):
                     # should be in BaseGroup manager, not here and also account_extra.models (ie, User.get_groups())
-                    grps = BaseGroup.objects.filter(member_users=self.sender).exclude(model="LogisticalGroup")
+                    grps = BaseGroup.objects.filter(member_users=self.sender, is_active=True).exclude(model="LogisticalGroup")
                     
                     # should probably also be in a BaseGroup manager somewhere...!
                     gm = GroupMember.objects.filter(user=r, group__in=grps).count()
