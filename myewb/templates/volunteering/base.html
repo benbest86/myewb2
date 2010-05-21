@@ -1,8 +1,8 @@
 {% extends "site_base.html" %}
 
 {% block extra_head %}
-		<link href="/media/css/base.css" rel="stylesheet" type="text/css" media="screen" /> 
-		<link href="/media/css/forms.css" rel="stylesheet" type="text/css" media="screen" /> 
+<!-- 		<link href="/media/css/base.css" rel="stylesheet" type="text/css" media="screen" />  -->
+<!-- 		<link href="/media/css/forms.css" rel="stylesheet" type="text/css" media="screen" />  -->
 		<script type="text/javascript" src="/admin/jsi18n/"></script>
 		<script type="text/javascript" src="{{STATIC_URL}}js/core.js"></script>
 		<script type="text/javascript" src="{{STATIC_URL}}js/admin/RelatedObjectLookups.js"></script> 
@@ -11,10 +11,14 @@
 
 {% block body_class %}volunteering purple{% endblock %}
 
+{% block head_title %}Volunteering with EWB{% endblock %}
+
 {% block subnav %}
 <ul class="subnav">
 <!-- user/guest -->
 <li class="current">Volunteering with EWB</li>
+
+{% comment %}
 <!-- admins -->
 <li><a href="{% url placements %}">Placements</a></li>
 <li><a href="{% url sessions %}">Sessions</a></li>
@@ -28,5 +32,7 @@
 <li><a href="{% url sendinggroups %}">Sending Groups</a></li>
 
 <li><a href="{% url ov_info %}">OV Info</a></li>
+
+{% endcomment %}
 </ul>
 {% endblock %}
