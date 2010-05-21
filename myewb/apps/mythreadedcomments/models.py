@@ -63,7 +63,8 @@ def send_to_watchlist(sender, instance, created, **kwargs):
             recipients.add(c.user.email)
             
     # but remove original poster
-    recipients.remove(instance.user.email)
+    if instance.user.email in recipients:
+        recipients.remove(instance.user.email)
             
     if len(recipients):
         send_mail(subject="Re: %s" % topic.title,
