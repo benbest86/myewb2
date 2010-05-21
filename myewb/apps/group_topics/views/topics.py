@@ -381,7 +381,9 @@ def watchlist(request, list_id):
     topics = GroupTopic.objects.get_for_watchlist(list)
             
     return render_to_response("topics/topics.html",
-                              {"topics": topics},
+                              {"topics": topics,
+                               "group": None,
+                               "mode": None},
                               context_instance=RequestContext(request)
                              )
     
