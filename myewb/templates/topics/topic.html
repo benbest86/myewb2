@@ -71,7 +71,7 @@
 
 		<a href="{% url profile_detail topic.creator.username %}">
 		    {# {% avatar topic.creator 40 %} #}
-		    <img src="{% avatar_url topic.creator 60 %}" class="posthumbnail" title="{{topic.creator}}" alt="{{topic.creator}}"/>
+		    <img src="{% avatar_url topic.creator 60 %}" class="posthumbnail" style="max-width:70px; max-height:70px;"  title="{{topic.creator}}" alt="{{topic.creator}}"/>
 		</a>
 
         <div class="textbody">
