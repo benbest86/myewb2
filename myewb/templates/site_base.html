@@ -178,4 +178,81 @@
 {% block extra_body_base %}
     {% urchin %}    
     {% block extra_body %}{% endblock %}
+    
+    {% if grandfathered %}
+	<link type="text/css" href="{{STATIC_URL}}css/colorbox.css" rel="stylesheet" />
+	<script type="text/javascript" src="{{STATIC_URL}}js/colorbox.js"></script>
+    <script type="text/javascript">
+	    $(document).ready(function() {
+	    	$.fn.colorbox({	inline:true,
+		    				href:'#welcomescreen',
+		    				width:'80%',
+		    				height:'80%',
+		    				opacity:'0.7',
+		    				overlayClose:false});
+	    });
+    </script>
+    <style>
+    #welcomescreen li { font-size: 12px; line-height: 18px; }
+    </style>
+    
+    <div style="display: none;">
+     	<div id="welcomescreen">
+     		<img src="{{STATIC_URL}}images/ninja.gif" style="float: right; padding: 5px;"/>
+     		<img src="{{STATIC_URL}}images/logos/title-graphic.png"/>
+     		<h2>Welcome to the new myEWB<br/>
+     		<em style="font-size: 10px; position: relative; top: -8px; padding-left: 5px;">slightly more awesome</em></h2>
+    		
+    		<p>
+    			Over the past year, we've been busy at work on this myEWB release.  While it's the 
+    			same myEWB that's served us well over the past five years, we've brought it into the garage,
+    			rebuilt the engine, done some body work, and are preparing for some really exciting changes 
+    			over the summer.
+    		</p>
+    		
+    		<p>
+    			<strong>What's new?</strong><br/>
+    			Our work was mostly behind the scenes, rewritting myEWB from the ground up.  The new 
+    			re-written platform is much more agile (agile like a fox!), allowing us to push new features out faster.  
+    			And we were also able to sneak in some pretty cool upgrades:
+    			<ul>
+    				<li>a "remember me" checkbox when you're logging in!</li>
+    				<li>a rich text editor for new posts (instead of those pesky stars and hat signs for formatting)</li>
+    				<li>options to have posts emailed to you automatically after you start or reply to a post</li>
+    				<li>communities that anyone can create to do cool EWB stuff, both in and out of chapters</li>
+					<li>a friends and messaging system making it easy for EWBers to keep in touch (really, Facebook, we didn't copy you!)</li>
+					<li>and for chapter execs, better member management options instead of CSV files!</li>
+    			</ul>
+    		</p>
+    		
+    		<p>
+    			<strong>What's coming up?</strong><br/>
+    			This is the first step toward the <em>myEWB 2.0</em> we've been talking about.  We have 
+    			a lot of exciting plans for the summer, including a new CHAMP (finally... we know!) and new tools to enhance our 
+    			online community.  Stay tuned!
+    		</p>
+    		
+    		<p>
+    			With these cool new changes, and to better reflect our future direction, we have made some small changes
+    			to the <a href="{% url privacy %}" target="_new">myEWB privacy policy</a>.  Don't worry, it's still 
+    			really really short (we're engineers, not lawyers).  Please take a moment to look it over.  The new 
+    			myEWB provides new and improved ways for members to conenct with each other, and we want to make sure 
+    			this is okay with you.   If you're freaked out by the changes, definitely send us an email! 
+    		</p>
+    		
+    		<p>
+    			<strong>What do you think?</strong><br/>
+    			Are we on the right track?  What are you most excited about?  Have you found something 
+    			that doesn't quite work as expected?  We'd love to hear from you!  Please send your
+    			feedback to <a href="mailto:feedback@my.ewb.ca">feedback@my.ewb.ca</a>, or click the 
+    			feedback tab on the side of the screen.
+    		</p>
+    		
+    		<p>
+    			<strong>Most of all, we hope to help build this incredible movement across the country!</strong>
+    		</p>
+    		
+    	</div>
+    </div>
+    {% endif %}
 {% endblock %}
