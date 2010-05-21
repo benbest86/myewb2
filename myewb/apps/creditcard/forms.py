@@ -289,6 +289,16 @@ class PaymentFormPreview(FormPreview):
         
         # TODO: any other processing/recordkeeping we want to do?
         # do I want to save this into the db?
+        p = Payment()
+        p.billing_name=cleaned_data['billing_name']
+        p.phone=cleaned_data['phone']
+        p.email=cleaned_data['email']
+        p.approved=results['trnApproved']
+        p.response="\n".join(result)
+        p.amount = product.amount
+        p.save()
+        p.products.add(product)
+        p.save()
         
         # return based on value
         if results['trnApproved'] == '1':
