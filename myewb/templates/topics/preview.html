@@ -59,6 +59,7 @@ The {% if group %} checks are left in just in case, and should be removed eventu
     <form class="uniForm" method="POST" action="">
         <p class="form_block">
             <input type="hidden" name="postid" value="{{ topic.id }}" />
+            <input type="hidden" name="sender" value="{{sender}}"/>
             <input type="submit" name="goback" value="{% trans "Go back and edit" %}" />
             <input type="submit" name="previewed" value="{% trans "Create New Post" %}" />
         </p>
