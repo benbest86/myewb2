@@ -57,7 +57,7 @@
 		  $(this).siblings('.frontpage-mygroups-actions').show();
 		  var groupSlug = $(this).attr("id").substring(17);
 		  load_posts('/groups/' + groupSlug + '/posts/');
-		  $('.frontpage-reset').show();
+		  //$('.frontpage-reset').show();
 		  return false;
 		});
 		
@@ -65,7 +65,7 @@
 		  $('.frontpage-mygroups-actions').hide();
 		  $('.frontpage-mygroups-actions').parent().removeClass('bkgd-light');
 		  load_posts('{{request.url}}');
-		  $('.frontpage-reset').hide();
+		  //$('.frontpage-reset').hide();
 		  return false;
         });
 		
@@ -143,6 +143,10 @@
 
 {% block toolbar_left %}
     {% if user.is_authenticated %}
+    
+    
+        {% comment %}
+    
         <div class="toolbarheader bkgd" id="box-latestactivity">{% trans "Latest Activity" %}</div>
         <div class="toolbarcontent">
         	Since you last signed in {{ user.get_profile.previous_login|timesince}} ago:
@@ -203,15 +207,18 @@
            	{% endif %}
         </div>
         
+        {% endcomment %}
+        
+        
 		{% ifnotequal mode "newposts" %}
 			{% ifnotequal mode "newreplies" %}
 				{% ifnotequal mode "featured" %}
         {# my groups #}
         {% cache CACHE_TIMEOUT "frontpagegroups" user.username LATEST_POST %} 
-        <div class="toolbarheader bkgd" id="box-frontpage-mygroups">{% trans "My groups" %}</div>
+        <div class="toolbarheader bkgd" id="box-frontpage-mygroups">{% trans "Latest posts" %}</div>
         <div class="toolbarcontent">
         
-				<a href="#" class="frontpage-reset" style="display: none;">Show all posts</a>
+				<a href="#" class="frontpage-reset" {#style="display: none;"#}>All posts{% if posts_since_login %}&nbsp;&nbsp;<small>({{posts_since_login}} recent){% endif %}</small></a>
 
              	{% for group in user.get_groups %}
              		{% if not group.recent_topic_count %}
@@ -232,7 +239,33 @@
              		{% endif %}
             	{% endfor %}
             	<div style="text-align: right;">
-            		<a href="#" onclick="$('.frontpage-mygroups-nonew').slideDown(); $(this).hide(); return false;">show all</a>
+            		<a href="#" onclick="$('.frontpage-mygroups-nonew').slideToggle(); {#$(this).hide();#} return false;">show all</a>
+            		
+            		{% if can_adminovision %}
+                    {% spaceless %}
+                        <br/><a href="{% url topic_adminovision %}">
+                            {% if adminovision %}
+                    			Turn off adminovision
+                    		{% else %}
+                    			Turn on adminovision
+                    		{% endif %}
+                    	</a>
+                    {% endspaceless %}
+           	{% else %}
+               	{% if can_execovision %}
+               		{% spaceless %}
+               			<br/><a href="{% url topic_adminovision %}">
+                		{% if adminovision %}
+                			Turn off execovision
+                		{% else %}
+                			Turn on execovision
+                		{% endif %}
+                		</a>
+                	{% endspaceless %}
+                {% endif %}
+           	{% endif %}
+            		
+            		
             	</div>
         </div>
         {% endcache %}
