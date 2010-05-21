@@ -15,7 +15,7 @@ display: inline;
 ul.segmented li a, ul.segmented li span {
   display: block;
   background: #eee;
-padding:0.5em 0.7em;
+padding:0.5em 0.65em;
   margin: 0;
   border: 0.1em solid #ccc;
   border-left: none;

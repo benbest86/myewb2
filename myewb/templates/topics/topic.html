@@ -74,7 +74,11 @@
 		    <img src="{% avatar_url topic.creator 60 %}" class="posthumbnail" title="{{topic.creator}}" alt="{{topic.creator}}"/>
 		</a>
 
-        {{ topic.body|safe }}
+        <div class="textbody">
+
+            {{ topic.body|safe }}
+        
+        </div>
         
 		<br style="clear:both; height: 1px; line-height: 1px;" />
 	

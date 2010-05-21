@@ -17,7 +17,9 @@
 	<div class="whiteboard-box" id="post-whiteboard">
 		{# we ignore the markup field, and assume it's html, since we've hacked it up... #}
 		<div class="whiteboard-contents">
-		{{ wb.content|safe }}
+		  <div class="textbody">
+    		{{ wb.content|safe }}
+		  </div>
         </div>
 
         {% get_attachments_for wb as "attachments" %}

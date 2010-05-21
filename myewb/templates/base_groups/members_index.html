@@ -17,7 +17,9 @@
 
 {% if user.is_authenticated and is_admin %}
     {# <p><a href="{% groupurl new_member group %}">Add</a> a member</p> #}
-{% else %}
+{% endif %}    
+    
+{% if not user.is_authenticated %}
     {% url acct_signup as signup_url %}
     {% url acct_login as login_url %}
     <p>{% blocktrans %}<a href="{{ signup_url }}">Sign up</a> and <a href="{{ login_url }}">log in </a> to become a member.{% endblocktrans %}</p>

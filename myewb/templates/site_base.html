@@ -5,6 +5,8 @@
 {% load ifsetting_tag %}
 {% load analytics %}
 
+
+
 {% block extra_head_base %}
 		<link rel="SHORTCUT ICON" href="{{ STATIC_URL}}favicon.ico" />
 		<link rel="stylesheet" href="{{ STATIC_URL }}pinax/css/topics.css" />
@@ -13,6 +15,10 @@
 		<script type="text/javascript" src="{{ STATIC_URL }}base.js"></script>
 		{% block extra_head %}{% endblock %}
 		<link rel="stylesheet" href="{{ STATIC_URL }}css/myewb2.css" />
+		
+		
+		<script type="text/javascript" src="{{ STATIC_URL }}js/jquery-ui.js"></script>
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/jquery-ui.css" />
 
 
 		<link rel="stylesheet" href="{{ STATIC_URL }}css/myewb2-posts.css" />  {# @@@ this is now standard - need to take it out where it's loaded secondly #}
@@ -21,6 +27,15 @@
 		
 		
 		<script type="text/javascript">
+		
+//  External links in posts, etc., should open in a new window    
+$(document).ready(function(){
+	$(".textbody a[ href^='http']").attr('target','_blank');
+	
+	$(".openlinks a").attr('target','_blank');
+});
+		
+		
         $(document).ready(function() {
     		  $('.toolbarheader').click(function(){	
                 $(this).next().slideToggle();
@@ -110,6 +125,11 @@
     {% endif %}
         
         
+
+
+        
+        
+        
         
 		</script>
 		
@@ -173,6 +193,13 @@
 		</li>
 	{% endblock %}
 </ul>
+
+{% include "feedbackform.html" %}
+
+
+
+
+
 {% endblock %}
 
 {% block extra_body_base %}
