@@ -48,7 +48,7 @@ def image_preview(filepath, filename, postid):
     (shortname, extension) = os.path.splitext(filename)
     extension = extension.lower().strip('.')
     preview = False
-    if extension in KNOWN_EXTENSIONS:
+    if extension in IMAGE_EXTENSIONS:
         preview = True
         
     return {'preview': preview,
