@@ -10,7 +10,7 @@
     	   
     	   <input type="hidden" name="feedback-username" value="{{ user.username }}"/>
        	   <input type="hidden" name="feedback-visiblename" value="{{ user.visible_name }}"/>
-       	   <input type="hidden" name="feedback-email" value="{{ user.email }}"/>
+       	   <input type="hidden" name="feedback-email-h" value="{{ user.email }}"/>
     	   {# {{ user.username }} - {{ user.visible_name }} - {{ user.email }} #}
     	   
     	   {% endif %}
@@ -37,7 +37,7 @@
 	</div>
 </div>
 
-<a href="#" id="feedback-button-woot">Share your feedback!</a>
+<a href="#" id="feedback-button-woot" title="It's not the Trevor tab, but it's close!">Share your feedback!</a>
 
 
 <script type="text/javascript">
