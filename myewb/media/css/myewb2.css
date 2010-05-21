@@ -742,6 +742,9 @@ width:16px;
 max-height: 16px;
 }
 
+#feedback-dialog {
+background: url(images/francisC.png) no-repeat bottom right white;
+}
 
 #feedback-dialog-contents {
 font-size: 14px;
