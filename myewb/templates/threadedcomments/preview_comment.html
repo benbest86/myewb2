@@ -8,10 +8,10 @@
 {% load avatar_tags %}
 {% load attachments_tags %}
 
-{% block head_title %}{% trans "Comment Preview" %}{% endblock %}
+{% block head_title %}{% trans "Reply Preview" %}{% endblock %}
 
 {% block body %}
-<h1>{% trans "Comment Preview" %}</h1>
+<h1>{% trans "Reply Preview" %}</h1>
 <p><strong>{% trans "You will have to reattach any files." %}</strong></p>
 {% if user.is_authenticated %}
     {% if comment %}
@@ -26,7 +26,7 @@
                         {{ af|as_uni_form }}
                     {% endfor %}
                     <div id="attachLink">
-                        <a class="getAttachForm" href="{% url ac_get_attachment_form %}">{% trans "Attach a file to this post" %}</a>
+                        <a class="getAttachForm" href="{% url ac_get_attachment_form %}">{% trans "Attach a file to this reply" %}</a>
                     </div>
                 </div>
             </div>
