@@ -665,15 +665,19 @@ def pay_membership_preview(request, username):
 @staff_member_required   
 def impersonate (request, username):
     user = get_object_or_404(User, username=username)
-
-    logout(request)
-    online_middleware.remove_user(request)
-    user.backend = "django.contrib.auth.backends.ModelBackend"
-    login(request, user)
     
-    request.user.message_set.create(message="Welcome, %s impersonator!" % user.visible_name())
+    if user.get_profile().grandfathered:
+        request.user.message_set.create(message="%s has not logged into the new myewb yet; you can't impersonate them." % user.visible_name())
+        
+    else:
+        logout(request)
+        online_middleware.remove_user(request)
+        user.backend = "django.contrib.auth.backends.ModelBackend"
+        login(request, user)
+    
+        request.user.message_set.create(message="Welcome, %s impersonator!" % user.visible_name())
 
-    return HttpResponseRedirect(reverse(settings.LOGIN_REDIRECT_URLNAME))
+    return HttpResponseRedirect(reverse('home'))
 
 # is there a decorator that uses user.has_module_perms instead of user.has_perms ?
 @permission_required('profiles.admin')
