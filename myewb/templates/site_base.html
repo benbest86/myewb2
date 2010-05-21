@@ -5,6 +5,8 @@
 {% load ifsetting_tag %}
 {% load analytics %}
 
+
+
 {% block extra_head_base %}
 		<link rel="SHORTCUT ICON" href="{{ STATIC_URL}}favicon.ico" />
 		<link rel="stylesheet" href="{{ STATIC_URL }}pinax/css/topics.css" />
@@ -173,6 +175,13 @@
 		</li>
 	{% endblock %}
 </ul>
+
+{% include "feedbackform.html" %}
+
+
+
+
+
 {% endblock %}
 
 {% block extra_body_base %}

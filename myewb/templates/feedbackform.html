@@ -1,0 +1,65 @@
+
+
+<div id="feedback-dialog" title="myEWB 1.5 Feedback!">
+    <div id="feedback-dialog-contents">
+    	<p>Thanks for checking out the new myEWB 1.5!  We'd really love to hear your feedback on the changes, on bugs that you find, and ideas you have for myEWB's direction. Our priority right now is definitely finding bugs or broken parts of the site - thanks for helping us find those.</p>
+    	<form style="font-size:14px;">
+    	   
+           {% if user.is_authenticated %}
+    
+    	   
+    	   <input type="hidden" name="feedback-username" value="{{ user.username }}"/>
+       	   <input type="hidden" name="feedback-visiblename" value="{{ user.visible_name }}"/>
+       	   <input type="hidden" name="feedback-email" value="{{ user.email }}"/>
+    	   {# {{ user.username }} - {{ user.visible_name }} - {{ user.email }} #}
+    	   
+    	   {% endif %}
+    	   
+    	   <label>Email: <input type="text" name="feedback-email" value="{% if user.is_authenticated %}{{ user.email }}{% endif %}"/></label>
+    	   
+    	   
+    	   
+    	   <label>Feedback:<br/><textarea name="feedback-text" style="width:100%; height:120px;"></textarea></label>
+    	   <label>Category:
+    	       <select name="feedback-category">
+    	           <option>(choose an option)</option>
+    	           <option>This is broken</option>
+    	           <option>This looks funny</option>
+    	           <option>This is cool</option>
+    	           <option>It would be sweet if...</option>
+    	       </select>
+    	   </label><br/>
+    	   <button id="feedback-dialog-send">Send!</button>
+    	</form>
+
+        <p>Major issues? Email <a href="mailto:support@my.ewb.ca">support@my.ewb.ca</a></p>
+
+	</div>
+</div>
+
+<a href="#" id="feedback-button-woot">Share your feedback!</a>
+
+
+<script type="text/javascript">
+$(function() {
+		$("#feedback-dialog").dialog({ modal: true,width: 460,autoOpen: false });
+		
+		
+		$("#feedback-dialog-send").click(function() {
+    		$.post("test.php{# @@@ change this URL #}", $("#feedback-dialog form").serialize(),
+    		function(data){
+               //alert("Data Loaded: " + data);
+               $("#feedback-dialog").dialog('close');
+            });
+           return false;
+		});
+		
+		
+		$("#feedback-button-woot").click(function() {
+            $("#feedback-dialog").dialog('open');
+            return false;
+        });
+
+});
+
+</script>
