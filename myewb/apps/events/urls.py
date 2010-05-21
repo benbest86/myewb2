@@ -30,7 +30,7 @@ urlpatterns = patterns('',
     url(r'^change/(?P<id>\d+)/', view='events.views.change',
         name='events_change'),
 
-    url(r'^user/(?P<username>[-\w]+)/$',\
+    url(r'^user/(?P<username>[\w\._-]+)/$',\
             view='events.views.for_user', name='events_for_user'),
 
     # my regex isn't up to snuff... is it possible to do this in one line instad of four?
