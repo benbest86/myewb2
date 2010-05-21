@@ -185,7 +185,8 @@ class BaseGroup(Group):
                   htmlMessage=htmlBody,
                   fromemail=sender,
                   recipients=self.get_member_emails(),
-                  context=context)
+                  context=context,
+                  shortname=self.slug)
     
     def save(self, force_insert=False, force_update=False):
         # if we are updating a group, don't change the slug (for consistency)

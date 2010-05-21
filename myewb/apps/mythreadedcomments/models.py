@@ -49,7 +49,7 @@ def send_to_watchlist(sender, instance, created, **kwargs):
         # TODO: for user in list.subscribers blah blah
 
         if user.get_profile().watchlist_as_emails:
-            send_mail(subject=topic.title,
+            send_mail(subject="Re: %s" % topic.title,
                       txtMessage=None,
                       htmlMessage=instance.comment,
                       fromemail=sender,
@@ -58,7 +58,7 @@ def send_to_watchlist(sender, instance, created, **kwargs):
             
     # send email to original post creator
     if topic.creator.get_profile().replies_as_emails:
-        send_mail(subject=topic.title,
+        send_mail(subject="Re: %s" % topic.title,
                   txtMessage=None,
                   htmlMessage=instance.comment,
                   fromemail=sender,
@@ -76,7 +76,7 @@ def send_to_watchlist(sender, instance, created, **kwargs):
         if topic.creator.email in participants:
             participants.remove(topic.creator.email)
     if len(participants):
-        send_mail(subject=topic.title,
+        send_mail(subject="Re: %s" % topic.title,
                   txtMessage=None,
                   htmlMessage=instance.comment,
                   fromemail=sender,
