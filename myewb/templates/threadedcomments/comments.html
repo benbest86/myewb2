@@ -34,7 +34,9 @@
     		    <img src="{% avatar_url response.user 60 %}" class="posthumbnail" title="{{response.user.visible_name}}" alt="{{response.user.visible_name}}"/>
     		</a>
 
+        <div class="textbody">
             {{ response.comment|safe }}
+        </div>
 
             <br style="clear:both; height: 1px; line-height: 1px;" />
 

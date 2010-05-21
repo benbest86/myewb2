@@ -12,7 +12,9 @@
     <p>Reply by {{ response.user.visible_name }}, {{ response.date_submitted|date }}</p>
 
     <div class="postcontent"> <!-- main row -->
-        {{ response.comment|safe }}
+        <div class="textbody">
+            {{ response.comment|safe }}
+        </div>
     </div>
 
     {% get_attachments_for response as "attachments" %}

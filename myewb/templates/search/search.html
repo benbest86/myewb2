@@ -107,7 +107,12 @@
 						    <img src="{% avatar_url result.object.user 40 %}" class="posthumbnail" title="{{result.object.visible_name}}" alt="{{result.object.user.visible_name}}"/>
 						</a>
 				
-				        {{ result.object.comment|safe }}
+				
+				        <div class="textbody">
+
+    				        {{ result.object.comment|safe }}
+	
+				        </div>
 				        
     					<br class="clear"/>
 						<div class="whiteboard-editing-box" style="font-size: 10px; padding-right: 10px;">
@@ -128,7 +133,12 @@
     				<div class="postcontent orange-border">
 					    
 				        {% get_membership result.object.parent_group request.user as member %}
-				        {% show_whiteboard_force result.object result.object.parent_group member %}
+				        
+				        <div class="textbody">
+				        
+    				        {% show_whiteboard_force result.object result.object.parent_group member %}
+    				        
+    				    </div>
     				</div>
 				</div>
 				{% endifequal %}		    
@@ -166,8 +176,9 @@
 	
 			    	<div class="postcontent red-border">
 						{% if result.object.location %}<p>Location: {{result.object.location}}</p>{% endif %}
-
+                    <div class="textbody">
 						<p>{{result.object.description|safe}}</p>
+				    </div>
 
 						<div class="whiteboard-editing-box">
 							<a href="{{ result.object.get_absolute_url }}">See full event details &raquo;</a>

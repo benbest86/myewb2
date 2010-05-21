@@ -43,7 +43,11 @@
 
 {% if e.location %}<p>Location: {{e.location}}</p>{% endif %}
 
-<p>{{e.description|safe}}</p>
+        <div class="textbody">
+
+            <p>{{e.description|safe}}</p>
+        </div>
+        
 
     <div class="whiteboard-editing-box">
 <a href="{{ e.get_absolute_url }}">See full event details &raquo;</a>
