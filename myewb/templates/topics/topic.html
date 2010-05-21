@@ -30,12 +30,12 @@
 		
         {% get_attachments_for topic as "attachments" %}
         {% if attachments.count %}
-		<a href="{{ topic.get_absolute_url }}"><img src="{{ STATIC_URL }}images/post_icons/paperclip.gif" style="float: right; margin: -5px 10px 0 0; padding: 0;" border="0"/></a>
+		<a href="{{ topic.get_absolute_url }}"><img src="{{ STATIC_URL }}images/post_icons/paperclip.gif" class="posts-icon-paperclip" border="0"/></a>
 		{% endif %}
 
 		<div class="topic-numberofreplies">
 			{% if topic.num_whiteboard_edits %}
-    			<a href="{{ topic.get_absolute_url }}" style="float: right; margin-top: 3px; margin-left: 10px; padding: 0;" border="0"><img src="{{ STATIC_URL }}images/post_icons/whiteboard.gif" border="0"/></a>
+    			<a href="{{ topic.get_absolute_url }}#post-whiteboard" class="posts-icon-whiteboard" border="0"><img src="{{ STATIC_URL }}images/post_icons/whiteboard.gif" border="0"/></a>
     		{% endif %}
 		</div>
 		
@@ -71,7 +71,7 @@
 
 		<a href="{% url profile_detail topic.creator.username %}">
 		    {# {% avatar topic.creator 40 %} #}
-		    <img src="{% avatar_url topic.creator 40 %}" style="border: 1px solid #CCC; float:right; margin: 10px; margin-left:14px; padding:5px;" title="{{topic.creator}}" alt="{{topic.creator}}"/>
+		    <img src="{% avatar_url topic.creator 60 %}" class="posthumbnail" title="{{topic.creator}}" alt="{{topic.creator}}"/>
 		</a>
 
         {{ topic.body|safe }}
@@ -87,7 +87,7 @@
                         <ul>
                             {% for att in attachments %}
                                 <li class="attachmentItem">
-                                    {% icon_for_filename att.filename %} <a href="{{ STATIC_URL }}{{ att.attachment_file.name }}">{{ att.filename }}</a>
+                                    {% icon_for_filename att.filename %} <a href="{{ STATIC_URL }}{{ att.attachment_file.name }}" target="_blank">{{ att.filename }}</a>
                                     {% image_preview att.attachment_file.name att.filename topic.pk %} 
                                     {% filesize_for_filename att.attachment_file.name %}
                                 </li>

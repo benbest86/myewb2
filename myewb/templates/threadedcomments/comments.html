@@ -31,7 +31,7 @@
 
         <div class="postcontent" style="width: 98%;"> <!-- main row -->
     		<a href="{% url profile_detail response.user.username %}">
-    		    <img src="{% avatar_url response.user 40 %}" style="border: 1px solid #CCC; float:right; margin: 10px; margin-left:14px; padding:5px;" title="{{response.user.visible_name}}" alt="{{response.user.visible_name}}"/>
+    		    <img src="{% avatar_url response.user 60 %}" class="posthumbnail" title="{{response.user.visible_name}}" alt="{{response.user.visible_name}}"/>
     		</a>
 
             {{ response.comment|safe }}
@@ -48,11 +48,14 @@
                             <span class="attach-label lighter">attached files:</span>
                             <ul>
                                 {% for att in attachments %}
-                                    <li class="attachmentItem">
-                                        {% icon_for_filename att.filename %} <a href="{{ STATIC_URL }}{{ att.attachment_file.name }}">{{ att.filename }}</a>
-                                        {% image_preview att.attachment_file.name att.filename response.pk %} 
-                                        {% filesize_for_filename att.attachment_file.name %}
-                                    </li>
+                                
+<li class="file_$file.extension attachmentItem">
+                                {% icon_for_filename att.filename %}<a href="{% get_STATIC_URL %}{{ att.attachment_file.name }}" target="_blank">{{ att.filename }}</a>
+                                {% image_preview att.attachment_file.name att.filename response.pk %}
+                                {% filesize_for_filename att.attachment_file.name %}
+                                </li>
+                
+                                    
                                 {% endfor %}
                             </ul>
                         </div>

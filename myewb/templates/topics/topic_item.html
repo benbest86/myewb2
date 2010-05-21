@@ -18,18 +18,21 @@
 		{# TODO: display the icon if any replies have an attachment, too #}
         {% get_attachments_for topic as "attachments" %}
         {% if attachments.count %}
-		<a href="{{ topic.get_absolute_url }}"><img src="{{ STATIC_URL }}images/post_icons/paperclip.gif" style="float: right; margin: -5px 10px 0 0; padding: 0;" border="0"/></a>
+		<a href="{{ topic.get_absolute_url }}"><img src="{{ STATIC_URL }}images/post_icons/paperclip.gif" class="posts-icon-paperclip" border="0"/></a>
 		{% endif %}
 
-		<div class="topic-numberofreplies">
-			{% get_comment_count for topic as num_comments %}
-            {% get_latest_comments_for 1 as latest for topic %}
+
+		{% get_comment_count for topic as num_comments %}
+        {% get_latest_comments_for 1 as latest for topic %}
+		<div class="topic-numberofreplies {% if num_comments and topic.num_whiteboard_edits %} topic-nor-two{% endif %}">
+
             
 			{% if topic.num_whiteboard_edits %}
-    			<a href="{{ topic.get_absolute_url }}" style="float: right; margin-top: 3px; margin-left: 10px; padding: 0;" border="0"><img src="{{ STATIC_URL }}images/post_icons/whiteboard.gif" border="0"/></a>
+    			<a href="{{ topic.get_absolute_url }}#post-whiteboard" class="posts-icon-whiteboard" border="0"><img src="{{ STATIC_URL }}images/post_icons/whiteboard.gif" border="0"/></a>
     		{% endif %}
 
 			{% if num_comments %}
+			  {% spaceless %}
 				<a href="{{ topic.get_absolute_url }}" style="color: white;" class="nodeco">
 				{% ifequal num_comments 1 %}
 					1 reply
@@ -41,13 +44,15 @@
 					<em>{% get_comments_for_topic_since topic user.get_profile.previous_login %}</em>
     			{% endif %}
     			</a>
+			  {% endspaceless %}
 			{% else %}
-					&nbsp;
+					{#&nbsp;#}
 			{% endif %}
-			<br/>
+			
+			{% if num_comments and topic.num_whiteboard_edits %}<br/>{% endif %}
 
 			{% if topic.num_whiteboard_edits %}
- 				<a href="{{ topic.get_absolute_url }}" style="color: white;" class="nodeco">{{topic.num_whiteboard_edits}} whiteboard edits</a>
+ 				<a href="{{ topic.get_absolute_url }}#post-whiteboard" style="color: white;" class="nodeco">{{topic.num_whiteboard_edits}} whiteboard edit{% ifnotequal topic.num_whiteboard_edits 1 %}s{% endifnotequal %}</a>
             {% else %}
  				&nbsp;
 			{% endif %}
@@ -79,7 +84,7 @@
 
 		<a href="{% url profile_detail topic.creator.username %}">
 		    {# {% avatar topic.creator 40 %} #}
-		    <img src="{% avatar_url topic.creator 40 %}" style="border: 1px solid #CCC; float:right; margin: 10px; margin-left:14px; padding:5px;" title="{{topic.creator.visible_name}}" alt="{{topic.creator.visible_name}}"/>
+		    <img src="{% avatar_url topic.creator 40 %}" class="posthumbnail" title="{{topic.creator.visible_name}}" alt="{{topic.creator.visible_name}}"/>
 		</a>
 
         {{ topic.intro|safe }}
@@ -100,7 +105,7 @@
 				{% endif %}
 					
 		        {% if topic.num_whiteboard_edits %}
-		            Lastest whiteboard edit by <a href="{% url profile_detail topic.whiteboard.latest_changeset.editor.username %}">{{ topic.whiteboard.latest_changeset.editor.visible_name }}</a> on {{ topic.whiteboard.latest_changeset.modified|date }}
+		            <a href="{{ topic.get_absolute_url }}#post-whiteboard">Latest whiteboard edit</a> by <a href="{% url profile_detail topic.whiteboard.latest_changeset.editor.username %}">{{ topic.whiteboard.latest_changeset.editor.visible_name }}</a><br/> on {{ topic.whiteboard.latest_changeset.modified|date }} at {{ topic.whiteboard.latest_changeset.modified|time }}
 		        {% endif %}
 		    </td>
     		</tr>

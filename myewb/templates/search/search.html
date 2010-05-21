@@ -104,7 +104,7 @@
 			    	<div class="postcontent blue-border">
 						<a href="{% url profile_detail result.object.user.username %}">
 						    {# {% avatar topic.creator 40 %} #}
-						    <img src="{% avatar_url result.object.user 40 %}" style="border: 1px solid #CCC; float:right; margin: 10px; margin-left:14px; padding:5px;" title="{{result.object.visible_name}}" alt="{{result.object.user.visible_name}}"/>
+						    <img src="{% avatar_url result.object.user 40 %}" class="posthumbnail" title="{{result.object.visible_name}}" alt="{{result.object.user.visible_name}}"/>
 						</a>
 				
 				        {{ result.object.comment|safe }}

@@ -39,6 +39,7 @@ color: #777;
 }
 
 body, body#bodybackground {
+    /* background: #eee url(images/page_bg_gradient.gif) repeat-x; */
     background: #C1C1C3;
     font-family: verdana, sans serif;
     min-width: 59.3em;
@@ -292,14 +293,14 @@ ul.legal form {
     display: inline;
 }
 
-form.login {
+/*form.login {
     width: 35em;
 }
 
 form.login .inlineLabels {
     width: 35em;
 }
-
+*/
 form.login .inlineLabels label {
     width: 10em;
     text-align: right;
@@ -317,6 +318,11 @@ form.toolbarlogin input[type="password"]
 {
     width: 150px;
 }
+
+form.login fieldset.inlineLabels p {
+clear:both;
+}
+
 
 form.filter {
   display: inline;
