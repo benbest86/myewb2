@@ -293,20 +293,26 @@ ul.legal form {
     display: inline;
 }
 
-/*form.login {
-    width: 35em;
+form.login {
+    width: 53%;
 }
 
+/*
 form.login .inlineLabels {
-    width: 35em;
+    width: 35%;
 }
 */
+
 form.login .inlineLabels label {
     width: 10em;
     text-align: right;
     font-weight: bold;
     margin-top: 0.6em;
 }
+form.login .inlineLabels input[type="text"], form.login .inlineLabels input[type="password"] {
+width: 180px;
+}
+
 
 form.login label[for="id_remember"] {
     visibility: hidden;

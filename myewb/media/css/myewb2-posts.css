@@ -101,4 +101,5 @@ padding:10px;
 /* post profile pic thumbnails */
 img.posthumbnail {
 border: 1px solid #CCC; float:right; margin: 10px; margin-left:14px; padding:5px;
+max-width: 50px; max-height: 50px;
 }

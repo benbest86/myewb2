@@ -339,6 +339,12 @@ TEST_RUNNER = 'test_coverage.coverage_runner.run_tests'
 from test_coverage.settings import *
 COVERAGE_REPORT_HTML_OUTPUT_DIR = os.path.join(PROJECT_ROOT, 'coverage_report')
 
+# avatar controls
+AVATAR_DEFAULT_URL =  MEDIA_URL + 'images/nophoto.gif'
+AVATAR_GRAVATAR_BACKUP = False
+
+
+
 
 # local_settings.py can be used to override environment-specific settings
 # like database and email that differ between development and production.
