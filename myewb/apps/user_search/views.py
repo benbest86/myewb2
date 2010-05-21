@@ -44,6 +44,7 @@ def user_search(request):
             qry = qry & (Q(member_groups__group__in=mygrps) | Q(friends=request.user) | Q(_unused_=request.user))
 
         # build the final query
+        qry = qry & Q(is_active=True)
         users = User.objects.filter(qry).exclude(id=request.user.id).order_by('first_name', 'last_name')
         usercount = users.count()
     else:

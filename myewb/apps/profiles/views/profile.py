@@ -42,8 +42,8 @@ from friends_app.forms import InviteFriendForm
 def profiles(request, template_name="profiles/profiles.html"):
     search_terms = request.GET.get('search', '')
     if search_terms:
-        users = User.objects.filter(profile__name__icontains=search_terms) | \
-                        User.objects.filter(username__icontains=search_terms)
+        qry = Q(profile__name__icontains=search_terms) | Q(username__icontains=search_terms)
+        users = User.objects.filter(is_active=True).filter(qry)
         if not request.user.has_module_perms("profiles"):
             users = users.filter(memberprofile__grandfathered=False)
         users = users.order_by("profile__name")
