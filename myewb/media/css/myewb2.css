@@ -313,10 +313,11 @@ form.login label[for="id_remember"] {
 }
 
 /* FIXME: this probably doesn't work in 50% of browsers... */
-form.toolbarlogin input[type="text"],
-form.toolbarlogin input[type="password"]
+div.toolbarcontent form.toolbarlogin input[type="text"],
+div.toolbarcontent form.toolbarlogin input[type="password"]
 {
     width: 150px;
+    display:block;
 }
 
 form.login fieldset.inlineLabels p {
