@@ -63,11 +63,7 @@
 
 	<div class="postcontent"> <!-- main row -->
 	
-	    <div align="right" style="font-size: 1-px; margin-bottom: 15px;">
-	        printable verison:
-	        <a href="{% url topic_printable_with_replies topic.id %}" class="more">with replies</a> |
-	        <a href="{% url topic_printable topic.id %}" class="more">without replies</a>
-	    </div>
+	    
 
 		<a href="{% url profile_detail topic.creator.username %}">
 		    {# {% avatar topic.creator 40 %} #}
@@ -132,12 +128,18 @@
     				</span>
 				{% endif %}
 				
+				<div align="right" style="font-size: 1-px; margin-bottom: 15px;">
+	        printable verison:<br/>
+	        <a href="{% url topic_printable_with_replies topic.id %}" class="more">with replies</a> |
+	        <a href="{% url topic_printable topic.id %}" class="more">without replies</a>
+	    </div>
+				
 				{% if perms.group_topics %}
-					<br/><br/>
+
 					<div id="simple_hotlist">
 						<form action="" method="post" class="score_modifier_form">
 							<input type="hidden" name="modifier" value="{{topic.score_modifier|add:100}}"/>
-							<input type="submit" value="add to global hotlist"/> (<a href="#" id="show_advanced_hotlist">advanced hotlist options</a>)
+							<input type="submit" value="add to global hotlist"/><br/>(<a href="#" id="show_advanced_hotlist">advanced hotlist options</a>)
 						</form>
 					</div>
 					<div id="advanced_hotlist" style="display: none;">
