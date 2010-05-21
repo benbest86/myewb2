@@ -292,14 +292,14 @@ ul.legal form {
     display: inline;
 }
 
-form.login {
+/*form.login {
     width: 35em;
 }
 
 form.login .inlineLabels {
     width: 35em;
 }
-
+*/
 form.login .inlineLabels label {
     width: 10em;
     text-align: right;
@@ -317,6 +317,11 @@ form.toolbarlogin input[type="password"]
 {
     width: 150px;
 }
+
+form.login fieldset.inlineLabels p {
+clear:both;
+}
+
 
 form.filter {
   display: inline;
