@@ -8,6 +8,7 @@ def myewb_settings(request):
     if request.user.is_authenticated():
         grandfathered = request.user.get_profile().grandfathered
         request.user.get_profile().grandfathered = False
+        request.user.get_profile().messages_as_emails = True
         request.user.get_profile().save()
     
     return {'CACHE_TIMEOUT': settings.CACHE_TIMEOUT,
