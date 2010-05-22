@@ -1,4 +1,4 @@
-{% extends "site_base.html" %}
+{% extends "topics/base.html" %}
 
 {% load i18n %}
 
@@ -15,27 +15,106 @@
 
     <p>myEWB is also EWB's chapter membership management system, providing EWB chapters with automatic mailing lists and other useful tools.</p>
 
-    <p>The software powering myEWB is also an open-source project: see our 
+    <p>
+    myEWB is an evolving system, with new features being added all the time to support the EWB community.
+    </p>
+    
+    <p>
+    In the past, old features were added slowly but the system was solid and stable; however in the future 
+    we see a more agile myEWB where we can experiment and play with new ideas.  This also means that 
+    things may not always work perfectly... if you find any problems, please 
+    <a href="#" onclick="$("#feedback-dialog-send").click(); return false;">tell us</a>
+    and we'll be sure to fix them ASAP!
+    </p>
+
+    <h1>The Software</h1>
+
+    <p>The software powering myEWB is an open-source project: see our 
     <a href="http://office.ewb.ca/fastrac/myewb2">project page</a> and
     <a href="http://github.com/ewbcanada/myewb2">GitHub repository</a>.
-    myEWB is written in Python, using the <a href="http://djangoproject.com">django</a>
+    It is written in Python, using the <a href="http://djangoproject.com">django</a>
     and <a href="http://pinaxproject.com">pinax</a> projects.
+    </p>
+    
+    <p>If you would like to contribute to the project, give us a shout!</p>
+    
+    <p>
     The old version of myEWB (myEWB1 or OpenMyEWB, written in Java) is also available 
     <a href="http://nicolas.kruchten.com/openmyewb.html">here</a>.
     </p>
     
     {% endblocktrans %}
-	
-{% comment %}
-    <p>Here's a quick list of what you can do here:</p>
-        <ul>
-            <li><span><a href="{% url frontpage %}">Read through past and current myEWB discussions &raquo;</a></span></li>
-            <li><span><a href="$base/home/NewPost">Start a new discussion &raquo;</a></span></li>
-            <li><span><a href="$base/profile/Profile">Manage your myEWB profile &raquo;</a></span></li>
-            <li><span><a href="$base/chapter/Chapter">Get involved in the EWB chapter system &raquo;</a></span></li>
-            <li><span><a href="$base/mailing/Mailing">Sign up to a variety of myEWB mailing lists &raquo;</a></span></li>
-        </ul>
-{% endcomment %}
 
 {% endblock %}    
 
+
+{% block toolbar_right %}
+	<style>
+	#toolbarcolumn_right {
+		width: 400px;
+		margin: 0 -1em 0 2em;
+	}
+	.toolbarcontent ul li
+	{
+		margin-left: 1em;
+		font-size: 12px;
+		list-style: disc;
+		padding-bottom: 5px;
+	}
+	</style>
+	
+    <div class="toolbarheader bkgd" id="box-status2">{% trans "myEWB status" %}</div>
+    <div class="toolbarcontent">
+	<p>
+ 		<img src="{{STATIC_URL}}images/status_icons/bug.png" style="padding-right: 10px;"/>
+		online with some problems
+	</p>
+
+    	<p>
+    	<strong>Known Issues</strong>
+    	<br/>
+    	
+    	<ul>
+    		<li>
+    			Not all posts come up in searches: myEWB's new internal search engine 
+    			is still indexing all of our old content, which will take a couple of days
+    			to finish.
+    			(we could speed it up, but that would make everything else really slow!).
+    		</li>
+    		<li>
+    			Attached files with filenames over about 30 characters long are causing
+    			problems (if you view a post with a file like this, you'll likely get an error).
+    			Will be fixed soon! 
+    		</li>
+    		
+    		<li>
+    			
+    		</li>
+    	</ul>
+    	</p>
+
+    	<!--
+    	<p>
+    	<strong>Planned updates</strong>
+    	<ul>
+    	</ul>
+    	</p>
+	-->
+    	
+    	<p>
+    	<strong>Recent fixes</strong>
+    	<ul>
+    		<li>
+    			Guests were able to create/edit whiteboards - oops! (was causing blank-
+    			page errors earlier)<br/>
+    			<em>Fixed May 22</em>
+    		</li>
+    		<li>
+    			Some whiteboards were not migrated properly and wouldn't save<br/>
+    			<em>Fixed May 21</em>
+    		</li>
+    	</ul>
+    	</p>
+    </div>
+	
+{% endblock %}      

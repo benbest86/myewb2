@@ -239,9 +239,19 @@
     <div class="toolbarheader bkgd" id="box-online">{% trans "Who's Online" %}</div>
     <div class="toolbarcontent">
         {% for online in online_users %}
-            <a href="{% url profile_detail online %}">{{ online.visible_name }}</a><br/>
+            <div style="padding-bottom: 4px;"><a href="{% url profile_detail online %}">{{ online.visible_name }}</a></div>
         {% endfor %} <br/>
-        and {{ online_anon }} guests
+        {% if online_anon %}
+        	and {{ online_anon }} guest{{ online_anon|pluralize }}
+        {% endif %}
+    </div>
+    
+    <div class="toolbarheader bkgd" id="box-status">{% trans "myEWB status" %}</div>
+    <div class="toolbarcontent">
+ 		<img src="{{STATIC_URL}}images/status_icons/bug.png" style="float: left; padding: 0.8em 3px 0 0;"/>
+
+ 		myEWB is: <br/>
+    	<a href="{% url about %}#status">online with known issues</a> 
     </div>
 {% endblock %}
 
