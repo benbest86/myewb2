@@ -20,10 +20,10 @@
     </p>
     
     <p>
-    In the past, old features were added slowly but the system was solid and stable; however in the future 
+    In the past, features were added slowly but the system was solid and stable; however in the future 
     we see a more agile myEWB where we can experiment and play with new ideas.  This also means that 
     things may not always work perfectly... if you find any problems, please 
-    <a href="#" onclick="$("#feedback-dialog-send").click(); return false;">tell us</a>
+    <a href="#" onclick="$('#feedback-button-woot').click(); return false;">tell us</a>
     and we'll be sure to fix them ASAP!
     </p>
 
@@ -66,8 +66,8 @@
     <div class="toolbarheader bkgd" id="box-status2">{% trans "myEWB status" %}</div>
     <div class="toolbarcontent">
 	<p>
- 		<img src="{{STATIC_URL}}images/status_icons/bug.png" style="padding-right: 10px;"/>
-		online with some problems
+ 		<img src="{{STATIC_URL}}images/status_icons/bug.png" style="padding-right: 5px;"/>
+		<span style="position: relative; top: -7px;">online with some problems</span>
 	</p>
 
     	<p>
@@ -86,10 +86,9 @@
     			problems (if you view a post with a file like this, you'll likely get an error).
     			Will be fixed soon! 
     		</li>
-    		
-    		<li>
-    			
-    		</li>
+		<li>
+			On a chapter or community page, clicking on the posts/events/whiteboard tab causes the page to jump
+		</li>
     	</ul>
     	</p>
 
@@ -104,6 +103,9 @@
     	<p>
     	<strong>Recent fixes</strong>
     	<ul>
+		<li>
+			Some deleted mailing lists were showing up on chapter info pages<br/>
+			<em>Fixed May 22</em>
     		<li>
     			Guests were able to create/edit whiteboards - oops! (was causing blank-
     			page errors earlier)<br/>

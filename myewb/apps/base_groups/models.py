@@ -236,14 +236,14 @@ class BaseGroup(Group):
         
     def get_visible_children(self, user):
         if not user.is_authenticated():
-            return self.children.filter(visibility='E')
+            return self.children.filter(visibility='E', is_active=True)
         elif user.has_module_perms("base_groups") | self.user_is_admin(user):
-            return self.children.all()
+            return self.children.filter(is_active=True)
         else:
             children = self.children.filter(visibility='E') | self.children.filter(member_users=user)
             if self.user_is_member(user):
                 children = children | self.children.filter(visibility='P')
-            return children.distinct()
+            return children.filter(is_active).distinct()
             #return children
             
     def get_accepted_members(self):
