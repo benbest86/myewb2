@@ -92,7 +92,7 @@ def topics(request, group_slug=None, form_class=GroupTopicForm,
            attach_form_class=AttachmentForm, template_name="topics/topics.html",
            bridge=None, mode=None):
     
-    if request.is_ajax():
+    if request.is_ajax() or request.GET.get('ajax', None):
         template_name = "topics/topics_ajax.html"
 
     is_member = False

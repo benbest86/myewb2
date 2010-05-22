@@ -104,7 +104,7 @@
                     {% if topic.num_whiteboard_edits %}<br/>{% endif %}
 				{% endif %}
 					
-		        {% if topic.num_whiteboard_edits %}
+		        {% if topic.num_whiteboard_edits and topc.whiteboard.latest_changeset.editor.username %}
 		            <a href="{{ topic.get_absolute_url }}#post-whiteboard">Latest whiteboard edit</a> by <a href="{% url profile_detail topic.whiteboard.latest_changeset.editor.username %}">{{ topic.whiteboard.latest_changeset.editor.visible_name }}</a><br/> on {{ topic.whiteboard.latest_changeset.modified|date }} at {{ topic.whiteboard.latest_changeset.modified|time }}
 		        {% endif %}
 		    </td>

@@ -6,7 +6,7 @@
 
 {% if not wb.content and not force %}
 
-	{% if member %}
+	{% if member and user.is_authenticated %}
 		{% trans "No whiteboard" %} - <a href="{% groupurl wiki_edit group title=wb.title %}">{% trans "create a whiteboard..." %}</a>
 	{% endif %}
 
@@ -50,10 +50,12 @@
             No whiteboard edits yet
             {% endif %}
             
+		{% if user.is_authenticated %}
             | 
 			<a href="{% groupurl wiki_edit group title=wb.title %}">{% trans "Edit this article" %}</a>
 			|
 			<a href="{% groupurl wiki_article_history group title=wb.title %}">{% trans "Editing history" %}</a>
+		{% endif %}
 	</div>
 	<br class="clear"/>
 		{% endif %}
