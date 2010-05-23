@@ -243,7 +243,7 @@ class BaseGroup(Group):
             children = self.children.filter(visibility='E') | self.children.filter(member_users=user)
             if self.user_is_member(user):
                 children = children | self.children.filter(visibility='P')
-            return children.filter(is_active).distinct()
+            return children.filter(is_active=True).distinct()
             #return children
             
     def get_accepted_members(self):
