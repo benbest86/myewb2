@@ -78,13 +78,16 @@ table.messages tr th {
 
 a.message-link {
 display:block;
-font-weight:bold;
-letter-spacing:0.05em;  /* too gratuitous? */
+
 /* min-width:15em; */
 min-width: 150px;
 
 margin:-10px;
 padding:10px; /* test this in all browsers. */
+}
+a.message-link.new {
+font-weight:bold;
+letter-spacing:0.05em;  /* too gratuitous? */
 }
 
 dl.message-headers {
