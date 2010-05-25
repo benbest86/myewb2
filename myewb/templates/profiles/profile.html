@@ -31,7 +31,22 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
     {% if not is_me %}
 		{% if is_me or is_friend or perms.profiles %}
 	    	<div style="text-align: center;">
-				<a href="{% url messages_compose_to other_user.username %}">Send a message to {{ other_user.visible_name}}</a>
+				
+				
+				{#<a href="{% url messages_compose_to other_user.username %}">Send a message to {{ other_user.visible_name}}</a>#}
+				
+				<form method="GET" action="{% url messages_compose_to other_user.username %}">
+    	                <input type="submit" value="{% trans "Send a message to " %}{{ other_user.visible_name}}"/>
+	            </form>
+	            
+	            
+	            {% if is_friend %}
+<br/>
+    	            <form method="POST" action="">
+    	                <input type="hidden" name="action" value="remove" /><input type="submit" value="{% trans "Remove from friends" %}"/>
+    	            </form>
+	            {% endif %}
+	            
 			</div>
 			<br/>
 		{% endif %}
@@ -407,9 +422,16 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
     	    {% if is_friend %}
     	        <p>
     	        	{% blocktrans %}You are friends with{% endblocktrans %} {{ other_user.visible_name }}.
-    	            <form method="POST" action="">
-    	                <input type="hidden" name="action" value="remove" /><input type="submit" value="{% trans "remove" %}"/>
+    	            
+    	            
+    	            
+    	            
+    	            
+    	            <form method="GET" action="{% url messages_compose_to other_user.username %}">
+    	                <input type="submit" value="{% trans "Send a message!" %}"/>
     	            </form>
+    	            
+    	            
     	        </p>
     	    {% else %}
     	        {% if previous_invitations_from %}
