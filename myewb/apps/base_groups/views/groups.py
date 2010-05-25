@@ -52,7 +52,7 @@ def groups_index(request, model=None, member_model=None, form_class=None,
     if hasattr(model.objects, 'listing'):
         groups = model.objects.listing()
     else:
-        groups = model.objects.all()
+        groups = model.objects.filter(is_active=True)
 
     # if running a search, filter by search term
     search_terms = request.GET.get('search', '')
