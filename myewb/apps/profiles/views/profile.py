@@ -45,7 +45,11 @@ def profiles(request, template_name="profiles/profiles.html"):
         qry = Q(profile__name__icontains=search_terms) | Q(username__icontains=search_terms)
         users = User.objects.filter(is_active=True).filter(qry)
         if not request.user.has_module_perms("profiles"):
+            users = User.objects.filter(is_active=True).filter(qry)
             users = users.filter(memberprofile__grandfathered=False)
+        else:
+            qry = qry | Q(emailaddress__email__icontains=search_terms)
+            users = User.objects.filter(is_active=True).filter(qry)
         users = users.order_by("profile__name")
     else:
         users = None
