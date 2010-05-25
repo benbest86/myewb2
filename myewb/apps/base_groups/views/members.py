@@ -8,6 +8,7 @@ Last modified on 2009-08-02
 @author Joshua Gorner, Benjamin Best
 """
 
+from time import time
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponseRedirect, HttpResponseNotFound, Http404
@@ -130,6 +131,7 @@ def new_member(request, group_slug, group_model=None, form_class=None,
                                       admin_title=form.cleaned_data['admin_title'])
                 else:
                     single_new_member(group, user, singleuser)
+                    request.session['cache_stamp'] = time()
                 
             # different returns if it's an ajax call...
             if not request.is_ajax():
@@ -334,6 +336,7 @@ def delete_member(request, group_slug, username, group_model=None):
         
         # delete it.  how, that was hard...
         member.delete()
+        request.session['cache_stamp'] = time()
         
         # response is different for AJAX and normal calls.
         if request.is_ajax():

@@ -150,7 +150,7 @@
 			{% ifnotequal mode "newreplies" %}
 				{% ifnotequal mode "featured" %}
         {# my groups #}
-        {% cache CACHE_TIMEOUT "frontpagegroups" user.username LATEST_POST %} 
+        {% cache CACHE_TIMEOUT "frontpagegroups" user.username LATEST_POST CACHE_STAMP %} 
         <div class="toolbarheader bkgd" id="box-frontpage-mygroups">{% trans "Latest posts" %}</div>
         <div class="toolbarcontent">
         

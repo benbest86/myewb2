@@ -30,7 +30,7 @@
 
 {% endif %}
 
-{% cache 300 "postlist" user.username request.page group mode LATEST_POST %}
+{% cache CACHE_TIMEOUT "postlist" user.username request.page group mode LATEST_POST CACHE_STAMP %}
 
 {% autopaginate topics 10 %}
 

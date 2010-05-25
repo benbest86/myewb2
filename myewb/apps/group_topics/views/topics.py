@@ -10,6 +10,7 @@ Last modified: 2009-12-02
 """
 
 import settings
+from time import time
 
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.utils.translation import ugettext as _
@@ -411,6 +412,7 @@ def add_to_watchlist(request, user_id, topic_id):
     
     if list.user_can_control(request.user):
         list.add_post(topic)
+        request.session['cache_stamp'] = time()
         
         # TODO: do I want to templatize?
         return HttpResponse("[remove from watch-list]")
@@ -429,6 +431,7 @@ def remove_from_watchlist(request, user_id, topic_id):
     
     if list.user_can_control(request.user):
         list.remove_post(topic)
+        request.session['cache_stamp'] = time()
         
         # TODO: do I want to templatize?  do you!  just kidding. -sean  @@@
         return HttpResponse("[add to watch-list]")  # was "removed"
