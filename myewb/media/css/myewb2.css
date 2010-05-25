@@ -317,6 +317,12 @@ width: 180px;
 form.login label[for="id_remember"] {
     visibility: hidden;
 }
+form.login label[for="id_remember"].remember-me-label {
+display:inline;
+float:none;
+font-weight:normal;
+visibility:visible;
+}
 
 /* FIXME: this probably doesn't work in 50% of browsers... */
 div.toolbarcontent form.toolbarlogin input[type="text"],
@@ -662,10 +668,18 @@ padding:0 3px;
 .form_block {
 padding: 7px;
 }
+.toolbarcontent .form_block {
+padding:0px;
+}
 
 .message-body {
 padding:0 15px;
 }
+
+.toolbarcontent p {
+margin-top: 0;
+}
+
 
 form.inline-form-button {
 display: inline; margin-right: 10px;

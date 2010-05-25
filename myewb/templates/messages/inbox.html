@@ -21,11 +21,10 @@
                 <tr class="{% cycle "" "bkgd-light" %}">
                     <td>{{ message.sender.visible_name }}</td>
                     <td>
-                        {% if message.new %}<strong>{% endif %}
                         {% if message.replied %}<em>{% endif %}
-                        <a class="message-link" href="{{ message.get_absolute_url }}">{% if message.subject.strip %}{{ message.subject }}{% else %}(No subject.){% endif %}</a>
+                        <a class="message-link {% if message.new %}new{% endif %}" href="{{ message.get_absolute_url }}">{% if message.subject.strip %}{{ message.subject }}{% else %}(No subject.){% endif %}</a>
                         {% if message.replied %}</em>{% endif %}
-                        {% if message.new %}</strong>{% endif %}</td>
+                    </td>
                     <td>{{ message.sent_at|localtime:account.timezone|date:_("DATETIME_FORMAT") }}</td>
                     <td><a href="{% url messages_delete message.id %}" class="deletemessage">{% trans "delete" %}</a></td>
                 </tr>
