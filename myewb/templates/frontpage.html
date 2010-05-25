@@ -41,6 +41,7 @@
 				  if (currentURL.indexOf('?') != -1)
 					  currentURL = currentURL.substring(0, currentURL.indexOf('?'));
 				  load_posts(currentURL + $(this).attr('href'));
+				  $().scrollTo(0,500);
 				  return false;
 	  		  });
 
