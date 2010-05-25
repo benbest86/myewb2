@@ -127,29 +127,31 @@
 	{# FIXME: this is also loaded for EVERY comment, which gets really slow if there #}
 	{#        are a lot of comments (esp with the tinymce editor #}
 	<h2>{% trans "Add a reply" %}</h2>
-    <form method="POST" enctype="multipart/form-data" action="{% get_comment_url object %}">
-                <textarea id="id_comment" class="tinymce" rows="8" cols="80" name="comment"></textarea>
-                <br/><br/>
-                <div id="attachFiles">                    
-                    {% for af in attach_forms %}
-                        {{ af.as_p }}
-                    {% endfor %}
-                    <div id="attachLink">
-                        <a class="getAttachForm" href="{% url ac_get_attachment_form %}">{% trans "Attach a file to this reply" %}</a>
+	<div class="post-reply-container">
+        <form method="POST" enctype="multipart/form-data" action="{% get_comment_url object %}">
+                    <textarea id="id_comment" class="tinymce" rows="8" cols="80" style="width:99%" name="comment"></textarea>
+                    <br/><br/>
+                    <div id="attachFiles">                    
+                        {% for af in attach_forms %}
+                            {{ af.as_p }}
+                        {% endfor %}
+                        <div id="attachLink">
+                            <a class="getAttachForm" href="{% url ac_get_attachment_form %}">{% trans "Attach a file to this reply" %}</a>
+                        </div>
                     </div>
+                
+                <p>
+                    <label for="id_tags">Tags:</label>
+                    <input id="id_tags" type="text" class="textinput" name="tags" maxlength="255" />
+                </p>
+                
+                <div class="form_block">
+                    <input type="hidden" id="attachCount" name="attach_count" value="0">
+                    <input type="hidden" name="next" value="{{ request.path }}" />
+                    <input type="submit" value="{% trans "Post Response" %}" />
                 </div>
-            
-            <p>
-                <label for="id_tags">Tags:</label>
-                <input id="id_tags" type="text" class="textinput" name="tags" maxlength="255" />
-            </p>
-            
-            <div class="form_block">
-                <input type="hidden" id="attachCount" name="attach_count" value="0">
-                <input type="hidden" name="next" value="{{ request.path }}" />
-                <input type="submit" value="{% trans "Post Response" %}" />
-            </div>
-    </form>
+        </form>
+    </div>
 {% else %}
     <h3>Please <a href="{% url acct_login %}">Sign in</a> (or <a href="{% url acct_signup %}">Sign Up</a>) to respond</h3>
 {% endif %}
