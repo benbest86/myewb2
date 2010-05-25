@@ -314,17 +314,18 @@ def edit_member(request, group_slug, username, group_model=None, form_class=None
                              )
 
 @own_member_object_required()
-def delete_member(request, group_slug, username, group_model=None):    
+def delete_member(request, group_slug, username, group_model=None, template_name=None):
     # handle generic call
     if group_model is None and request.method == 'GET':
         group = get_object_or_404(BaseGroup, slug=group_slug)
         return HttpResponseRedirect(reverse('%s_delete_member' % group.model.lower(), kwargs={'group_slug': group_slug, 'username': username}))
         
+    group = get_object_or_404(group_model, slug=group_slug)
+    user = get_object_or_404(User, username=username)
+    
     # should only ever really be a POST call here...
     if request.method == 'POST':
         # load up objects
-        group = get_object_or_404(group_model, slug=group_slug)
-        user = get_object_or_404(User, username=username)
         was_pending = False
         if group.user_is_member(user):
             member = get_object_or_404(GroupMember, group=group, user=user)
@@ -358,15 +359,22 @@ def delete_member(request, group_slug, username, group_model=None):
                 
             response =  HttpResponseRedirect(reverse('%s_detail' % group.model.lower(), kwargs={'group_slug': group_slug,}))
             
-    # these are both errors.  it's all in how we display it...
     else:
+        # this is an error.
         if request.is_ajax():
             response = render_to_response("base_groups/ajax-leave.html",
                                           {'group': None},
                                           context_instance=RequestContext(request),
                                          )
+        
+        # display confirmation page...
         else:
-            response = HttpResponseNotFound();
+            response = render_to_response(template_name,
+                                          {'group': group,
+                                           'other_user': user,
+                                          }, 
+                                          context_instance=RequestContext(request),
+                                         )
             
     return response
     

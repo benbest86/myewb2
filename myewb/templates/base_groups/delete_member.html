@@ -1,0 +1,16 @@
+{% load i18n %}
+{% load uni_form_tags %}
+{% load group_tags %}
+
+<h1>{{ group }}</h1>    
+<h2>{{ member.user.visible_name }}</h2>
+
+<p>
+Are you sure you want to leave {{ group }}?
+</p>
+
+<form class="uniForm" id="delete-member" method="POST" action="">
+    <fieldset class="inlineLabels">
+            <input type="submit" value="{% trans "Leave group" %}"/>
+    </fieldset>
+</form>
