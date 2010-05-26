@@ -718,12 +718,22 @@ ul.users-search-list {
 padding: 0;
 }
 
+.uniForm .inlineLabels ul.users-search-list  {
+width:100%;
+}
+
 ul.users-search-list li {
 list-style: none;
 float:left;
 width:250px;
 /* border:1px solid; */
 }
+
+.uniForm .inlineLabels div#errorMsg ul {
+float:none;
+}
+
+
 ul.chapter-info-member-list li {
 /* width:200px; */
 }
