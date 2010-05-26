@@ -742,7 +742,7 @@ def settings(request, username=None):
                 form.save()
             
                 request.user.message_set.create(message='Settings updated.')
-                return HttpResponseRedirect(reverse('profile_detail', kwargs={'username': username}))
+                return HttpResponseRedirect(reverse('profile_detail', kwargs={'username': user.username}))
             
         else:
             form = SettingsForm(instance=user.get_profile())
