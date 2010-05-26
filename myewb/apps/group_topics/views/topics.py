@@ -258,7 +258,9 @@ def new_topic(request, group_slug=None, bridge=None):
                         attachment = af.save(request, base_topic)
                         attachments.append(af.cleaned_data['attachment_file'].name)
         
-                    sender = topic_form.cleaned_data.get('sender', None)
+                    sender = None
+                    if topic_form.cleaned_data.get('send_as_email', None):
+                        sender = topic_form.cleaned_data.get('sender', None)
                     return render_to_response("topics/preview.html",
                                               {"group": group,
                                                "topic": topic,
