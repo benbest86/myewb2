@@ -11,12 +11,14 @@
     	   <input type="hidden" name="feedback-username" value="{{ user.username }}"/>
        	   <input type="hidden" name="feedback-visiblename" value="{{ user.visible_name }}"/>
        	   <input type="hidden" name="feedback-email-h" value="{{ user.email }}"/>
+
+       	   
     	   {# {{ user.username }} - {{ user.visible_name }} - {{ user.email }} #}
     	   
     	   {% endif %}
     	   
     	   <label>Email: <input type="text" name="feedback-email" value="{% if user.is_authenticated %}{{ user.email }}{% endif %}"/></label>
-    	   
+       	   <input type="hidden" name="feedback-path" value="{{request.path}}"/>    	   
     	   
     	   
     	   <label>Feedback:<br/><textarea name="feedback-text" style="width:100%; height:120px;"></textarea></label>

@@ -128,6 +128,14 @@ $(document).ready(function(){
         
 
 
+	$(document).ready(function() {
+        if (jQuery.browser.msie) {
+           if(parseInt(jQuery.browser.version) == 6) {
+                $('#ie6alert').html('<div>        <span>Uhoh.</span> Looks like you\'re using Internet Explorer 6. It\'s pretty sketchy with myEWB, so we\'d suggest upgrading to <a href="http://getfirefox.com" target="_blank" title="It\'s great.">Firefox</a>, <a href="http://www.google.com/chrome" target="_blank" title="It\'s great too.">Chrome</a>, or <a href="http://www.microsoft.com/windows/internet-explorer/default.aspx" target="_blank" title="...but preferably, one of the first two. :)">Internet Explorer 8</a>. Sorry!    </div>');
+                $('#ie6alert').show();
+           }
+        }
+    });
         
         
         
@@ -296,4 +304,10 @@ $(document).ready(function(){
     	</div>
     </div>
     {% endif %}
+
+
+<div id="ie6alert" style="display:none;">
+    
+</div>
+
 {% endblock %}
