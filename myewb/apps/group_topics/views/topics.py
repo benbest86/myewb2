@@ -47,7 +47,13 @@ def topic(request, topic_id, group_slug=None, edit=False, template_name="topics/
     parent_group = topic.parent_group
     # XXX PERMISSIONS CHECK
     if not parent_group.is_visible(request.user) and not topic.creator == request.user:
-        return HttpResponseForbidden()
+        return render_to_response("topics/disallowed.html", {
+            "topic": None,
+            "group": parent_group,
+            "member": None,
+            "grpadmin": None,
+        }, context_instance=RequestContext(request))
+
 
     # XXX PERMISSIONS CHECK
     # only the owner of a topic or a group admin can edit a topic (??)

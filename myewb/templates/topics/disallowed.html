@@ -1,0 +1,35 @@
+{% extends "topics/base.html" %}
+
+{% load i18n %}
+{% load uni_form_tags %}
+{% load extra_tagging_tags %}
+{% load pagination_tags %}
+{% load attachablecomments_tags %}
+{% load avatar_tags %}
+{% load group_tags %}
+{% load group_topics_tags %}
+{% load attachments_tags %}
+{% load whiteboard_tags %}
+{% load icon_tags %}
+{% load filesize_tags %}
+{% load cache %}
+
+{% block head_title %}{% endblock %}
+
+{% block body %}
+
+<h1>Sorry, you can't see this post.</h1>
+
+{% if user.is_authenticated %}
+	<p>
+		This post belongs to a private group which you are not a member of.
+	</p>
+
+{% else %}
+	<p>
+		You may be able to view this post if you <a href="{% url acct_login %}?url={{request.path}}">sign in</a>.
+	</p>
+
+{% endif %}
+
+{% endblock %}
