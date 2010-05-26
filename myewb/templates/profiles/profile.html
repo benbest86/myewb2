@@ -14,17 +14,25 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% block head_title %}{% blocktrans with other_user.visible_name as username %}Profile for {{ username }}{% endblocktrans %}{% endblock %}
 
 {% block body %}
+	<style>
+	  a img {
+	    border: 0;
+	  }
+	</style>
+
 	<br/>
     <h1 style="text-align: center;">{{ other_user.visible_name }}</h1>
 
-    {% if is_me or is_friend or perms.profiles %}
+    {% if is_me or is_friend or perms.profiles or other_user.is_staff %}
         <div style="text-align: center; position: relative; top: -5px;">
             <a href="mailto:{{other_user.email}}">{{other_user.email}}</a>
         </div>
     {% endif %}
     
     <div id="profile_avatar" style="text-align: center;">
-        {% avatar other_user 160 %}
+    	<a href="{% avatar_url other_user 500 %}" id="avatar">
+        	{% avatar other_user 160 %}
+        </a>
     </div>
     <br/>
     
@@ -553,5 +561,12 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 		</script>
 	{% endif %}
     
+	<link type="text/css" href="{{STATIC_URL}}css/colorbox.css" rel="stylesheet" />
+	<script type="text/javascript" src="{{STATIC_URL}}js/colorbox.js"></script>
+    <script type="text/javascript">
+	    $(document).ready(function() {
+			$('#avatar').colorbox({transition: "elastic", width:"80%", height:"80%"});
+	    });
+    </script>
 {% endblock %}
 
