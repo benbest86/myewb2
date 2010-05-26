@@ -813,3 +813,24 @@ background-color:#823300;/* border-color:#823300 ; */
 a#feedback-button-woot:active {
 outline: none;
 }
+
+
+div#ie6alert {
+background-color:#FBF9EA;
+
+border-bottom:2px solid #888888;
+left:0;
+
+position:absolute;
+/* text-align:center; */
+top:0;
+width:100%;
+}
+div#ie6alert div {
+padding:6px;
+font-size: 12px;
+}
+div#ie6alert span {
+color:maroon;
+font-weight: bold;
+}
