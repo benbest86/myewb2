@@ -420,7 +420,7 @@ def profile_by_id(request, profile_id):
 
 # override default "save" function so we can prompt people to join networks
 def profile(request, username, template_name="profiles/profile.html", extra_context=None):
-    other_user = User.objects.get(username=username)
+    other_user = get_object_or_404(User, username=username)
 
     """
     This is really really neat code, but dunno where to put it since 
