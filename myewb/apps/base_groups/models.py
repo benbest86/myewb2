@@ -483,7 +483,7 @@ def clean_up_bulk_users(sender, instance, created, **kwargs):
         email_user = get_email_user(instance.email)
         user = instance.user
         # a 
-        if not email_user == user:
+        if email_user and not email_user == user:
             for membership in email_user.member_groups.all():
                 if not user.member_groups.filter(group=membership.group):
                     membership.user = instance.user
