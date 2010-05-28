@@ -544,6 +544,13 @@ def profile(request, username, template_name="profiles/profile.html", extra_cont
         previous_invitations_to = FriendshipInvitation.objects.invitations(to_user=other_user, from_user=request.user)
         previous_invitations_from = FriendshipInvitation.objects.invitations(to_user=request.user, from_user=other_user)
         
+        # friends & admins have visibility.
+        has_visibility = is_friend or request.user.has_module_perms("profiles")
+        if not has_visibility:      #but so does your chapter's exec
+            mygrps = Network.objects.filter(members__user=request.user, members__is_admin=True, is_active=True).order_by('name')
+            if len(list(set(mygrps) & set(other_user.get_networks()))) > 0:
+                has_visibility = True
+        
     else:
         other_friends = []
         is_friend = False
@@ -553,7 +560,7 @@ def profile(request, username, template_name="profiles/profile.html", extra_cont
         invite_form = None
         previous_invitations_to = None
         previous_invitations_from = None
-        
+        has_visibility = False
     
     return render_to_response(template_name, dict({
         "is_me": is_me,
@@ -565,6 +572,7 @@ def profile(request, username, template_name="profiles/profile.html", extra_cont
         "previous_invitations_to": previous_invitations_to,
         "previous_invitations_from": previous_invitations_from,
         "pending_requests": pending_requests,
+        "has_visibility": has_visibility
     }, **extra_context), context_instance=RequestContext(request))
 
 @secure_required

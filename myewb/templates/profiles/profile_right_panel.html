@@ -13,7 +13,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 	{% show_profile_search "" %}
 </div>
 
-{% if is_me or is_friend or perms.profiles %}
+{% if is_me or has_visibility %}
     {% if other_user.basegroup_set.all %}
 		<div class="toolbarheader bkgd"  id="box-groups">
     	    {% if is_me %}
