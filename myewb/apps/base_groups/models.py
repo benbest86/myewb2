@@ -512,13 +512,13 @@ post_save.connect(clean_up_bulk_users, sender=EmailAddress)
 
 def add_creator_to_group(sender, instance, created, **kwargs):
     if created:
-        try:
+        gm = GroupMember.objects.filter(user=instance.creator,
+                                        group=instance)
+        if gm.count() == 0:
             GroupMember.objects.create(
                     user=instance.creator, 
                     group=instance,
                     is_admin=True,
                     admin_title='%s Creator' % instance.name,
                     admin_order = 1)
-        except:
-            pass
 post_save.connect(add_creator_to_group, sender=BaseGroup)
