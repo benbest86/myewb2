@@ -103,3 +103,27 @@ img.posthumbnail {
 border: 1px solid #CCC; float:right; margin: 10px; margin-left:14px; padding:5px;
 max-width: 50px; max-height: 50px;
 }
+
+
+
+
+/* making h1, h2, h3 etc. less obnoxious on the frontpage */
+/* default for text is 12px */
+
+div#topiclisting div.post h1, h2, h3, h4, h5, h6 {
+margin:0;
+margin-bottom:0.5em;
+}
+
+div#topiclisting div.post h1 {
+font-size: 18px;
+}
+div#topiclisting div.post h2 {
+font-size: 16px;
+}
+div#topiclisting div.post h3 {
+font-size: 14px;
+}
+div#topiclisting div.post h4, h5, h6 {
+font-size: 12px;
+}
