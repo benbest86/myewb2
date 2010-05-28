@@ -6,6 +6,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% load i18n %}
 {% load avatar_tags %}
 {% load profile_tags %}
+{% load base_groups_tags %}
 
 {# should probably pull this CSS stuff out into the css file... #}
 <div class="toolbarheader bkgd" id="box-find-users">{% trans "Find Users" %}</div>
@@ -34,9 +35,12 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 			<p>
 				<strong>Communities</strong><br/>
             	{% for group in other_user.get_communities %}
-            		<span style="padding-bottom: 3px; display:block;">
-	                	<a href="{% url group_detail group.slug %}">{{ group.name }}</a>
-	                </span>
+            		{% group_is_visible group for user as grpvisible %}
+            		{% if is_me or grpvisible %}
+            			<span style="padding-bottom: 3px; display:block;">
+		                	<a href="{% url group_detail group.slug %}">{{ group.name }}</a>
+	                	</span>
+	                {% endif %}
             	{% endfor %}
             </p>
         </div>

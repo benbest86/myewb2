@@ -159,3 +159,31 @@ def do_get_random_members(parser, token):
 
 register.tag('get_random_members', do_get_random_members)
 
+class GroupIsVisibleNode(template.Node):
+    def __init__(self, group_name, username, context_name):
+        self.group = template.Variable(group_name)
+        self.user = template.Variable(username)
+        self.context_name = context_name
+
+    def render(self, context):
+        try:
+            group = self.group.resolve(context)
+            user = self.user.resolve(context)
+        except template.VariableDoesNotExist:
+            return u''
+        
+        context[self.context_name] = group.is_visible(user)
+        return u''
+
+def do_group_is_visible(parser, token):
+    """
+    Provides the template tag {% group_is_visible GROUP for USER as VARIABLE %}
+    """
+    try:
+        _tagname, group_name, _for, username, _as, context_name = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError(u'%(tagname)r tag syntax is as follows: '
+            '{%% %(tagname)r GROUP for USER as VARIABLE %%}' % {'tagname': _tagname})
+    return GroupIsVisibleNode(group_name, username, context_name)
+
+register.tag('group_is_visible', do_group_is_visible)
