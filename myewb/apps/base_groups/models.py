@@ -484,11 +484,28 @@ def clean_up_bulk_users(sender, instance, created, **kwargs):
         user = instance.user
         # a 
         if email_user and not email_user == user:
+            # update group memberships
             for membership in email_user.member_groups.all():
                 if not user.member_groups.filter(group=membership.group):
                     membership.user = instance.user
                     membership.save()
-            # delete old bulk user - should delete GroupMember objects as well
+                else:
+                    membership.delete()
+                    
+            # update membership records (should we just delete them instead?)
+            for record in email_user.group_records.all():
+                record.user = instance.user
+                record.save()
+                
+            # update invitations
+            for invitation in email_user.pending_memberships.all():
+                if not user.pending_memberships.filter(group=invitation.group):
+                    invitation.user = instance.user
+                    invitation.save()
+                else:
+                    invitation.delete()
+                
+            # delete old bulk user
             email_user.delete()
 
 post_save.connect(clean_up_bulk_users, sender=EmailAddress)
