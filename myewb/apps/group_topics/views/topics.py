@@ -299,6 +299,8 @@ def get_attachment_form(request, template_name="topics/attachment_form.html", fo
             context_instance=RequestContext(request),
         )
         return response
+    else:
+        raise Http404
 
 def topic_delete(request, topic_id, group_slug=None, bridge=None, confirm=False):
     """
