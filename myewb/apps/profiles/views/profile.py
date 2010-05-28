@@ -97,6 +97,7 @@ def profile_edit(request, form_class=ProfileForm, **kwargs):
             profile_form = form_class(instance=profile)
         else:
             profile_form = form_class(request.POST, instance=profile)
+            phone_form = PhoneNumberForm()
             if profile_form.is_valid():
                 profile = profile_form.save(commit=False)
                 profile.user = request.user
