@@ -80,7 +80,7 @@ def topic(request, topic_id, group_slug=None, edit=False, template_name="topics/
         
     # find membership status
     member = False
-    if topic.group and (topic.group.user_is_member(request.user) or topic.group.slug == "ewb"):
+    if request.user.is_authenticated() and topic.group and (topic.group.user_is_member(request.user) or topic.group.slug == "ewb"):
         member = True
         
     grpadmin = topic.group.user_is_admin(request.user)
