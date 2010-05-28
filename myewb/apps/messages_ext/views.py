@@ -13,6 +13,7 @@ from messages_ext.forms import ComposeForm
 
 # almost all copied from the original messaging app, but passes the current
 # user to a custom ComposeForm (so we can verify friends-only messaging)
+@login_required
 def compose(request, recipient=None, form_class=ComposeForm,
         template_name='messages/compose.html', success_url=None, recipient_filter=None):
     if request.method == "POST":
@@ -37,6 +38,9 @@ def compose(request, recipient=None, form_class=ComposeForm,
     }, context_instance=RequestContext(request))
 compose = login_required(compose)
 
+# almost all copied from the original messaging app, but passes the current
+# user to a custom ComposeForm (so we can verify friends-only messaging)
+@login_required
 def reply(request, message_id, form_class=ComposeForm,
         template_name='messages/compose.html', success_url=None, recipient_filter=None):
     
@@ -46,9 +50,15 @@ def reply(request, message_id, form_class=ComposeForm,
         raise Http404
 
     if request.method == 'POST':
-        return pinaxreply(request, message_id, form_class=form_class,
-                          template_name=template_name, success_url=success_url,
-                          recipient_filter=recipient_filter)
+        sender = request.user
+        form = form_class(request.POST, recipient_filter=recipient_filter, sender=request.user)
+        if form.is_valid():
+            form.save(sender=request.user, parent_msg=parent)
+            request.user.message_set.create(
+                message=_(u"Message successfully sent."))
+            if success_url is None:
+                success_url = reverse('messages_inbox')
+            return HttpResponseRedirect(success_url)
     else:
         form = form_class({'body': _(u"%(sender)s wrote:\n%(body)s") % {'sender': parent.sender.visible_name(),
                                                                         'body': format_quote(parent.body)
