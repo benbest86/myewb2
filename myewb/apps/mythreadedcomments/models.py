@@ -11,6 +11,7 @@ from datetime import datetime
 
 from mailer import send_mail
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.signals import post_save
 from threadedcomments.models import ThreadedComment, FreeThreadedComment
@@ -65,14 +66,31 @@ def send_to_watchlist(sender, instance, created, **kwargs):
     # but remove original poster
     if instance.user.email in recipients:
         recipients.remove(instance.user.email)
-            
+        
+    messagebody = """<p>Hello</p>        
+
+<p>
+%s has replied to the post <em>%s</em> on myEWB:
+</p>
+
+<div style="margin: 10px; padding: 10px; border: 1px solid;">
+    %s
+</div>
+
+<p>You are receiving this email because you have participated in this conversation or 
+added it to your watchlist.  To change your email preferences, 
+<a href="http://my.ewb.ca%s">click here</a>.
+</p>
+""" % (instance.user.visible_name(), topic.title, instance.comment, reverse('profile_settings'))
+      
     if len(recipients):
         send_mail(subject="Re: %s" % topic.title,
                   txtMessage=None,
-                  htmlMessage=instance.comment,
+                  htmlMessage=messagebody,
                   fromemail=sender,
                   recipients=recipients,
-                  context=ctx)
+                  context=ctx,
+                  shortname=topic.group.slug)
         
 post_save.connect(send_to_watchlist, sender=ThreadedComment, dispatch_uid='sendreplytowatchlist')
 
