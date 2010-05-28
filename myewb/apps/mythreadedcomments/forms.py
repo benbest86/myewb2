@@ -6,7 +6,8 @@ from tag_app.models import TagAlias
 from lxml.html.clean import clean_html, autolink_html
 
 class MyThreadedCommentForm(ThreadedCommentForm):
-    comment = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
+    comment = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}),
+                              max_length = None)
     tags = forms.CharField(required=False)
     
     def clean_comment(self):
