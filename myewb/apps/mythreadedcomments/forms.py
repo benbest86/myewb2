@@ -43,7 +43,7 @@ class MyThreadedCommentForm(ThreadedCommentForm):
 
     class Meta:
         model = ThreadedComment
-        fields = ('comment', 'markup')
+        fields = ('comment')
         
 class MyFreeThreadedCommentForm(FreeThreadedCommentForm):
     comment = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
