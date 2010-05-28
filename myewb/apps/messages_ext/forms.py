@@ -53,7 +53,7 @@ class ComposeForm(OriginalComposeForm):
         super(ComposeForm, self).clean()
         
         if not self.sender.has_module_perms("profiles"):
-            recipients = self.cleaned_data['recipient']
+            recipients = self.cleaned_data.get('recipient', [])
             for r in recipients:
                 if not Friendship.objects.are_friends(self.sender, r):
                     # should be in BaseGroup manager, not here and also account_extra.models (ie, User.get_groups())
