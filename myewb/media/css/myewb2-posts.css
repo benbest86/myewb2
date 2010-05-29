@@ -110,7 +110,7 @@ max-width: 50px; max-height: 50px;
 /* making h1, h2, h3 etc. less obnoxious on the frontpage */
 /* default for text is 12px */
 
-div#topiclisting div.post h1, h2, h3, h4, h5, h6 {
+div#topiclisting div.post h1,div#topiclisting div.post  h2, div#topiclisting div.post h3, div#topiclisting div.post h4, div#topiclisting div.post h5, div#topiclisting div.post h6 {
 margin:0;
 margin-bottom:0.5em;
 }
