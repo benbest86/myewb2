@@ -9,6 +9,7 @@ Last modified on 2009-08-17
 """
 
 from django import forms
+from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 from django.utils.translation import ugettext_lazy as _
 from emailconfirmation.models import EmailAddress
