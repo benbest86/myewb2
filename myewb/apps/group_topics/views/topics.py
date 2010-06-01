@@ -364,7 +364,7 @@ def topics_by_user(request, username):
     return render_to_response("topics/topics.html",
                               {"topics": topics,
                                "group": None,
-                               "mode": "byuser"},
+                               "mode": "byuser-%s" % username},
                               context_instance=RequestContext(request)
                              )
 
@@ -394,7 +394,7 @@ def watchlist(request, list_id):
     return render_to_response("topics/topics.html",
                               {"topics": topics,
                                "group": None,
-                               "mode": "forwatchlist"},
+                               "mode": "forwatchlist-%s"},
                               context_instance=RequestContext(request)
                              )
     
