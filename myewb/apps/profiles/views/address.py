@@ -78,6 +78,10 @@ def create_address(request, username, object=None):
             #return HttpResponseRedirect(reverse('profile_address_detail', kwargs={'username': username, 'label': address.label}))
             return HttpResponseRedirect(reverse('profile_edit'))
     else:
+        label = ""
+        if form.is_valid():
+            label = form.cleaned_data['label']
+            
         if request.is_ajax():
             error_data = {
                 'valid': False,
