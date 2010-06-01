@@ -506,7 +506,10 @@ def profile(request, username, template_name="profiles/profile.html", extra_cont
                         try:
                             invitation = FriendshipInvitation.objects.get(id=invitation_id)
                             if invitation.to_user == request.user:
-                                invitation.accept()
+                                try:                                # have gotten IntegrityError from this... #573
+                                    invitation.accept()             # (accepting an already-accepted invite, maybe?)
+                                except:
+                                    pass
                                 request.user.message_set.create(message=_("You have accepted the friendship request from %(from_user)s") % {'from_user': invitation.from_user.visible_name()})
                         except FriendshipInvitation.DoesNotExist:
                             pass
