@@ -20,7 +20,7 @@ from ldap import modlist as ml
 import settings
         
 objectClass = ['top','ewbMailForward','ewbPerson']
-basedn = 'ou=testing,dc=ewb,dc=ca'
+basedn = 'ou=people,dc=ewb,dc=ca'
 scope = ldap.SCOPE_ONELEVEL
 aliasField = 'ewbMailAddress'
 recipientField = 'ewbMailInbox'
