@@ -394,7 +394,7 @@ def watchlist(request, list_id):
     return render_to_response("topics/topics.html",
                               {"topics": topics,
                                "group": None,
-                               "mode": "forwatchlist-%s"},
+                               "mode": "forwatchlist-%s" % list_id},
                               context_instance=RequestContext(request)
                              )
     
