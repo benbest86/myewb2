@@ -105,6 +105,7 @@ MIDDLEWARE_CLASSES = (
     #'siteutils.helpers.SQLLogToConsoleMiddleware',
     #'siteutils.profile_middleware.ProfileMiddleware',
 #    'django.middleware.cache.FetchFromCacheMiddleware',
+#    'debug_toolbar.middleware.DebugToolbarMiddleware'
 )
 
 ROOT_URLCONF = 'urls'
@@ -191,6 +192,7 @@ INSTALLED_APPS = (
     'uni_form',
     'django_sorting',
     'django_markup',
+#    'debug_toolbar',
     
     # internal (for now)
     'analytics',
