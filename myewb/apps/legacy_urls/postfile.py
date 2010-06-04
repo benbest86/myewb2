@@ -3,6 +3,7 @@ from django.core.urlresolvers import reverse
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404, render_to_response
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden, Http404
+from django.template import RequestContext
 
 from attachments.models import Attachment
 from group_topics.models import GroupTopic
