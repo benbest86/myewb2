@@ -3,6 +3,7 @@
 {% load attachments_tags %}
 {% load icon_tags %}
 {% load filesize_tags %}
+{% load time_filters %}
 
 {% if not wb.content and not force %}
 	{% if member %}
@@ -43,7 +44,7 @@
     <div class="whiteboard-editing-box">
     	{% if wb.latest_changeset %}
             
-            <span class="lighter">Last edited by <a href="{% url profile_detail  wb.latest_changeset.editor.username %}" class="nodeco">{{ wb.latest_changeset.editor.visible_name }}</a>  on {{ wb.last_update|date }} at {{ wb.last_update|time }}</span>
+            <span class="lighter">Last edited by <a href="{% url profile_detail  wb.latest_changeset.editor.username %}" class="nodeco">{{ wb.latest_changeset.editor.visible_name }}</a> {{ wb.last_update|since }}</span>
             
         {% else %}
             No whiteboard edits yet

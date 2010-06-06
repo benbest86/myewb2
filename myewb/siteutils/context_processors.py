@@ -21,7 +21,7 @@ def myewb_settings(request):
         if request.session.get("cache_stamp", None):
             cache_stamp = request.session['cache_stamp']
     
-    return {'CACHE_TIMEOUT': settings.CACHE_TIMEOUT,
+    return {'CACHE_TIMEOUT': settings.TEMPLATE_CACHE_TIMEOUT,
             'LATEST_POST': latest_post,
             'CACHE_STAMP': cache_stamp,
             'grandfathered': grandfathered}

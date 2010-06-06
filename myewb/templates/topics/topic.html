@@ -13,6 +13,7 @@
 {% load icon_tags %}
 {% load filesize_tags %}
 {% load cache %}
+{% load time_filters %}
 
 {% block head_title %}{% trans "Post" %} : {{ topic.title }}{% endblock %}
 
@@ -51,7 +52,7 @@
 	<div class="postsubheader bkgd-light"> <!-- stat row -->
 		<table width="100%" style="margin:0; padding: 0;">
 			<tr>
-				<td>By <a href="{% url profile_detail topic.creator.username %}">{{ topic.creator.visible_name }}</a> on {{ topic.created|date }} at {{ topic.created|time }}</td>
+				<td>By <a href="{% url profile_detail topic.creator.username %}">{{ topic.creator.visible_name }}</a> {{ topic.created|since }}</td>
 				<td align="right" width="50%">
 					{% ifnotequal topic.group.slug "ewb" %}
 				    	<a href="{% groupurl topic_list topic.group %}">{{ topic.group }}</a>
