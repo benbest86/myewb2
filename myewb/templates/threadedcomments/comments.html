@@ -25,7 +25,7 @@
         <div class="postsubheader bkgd-light" id="reply-{{ response.id }}"> <!-- stat row -->
             <table width="100%" style="margin:0; padding: 0;">
             <tr>
-				<td>By <a href="{% url profile_detail response.user.username %}">{{ response.user.visible_name }}</a> {{ response.date_submitted|since }}</td>
+				<td>By <a href="{% url profile_detail response.user.username %}">{{ response.user.visible_name }}</a> {% mktime response.date_submitted %}</td>
             </tr>
             </table>
         </div>

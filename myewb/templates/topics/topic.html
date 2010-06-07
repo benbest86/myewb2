@@ -26,7 +26,7 @@
 {% block body %}
 
 <div class="post">
-	{% cache CACHE_TIMEOUT "postbody" topic.id %}
+	{% cache CACHE_TIMEOUT "postbody" topic.id current_timezone %}
 	<div class="postheader bkgd" style="position: relative;"> <!-- header row -->
 		
         {% get_attachments_for topic as "attachments" %}
@@ -52,7 +52,7 @@
 	<div class="postsubheader bkgd-light"> <!-- stat row -->
 		<table width="100%" style="margin:0; padding: 0;">
 			<tr>
-				<td>By <a href="{% url profile_detail topic.creator.username %}">{{ topic.creator.visible_name }}</a> {{ topic.created|since }}</td>
+				<td>By <a href="{% url profile_detail topic.creator.username %}">{{ topic.creator.visible_name }}</a> {% mktime topic.created %}</td>
 				<td align="right" width="50%">
 					{% ifnotequal topic.group.slug "ewb" %}
 				    	<a href="{% groupurl topic_list topic.group %}">{{ topic.group }}</a>
@@ -161,7 +161,7 @@
 			</td>
     		</tr>
 
-			{% cache CACHE_TIMEOUT "posttagswbreplies" topic.id topic.last_reply topic.whiteboard.last_update user.is_authenticated %}
+			{% cache CACHE_TIMEOUT "posttagswbreplies" topic.id topic.last_reply topic.whiteboard.last_update user.is_authenticated current_timezone %}
             <tr>
 			<td align="left" valign="top" colspan="2" style="font-size: 10px; padding-right: 10px;">
                 {% show_tags_for topic %}

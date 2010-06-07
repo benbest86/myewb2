@@ -105,6 +105,7 @@ class MemberProfile(Profile):
     date_of_birth = models.DateField(_('date of birth'), null=True, blank=True)
     # student = models.BooleanField(_('student'), null=True, blank=True)        # see below
     membership_expiry = models.DateField(_('membership expiry'), null=True, blank=True)
+    timezone = models.CharField(_('Timezone'), max_length=50, null=True, blank=True)
     
     current_login = models.DateTimeField(_('current login'), null=True, blank=True)
     previous_login = models.DateTimeField(_('previous login'), null=True, blank=True)

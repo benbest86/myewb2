@@ -27,7 +27,13 @@
 	function load_posts(url)
 	{
 		  if (url == "")
-			  url = "/?ajax=1";
+			  url = "/";
+		  url = url + "?ajax=1";
+		  
+		  {% if not current_timezone %}
+		  	var d = new Date();
+		  	url = url + "&tzoffset=" + d.getTimezoneOffset();
+		  {% endif %}
 		  currentURL = url
 		  $('#topiclisting').hide();
 		  $('.frontpage-loading').show();

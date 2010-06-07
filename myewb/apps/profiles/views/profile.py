@@ -28,6 +28,7 @@ from siteutils import online_middleware
 from siteutils.helpers import get_email_user
 from siteutils.decorators import owner_required, secure_required
 from siteutils.models import PhoneNumber
+from siteutils.context_processors import timezones
 from profiles.models import MemberProfile, StudentRecord, WorkRecord, ToolbarState
 from profiles.forms import StudentRecordForm, WorkRecordForm, MembershipForm, MembershipFormPreview, PhoneNumberForm, SettingsForm 
 
@@ -784,3 +785,23 @@ def toolbar_action(request, action=None, toolbar_id=None):
     state.save()
     
     return HttpResponse("")
+
+def timezone_switch(request):
+    if request.method == 'POST':
+        timezone = request.POST.get('timezone', None)
+        redirect = request.POST.get('redirect', None)
+        
+        if timezone and redirect and (timezone in timezones or timezone == "auto"):
+            if timezone == "auto":
+                timezone = None
+            
+            if request.user.is_authenticated() and False:
+                profile = request.user.get_profile()
+                profile.timezone = timezone
+                profile.save() 
+            else:
+                request.session['timezone'] = timezone
+                
+            return HttpResponseRedirect(redirect)
+    
+    return HttpResponseForbidden

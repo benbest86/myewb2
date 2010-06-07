@@ -165,6 +165,18 @@ $(document).ready(function(){
 	    </form>
 		</li>
 	{% endblock %}
+	
+	<li>timezone: 
+		<form action="{% url timezone_switch %}" method="post" id="language-switcher">
+			<select name="timezone" onchange="$('#language-switcher').submit()">
+				<option value="auto">auto-detect</option>
+				{% for tz in timezones %}
+					<option value="{{tz}}" {% ifequal tz current_timezone %}selected="selected"{% endifequal %}>{{ tz }}</option>
+				{% endfor %}
+			</select>
+			<input type="hidden" name="redirect" value="{{ request.path }}"/>
+		</form>
+	</li>
 </ul>
 
 {% include "feedbackform.html" %}
@@ -182,8 +194,6 @@ $(document).ready(function(){
   })();
 
 </script>
-
-
 
 {% endblock %}
 

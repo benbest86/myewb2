@@ -1,6 +1,9 @@
 from time import time
+from datetime import datetime
 import settings
 from group_topics.models import GroupTopic
+from pytz import country_timezones, common_timezones, timezone as pytzone
+from siteutils.templatetags.time_filters import timezones, tznames
 
 def myewb_settings(request):
     gt = GroupTopic.objects.all().order_by('-last_reply')[:1]
@@ -25,3 +28,42 @@ def myewb_settings(request):
             'LATEST_POST': latest_post,
             'CACHE_STAMP': cache_stamp,
             'grandfathered': grandfathered}
+
+def timezone(request):
+    current_timezone = None
+
+    if request.session.get("timezone", None):
+        current_timezone = request.session['timezone']
+
+    if request.user.is_authenticated() and request.user.get_profile().timezone:
+        if current_timezone != request.user.get_profile().timezone:
+            request.user.get_profile().timezone = current_timezone
+            request.user.get_profile().save()
+            
+    if not current_timezone and request.GET.get("tzoffset", None):
+        offset = 0 - int(request.GET['tzoffset'])
+        tz = None
+        
+        for name, code in tznames.items():
+            zoneoffset = pytzone(code).utcoffset(datetime.now()).seconds
+            if zoneoffset > 43200:          # over 12 hours: need to wrap arond
+                zoneoffset = zoneoffset - 86400        # 24 hours * 60 minutes * 60 seconds
+            zoneoffset = zoneoffset / 60        # seconds to minutes
+            if zoneoffset == offset:
+                tz = name
+                break
+
+        if not tz:
+            offset = int(offset) / -60
+            if offset > 0:
+                tz = 'Etc/GMT+%s' % offset
+            elif offset < 0:
+                tz = 'Etc/GMT%s' % offset
+            else:
+                tz = 'UTC'
+            
+        request.session['timezone'] = tz
+        current_timezone = tz
+        
+    return {'current_timezone': current_timezone,
+            'timezones': timezones}

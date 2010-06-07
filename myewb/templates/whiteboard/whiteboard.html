@@ -44,7 +44,7 @@
     <div class="whiteboard-editing-box">
     	{% if wb.latest_changeset %}
             
-            <span class="lighter">Last edited by <a href="{% url profile_detail  wb.latest_changeset.editor.username %}" class="nodeco">{{ wb.latest_changeset.editor.visible_name }}</a> {{ wb.last_update|since }}</span>
+            <span class="lighter">Last edited by <a href="{% url profile_detail  wb.latest_changeset.editor.username %}" class="nodeco">{{ wb.latest_changeset.editor.visible_name }}</a> {% mktime wb.last_update %}</span>
             
         {% else %}
             No whiteboard edits yet
