@@ -28,7 +28,7 @@ Category: %s
 
 From: %s
 
-Page: %s
+Page: http://my.ewb.ca%s
 
 Feeback:
 %s
