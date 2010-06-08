@@ -54,7 +54,12 @@ def upcoming(events):
     """
     Filter events to show upcoming events only.
     """
-    return events.filter(start__gte=date.today())
+    current_events = Q(start__year=datetime.today().year)
+    current_events = current_events & Q(start__month=datetime.today().month)
+    
+    future_events = Q(start__gte=date.today())
+
+    return events.filter(current_events | future_events)
 
 # filter a list of events, returning only visible ones
 def filter_visibility(events, user):
