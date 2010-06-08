@@ -31,6 +31,7 @@ def myewb_settings(request):
 
 def timezone(request):
     current_timezone = None
+    detected_timezone = request.session.get("detected_timezone", None)
 
     if request.session.get("timezone", None):
         current_timezone = request.session['timezone']
@@ -40,7 +41,7 @@ def timezone(request):
             request.user.get_profile().timezone = current_timezone
             request.user.get_profile().save()
             
-    if not current_timezone and request.GET.get("tzoffset", None):
+    if request.GET.get("tzoffset", None):
         offset = 0 - int(request.GET['tzoffset'])
         tz = None
         
@@ -62,8 +63,11 @@ def timezone(request):
             else:
                 tz = 'UTC'
             
-        request.session['timezone'] = tz
-        current_timezone = tz
+        request.session['detected_timezone'] = tz
+        if not current_timezone:
+            request.session['timezone'] = tz
+            current_timezone = tz
         
     return {'current_timezone': current_timezone,
+            'detected_timezone': detected_timezone,
             'timezones': timezones}

@@ -169,7 +169,7 @@ $(document).ready(function(){
 	<li>timezone: 
 		<form action="{% url timezone_switch %}" method="post" id="language-switcher">
 			<select name="timezone" onchange="$('#language-switcher').submit()">
-				<option value="auto">auto-detect</option>
+				<option value="auto">auto-detect {% if detected_timezone %}({{detected_timezone}}){% endif %}</option>
 				{% for tz in timezones %}
 					<option value="{{tz}}" {% ifequal tz current_timezone %}selected="selected"{% endifequal %}>{{ tz }}</option>
 				{% endfor %}
