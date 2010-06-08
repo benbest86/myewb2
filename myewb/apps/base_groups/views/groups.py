@@ -38,7 +38,8 @@ def groups_index(request, model=None, member_model=None, form_class=None,
     Display a listing of available groups
     """
     
-    if model is None:
+    if model is None:       # i dunno how the bots are finding this, but they are, and it's causing errors.
+        return HttpResponseRedirect(reverse('communities_index'))       # it's not meant to be a visible page.
         model = BaseGroup
         
     # keep this here to be RESTful (allow POST to index for creating new objects)
