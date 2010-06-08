@@ -83,13 +83,13 @@ class MktimeNode(template.Node):
                 hours = hours + 1
             
             if hours > 1:
-                return ", %s hours ago" % hours
+                return "%s hours ago" % hours
             elif hours == 1:
-                return ", 1 hour ago"
+                return "1 hour ago"
             elif minutes < 5:
-                return ", just now"
+                return "just now"
             else:
-                return ", %s minutes ago" % minutes
+                return "%s minutes ago" % minutes
         
         # otherwise do the full date/time
         elif d.date() == datetime.date.today():
