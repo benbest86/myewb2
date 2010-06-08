@@ -10,7 +10,7 @@
 {% load cache %}
 {% load time_filters %}
 
-{% cache CACHE_TIMEOUT "postpreview" topic.id topic.last_reply current_timezone %}
+{% cache CACHE_TIMEOUT "postpreview" topic.id topic.last_reply current_timezone LANGUAGE_CODE %}
 
 <div class="post">
 	<div class="postheader bkgd" style="position: relative;"> <!-- header row -->

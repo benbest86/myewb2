@@ -279,7 +279,7 @@ INTERNAL_IPS = (
 ugettext = lambda s: s
 LANGUAGES = (
     ('en', u'English'),
-    ('fr', u'Français'),
+#    ('fr', u'Français'),
 )
 
 # URCHIN_ID = "ua-..."
