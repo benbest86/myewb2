@@ -78,12 +78,18 @@ def create_address(request, username, object=None):
             #return HttpResponseRedirect(reverse('profile_address_detail', kwargs={'username': username, 'label': address.label}))
             return HttpResponseRedirect(reverse('profile_edit'))
     else:
+        label = ""
+        label_error = False
+        if form.is_valid():
+            label = form.cleaned_data['label']
+            label_error = not is_label_unique_for_user(other_user, form.cleaned_data['label'], None)
+            
         if request.is_ajax():
             error_data = {
                 'valid': False,
-                'label': form.cleaned_data['label'],
+                'label': label,
                 'errors': form.errors,
-                'label_error': not is_label_unique_for_user(other_user, form.cleaned_data['label'], None)
+                'label_error': label_error
             }
             return JsonResponse(error_data)
             # return HttpResponse(simplejson.dumps(error_data), mimetype='application/javascript')            

@@ -11,16 +11,15 @@
 {% block head_title %}{% trans "Reply Preview" %}{% endblock %}
 
 {% block body %}
-<h1>{% trans "Reply Preview" %}</h1>
-<p><strong>{% trans "You will have to reattach any files." %}</strong></p>
+<h1>{% trans "Reply" %}</h1>
 {% if user.is_authenticated %}
     {% if comment %}
         <div id="comment_preview">{% auto_transform_markup comment %}</div>
     {% endif %}
     <form class="uniForm" method="POST" enctype="multipart/form-data" action="">
-        <fieldset class="inlineLabels">
             <div class="ctrlHolder">
-                {{ form.comment }}
+                {# {{ form.comment }} #}
+                {{ form|as_uni_form }}
                 <div id="attachFiles">             
                     {% for af in attach_forms %}
                         {{ af|as_uni_form }}
@@ -28,6 +27,7 @@
                     <div id="attachLink">
                         <a class="getAttachForm" href="{% url ac_get_attachment_form %}">{% trans "Attach a file to this reply" %}</a>
                     </div>
+					<p><strong>{% trans "If you had any files attached, you will have to re-attach them." %}</strong></p>
                 </div>
             </div>
             <div class="form_block">                
@@ -35,7 +35,6 @@
                 <input type="hidden" name="next" value="{{ next }}" />
                 <input type="submit" value="{% trans "Post Response" %}" />
             </div>
-        </fieldset>
     </form>
 {% else %}
     <h3>Please <a href="{% url acct_login %}">Login</a> (or <a href="{% url acct_signup %}">Sign Up</a>) to leave a comment</h3>

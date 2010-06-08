@@ -27,7 +27,13 @@
 	function load_posts(url)
 	{
 		  if (url == "")
-			  url = "/?ajax=1";
+			  url = "/";
+		  url = url + "?ajax=1";
+		  
+		  {% if not current_timezone %}
+		  	var d = new Date();
+		  	url = url + "&tzoffset=" + d.getTimezoneOffset();
+		  {% endif %}
 		  currentURL = url
 		  $('#topiclisting').hide();
 		  $('.frontpage-loading').show();
@@ -151,7 +157,7 @@
 			{% ifnotequal mode "newreplies" %}
 				{% ifnotequal mode "featured" %}
         {# my groups #}
-        {% cache CACHE_TIMEOUT "frontpagegroups" user.username LATEST_POST %} 
+        {% cache CACHE_TIMEOUT "frontpagegroups" user.username LATEST_POST CACHE_STAMP adminovision %} 
         <div class="toolbarheader bkgd" id="box-frontpage-mygroups">{% trans "Latest posts" %}</div>
         <div class="toolbarcontent">
         
@@ -249,10 +255,14 @@
     
     <div class="toolbarheader bkgd" id="box-status">{% trans "myEWB status" %}</div>
     <div class="toolbarcontent">
- 		<img src="{{STATIC_URL}}images/status_icons/bug.png" style="float: left; padding: 0.8em 3px 0 0;"/>
-
+		{% comment %}
+ 		<img src="{{STATIC_URL}}images/status_icons/svn_conflicted.png" style="float: left; padding: 0.8em 3px 0 0;"/>
  		myEWB is: <br/>
-    	<a href="{% url about %}#status">online with known issues</a> 
+    	<a href="{% url about %}#status">online with some notices</a> 
+		{% endcomment %}
+		<img src="{{STATIC_URL}}images/status_icons/bug.png" style="float: left; padding: 0.1em 3px 0 0 ;"/>
+		myEWB is: <br/>
+		<a href="{% url about %}#status">online with some bugs</a>
     </div>
 {% endblock %}
 

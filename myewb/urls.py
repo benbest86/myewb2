@@ -42,7 +42,7 @@ urlpatterns = patterns('',
 #    (r'^blog/', include('blog.urls')),
     (r'^tags/', include('tag_app.urls')),
     (r'^invitations/', include('friends_app.urls')),
-    (r'^notices/', include('notification.urls')),
+    #(r'^notices/', include('notification.urls')),
     (r'^messages/', include('messages_ext.urls')),
     (r'^announcements/', include('group_announcements.urls')),
     (r'^tweets/', include('microblogging.urls')),
@@ -93,6 +93,8 @@ urlpatterns = patterns('',
     url(r'^volunteering/', include('legacy_urls.volunteering')),
     url(r'^api/', include('legacy_urls.api')),
     url(r'^cal/', include('legacy_urls.cal')),
+    url(r'^actions/', include('legacy_urls.actions')),
+    url(r'^postfile/', include('legacy_urls.postfile')),
 )
 
 ## @@@ for now, we'll use friends_app to glue this stuff together

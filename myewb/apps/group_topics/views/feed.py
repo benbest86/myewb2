@@ -7,18 +7,25 @@ Copyright 2010 Engineers Without Borders Canada
 """
 
 from django.contrib.syndication import feeds
-from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
+from django.core.urlresolvers import reverse
+from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, HttpResponsePermanentRedirect, Http404
 from tagging.models import Tag, TaggedItem
 
 from base_groups.models import BaseGroup
 from group_topics.feeds import TopicFeedAll, TopicFeedGroup, TopicFeedFeatured, TopicFeedTag
 
 def group(request, group_slug):
+    if group_slug == "waterloo":        # legacy name...
+        return HttpResponsePermanentRedirect(reverse('topic_feed_group', kwargs={'group_slug': 'grandriver'}))
+        
     try:
         try:
             group = BaseGroup.objects.get(slug=group_slug)
         except:
-            group = BaseGroup.objects.get(id=int(group_slug))
+            try:
+                group = BaseGroup.objects.get(id=int(group_slug))
+            except:
+                raise feeds.FeedDoesNotExist
             group_slug = group.slug
         
         # concept of a RSS feed for a logged-in user is weird, but OK...
@@ -28,7 +35,7 @@ def group(request, group_slug):
             return HttpResponseForbidden()
 
     except feeds.FeedDoesNotExist:
-        raise Http404, _("Invalid feed parameters. Slug %r is valid, but other parameters, or lack thereof, are not.") % slug
+        raise Http404, "Not found."
 
     response = HttpResponse(mimetype=feedgen.mime_type)
     feedgen.write(response, 'utf-8')

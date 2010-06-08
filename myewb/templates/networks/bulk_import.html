@@ -7,7 +7,7 @@
 
 {% block body %}
     <h1>{% trans "Email bulk import for" %} {{ group.name }}</h1>
-    <p>{% trans "Please enter each address you wish to add on a single line. Do not use commas or other delimiters to separate addresses."%}</p>
+    <p>{% trans "Please enter the addresses you wish to add, one per line. Do not use commas or other delimiters to separate addresses."%}</p>
     {% if user.is_authenticated %}
         <form class="uniForm" id="import_form" method="POST" action="">
             <fieldset class="inlineLabels">

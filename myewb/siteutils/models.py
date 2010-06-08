@@ -37,6 +37,7 @@ class PhoneNumber(models.Model):
   content_type = models.ForeignKey(ContentType)
   object_id = models.PositiveIntegerField()
   content_object = generic.GenericForeignKey()
+  last_updated = models.DateTimeField(editable=False, blank=True, null=True, auto_now=True)
 
   PHONE_LABELS = (
       ('Mobile', _('Mobile')),
@@ -87,6 +88,8 @@ class Address(models.Model):
   province = models.CharField(_('province / state'), max_length=2, choices=provinces, default='AB', blank=True)
   postal_code = models.CharField(_('postal / zip code'), max_length=255, null=True, blank=True)
   country = CountryField(_('country'), max_length=2, choices=countries, default='CA')
+  
+  last_updated = models.DateTimeField(editable=False, blank=True, null=True, auto_now=True)
   
   # FIXME -- have a smarter fallback name for the 
   def __unicode__(self):

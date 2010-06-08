@@ -1,0 +1,11 @@
+{% extends "communities/base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% blocktrans %}{{ group }} members{% endblocktrans %}{% endblock %}
+
+{% block body %}
+    
+    {% include "base_groups/delete_member.html" %}
+
+{% endblock %}

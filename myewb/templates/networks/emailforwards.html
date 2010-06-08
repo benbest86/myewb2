@@ -20,6 +20,11 @@
 	<p><a href="{% url network_detail network.slug %}">{{ network.name }}</a></p>
     <h1>{% trans "Email forwards" %}</h1>
     
+    <p><em>Sorry - email forwards are temporarily disabled.  Existing forwards 
+    will continue to work, but listing/adding/removing forwards is offline.</em></p>
+    
+    <p><em>We expect to have this back within the next day or two - sorry for the inconvenience!</em></p>
+    
     {% autosort forwards %}
     {% autopaginate forwards 10 %}
     {% if forwards %}
@@ -44,11 +49,16 @@
         {% paginate %}
     {% endif %}
 
+    {% comment %}
+    
 	<h3>Add a new forward</h3>    
 	<form method="POST" action="">
 		{{ form|as_uni_form }}
         <input type="submit" value="Add" />
     </form>
+    
+    {% endcomment %}
+    
 {% endblock %}
 
 {% block extra_body %}

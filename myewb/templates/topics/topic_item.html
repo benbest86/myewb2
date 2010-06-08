@@ -8,8 +8,9 @@
 {% load attachments_tags %}
 {% load helpers %}
 {% load cache %}
+{% load time_filters %}
 
-{% cache CACHE_TIMEOUT "postpreview" topic.id topic.last_reply %}
+{% cache CACHE_TIMEOUT "postpreview" topic.id topic.last_reply current_timezone LANGUAGE_CODE %}
 
 <div class="post">
 	<div class="postheader bkgd" style="position: relative;"> <!-- header row -->
@@ -39,10 +40,6 @@
 				{% else %}
 					{{ num_comments }} replies
 				{% endifequal %}
-				
-				{% if user.is_authenticated %}
-					<em>{% get_comments_for_topic_since topic user.get_profile.previous_login %}</em>
-    			{% endif %}
     			</a>
 			  {% endspaceless %}
 			{% else %}
@@ -70,7 +67,7 @@
 	<div class="postsubheader bkgd-light"> <!-- stat row -->
 		<table width="100%" style="margin:0; padding: 0;">
 			<tr>
-				<td>By <a href="{% url profile_detail topic.creator.username %}">{{ topic.creator.visible_name }}</a> on {{ topic.created|date }} at {{ topic.created|time }}</td>
+				<td>By <a href="{% url profile_detail topic.creator.username %}">{{ topic.creator.visible_name }}</a> {% mktime topic.created %}</td>
 				<td align="right" width="50%">
 					{% ifnotequal topic.group.slug "ewb" %}
 				    	<a href="{{ topic.group.get_absolute_url }}#group-posts">{{ topic.group }}</a>
@@ -99,7 +96,7 @@
 			<tr>
 			<td align="right" valign="top" colspan="2" style="font-size: 10px; padding-right: 10px; line-height:14px;">
 		        {% if num_comments %}
-					<a href="{{ topic.get_absolute_url }}#reply-{{ latest.0.id }}">Latest reply</a> by <a href="{% url profile_detail latest.0.user.username %}" class="nodeco">{{ latest.0.user.visible_name }}</a><br/> on {{ latest.0.date_submitted|date }} at {{ latest.0.date_submitted|time }}
+					<a href="{{ topic.get_absolute_url }}#reply-{{ latest.0.id }}">Latest reply</a> by <a href="{% url profile_detail latest.0.user.username %}" class="nodeco">{{ latest.0.user.visible_name }}</a><br/> {% mktime latest.0.date_submitted %}
 
                     {% if topic.num_whiteboard_edits %}<br/>{% endif %}
 				{% endif %}

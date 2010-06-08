@@ -92,42 +92,6 @@ $(document).ready(function(){
 		
         });
         
-        
-
-    {% if user.is_authenticated %}
-// Watch-list JS code
-// should this be stored somewhere more post-specific?
-	$(document).ready(function() {
-		$('.watchlist-toggle').click(function() {
-		
-		  var topicID = $(this).attr('id').substring('17');
-		  
-		  console.log(topicID);
-		  
-		  if($(this).hasClass('toggle-remove')) {
-		      // remove it from the watchlist when clicked
-                $(this).html("removing...");
-				$(this).load('{% url topic_watchlist_remove user.pk %}' + topicID + '/');
-				
-				$(this).removeClass('toggle-remove');
-				$(this).addClass('toggle-add');
-		  } else {
-                $(this).html("adding...");
-				$(this).load('{% url topic_watchlist_add user.pk %}' + topicID + '/');
-				
-				$(this).removeClass('toggle-add');
-				$(this).addClass('toggle-remove');
-		  }
-		
-			return false;
-		});
-	});
-    
-    {% endif %}
-        
-        
-
-
 	$(document).ready(function() {
         if (jQuery.browser.msie) {
            if(parseInt(jQuery.browser.version) == 6) {
@@ -201,6 +165,18 @@ $(document).ready(function(){
 	    </form>
 		</li>
 	{% endblock %}
+	
+	<li>timezone: 
+		<form action="{% url timezone_switch %}" method="post" id="language-switcher">
+			<select name="timezone" onchange="$('#language-switcher').submit()">
+				<option value="auto">auto-detect {% if detected_timezone %}({{detected_timezone}}){% endif %}</option>
+				{% for tz in timezones %}
+					<option value="{{tz}}" {% ifequal tz current_timezone %}selected="selected"{% endifequal %}>{{ tz }}</option>
+				{% endfor %}
+			</select>
+			<input type="hidden" name="redirect" value="{{ request.path }}"/>
+		</form>
+	</li>
 </ul>
 
 {% include "feedbackform.html" %}
@@ -218,8 +194,6 @@ $(document).ready(function(){
   })();
 
 </script>
-
-
 
 {% endblock %}
 

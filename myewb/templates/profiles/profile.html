@@ -14,22 +14,30 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% block head_title %}{% blocktrans with other_user.visible_name as username %}Profile for {{ username }}{% endblocktrans %}{% endblock %}
 
 {% block body %}
+	<style>
+	  a img {
+	    border: 0;
+	  }
+	</style>
+
 	<br/>
     <h1 style="text-align: center;">{{ other_user.visible_name }}</h1>
 
-    {% if is_me or is_friend or perms.profiles %}
+    {% if is_me or has_visibility or other_user.is_staff %}
         <div style="text-align: center; position: relative; top: -5px;">
             <a href="mailto:{{other_user.email}}">{{other_user.email}}</a>
         </div>
     {% endif %}
     
     <div id="profile_avatar" style="text-align: center;">
-        {% avatar other_user 160 %}
+    	<a href="{% avatar_url other_user 500 %}" id="avatar">
+        	{% avatar other_user 160 %}
+        </a>
     </div>
     <br/>
     
     {% if not is_me %}
-		{% if is_me or is_friend or perms.profiles %}
+		{% if is_me or has_visibility %}
 	    	<div style="text-align: center;">
 				
 				
@@ -66,7 +74,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
     
 
         
-	{% if is_me or is_friend or perms.profiles %}
+	{% if is_me or has_visibility %}
 
 <table class="standard standard-right search-form">
     <tbody>
@@ -422,16 +430,9 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
     	    {% if is_friend %}
     	        <p>
     	        	{% blocktrans %}You are friends with{% endblocktrans %} {{ other_user.visible_name }}.
-    	            
-    	            
-    	            
-    	            
-    	            
     	            <form method="GET" action="{% url messages_compose_to other_user.username %}">
     	                <input type="submit" value="{% trans "Send a message!" %}"/>
     	            </form>
-    	            
-    	            
     	        </p>
     	    {% else %}
     	        {% if previous_invitations_from %}
@@ -489,22 +490,8 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
     	        {% endif %} {# previous_invitations_from #}
     	        
     	    {% endif %} {# is_friend #}
-        </div>
-	{% endif %}  {# is authenticated #}
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
+        	</div>
+		{% endif %}  {# is authenticated #}
         
         {# exec / admin actions #}
         {% if perms.profiles and renew %}
@@ -517,30 +504,30 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
             	{% endif %}
             </div>
             
-        {% else %}
-            {# doesn't need renewing, so chapter execs shouldn't see any actions, but staff need the staff tools #}
-        	{% if user.is_staff %}
-
-                <div class="toolbarheader bkgd" id="box-profile-actions">{% trans "Admin Actions" %}</div>
-                <div class="toolbarcontent">
-                	{# TODO: is chapter exec?? #}
-                	{% if renew %}
-        			    <a href="{% url profile_pay_membership other_user %}">Make regular member</a><br/>
-        			    (only click if they have paid their fee in cash)
-        			    <br/><br/>
-                	{% endif %}
-                	
-            	    {# intentional use of is_staff... #}
-            	    <a href="{% url profile_impersonate other_user %}">Impersonate user</a>
-            	    <br/><br/>
-		            <a href="{% url account_delete other_user %}">Delete user</a><br/>
-
-                </div>
-
-        	
-        	{% endif %}
-        	
         {% endif %}
+        
+        {# and various admin options #}
+       	{% if user.is_staff %}
+
+               <div class="toolbarheader bkgd" id="box-profile-actions">{% trans "Admin Actions" %}</div>
+               <div class="toolbarcontent">
+               	{# TODO: is chapter exec?? #}
+               	{% if renew %}
+       			    <a href="{% url profile_pay_membership other_user %}">Make regular member</a><br/>
+       			    (only click if they have paid their fee in cash)
+       			    <br/><br/>
+               	{% endif %}
+               	
+           	    {# intentional use of is_staff... #}
+           	    <a href="{% url profile_impersonate other_user %}">Impersonate user</a>
+           	    <br/><br/>
+	            <a href="{% url account_delete other_user %}">Delete user</a><br/>
+
+               </div>
+
+       	
+       	{% endif %}
+        	
     {% endif %}
     
 {% endblock %}
@@ -574,5 +561,12 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 		</script>
 	{% endif %}
     
+	<link type="text/css" href="{{STATIC_URL}}css/colorbox.css" rel="stylesheet" />
+	<script type="text/javascript" src="{{STATIC_URL}}js/colorbox.js"></script>
+    <script type="text/javascript">
+	    $(document).ready(function() {
+			$('#avatar').colorbox({transition: "elastic", width:"80%", height:"80%"});
+	    });
+    </script>
 {% endblock %}
 

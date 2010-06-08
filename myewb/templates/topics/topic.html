@@ -13,6 +13,7 @@
 {% load icon_tags %}
 {% load filesize_tags %}
 {% load cache %}
+{% load time_filters %}
 
 {% block head_title %}{% trans "Post" %} : {{ topic.title }}{% endblock %}
 
@@ -25,7 +26,7 @@
 {% block body %}
 
 <div class="post">
-	{% cache CACHE_TIMEOUT "postbody" topic.id %}
+	{% cache CACHE_TIMEOUT "postbody" topic.id current_timezone LANGUAGE_CODE %}
 	<div class="postheader bkgd" style="position: relative;"> <!-- header row -->
 		
         {% get_attachments_for topic as "attachments" %}
@@ -51,7 +52,7 @@
 	<div class="postsubheader bkgd-light"> <!-- stat row -->
 		<table width="100%" style="margin:0; padding: 0;">
 			<tr>
-				<td>By <a href="{% url profile_detail topic.creator.username %}">{{ topic.creator.visible_name }}</a> on {{ topic.created|date }} at {{ topic.created|time }}</td>
+				<td>By <a href="{% url profile_detail topic.creator.username %}">{{ topic.creator.visible_name }}</a> {% mktime topic.created %}</td>
 				<td align="right" width="50%">
 					{% ifnotequal topic.group.slug "ewb" %}
 				    	<a href="{% groupurl topic_list topic.group %}">{{ topic.group }}</a>
@@ -160,7 +161,7 @@
 			</td>
     		</tr>
 
-			{% cache CACHE_TIMEOUT "posttagswbreplies" topic.id topic.last_reply topic.whiteboard.last_update user.is_authenticated %}
+			{% cache CACHE_TIMEOUT "posttagswbreplies" topic.id topic.last_reply topic.whiteboard.last_update user.is_authenticated current_timezone LANGUAGE_CODE %}
             <tr>
 			<td align="left" valign="top" colspan="2" style="font-size: 10px; padding-right: 10px;">
                 {% show_tags_for topic %}
@@ -171,7 +172,6 @@
 
 	</div>
 </div>
-
 
 <div class="topic-whiteboard-container">
 {% show_whiteboard topic.whiteboard topic.group member %}
@@ -201,31 +201,28 @@
 	{% endif %}	
 
 	{% if user.is_authenticated %}
-	
-	
-	
-	{% comment %}	
 	<script type="text/javascript">
 		$(document).ready(function() {
-		
-			$('#add_to_watchlist').click(function() {
-				$('#toggle_watchlist_container').html("adding...");
-				$('#toggle_watchlist_container').load('{% url topic_watchlist_add user.pk topic.pk %}');
-				return false;
-			});
-			$('#remove_from_watchlist').click(function() {
-				$('#toggle_watchlist_container').html("removing...");
-				$('#toggle_watchlist_container').load('{% url topic_watchlist_remove user.pk topic.pk %}');
-				return false;
-			});
+			$('.watchlist-toggle').click(function() {
 			
-			
+			  if($(this).hasClass('toggle-remove')) {
+			      // remove it from the watchlist when clicked
+	                $(this).html("removing...");
+					$(this).load('{% url topic_watchlist_remove user.pk topic.pk %}');
+					
+					$(this).removeClass('toggle-remove');
+					$(this).addClass('toggle-add');
+			  } else {
+	                $(this).html("adding...");
+					$(this).load('{% url topic_watchlist_add user.pk topic.pk %}');
+					
+					$(this).removeClass('toggle-add');
+					$(this).addClass('toggle-remove');
+			  }
+			  return false;
+			});
 		});
 	</script>
-	
-	{% endcomment %}
-	
-	
 	{% endif %}
 	
 	{% if perms.group_topics %}

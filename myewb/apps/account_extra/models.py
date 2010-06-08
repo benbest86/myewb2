@@ -46,7 +46,11 @@ def create_bulk_user_method(self, email):
     new_user.save()
     
     # and the EmailAddress object too (should this be a User.postsave instead?)
-    EmailAddress.objects.add_email(new_user, email)
+    # (do not use EmailAddress.objects.add_email since that will generate a verification email)
+    try:
+        EmailAddress.objects.create(user=new_user, email=email)
+    except:
+        pass
     
     # and finish up
     signals.listsignup.send(sender=new_user, user=new_user)

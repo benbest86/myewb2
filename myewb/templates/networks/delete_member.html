@@ -1,0 +1,11 @@
+{% extends "networks/base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{{ member.user.visible_name }}{% endblock %}
+
+{% block body %}
+    
+    {% include "base_groups/delete_member.html" %}
+
+{% endblock %}

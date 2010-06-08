@@ -10,6 +10,7 @@ Last modified: 2009-12-02
 """
 
 import settings
+from time import time
 
 from django.http import HttpResponse, HttpResponseForbidden, HttpResponseRedirect, Http404
 from django.utils.translation import ugettext as _
@@ -46,7 +47,13 @@ def topic(request, topic_id, group_slug=None, edit=False, template_name="topics/
     parent_group = topic.parent_group
     # XXX PERMISSIONS CHECK
     if not parent_group.is_visible(request.user) and not topic.creator == request.user:
-        return HttpResponseForbidden()
+        return render_to_response("topics/disallowed.html", {
+            "topic": None,
+            "group": parent_group,
+            "member": None,
+            "grpadmin": None,
+        }, context_instance=RequestContext(request))
+
 
     # XXX PERMISSIONS CHECK
     # only the owner of a topic or a group admin can edit a topic (??)
@@ -73,7 +80,7 @@ def topic(request, topic_id, group_slug=None, edit=False, template_name="topics/
         
     # find membership status
     member = False
-    if topic.group and (topic.group.user_is_member(request.user) or topic.group.slug == "ewb"):
+    if request.user.is_authenticated() and topic.group and (topic.group.user_is_member(request.user) or topic.group.slug == "ewb"):
         member = True
         
     grpadmin = topic.group.user_is_admin(request.user)
@@ -251,7 +258,9 @@ def new_topic(request, group_slug=None, bridge=None):
                         attachment = af.save(request, base_topic)
                         attachments.append(af.cleaned_data['attachment_file'].name)
         
-                    sender = topic_form.cleaned_data.get('sender', None)
+                    sender = None
+                    if topic_form.cleaned_data.get('send_as_email', None):
+                        sender = topic_form.cleaned_data.get('sender', None)
                     return render_to_response("topics/preview.html",
                                               {"group": group,
                                                "topic": topic,
@@ -290,6 +299,8 @@ def get_attachment_form(request, template_name="topics/attachment_form.html", fo
             context_instance=RequestContext(request),
         )
         return response
+    else:
+        raise Http404
 
 def topic_delete(request, topic_id, group_slug=None, bridge=None, confirm=False):
     """
@@ -353,7 +364,7 @@ def topics_by_user(request, username):
     return render_to_response("topics/topics.html",
                               {"topics": topics,
                                "group": None,
-                               "mode": "byuser"},
+                               "mode": "byuser-%s" % username},
                               context_instance=RequestContext(request)
                              )
 
@@ -383,7 +394,7 @@ def watchlist(request, list_id):
     return render_to_response("topics/topics.html",
                               {"topics": topics,
                                "group": None,
-                               "mode": "forwatchlist"},
+                               "mode": "forwatchlist-%s" % list_id},
                               context_instance=RequestContext(request)
                              )
     
@@ -411,6 +422,7 @@ def add_to_watchlist(request, user_id, topic_id):
     
     if list.user_can_control(request.user):
         list.add_post(topic)
+        request.session['cache_stamp'] = time()
         
         # TODO: do I want to templatize?
         return HttpResponse("[remove from watch-list]")
@@ -429,6 +441,7 @@ def remove_from_watchlist(request, user_id, topic_id):
     
     if list.user_can_control(request.user):
         list.remove_post(topic)
+        request.session['cache_stamp'] = time()
         
         # TODO: do I want to templatize?  do you!  just kidding. -sean  @@@
         return HttpResponse("[add to watch-list]")  # was "removed"

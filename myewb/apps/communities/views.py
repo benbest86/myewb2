@@ -38,6 +38,7 @@ MEM_NEW_TEMPLATE = 'communities/new_member.html'
 MEM_INVITE_TEMPLATE = 'communities/invite_member.html'
 MEM_EDIT_TEMPLATE = 'communities/edit_member.html'
 MEM_DETAIL_TEMPLATE = 'communities/member_detail.html'
+MEM_DELETE_TEMPLATE = 'communities/delete_member.html'
 
 DEFAULT_OPTIONS = {}
 
@@ -90,8 +91,8 @@ def edit_member(request, group_slug, username, form_class=EditGroupMemberForm, t
     return members.edit_member(request, group_slug, username, Community, form_class, template_name, detail_template_name)
 
 @login_required    
-def delete_member(request, group_slug, username):
-    return members.delete_member(request, group_slug, username, Community)
+def delete_member(request, group_slug, username, template_name=MEM_DELETE_TEMPLATE):
+    return members.delete_member(request, group_slug, username, Community, template_name)
 
 @group_admin_required()
 def community_stats(request, group_slug):

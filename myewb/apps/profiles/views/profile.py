@@ -28,6 +28,7 @@ from siteutils import online_middleware
 from siteutils.helpers import get_email_user
 from siteutils.decorators import owner_required, secure_required
 from siteutils.models import PhoneNumber
+from siteutils.context_processors import timezones
 from profiles.models import MemberProfile, StudentRecord, WorkRecord, ToolbarState
 from profiles.forms import StudentRecordForm, WorkRecordForm, MembershipForm, MembershipFormPreview, PhoneNumberForm, SettingsForm 
 
@@ -45,7 +46,11 @@ def profiles(request, template_name="profiles/profiles.html"):
         qry = Q(profile__name__icontains=search_terms) | Q(username__icontains=search_terms)
         users = User.objects.filter(is_active=True).filter(qry)
         if not request.user.has_module_perms("profiles"):
+            users = User.objects.filter(is_active=True).filter(qry)
             users = users.filter(memberprofile__grandfathered=False)
+        else:
+            qry = qry | Q(emailaddress__email__icontains=search_terms)
+            users = User.objects.filter(is_active=True).filter(qry)
         users = users.order_by("profile__name")
     else:
         users = None
@@ -93,6 +98,7 @@ def profile_edit(request, form_class=ProfileForm, **kwargs):
             profile_form = form_class(instance=profile)
         else:
             profile_form = form_class(request.POST, instance=profile)
+            phone_form = PhoneNumberForm()
             if profile_form.is_valid():
                 profile = profile_form.save(commit=False)
                 profile.user = request.user
@@ -410,12 +416,15 @@ def delete_work_record(request, username, work_record_id, object=None):
         return HttpResponseRedirect(reverse('work_record_index', kwargs={'username': username}))
 
 def profile_by_id(request, profile_id):
-    user = get_object_or_404(User, id=profile_id)
-    return HttpResponseRedirect(reverse('profile_detail', kwargs={'username': user.username}))
+    try:
+        user = User.objects.get(id=profile_id)
+        return HttpResponseRedirect(reverse('profile_detail', kwargs={'username': user.username}))
+    except:
+        return profile(request, profile_id)
 
 # override default "save" function so we can prompt people to join networks
 def profile(request, username, template_name="profiles/profile.html", extra_context=None):
-    other_user = User.objects.get(username=username)
+    other_user = get_object_or_404(User, username=username)
 
     """
     This is really really neat code, but dunno where to put it since 
@@ -498,7 +507,10 @@ def profile(request, username, template_name="profiles/profile.html", extra_cont
                         try:
                             invitation = FriendshipInvitation.objects.get(id=invitation_id)
                             if invitation.to_user == request.user:
-                                invitation.accept()
+                                try:                                # have gotten IntegrityError from this... #573
+                                    invitation.accept()             # (accepting an already-accepted invite, maybe?)
+                                except:
+                                    pass
                                 request.user.message_set.create(message=_("You have accepted the friendship request from %(from_user)s") % {'from_user': invitation.from_user.visible_name()})
                         except FriendshipInvitation.DoesNotExist:
                             pass
@@ -539,6 +551,13 @@ def profile(request, username, template_name="profiles/profile.html", extra_cont
         previous_invitations_to = FriendshipInvitation.objects.invitations(to_user=other_user, from_user=request.user)
         previous_invitations_from = FriendshipInvitation.objects.invitations(to_user=request.user, from_user=other_user)
         
+        # friends & admins have visibility.
+        has_visibility = is_friend or request.user.has_module_perms("profiles")
+        if not has_visibility:      #but so does your chapter's exec
+            mygrps = Network.objects.filter(members__user=request.user, members__is_admin=True, is_active=True).order_by('name')
+            if len(list(set(mygrps) & set(other_user.get_networks()))) > 0:
+                has_visibility = True
+        
     else:
         other_friends = []
         is_friend = False
@@ -548,7 +567,7 @@ def profile(request, username, template_name="profiles/profile.html", extra_cont
         invite_form = None
         previous_invitations_to = None
         previous_invitations_from = None
-        
+        has_visibility = False
     
     return render_to_response(template_name, dict({
         "is_me": is_me,
@@ -560,6 +579,7 @@ def profile(request, username, template_name="profiles/profile.html", extra_cont
         "previous_invitations_to": previous_invitations_to,
         "previous_invitations_from": previous_invitations_from,
         "pending_requests": pending_requests,
+        "has_visibility": has_visibility
     }, **extra_context), context_instance=RequestContext(request))
 
 @secure_required
@@ -738,7 +758,7 @@ def settings(request, username=None):
                 form.save()
             
                 request.user.message_set.create(message='Settings updated.')
-                return HttpResponseRedirect(reverse('profile_detail', kwargs={'username': username}))
+                return HttpResponseRedirect(reverse('profile_detail', kwargs={'username': user.username}))
             
         else:
             form = SettingsForm(instance=user.get_profile())
@@ -765,3 +785,23 @@ def toolbar_action(request, action=None, toolbar_id=None):
     state.save()
     
     return HttpResponse("")
+
+def timezone_switch(request):
+    if request.method == 'POST':
+        timezone = request.POST.get('timezone', None)
+        redirect = request.POST.get('redirect', None)
+        
+        if timezone and redirect and (timezone in timezones or timezone == "auto"):
+            if timezone == "auto":
+                timezone = None
+            
+            if request.user.is_authenticated() and False:
+                profile = request.user.get_profile()
+                profile.timezone = timezone
+                profile.save() 
+            else:
+                request.session['timezone'] = timezone
+                
+            return HttpResponseRedirect(redirect)
+    
+    return HttpResponseForbidden

@@ -10,15 +10,21 @@
 {% block head_title %}{% blocktrans %}National Office{% endblocktrans %}{% endblock %}
 
 {% block body %}
+	<style>
+	  a img {
+	    border: 0;
+	  }
+	</style>
     <h1>{% trans "National Office" %}</h1>
     
     {% get_admins group as admins %}
-    <table border="0" width="100%">
+    <table border="0" width="100%" style="font-size: 14px;">
     {% for admin in admins %}
     	{% cycle "<tr><td>" "<td>" "<td>" %}
     		<br/>
-            {% avatar admin.user 120 %}<br/>
-            <a href="{% url profile_detail admin.user.username %}">{{ admin.user.visible_name }}</a><br/>
+            <a href="{% url profile_detail admin.user.username %}">{% avatar admin.user 120 %}</a><br/>
+            <a href="{% url profile_detail admin.user.username %}" style="font-size: 16px; font-weight: bold;">{{ admin.user.visible_name }}</a><br/>
+            <a href="mailto:{{ admin.user.email }}">{{ admin.user.email }}</a><br/>
             {{ admin.admin_title }}
         {% cycle "</td>" "</td>" "</td></tr>" %}
     {% endfor %}

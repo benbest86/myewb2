@@ -15,7 +15,7 @@ from base_groups.models import BaseGroup, GroupMember, add_creator_to_group
 
 class CommunityManager(models.Manager):
     def listing(self):
-        return self.get_query_set().filter(parent__isnull=True)
+        return self.get_query_set().filter(parent__isnull=True, is_active=True)
         
 class Community(BaseGroup):
     objects = CommunityManager()

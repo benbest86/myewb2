@@ -45,7 +45,7 @@ def user_search(request):
 
         # build the final query
         qry = qry & Q(is_active=True)
-        users = User.objects.filter(qry).exclude(id=request.user.id).order_by('first_name', 'last_name')
+        users = User.objects.filter(qry).order_by('first_name', 'last_name')
         usercount = users.count()
     else:
         users = None

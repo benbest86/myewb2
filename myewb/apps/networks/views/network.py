@@ -43,7 +43,7 @@ MEM_NEW_TEMPLATE = 'networks/new_member.html'
 MEM_INVITE_TEMPLATE = 'networks/invite_member.html'
 MEM_EDIT_TEMPLATE = 'networks/edit_member.html'
 MEM_DETAIL_TEMPLATE = 'networks/member_detail.html'
-
+MEM_DELETE_TEMPLATE = 'networks/delete_member.html'
 
 DEFAULT_OPTIONS = {"check_create": True}
 
@@ -113,8 +113,8 @@ def edit_member(request, group_slug, username, form_class=EditNetworkMemberForm,
         return HttpResponseRedirect(reverse('network_members_index', kwargs={'group_slug': group_slug}))
 
 @login_required    
-def delete_member(request, group_slug, username):
-    return members.delete_member(request, group_slug, username, Network)
+def delete_member(request, group_slug, username, template_name=MEM_DELETE_TEMPLATE):
+    return members.delete_member(request, group_slug, username, Network, template_name)
 
 @group_admin_required()
 def network_stats(request, group_slug):

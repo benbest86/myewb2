@@ -22,7 +22,7 @@ from whiteboard.models import Whiteboard
 
 from django.contrib.auth.models import User
 
-from datetime import datetime
+from datetime import datetime, date
 
 from siteutils import helpers
 from siteutils.shortcuts import get_object_or_none
@@ -49,6 +49,17 @@ def timebound(events, year=None, month=None, day=None, user=None):
         events = events.filter(start__day=int(day))
         
     return events
+
+def upcoming(events):
+    """
+    Filter events to show upcoming events only.
+    """
+    current_events = Q(start__year=datetime.today().year)
+    current_events = current_events & Q(start__month=datetime.today().month)
+    
+    future_events = Q(start__gte=date.today())
+
+    return events.filter(current_events | future_events)
 
 # filter a list of events, returning only visible ones
 def filter_visibility(events, user):
@@ -360,7 +371,7 @@ def feed_for_instance(request, app_label, model_name, id, year=None, month=None,
         return render_to_response('denied.html', context_instance=RequestContext(request))
         
     events = Event.objects.filter(content_type = ContentType.objects.get_for_model(obj), object_id = id)
-    events = timebound(events, year, month, day)
+    events = upcoming(events).order_by('start')[:30]
         
     return build_ical(events)
 

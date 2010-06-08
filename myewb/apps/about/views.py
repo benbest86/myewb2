@@ -20,6 +20,7 @@ def feedback(request):
         email = request.POST.get('feedback-email', None)
         text = request.POST.get('feedback-text', None)
         category = request.POST.get('feedback-category', None)
+        pagename = request.POST.get('feedback-path', None)
 
         body = """myEWB 1.5 feedback received!
 
@@ -27,14 +28,16 @@ Category: %s
 
 From: %s
 
+Page: %s
+
 Feeback:
 %s
-""" % (category, email, text)
+""" % (category, email, pagename, text)
 
-        send_mail(subject="myEWB feedback",
+        send_mail(subject="myEWB feedback (%s)" % category,
                   txtMessage=body,
                   htmlMessage=None,
-                  fromemail="myEWB notices <system@my.ewb.ca>",
+                  fromemail=email,
                   recipients=["feedback@my.ewb.ca"],
                   use_template=False)
     return HttpResponse("thanks")

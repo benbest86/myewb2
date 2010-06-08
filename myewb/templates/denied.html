@@ -4,8 +4,19 @@
 <div class="access-denied-page">
     <h1>Access denied</h1>
     
-    <p>Sorry! You don't have permission to access this page.  <a href="/">Click here</a> to return to the myEWB homepage.</p>
-    <p>If you think this is a bug, please email <a href="mailto:support@my.ewb.ca">support@my.ewb.ca</a> - thanks.</p>
+    <p>
+    	Sorry! You don't have permission to access this page.
+    
+    	{% if user.is_authenticated %}
+    		<a href="/">Click here</a> to return to the myEWB homepage.
+    	{% else %}
+			You may be able to view this page if you <a href="{% url acct_login %}?url={{request.path}}">sign in</a>.
+    	{% endif %}
+    </p>
+    
+    <p>
+    	If you think this is a bug, please email <a href="mailto:support@my.ewb.ca">support@my.ewb.ca</a> - thanks.
+    </p>
     
 
 </div>

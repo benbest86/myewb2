@@ -483,25 +483,42 @@ def clean_up_bulk_users(sender, instance, created, **kwargs):
         email_user = get_email_user(instance.email)
         user = instance.user
         # a 
-        if not email_user == user:
+        if email_user and not email_user == user:
+            # update group memberships
             for membership in email_user.member_groups.all():
                 if not user.member_groups.filter(group=membership.group):
                     membership.user = instance.user
                     membership.save()
-            # delete old bulk user - should delete GroupMember objects as well
+                else:
+                    membership.delete()
+                    
+            # update membership records (should we just delete them instead?)
+            for record in email_user.group_records.all():
+                record.user = instance.user
+                record.save()
+                
+            # update invitations
+            for invitation in email_user.pending_memberships.all():
+                if not user.pending_memberships.filter(group=invitation.group):
+                    invitation.user = instance.user
+                    invitation.save()
+                else:
+                    invitation.delete()
+                
+            # delete old bulk user
             email_user.delete()
 
 post_save.connect(clean_up_bulk_users, sender=EmailAddress)
 
 def add_creator_to_group(sender, instance, created, **kwargs):
     if created:
-        try:
+        gm = GroupMember.objects.filter(user=instance.creator,
+                                        group=instance)
+        if gm.count() == 0:
             GroupMember.objects.create(
                     user=instance.creator, 
                     group=instance,
                     is_admin=True,
                     admin_title='%s Creator' % instance.name,
                     admin_order = 1)
-        except:
-            pass
 post_save.connect(add_creator_to_group, sender=BaseGroup)

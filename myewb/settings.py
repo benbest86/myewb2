@@ -105,6 +105,7 @@ MIDDLEWARE_CLASSES = (
     #'siteutils.helpers.SQLLogToConsoleMiddleware',
     #'siteutils.profile_middleware.ProfileMiddleware',
 #    'django.middleware.cache.FetchFromCacheMiddleware',
+#    'debug_toolbar.middleware.DebugToolbarMiddleware'
 )
 
 ROOT_URLCONF = 'urls'
@@ -131,6 +132,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "friends_app.context_processors.invitations",
     "context_processors.combined_inbox_count",
     "siteutils.context_processors.myewb_settings",
+    "siteutils.context_processors.timezone",
     "siteutils.online_middleware.context",
     "group_topics.context_processors.newposts",
     "communities.context_processors.is_exec",
@@ -191,6 +193,7 @@ INSTALLED_APPS = (
     'uni_form',
     'django_sorting',
     'django_markup',
+#    'debug_toolbar',
     
     # internal (for now)
     'analytics',
@@ -244,6 +247,7 @@ MARKUP_CHOICES = (
     ('creole', u'Creole'),
 )
 WIKI_MARKUP_CHOICES = MARKUP_CHOICES
+DEFAULT_MAX_COMMENT_LENGTH = None
 
 AUTH_PROFILE_MODULE = 'profiles.MemberProfile'
 NOTIFICATION_LANGUAGE_MODULE = 'account.Account'
@@ -265,7 +269,8 @@ LOGIN_REDIRECT_URLNAME = "home"
 CACHE_BACKEND = 'dummy://'
 #CACHE_MIDDLEWARE_ANONYMOUS_ONLY = True      # will do user-based caching manually in the views
 CACHE_MIDDLEWARE_KEY_PREFIX = ''
-CACHE_TIMEOUT = 300             # in seconds... 5 minutes?
+CACHE_TIMEOUT = 1800             # 30 minutes for internal queries
+TEMPLATE_CACHE_TIMEOUT = 300             # 5 minutes for templates only
 
 INTERNAL_IPS = (
     '127.0.0.1',
@@ -274,7 +279,7 @@ INTERNAL_IPS = (
 ugettext = lambda s: s
 LANGUAGES = (
     ('en', u'English'),
-    ('fr', u'Français'),
+#    ('fr', u'Français'),
 )
 
 # URCHIN_ID = "ua-..."

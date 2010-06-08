@@ -105,11 +105,13 @@ class MemberProfile(Profile):
     date_of_birth = models.DateField(_('date of birth'), null=True, blank=True)
     # student = models.BooleanField(_('student'), null=True, blank=True)        # see below
     membership_expiry = models.DateField(_('membership expiry'), null=True, blank=True)
+    timezone = models.CharField(_('Timezone'), max_length=50, null=True, blank=True)
     
     current_login = models.DateTimeField(_('current login'), null=True, blank=True)
     previous_login = models.DateTimeField(_('previous login'), null=True, blank=True)
     login_count = models.IntegerField(_('login count'), null=False, default=0)
     adminovision = models.BooleanField(_('admin-o-vision'), null=False, blank=True)
+    last_updated = models.DateTimeField(editable=False, blank=True, null=True, auto_now=True)
     
     social_insurance = CASocialInsuranceNumberField()
     health_card = models.CharField(blank=True, max_length=100)
