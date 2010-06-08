@@ -614,8 +614,8 @@ def run_so_csv(group=None):
             
         row.extend([m.school_name, m.teacher_name, m.teacher_email, m.teacher_phone, m.presentations, m.students, m.grades, m.subject, m.workshop, m.facilitators, m.new_facilitators])
             
-        writer.writerow(row)
-    
+        writer.writerow([fix_encoding(s) for s in row])
+
     return response
                      
     
