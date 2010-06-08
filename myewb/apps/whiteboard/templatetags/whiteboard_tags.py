@@ -3,8 +3,8 @@ from django.conf import settings
 
 register = Library()
 
-@register.inclusion_tag("whiteboard/whiteboard.html")
-def show_whiteboard(whiteboard, group, member):
+@register.inclusion_tag("whiteboard/whiteboard.html", takes_context=True)
+def show_whiteboard(context, whiteboard, group, member):
     """
     Show a whiteboard.  If the whiteboard is empty, show a link to create one.
     """
@@ -13,11 +13,12 @@ def show_whiteboard(whiteboard, group, member):
         "group": group,
         "member": member,
         "force": False,
-        "STATIC_URL": settings.STATIC_URL
+        "STATIC_URL": settings.STATIC_URL,
+        "request": context['request']
     }
 
-@register.inclusion_tag("whiteboard/whiteboard.html")
-def show_whiteboard_force(whiteboard, group, member):
+@register.inclusion_tag("whiteboard/whiteboard.html", takes_context=True)
+def show_whiteboard_force(context, whiteboard, group, member):
     """
     Show a whiteboard, even if it's empty.
     """
@@ -26,6 +27,7 @@ def show_whiteboard_force(whiteboard, group, member):
         "group": group,
         "member": member,
         "force": True,
-        "STATIC_URL": settings.STATIC_URL
+        "STATIC_URL": settings.STATIC_URL,
+        "request": context['request']
     }
 

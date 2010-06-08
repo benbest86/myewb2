@@ -60,6 +60,9 @@ def show_topic_with_user(context, topic):
         "user": context.get("user"),
         "STATIC_URL": settings.STATIC_URL,
         "CACHE_TIMEOUT": settings.CACHE_TIMEOUT,
+        "current_timezone": context.get("current_timezone"),
+        "LANGUAGE_CODE": context.get("LANGUAGE_CODE"),
+        "request": context.get("request")
     }
 register.inclusion_tag("topics/topic_item.html", takes_context=True)(show_topic_with_user)
 
