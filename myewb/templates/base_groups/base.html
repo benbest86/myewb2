@@ -110,7 +110,14 @@
 	    {% if is_member %}
 	    	<a href="{% groupurl topic_new group %}">Create a new post</a>
 	    {% else %}
-	    	You need to join this group before you can post to it. [This is a bug - Ticket #473]
+	    	You need to 
+	    	
+	    	{% if user.is_authenticated %}
+	    	<a href="{% groupurl new_member group %}">join this group</a>
+	    	{% else %}
+	    	join this group
+	    	{% endif %}
+	    	 before you can post to it.
 	    {% endif %}
                     
                     
