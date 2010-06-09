@@ -1,8 +1,9 @@
 {# Put this in its own file, just because it's so big... #}
 
-<link rel="stylesheet" href="{{ STATIC_URL }}css/myewb-frontright.css" />    
+<link rel="stylesheet" href="{{ STATIC_URL }}css/myewb-frontright.css?d=20100608c" />
 
 {# <div id="toolbarcolumn_right2"> #}
+{% comment %}
         <div>
                 <div class="toolbarheader_right">The myEWB 1.5 Scavenger Hunt!</div>
                 <div class="toolbarcontent_right">
@@ -29,26 +30,25 @@
                 </div>
         </div>
         
-        
+{% endcomment %}
         <div>
-                <div class="toolbarheader_right"><a href="http://vision.ewb.ca" target="_blank" class="barheaderlink">EWB Resources</a></div>
                 <div class="toolbarcontent_right">
                     <ul class="postlinklist">
-                        <li><a href="http://vision.ewb.ca" target="_blank">EWB's Vision</a></li>
-                        <li><a href="http://my.ewb.ca/postfile/69028/EWB+Values_and_Beliefs.pdf" target="_blank">EWB's Values</a></li>
-                        <li><a href="http://www.ewb.ca/book" target="_blank">The Book</a></li>
-                        <li <a href="http://wiki.ewb.ca" target="_blank">The Orange Wiki</li>
-                        <li <a href="http://chapters.ewb.ca" target="_blank">Chapters.ewb.ca</li>
-                    </ul>
+                        <li>&raquo; EWB Direction (<a href="http://vision.ewb.ca/sites/vision.ewb.ca/files/direction.pdf" target="_blank">pdf</a>) (<a href="http://vision.ewb.ca/node/148" target="_blank">browse</a>)</li>
+                        <li>&raquo; EWB Values (<a href="http://my.ewb.ca/postfile/69028/EWB+Values_and_Beliefs.pdf" target="_blank">pdf</a>) (<a href="http://vision.ewb.ca/node/150" target="_blank">browse</a>)</li>
+                        <li>&raquo; <a href="http://chapters.ewb.ca/" target="_blank">Chapter resources</a></li>
+                        <li>&raquo; <a href="http://wiki.ewb.ca/" target="_blank">Orange Wiki of Change</a></li>
+                        <li>&raquo; <a href="http://vision.ewb.ca/" target="_blank">EWB Vision</a></li>
 
-                    {#<p style="text-align: right; padding-top: 0; margin-top: 0; padding-right: 0px; margin-right: 6px;"><a href="http://vision.ewb.ca" class="more" target="_blank">learn more about EWB &raquo;</a></p>#}
+                    </ul>
+{% comment %}
                 </div>
         </div>
 
-        <div>
-                <div class="toolbarheader_right"><a href="http://www.youtube.com/user/ewbcanada" target="_blank" class="barheaderlink">Latest from the EWBBC</a></div>
-                <div class="toolbarcontent_right">
 
+        <div>
+             <div class="toolbarcontent_right">               
+{% endcomment %}<br/>
                 <div id="ewbbc">
                 <div id="ewbbc-flash">
 
@@ -61,17 +61,8 @@
 
                 </div> <!-- ewbbc-flash -->
             </div> <!-- ewbbc -->
-{% comment %}
-                <p align="left" style="padding: 0px; margin 0px; margin-left: 0px; margin-right: 6px;"><strong>Featured videos</strong></p>
-                <ul class="postlinklist">
-                        <li><a href="http://www.youtube.com/watch?v=eOg88HxOm7A" target="_blank">EWB World of Opportunity</a></li>
-                        <li><a href="http://www.youtube.com/watch?v=NyDcGWxGkjM" target="_blank">EWB's Impact in 2009</a></li>
-                        <li><a href="http://www.youtube.com/watch?v=1jbAzBOmbI0" target="_blank">Impact d'ISF en 2009</a></li>
-                </ul>
-                
-{% endcomment %}
 
-                <p style="text-align: right; padding-top: 0; margin-top: 0; padding-right: 0px; margin-right: 6px;"><a href="http://www.youtube.com/user/ewbcanada" class="more" target="_blank">more videos from EWB &raquo;</a></p>
+                <div style="text-align: right; padding: 3px 0; margin-top: 0; margin-right: 6px; font-size: 11px;"><a href="http://www.youtube.com/user/ewbcanada" class="more" target="_blank">more videos from EWB &raquo;</a></div>
 
                 </div> <!-- toolbarcontent_right -->
         </div>
@@ -112,46 +103,22 @@
                 <div class="toolbarheader_right"><a href="http://blogs.ewb.ca/" target="_blank" class="barheaderlink">EWB Blogs</a></div>
                 <div class="toolbarcontent_right">
                 <ul class="postlinklist">
-                        <li><a title="from Colleen Duncan's blog" href="http://www.whereintheworldiscolleen.com/archives/1139" target="_blank">How should development workers live?</a></li>
+                        <li>&raquo; <a title="from Colleen Duncan's blog" href="http://www.whereintheworldiscolleen.com/archives/1139" target="_blank">How should development workers live?</a></li>
                         
-                        <li><a title="from Mark Hemsworth's blog" rel="bookmark" href="http://markhemsworth.blogspot.com/2010/05/visitors.html" target="_blank">Visitors - a photo update</a></li>
+                        <li>&raquo; <a title="from Mark Hemsworth's blog" rel="bookmark" href="http://markhemsworth.blogspot.com/2010/05/visitors.html" target="_blank">Visitors - a photo update</a></li>
 
 
                         {#<p style="text-align: right; padding-top: 0; margin-top: 0; padding-right: 0px; margin-right: 6px;"><a href="http://blogs.ewb.ca/ceo" class="more" target="_blank">more from the co-CEOs &raquo;</a></p>#}
 
-                        <li><a title="from the At Daybreak blog" href="http://atdaybreak.wordpress.com/2010/05/08/not-money-transfers-an-agent-network/" target="_blank">Not money transfers, an agent&nbsp;network</a></li>
+                        <li>&raquo; <a title="from the At Daybreak blog" href="http://atdaybreak.wordpress.com/2010/05/08/not-money-transfers-an-agent-network/" target="_blank">Not money transfers, an agent&nbsp;network</a></li>
                         
-                        <li><a title="from Whispers to Voices" href="http://whisperstovoices.wordpress.com/2010/05/17/mr-ali/" target="_blank">Peace and&nbsp;Solidarity</a></li>
+                        <li>&raquo; <a title="from Whispers to Voices" href="http://whisperstovoices.wordpress.com/2010/05/17/mr-ali/" target="_blank">Peace and&nbsp;Solidarity</a></li>
                         
                         
                 </ul>
-                <span class="lighter">Updated May 21, 2010<br/><a href="mailto:feedback@my.ewb.ca?subject=Blogs">Suggestions for blogs to highlight?</a></span>
+{#                <span class="lighter">Updated May 21, 2010<br/><a href="mailto:feedback@my.ewb.ca?subject=Blogs">Suggestions for blogs to highlight?</a></span> #}
                 </div>
         </div>
-
-
-{% comment %}
-       <div>
-                <div class="toolbarheader_right"><a href="http://chapters.ewb.ca" target="_blank" class="barheaderlink">Access resources for chapters and individual action</a></div>
-                <div class="toolbarcontent_right">
-
-                <ul class="postlinklist">
-                        <li><a href="http://www.wiki.ewb.ca/en/Welcome" target="_blank">Orangeapedia - The change resource</a><br/>
-                        Check out the Orange Wiki of Change. All the answers to all of your questions from fundraising secrets to role descriptions, to how to run an amazing meeting!</li>
-                        <li><a href="http://chapters.ewb.ca/index.php?path=/curriculum-enhancement/curriculum-resources" target="_blank">Curriculum enhancement library</a> - brand new!<br/>
-                        Access more than 60 resources, from case studies to presentations to full courses, that will help you enhance engineering education at your University.!</li>
-                        <li><a href="http://chapters.ewb.ca/index.php?path=/public-outreach-and-advocacy/our-work/fair-trade" target="_blank">Fair Trade - Direction, Discussions, Debates</a><br/>
-                        Encouraging Canadians to buy Fair Trade products, and understand what that action means, is one of our focuses organizationally. Check out this resource to learn all about Fair Trade in EWB.</li>
-                        <li><a href="http://www.wiki.ewb.ca/en/Impact_chain" target="_blank">Foundational learning - The Impact Chain</a><br/>
-                        Learn all about The Impact Chain, EWB's tool for planning and analyzing how the actions we all take together lead to the impact we desire.</li>
-                </ul>
-
-                        <p style="text-align: right; padding-top: 0; margin-top: 0; padding-right: 0px; margin-right: 6px;"><a href="http://chapters.ewb.ca" class="more" target="_blank">more resources &raquo;</a></p>
-
-                </div>
-        </div>
-        
-{% endcomment %}
 
         <div>
                 <div class="toolbarheader_right"><a href="http://twitter.com/ewb" class="barheaderlink">Across the country</a></div>

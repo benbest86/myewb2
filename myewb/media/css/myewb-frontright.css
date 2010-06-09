@@ -58,3 +58,15 @@ div.toolbarcontent_right
 /*      width:300px; */
         margin-bottom: 12px;
 }
+
+.toolbarcontent_right ul
+{
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.toolbarcontent_right li
+{
+  padding-bottom: 3px;
+}
