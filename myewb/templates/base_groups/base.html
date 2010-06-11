@@ -91,6 +91,16 @@
 			<p style="font-size: 14px;">
 	    		<a href="{% groupurl topic_new group %}">Create a new post</a>
 		    </p>
+		    
+		    
+        {% else %}
+        
+            {% if is_admin %}
+    			<p style="font-size: 14px;">
+    	    		<a href="{% groupurl topic_new group %}" title="You're not a member of this group, but as an admin you can post to it.">Create a new post</a>
+    		    </p>
+            {% endif %}
+                    
 	    {% endif %}
 	    
         {% get_grouptopics_for_group group as topic_queryset %}

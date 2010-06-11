@@ -48,7 +48,11 @@ The {% if group %} checks are left in just in case, and should be removed eventu
 	    {% if is_member %}
 	    	<a href="{% groupurl topic_new group %}">Create a new post</a>
 	    {% else %}
-	    	You need to join this group before you can post to it.
+	       {% if is_admin %}
+    	       <a href="{% groupurl topic_new group %}" title="You're an admin! Go to town.">Create a new post</a> {# @@@ for some reason, this never goes - admins are shown as members anyway, only on this page #}
+	       {% else %}
+    	    	You need to join this group before you can post to it.
+    	   {% endif %}
 	    {% endif %}
 	    </p>
     
