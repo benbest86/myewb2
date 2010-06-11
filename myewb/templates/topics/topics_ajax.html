@@ -5,15 +5,6 @@
 
 {% if group %}
 	<h1>{% blocktrans with group.get_absolute_url as group_url and group.name as group_name %}Posts for <a href="{{ group_url }}">{{ group_name }}</a>{% endblocktrans %}</h1>
-	
-	<p style="font-size: 14px;">
-	{% if is_member %}
-		<a href="{% groupurl topic_new group %}">Create a new post</a>
-	{% else %}
-		You need to join this group before you can post to it.
-	{% endif %}
-	</p>
-
 {% else  %}
 
 	{% ifequal mode "newposts" %}
@@ -29,6 +20,25 @@
 	{% endifequal %}
 
 {% endif %}
+
+<div style="position: relative;">
+	<span style="font-size: 10px; float: right; padding-right: 10px;">
+		<a href="#" id="collapse-posts" onclick="$('div.postcontent').slideUp(); $('div.postheader').addClass('shortpost'); $('#collapse-posts').hide(); $('#expand-posts').show(); return false;">collapse posts</a>
+		<a href="#" id="expand-posts" style="display: none;" onclick="$('div.postcontent').slideDown(); $('div.postheader').removeClass('shortpost'); $('#expand-posts').hide(); $('#collapse-posts').show(); return false;">show post previews</a>
+	</span>
+	<span style="font-size: 14px; position: relative; left: 10px; top: -3px;">
+		{% if group or True %}
+	 		{% if is_member %}
+				<a href="{% groupurl topic_new group %}">Create a new post</a>
+			{% else %}
+				You need to join this group before you can post to it.
+			{% endif %}
+		{% else %}
+			&nbsp;
+		{% endif %}
+	</span>
+</div>
+
 
 {% cache CACHE_TIMEOUT "postlist" user.username request.page group mode LATEST_POST CACHE_STAMP current_timezone LANGUAGE_CODE %}
 

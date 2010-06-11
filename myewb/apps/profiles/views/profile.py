@@ -43,15 +43,33 @@ from friends_app.forms import InviteFriendForm
 def profiles(request, template_name="profiles/profiles.html"):
     search_terms = request.GET.get('search', '')
     if search_terms:
-        qry = Q(profile__name__icontains=search_terms) | Q(username__icontains=search_terms)
-        users = User.objects.filter(is_active=True).filter(qry)
+        # allow space-deliminated search terms
+        qry = Q(profile__name__icontains=search_terms.split()[0])
+        for term in search_terms.split()[1:]:
+            qry = qry & Q(profile__name__icontains=term)
+            
+        # normal users just get that, and nothing else...
         if not request.user.has_module_perms("profiles"):
             users = User.objects.filter(is_active=True).filter(qry)
             users = users.filter(memberprofile__grandfathered=False)
+            
+        # people with profile super-permissions get more results
         else:
-            qry = qry | Q(emailaddress__email__icontains=search_terms)
+            # include email addresses in search
+            qry2 = Q(emailaddress__email__icontains=search_terms.split()[0])
+            for term in search_terms.split()[1:]:
+                qry2 = qry2 & Q(emailaddress__email__icontains=term)
+            qry = qry | qry2
+            
+            # also include usernames... why not...
+            qry2 = Q(username__icontains=search_terms.split()[0])
+            for term in search_terms.split()[1:]:
+                qry2 = qry2 & Q(username__icontains=term)
+            qry = qry | qry2
+            
             users = User.objects.filter(is_active=True).filter(qry)
-        users = users.order_by("profile__name")
+            
+        users = users.distinct().order_by("profile__name")
     else:
         users = None
     
