@@ -8,7 +8,7 @@
 {% block body %}
     <h1>{% trans "Tag Cloud" %}</h1>
 
-   	{% tag_cloud_for_model group_topics.GroupTopic as topic_cloud with steps=13 min_count=26 distribution=linear %}
+   	{% tag_cloud_for_model group_topics.GroupTopic as topic_cloud with steps=13 min_count=30 distribution=linear %}
     	
    	{% for tag in topic_cloud %}
 
