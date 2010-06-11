@@ -22,10 +22,16 @@ The {% if group %} checks are left in just in case, and should be removed eventu
 {% block head_title %}{% trans "New Post" %}{% endblock %}
 
 {% block body %}
-    <h2>{% trans "New Post" %}</h2>
-	{% ifnotequal group.slug "ewb" %}
-       	<h2>{{group.name}}</h2>
+    <h2><span class="lighter">{% trans "New Post to the" %}</span><br/>
+    {% ifnotequal group.slug "ewb" %}
+    
+    {{group.name}}
+    
+    {% else %}
+    myEWB Homepage
     {% endifnotequal %}
+    </h2>
+	
         
     <form class="uniForm wideform" method="POST" enctype="multipart/form-data" action="">
         <fieldset class="inlineLabels">
@@ -78,7 +84,7 @@ The {% if group %} checks are left in just in case, and should be removed eventu
     });
     
     $(document).ready(function() {
-    	if ($('#id_send_as_email').val())
+    	if ($('#id_send_as_email:checked').val())
     		$('#div_id_sender').show();
     	else
     		$('#div_id_sender').hide();

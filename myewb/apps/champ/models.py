@@ -83,18 +83,29 @@ class YearPlan(models.Model):
     #modified_date = models.DateTimeField(editable=False, default=datetime.now())
     last_editor = models.ForeignKey(User)
     
-    ml_average_attendance = models.IntegerField(null=True, blank=True)
-    ml_total_hours = models.IntegerField(null=True, blank=True)
-    adv_contacts = models.IntegerField(null=True, blank=True)
-    eng_people_reached = models.IntegerField(null=True, blank=True)
-    fund_total = models.IntegerField(null=True, blank=True)
-    pub_media_hits = models.IntegerField(null=True, blank=True)
-    ce_hours = models.IntegerField(null=True, blank=True)
-    ce_students = models.IntegerField(null=True, blank=True)
-    so_presentations = models.IntegerField(null=True, blank=True)
-    so_reached = models.IntegerField(null=True, blank=True)
-    wo_presentations = models.IntegerField(null=True, blank=True)
-    wo_reached = models.IntegerField(null=True, blank=True)
+    
+    ml_total_hours = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Member learning:</b> Total Hours'))
+    ml_average_attendance = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Member learning:</b> Average Attendance'))
+    
+    eng_people_reached = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Public Outreach:</b> People Reached')) # @@@ I hope this is the case! eng_people_reached != public outreach ??
+    
+    adv_contacts = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Advocacy:</b> Contacts with decision makers'))
+
+    ce_hours = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Curriculum Enhancement:</b> Total Class Hours'))
+    ce_students = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Curriculum Enhancement:</b> Students Reached'))
+
+    wo_presentations = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Workplace Outreach:</b> Presentations'))
+    wo_reached = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Workplace Outreach:</b> Professionals Reached'))
+
+    so_presentations = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>School Outreach:</b> Presentations'))
+    so_reached = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>School Outreach:</b> Students Reached'))
+
+    fund_total = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Fundraising:</b> Dollars Fundraised'))
+    
+    pub_media_hits = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Publicity:</b> Media Hits'))
+
+
+
     
 class Metrics(models.Model):
 #    activity_id = models.PositiveIntegerField()    # don't use ForeignKey so that subclassing won't cause reverse name problems.
