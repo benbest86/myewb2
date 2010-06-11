@@ -23,18 +23,38 @@
 // Frontpage Ajax updates
 
 	var currentURL = "";
+	
+	var shortPosts = false; 
 
 	function load_posts(url)
 	{
 		  if (url == "")
 			  url = "/";
+			  
+         if(url.indexOf('ajax') == -1)   // since pagination has it pre-tacked on
+         {
 		  url = url + "?ajax=1";
-		  
+		 } 
+		 
+		 
 		  {% if not current_timezone %}
 		  	var d = new Date();
 		  	url = url + "&tzoffset=" + d.getTimezoneOffset();
 		  {% endif %}
-		  currentURL = url
+		  
+		  
+		  if(shortPosts) {
+		      if(url.indexOf('&short=1')==-1) {
+    		      url = url + "&short=1";
+		      }
+		      
+		  } else {
+		      // url should *not* have &short=1 in it - kept by the pagination deal otherwise
+		      url = url.replace('&short=1','')
+		  }
+		  
+		  currentURL = url;
+		  
 		  $('#topiclisting').hide();
 		  $('.frontpage-loading').show();
 
@@ -46,8 +66,13 @@
 			  $('.pagination a').click(function() {
 				  if (currentURL.indexOf('?') != -1)
 					  currentURL = currentURL.substring(0, currentURL.indexOf('?'));
+					  
 				  load_posts(currentURL + $(this).attr('href'));
-				  $().scrollTo(0,600);
+				  
+				  if(shortPosts!=true)
+				  {
+				    $().scrollTo(0,600);
+				  }
 				  return false;
 	  		  });
 
@@ -112,6 +137,22 @@
                 toggleFrontpageToolbar();
 
           	  });
+          	  
+          	  
+            $('#collapse-posts').click(function(){	
+                $('div.postcontent').slideUp(); $('div.postheader').addClass('shortpost'); $('#collapse-posts').hide(); $('#expand-posts').show(); 
+                shortPosts = true;
+                return false;
+
+          	  });
+          	  
+            $('#expand-posts').click(function(){	
+          	   $('div.postcontent').slideDown(); $('div.postheader').removeClass('shortpost'); $('#expand-posts').hide(); $('#collapse-posts').show(); 
+          	   
+                shortPosts = false;
+          	   return false;
+          	  
+          	   });
 
 {% endblock %}
 
@@ -209,6 +250,11 @@
            	{% endif %}
             		
             		
+	<span style="display:block;margin-top:4px;">
+		<a href="#" id="collapse-posts">collapse posts</a>
+		<a href="#" id="expand-posts" style="display: none;">show post previews</a>
+	</span>
+            		
             	</div>
         </div>
         {% endcache %}
@@ -255,14 +301,19 @@
     
     <div class="toolbarheader bkgd" id="box-status">{% trans "myEWB status" %}</div>
     <div class="toolbarcontent">
-		{% comment %}
  		<img src="{{STATIC_URL}}images/status_icons/svn_conflicted.png" style="float: left; padding: 0.8em 3px 0 0;"/>
  		myEWB is: <br/>
-    	<a href="{% url about %}#status">online with some notices</a> 
-		{% endcomment %}
+    	<a href="{% url about %}#status">online with minor problems</a> 
+		{% comment %}
 		<img src="{{STATIC_URL}}images/status_icons/bug.png" style="float: left; padding: 0.1em 3px 0 0 ;"/>
 		myEWB is: <br/>
 		<a href="{% url about %}#status">online with some bugs</a>
+		{% endcomment %}
+		
+		<br/>
+<br/><em><b>Update, 3:30pm EST</b> myEWB's email delivery system should be working again. If you have any outstanding issues, <a href="mailto:feedback@my.ewb.ca">let us know</a> - thanks!</em>
+		
+		
     </div>
 {% endblock %}
 
@@ -275,7 +326,7 @@
             <div id="toolbarcolumn_right_container">
 
 
-                <div id="box-around-ewb-rightbar" class="toolbarheader-wide bkgd frontpagetoolbarToggles">Around EWB</div>
+                <div id="box-around-ewb-rightbar" class="toolbarheader-wide bkgd frontpagetoolbarToggles">Essential EWB</div>
 {% endblock %}
 
 {% block toolbarcolumn_right_bottom %}

@@ -21,11 +21,11 @@
 
 {% endif %}
 
+
+
+
 <div style="position: relative;">
-	<span style="font-size: 10px; float: right; padding-right: 10px;">
-		<a href="#" id="collapse-posts" onclick="$('div.postcontent').slideUp(); $('div.postheader').addClass('shortpost'); $('#collapse-posts').hide(); $('#expand-posts').show(); return false;">collapse posts</a>
-		<a href="#" id="expand-posts" style="display: none;" onclick="$('div.postcontent').slideDown(); $('div.postheader').removeClass('shortpost'); $('#expand-posts').hide(); $('#collapse-posts').show(); return false;">show post previews</a>
-	</span>
+	
 	<span style="font-size: 14px; position: relative; left: 10px; top: -3px;">
 		{% if group or True %}
 	 		{% if is_member %}
@@ -34,7 +34,7 @@
 				You need to join this group before you can post to it.
 			{% endif %}
 		{% else %}
-			&nbsp;
+			
 		{% endif %}
 	</span>
 </div>
