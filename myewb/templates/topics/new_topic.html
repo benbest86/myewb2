@@ -84,10 +84,23 @@ The {% if group %} checks are left in just in case, and should be removed eventu
     });
     
     $(document).ready(function() {
+    
+        {% comment %}
+        {% if request.REQUEST.sendasemail %}
+        $('#id_send_as_email').attr('checked', true);
+        {% else %}
+        $('#id_send_as_email').attr('checked', false);
+        {% endif %}
+        {% endcomment %}
+        {# This is going to be a problem - needs to be done server side so it doesn't override eg. previewing and going back, etc. #}
+    
+    
     	if ($('#id_send_as_email:checked').val())
     		$('#div_id_sender').show();
     	else
     		$('#div_id_sender').hide();
+    
+    
     });
     </script>	
 {% endblock %}
