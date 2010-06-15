@@ -4,8 +4,71 @@
 {% load cache %}
 
 {% if group %}
-	<h1>{% blocktrans with group.get_absolute_url as group_url and group.name as group_name %}Posts for <a href="{{ group_url }}">{{ group_name }}</a>{% endblocktrans %}</h1>
+	<div class="ajaxpoststitle">
+	
+	   <div class="ajaxpostsside">
+	   <ul>
+
+        {% if group or True %}
+	 		{% if is_member %}
+				<li><a href="{% groupurl topic_new group %}">Create a new post &raquo;</a></li>
+			{% else %}
+				You need to join this group before you can post to it.
+			{% endif %}
+
+		{% endif %}
+
+	       <li><a href="{{ group.get_absolute_url }}">View group info &raquo;</a></li>
+	       
+	       {% if request.REQUEST.page %}
+    	       {% ifnotequal request.REQUEST.page "1" %}
+        	       <li><span>Page: <strong>{{ request.REQUEST.page }}</strong></span></li>
+        	   {% endifnotequal %}
+           {% endif %}	   
+
+	   </ul>
+	   </div>
+
+	
+    	<h1>{% blocktrans with group.get_absolute_url as group_url and group.name as group_name %}Posts for <a href="{{ group_url }}">{{ group_name }}</a>{% endblocktrans %}</h1>
+	
+	   <div style="clear:both"></div>
+	
+	</div>
 {% else  %}
+
+{# assuming it's the homepage! how excitin'! #}
+<div class="ajaxpoststitle">
+	
+	   <div class="ajaxpostsside">
+	   <ul>
+
+        {% if user.is_authenticated %}
+			<li><a href="{% groupurl topic_new group %}">Create a new post<br/>on the front page &raquo;</a></li>
+			{% else %}
+			<li><span>Sign in to post to myEWB.</span></li>
+			
+
+		{% endif %}
+
+	       
+	       {% ifnotequal request.REQUEST.page "1" %}
+    	       <li><span>Page: <strong>{{ request.REQUEST.page }}</strong></span></li>
+    	   {% endifnotequal %}
+	   
+	   </ul>
+	   </div>
+
+	
+    	<h1>Latest myEWB Posts</h1>
+	
+	   <div style="clear:both"></div>
+	
+	</div>
+
+
+
+{# none of these other modes seem to work; although only the featured posts is still accessible #}
 
 	{% ifequal mode "newposts" %}
 		<h2>{% trans "New posts since last sign-in" %}</h2>
@@ -23,21 +86,10 @@
 
 
 
+{% if request.REQUEST.short %}
 
-<div style="position: relative;">
-	
-	<span style="font-size: 14px; position: relative; left: 10px; top: -3px;">
-		{% if group or True %}
-	 		{% if is_member %}
-				<a href="{% groupurl topic_new group %}">Create a new post</a>
-			{% else %}
-				You need to join this group before you can post to it.
-			{% endif %}
-		{% else %}
-			
-		{% endif %}
-	</span>
-</div>
+<div class="shortpostcontainer">
+{% endif %}
 
 
 {% cache CACHE_TIMEOUT "postlist" user.username request.page group mode LATEST_POST CACHE_STAMP current_timezone LANGUAGE_CODE %}
@@ -51,3 +103,15 @@
 {% paginate %}
 
 {% endcache %}
+
+
+{% if request.REQUEST.short %}
+</div>
+
+<script style="text/javascript">
+$('div.postcontent').hide(); 
+$('div.postheader').addClass('shortpost');
+
+</script>
+
+{% endif %}

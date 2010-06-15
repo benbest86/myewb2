@@ -128,6 +128,31 @@ max-width: 50px; max-height: 50px;
 
 
 
+#maincolumn .ajaxpoststitle {
+-moz-border-radius:11px;
+-webkit-border-radius: 11px;
+background-color: #F0F0F0;
+margin:0 0 12px;
+padding:12px;
+}
+#maincolumn .ajaxpoststitle h1 {
+margin:0;
+}
+
+
+div.ajaxpostsside {
+float:right;
+width:130px;
+}
+div.ajaxpostsside ul {
+margin:-6px 0 0; padding:0;
+list-style-type: none;
+float:right;
+}
+div.ajaxpostsside ul li a, div.ajaxpostsside ul li span {
+display: block;
+padding:3px 4px;
+}
 
 /* making h1, h2, h3 etc. less obnoxious on the frontpage */
 /* default for text is 12px */

@@ -13,7 +13,7 @@
 {% cache CACHE_TIMEOUT "postpreview" topic.id topic.last_reply current_timezone LANGUAGE_CODE %}
 
 <div class="post">
-	<div class="postheader bkgd {% if request.REQUEST.short %}shortpost{% endif %}" style="position: relative;"> <!-- header row -->
+	<div class="postheader bkgd" style="position: relative;"> <!-- header row -->
 		
 		{# is there a more efficient way than calling get_attachments_for ? #}
 		{# TODO: display the icon if any replies have an attachment, too #}
@@ -77,7 +77,7 @@
 		</table>
 	</div>
 
-	<div class="postcontent"{% if request.REQUEST.short %} style="display:none;"{% endif %}> <!-- main row -->
+	<div class="postcontent"> <!-- main row -->
 
 
 

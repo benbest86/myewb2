@@ -154,7 +154,7 @@ function load_posts(group,page,short)   // now, this'll be a behind-the-scenes f
 	  
     //$('#topiclisting').hide();
 	  
-	$('.frontpage-loading').show();
+	$('.frontpage-loading').slideDown();  // @@@ this should be adjusted so it doesn't move everything around.
 
     $('#topiclisting').load(url,
         function() {
@@ -347,6 +347,13 @@ $(document).ready(function() {
         <div class="toolbarheader bkgd" id="box-frontpage-mygroups">{% trans "Latest posts" %}</div>
         <div class="toolbarcontent">
         
+        	<span style="display:block;margin-bottom:4px;">
+        		<a href="#" id="collapse-posts"><span>Collapse posts</span></a>
+        		<a href="#" id="expand-posts" style="display: none;"><span>Show post previews</span></a>
+        	</span>
+        
+        
+        
 				<a href="#" class="frontpage-reset" {#style="display: none;"#}>All posts{% if posts_since_login %}&nbsp;&nbsp;<small>({{posts_since_login}} recent){% endif %}</small></a>
 
              	{% for group in user.get_groups %}
@@ -395,10 +402,7 @@ $(document).ready(function() {
            	{% endif %}
             		
             		
-	<span style="display:block;margin-top:4px;">
-		<a href="#" id="collapse-posts">collapse posts</a>
-		<a href="#" id="expand-posts" style="display: none;">show post previews</a>
-	</span>
+
             		
             	</div>
         </div>

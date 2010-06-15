@@ -592,11 +592,25 @@ margin-bottom:0.2em;
 }
 
 
+#collapse-posts span, #expand-posts span {
+background:url("images/collapse-icon.png") no-repeat 0 -21px transparent;
+display:block;
+padding:1px 1px 1px 17px;
+}
+#expand-posts span {
+background-position:0 3px;
+}
+
+
 div.frontpage-mygroups-div, div.frontpage-loading {
 margin:0 -5px 0 -10px;
 padding:5px 10px;
+
 }
 
+div.frontpage-loading {
+margin-bottom:10px;
+}
 
 a#frontpage-loading-refreshlink {
 float:right;
