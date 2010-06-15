@@ -14,95 +14,233 @@
     <link rel="alternate" type="application/rss+xml" title="myEWB Front Page" href="{% url topic_feed_all %}" />
 	<link rel="stylesheet" href="{{ STATIC_URL }}css/toolbars.css" />   
 	
-	
-	
+	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.ba-bbq.min.js"></script>
 	
 	
 	{# JS here for the frontpage ajax updates #}
 <script type="text/javascript">
 // Frontpage Ajax updates
 
-	var currentURL = "";
+	/*var currentURL = "";
 	
-	var shortPosts = false; 
+	var shortPosts = false; */
+	// both covered by the hashstate
 
-	function load_posts(url)
-	{
-		  if (url == "")
-			  url = "/";
-			  
-         if(url.indexOf('ajax') == -1)   // since pagination has it pre-tacked on
-         {
-		  url = url + "?ajax=1";
-		 } 
-		 
-		 
-		  {% if not current_timezone %}
-		  	var d = new Date();
-		  	url = url + "&tzoffset=" + d.getTimezoneOffset();
-		  {% endif %}
-		  
-		  
-		  if(shortPosts) {
-		      if(url.indexOf('&short=1')==-1) {
-    		      url = url + "&short=1";
-		      }
-		      
-		  } else {
-		      // url should *not* have &short=1 in it - kept by the pagination deal otherwise
-		      url = url.replace('&short=1','')
-		  }
-		  
-		  currentURL = url;
-		  
-		  $('#topiclisting').hide();
-		  $('.frontpage-loading').show();
+var currentGroup = '';
+var currentPage = ''; // not the actual default of 1, so that it'll actually load the first time.
+var shortPosts = 0;
 
-		  $('#topiclisting').load(url,
-			function() {
-      		  $('.frontpage-loading').hide();
-			  $('#topiclisting').show();
+$(window).bind( 'hashchange', function(e) {
+    rockAjaxPosts(0);
+});
 
-			  $('.pagination a').click(function() {
-				  if (currentURL.indexOf('?') != -1)
-					  currentURL = currentURL.substring(0, currentURL.indexOf('?'));
-					  
-				  load_posts(currentURL + $(this).attr('href'));
-				  
-				  if(shortPosts!=true)
-				  {
-				    $().scrollTo(0,600);
-				  }
-				  return false;
-	  		  });
 
-		    }
-		  );				  
+function rockAjaxPosts(forceReload) {
+    group = $.bbq.getState( 'group' ) || '';
+    
+    page = $.bbq.getState( 'page' ) || 1;
+    
+    short = $.bbq.getState( 'short' ) || 0;
+    
+    
+    if ( short !== shortPosts ) {
+        // turn on or off shortposts
+        if (short == 1) {
+            //console.log('short on');
+            
+                $('div.postcontent').slideUp(); $('div.postheader').addClass('shortpost'); $('#collapse-posts').hide(); $('#expand-posts').show(); 
+                shortPosts = true;
+            
+        } 
+        else {
+            //console.log('short off');
+            
+            $('div.postcontent').slideDown(); $('div.postheader').removeClass('shortpost'); $('#expand-posts').hide(); $('#collapse-posts').show(); 
+          	   
+            shortPosts = false;
+        }
+        shortPosts = short;
+        
+    }
+    
+    
+    if ( forceReload || (group !== currentGroup && page !== currentPage) ) {
+        // switching both at once; only likely to happen via curious people typing in the address bar
+        
+        //console.log('changegroup to ' + group + ' and page to ' + page);
+        
+        load_posts(group,page,short);
+        
+        currentGroup = group;
+        currentPage = page; // is this always intended? probably.
+        // make sure we don't get an endless loop of resetting the page number here.
+    }
+    
+    else if ( group !== currentGroup ) {
+        // load the new group
+        
+        //console.log('changegroup to ' + group);
+        
+        load_posts(group,1,short);
+        
+        currentGroup = group;
+        currentPage = 1; 
+    }
+    else if ( page !== currentPage ) {
+        // load the new page
+        
+        //console.log('changepage to ' + page);
+        
+        load_posts(group,page,short);
+        
+        currentPage = page;
+    }
+    
+
+
+}
+
+function load_posts(group,page,short)   // now, this'll be a behind-the-scenes function that's only called by hashchanges.
+{
+    var url = '';
+
+	if(group=='') {
+	   // no group yet; load default
+	   url = "/?ajax=1";
+	   
+	}
+	else {
+	   url = '/groups/' + group + '/posts/?ajax=1';
 	}
 	
-	$(document).ready(function() {
-		$('.frontpage-update').click(function() {
-		  $('.frontpage-mygroups-actions').hide();
+	if(page && page!=0) {
+	   url = url + '&page=' + page;
+	}
+
+	if (short==1) {
+    	url += '&short=1';
+	}
+	
+	
+	
+	/* misc. display stuff */
+	if (group) {
+    	$('.frontpage-mygroups-actions').hide();
 		  $('.frontpage-mygroups-actions').parent().removeClass('bkgd-light');
 			  
-		  $(this).parent().addClass('bkgd-light');
-		  $(this).siblings('.frontpage-mygroups-actions').show();
-		  var groupSlug = $(this).attr("id").substring(17);
-		  load_posts('/groups/' + groupSlug + '/posts/');
-		  //$('.frontpage-reset').show();
-		  return false;
-		});
-		
-		$('.frontpage-reset').click(function() {
-		  $('.frontpage-mygroups-actions').hide();
-		  $('.frontpage-mygroups-actions').parent().removeClass('bkgd-light');
-		  load_posts('{{request.url}}');
-		  //$('.frontpage-reset').hide();
-		  return false;
-        });
-		
-		load_posts('{{request.url}}');
+		  $('#frontpage-update-'+group).parent().addClass('bkgd-light');
+		  $('#frontpage-update-'+group).siblings('.frontpage-mygroups-actions').show();
+	
+	} else {
+	   // the maingroup
+	   $('.frontpage-mygroups-actions').hide();
+	  $('.frontpage-mygroups-actions').parent().removeClass('bkgd-light');
+	}
+
+
+   {% comment %}  {# this needs to be put back in sometime #}
+   {% if not current_timezone %}
+	  	var d = new Date();
+	  	url = url + "&tzoffset=" + d.getTimezoneOffset();
+	  {% endif %}
+    {% endcomment %}
+   
+	
+	//console.log(url);
+	
+	
+    
+    currentURL = url;
+	  
+    //$('#topiclisting').hide();
+	  
+	$('.frontpage-loading').show();
+
+    $('#topiclisting').load(url,
+        function() {
+            $('.frontpage-loading').hide();
+			  
+			  //$('#topiclisting').show();
+			  
+			  // $.deparam('?page=224&ajax=1')['?page']
+
+            $('.pagination a').click(function() {
+                
+                
+                targetPage =  $.deparam( $(this).attr('href') )['?page'] ;
+                
+                ////console.log(targetPage);
+                
+                //newTarget = $.param.fragment( '/#'+$.param.fragment(), 'page='+targetPage, 0);
+                
+                
+                //$(this).attr('href',newTarget.substring(1));  // But! this isn't even used; we replace the .click function right away:
+                
+
+                var state = {};
+                state['page'] = targetPage;
+                $.bbq.pushState( state );
+                
+                if(shortPosts!=true)
+                {
+                    $().scrollTo(0,600);
+                }
+                return false;
+
+                
+            });
+
+			 
+  		  
+  		  
+  		  
+
+		    }
+	  );				  
+}
+	
+$(document).ready(function() {
+	$('.frontpage-update').click(function() {
+	  
+	  // related actions take place in the updater function now.
+	  
+	  var groupSlug = $(this).attr("id").substring(17);
+	  //load_posts('/groups/' + groupSlug + '/posts/');
+	  //$('.frontpage-reset').show();
+	  
+      var state = {};
+      state['group'] = groupSlug;
+      state['page'] = 1;
+      $.bbq.pushState( state );
+        
+            
+            return false;
+	  
+	  
+	  return false;
 	});
+	
+	$('.frontpage-reset').click(function() {
+	  
+	  //load_posts('{{request.url}}');
+	  //$('.frontpage-reset').hide();
+	  
+      var state = {};
+      state['group'] = '';
+      state['page'] = 1;
+      $.bbq.pushState( state );
+	  
+	  return false;
+    });
+	
+    $('#frontpage-loading-refreshlink').click(function() {
+        rockAjaxPosts(1);
+        return false;
+    });
+	
+	// and the initial start trigger here! shazam!
+	$(window).trigger( 'hashchange' );
+});
  
  </script>
  
@@ -140,17 +278,24 @@
           	  
           	  
             $('#collapse-posts').click(function(){	
-                $('div.postcontent').slideUp(); $('div.postheader').addClass('shortpost'); $('#collapse-posts').hide(); $('#expand-posts').show(); 
-                shortPosts = true;
+            
+                var state = {};
+                state['short'] = 1;
+                $.bbq.pushState( state );
+            
+                
                 return false;
 
           	  });
           	  
             $('#expand-posts').click(function(){	
-          	   $('div.postcontent').slideDown(); $('div.postheader').removeClass('shortpost'); $('#expand-posts').hide(); $('#collapse-posts').show(); 
-          	   
-                shortPosts = false;
-          	   return false;
+            
+                var state = {};
+                state['short'] = 0;
+                $.bbq.pushState( state );
+            
+                
+                return false;
           	  
           	   });
 
@@ -161,7 +306,7 @@
 
 {% block body %}
 
-	<div class="frontpage-loading">Loading...</div>     
+	<div class="frontpage-loading"><a href="#" id="frontpage-loading-refreshlink">[refresh]</a>Loading...</div>     
  
  	<div id="topiclisting">
  		{% comment %}

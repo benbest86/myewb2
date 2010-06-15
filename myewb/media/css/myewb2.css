@@ -598,6 +598,10 @@ padding:5px 10px;
 }
 
 
+a#frontpage-loading-refreshlink {
+float:right;
+}
+
 
 .frontpage-mygroups-actions {
 margin-left: 10px;
