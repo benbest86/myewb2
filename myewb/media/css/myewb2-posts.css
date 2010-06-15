@@ -79,6 +79,11 @@ div.shortpost .postheaderlink, div.shortpost .postheaderlink:visited
 	padding:10px;
 }
 
+.post div.postcontent pre {
+white-space: normal;
+}
+
+
 #maincolumn div.postcontent p.postbody
 {
 	padding-right: 4px;
