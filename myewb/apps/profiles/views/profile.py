@@ -444,6 +444,9 @@ def profile_by_id(request, profile_id):
 def profile(request, username, template_name="profiles/profile.html", extra_context=None):
     other_user = get_object_or_404(User, username=username)
 
+    if not other_user.is_active:
+        return render_to_response('profiles/deleted.html', {}, context_instance=RequestContext(request)) 
+
     """
     This is really really neat code, but dunno where to put it since 
     address is now handled via ajax widget...!!
