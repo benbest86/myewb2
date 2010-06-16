@@ -34,6 +34,7 @@ from profiles.forms import StudentRecordForm, WorkRecordForm, MembershipForm, Me
 
 from networks.models import Network
 from networks.forms import NetworkBulkImportForm
+from networks.helpers import is_exec_over
 from base_groups.models import GroupMember
 from creditcard.forms import PaymentForm
 from creditcard.models import Payment, Product
@@ -594,13 +595,14 @@ def profile(request, username, template_name="profiles/profile.html", extra_cont
         "is_me": is_me,
         "is_friend": is_friend,
         #"is_following": is_following,
+        "is_exec_over": is_exec_over(other_user, request.user), 
         "other_user": other_user,
         "other_friends": other_friends,
         "invite_form": invite_form,
         "previous_invitations_to": previous_invitations_to,
         "previous_invitations_from": previous_invitations_from,
         "pending_requests": pending_requests,
-        "has_visibility": has_visibility
+        "has_visibility": has_visibility,
     }, **extra_context), context_instance=RequestContext(request))
 
 @secure_required
@@ -621,8 +623,8 @@ def pay_membership(request, username):
             context_instance=RequestContext(request)
             )
          
-    # Admins / chapter execs (TODO) can upgrade anyone's membership
-    elif request.user.has_module_perms("profiles"):
+    # Admins / chapter execs can upgrade anyone's membership
+    elif request.user.has_module_perms("profiles") or is_exec_over(other_user, request.user):
         other_user.get_profile().pay_membership()
         message = loader.get_template("profiles/member_upgraded.html")
         c = Context({'user': other_user.visible_name()})
@@ -687,8 +689,8 @@ def pay_membership2(request, username):
                 
         # what kind of error to throw...?
          
-    # Admins / chapter execs (TODO) can upgrade anyone's membership
-    elif request.user.has_module_perms("profiles"):
+    # Admins / chapter execs can upgrade anyone's membership
+    elif request.user.has_module_perms("profiles") or is_exec_over(other_user, request.user):
         other_user.get_profile().pay_membership()
         message = loader.get_template("profiles/member_upgraded.html")
         c = Context({'user': other_user.visible_name()})

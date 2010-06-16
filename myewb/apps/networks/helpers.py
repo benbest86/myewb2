@@ -15,13 +15,24 @@ def is_exec_over(subject, user):
     - all networks are chapters
     - admins are always considered execs
     """
+    # admins always have access
     # FIXME: probably sholdn't use is_superuser or is_staff here...
     if user.is_superuser or user.is_staff:
         return True
 
+    # and guests never have access
+    if not subject.is_authenticated() or not user.is_authenticated():
+        return False
+    
+    # find all networks that i am an exec of...
     groups = Network.objects.filter(members__user=user,
                                     members__is_admin=True)
     
+    # not an exec? good bye =)
+    if groups.count() == 0:
+        return False
+    
+    # see if the subject is a member of any of my exec chapters
     membership = GroupMember.objects.filter(user=subject,
                                             group__in=groups)
     

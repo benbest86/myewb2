@@ -494,14 +494,11 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 		{% endif %}  {# is authenticated #}
         
         {# exec / admin actions #}
-        {% if perms.profiles and renew %}
+        {% if perms.profiles or is_exec_over %}
             <div class="toolbarheader bkgd" id="box-profile-actions">{% trans "Exec Actions" %}</div>
             <div class="toolbarcontent">
-            	{# TODO: is chapter exec?? #}
-            	{% if renew %}
-    			    <a href="{% url profile_pay_membership other_user %}">Make regular member</a><br/>
+    			    <a href="{% url profile_pay_membership other_user %}" id="manual_update">Make regular member</a><br/>
     			    (only click if they have paid their fee in cash)
-            	{% endif %}
             </div>
             
         {% endif %}
@@ -511,13 +508,6 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 
                <div class="toolbarheader bkgd" id="box-profile-actions">{% trans "Admin Actions" %}</div>
                <div class="toolbarcontent">
-               	{# TODO: is chapter exec?? #}
-               	{% if renew %}
-       			    <a href="{% url profile_pay_membership other_user %}">Make regular member</a><br/>
-       			    (only click if they have paid their fee in cash)
-       			    <br/><br/>
-               	{% endif %}
-               	
            	    {# intentional use of is_staff... #}
            	    <a href="{% url profile_impersonate other_user %}">Impersonate user</a>
            	    <br/><br/>
@@ -566,7 +556,15 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
     <script type="text/javascript">
 	    $(document).ready(function() {
 			$('#avatar').colorbox({transition: "elastic", width:"80%", height:"80%"});
+
 	    });
+		$('#manual_update').click(function() {
+			var confirmed = confirm("Only continue if this person has paid their membership fees in person - this will renew their membership by one year.");
+			if (confirmed)
+				return true;
+			else
+				return false;
+		});
     </script>
 {% endblock %}
 
