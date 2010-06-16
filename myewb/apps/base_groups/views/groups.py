@@ -20,8 +20,9 @@ import pycountry
 
 from base_groups.models import BaseGroup
 from base_groups.helpers import group_search_filter, get_counts, get_recent_counts, enforce_visibility 
-from base_groups.forms import GroupLocationForm, GroupAddEmailForm
+from base_groups.forms import GroupLocationForm, GroupAddEmailForm, GroupBulkImportForm
 from base_groups.decorators import group_admin_required, visibility_required
+from siteutils.helpers import get_email_user
 
 from django.conf import settings
 if "notification" in settings.INSTALLED_APPS:
@@ -314,3 +315,45 @@ def stats(request, group_slug, model=None, template=None):
                               {'group': group},
                               context_instance=RequestContext(request)
     )
+
+@group_admin_required()
+def bulk_import(request, group_slug, model=BaseGroup, form_class=GroupBulkImportForm, template_name=None):
+    group = get_object_or_404(model, slug=group_slug)
+    if request.method == 'POST':
+        form = form_class(request.POST)
+        if form.is_valid():
+            raw_emails = form.cleaned_data['emails']
+            emails = raw_emails.split()   # splits by whitespace characters
+            
+            for email in emails:
+                group.add_email(email)
+
+            # redirect to group home page on success
+            return HttpResponseRedirect(reverse('%s_detail' % model._meta.verbose_name, kwargs={'group_slug': group.slug}))
+    else:
+        form = form_class()
+    return render_to_response(template_name, {
+        "group": group,
+        "form": form,
+    }, context_instance=RequestContext(request))
+    
+@group_admin_required()
+def bulk_remove(request, group_slug, model=BaseGroup, form_class=GroupBulkImportForm, template_name=None):
+    group = get_object_or_404(model, slug=group_slug)
+    if request.method == 'POST':
+        form = form_class(request.POST)
+        if form.is_valid():
+            raw_emails = form.cleaned_data['emails']
+            emails = raw_emails.split()   # splits by whitespace characters
+            
+            for email in emails:
+                email_user = get_email_user(email)
+                if email_user is not None:
+                    group.remove_member(email_user)
+            return HttpResponseRedirect(reverse('%s_detail' % model._meta.verbose_name, kwargs={'group_slug': group.slug}))
+    else:
+        form = form_class()
+    return render_to_response(template_name, {
+        "group": group,
+        "form": form,
+    }, context_instance=RequestContext(request))

@@ -20,7 +20,7 @@ class group_admin_required(object):
                 return render_to_response('denied.html', context_instance=RequestContext(request))
             
             group = get_object_or_404(BaseGroup, slug=group_slug)
-            if group.user_is_admin(user):
+            if group.user_is_admin(user) or (group.parent and group.parent.user_is_admin(user)):
                 # add object to list of kwargs because we had to hit
                 # the database to get it - no point in doing that
                 # again in the view function

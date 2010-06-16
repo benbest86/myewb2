@@ -12,7 +12,6 @@ from django import forms
 from django.forms import widgets
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
-from django.forms.fields import email_re
 from django.contrib.localflavor.ca import forms as caforms
 
 from base_groups.models import BaseGroup
@@ -27,19 +26,6 @@ class NetworkForm(BaseGroupForm):
         model = Network
         fields = ('name', 'slug', 'network_type', 'description',
                   'from_name', 'from_email', 'welcome_email')
-
-class NetworkBulkImportForm(forms.Form):
-    emails = forms.CharField(widget = forms.Textarea)
-
-    def clean_emails(self):
-        data = self.cleaned_data['emails']
-        bad_emails = []
-        for email in data.split():
-            if not email_re.match(email):
-                bad_emails.append(email)
-        if bad_emails:
-            raise forms.ValidationError('\n'.join(['%s is not a valid email.' % bad_email for bad_email in bad_emails]))
-        return data
 
 class NetworkMemberForm(GroupMemberForm):
     # build list of national rep lists...

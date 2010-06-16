@@ -19,7 +19,7 @@ from django.utils.translation import ugettext as _
 from emailconfirmation.models import EmailAddress
 
 from networks.models import Network
-from networks.forms import NetworkForm, NetworkBulkImportForm, NetworkUnsubscribeForm, NetworkMemberForm, EditNetworkMemberForm
+from networks.forms import NetworkForm, NetworkUnsubscribeForm, NetworkMemberForm, EditNetworkMemberForm
 from siteutils.helpers import get_email_user
 
 from base_groups.views import *
@@ -137,46 +137,12 @@ def ajax_search(request, network_type):
     }, context_instance=RequestContext(request))
     
 @group_admin_required()
-def bulk_import(request, group_slug, form_class=NetworkBulkImportForm, template_name='networks/bulk_import.html'):
-    group = get_object_or_404(Network, slug=group_slug)
-    if request.method == 'POST':
-        form = form_class(request.POST)
-        if form.is_valid():
-            raw_emails = form.cleaned_data['emails']
-            emails = raw_emails.split()   # splits by whitespace characters
-            
-            for email in emails:
-                group.add_email(email)
-
-            # redirect to network home page on success
-            return HttpResponseRedirect(reverse('network_detail', kwargs={'group_slug': group.slug}))
-    else:
-        form = form_class()
-    return render_to_response(template_name, {
-        "group": group,
-        "form": form,
-    }, context_instance=RequestContext(request))
+def network_bulk_import(request, group_slug, template_name='networks/bulk_import.html'):
+    return bulk_import(request, group_slug, model=Network, template_name=template_name)
     
 @group_admin_required()
-def bulk_remove(request, group_slug, form_class=NetworkBulkImportForm, template_name='networks/bulk_remove.html'):
-    group = get_object_or_404(Network, slug=group_slug)
-    if request.method == 'POST':
-        form = form_class(request.POST)
-        if form.is_valid():
-            raw_emails = form.cleaned_data['emails']
-            emails = raw_emails.split()   # splits by whitespace characters
-            
-            for email in emails:
-                email_user = get_email_user(email)
-                if email_user is not None:
-                    group.remove_member(email_user)
-            return HttpResponseRedirect(reverse('network_detail', kwargs={'group_slug': group.slug}))
-    else:
-        form = form_class()
-    return render_to_response(template_name, {
-        "group": group,
-        "form": form,
-    }, context_instance=RequestContext(request))
+def network_bulk_remove(request, group_slug, template_name='networks/bulk_remove.html'):
+    return bulk_remove(request, group_slug, model=Network, template_name=template_name)
     
 def unsubscribe(request, form_class=NetworkUnsubscribeForm, template_name='networks/unsubscribe.html'):
     message = None

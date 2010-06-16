@@ -11,6 +11,7 @@ from django import forms
 #from django.utils.translation import ugettext_lazy as _
 from siteutils.countries import _
 
+from django.forms.fields import email_re
 from base_groups.models import BaseGroup, GroupMember, GroupLocation, InvitationToJoinGroup
 from base_groups.helpers import get_valid_parents
 from user_search.forms import MultipleUserField
@@ -86,3 +87,16 @@ class GroupLocationForm(forms.ModelForm):
 class GroupAddEmailForm(forms.Form):
     email = forms.EmailField(label='', required=True,
                              initial='(your email address)')
+
+class GroupBulkImportForm(forms.Form):
+    emails = forms.CharField(widget = forms.Textarea)
+
+    def clean_emails(self):
+        data = self.cleaned_data['emails']
+        bad_emails = []
+        for email in data.split():
+            if not email_re.match(email):
+                bad_emails.append(email)
+        if bad_emails:
+            raise forms.ValidationError('\n'.join(['%s is not a valid email.' % bad_email for bad_email in bad_emails]))
+        return data

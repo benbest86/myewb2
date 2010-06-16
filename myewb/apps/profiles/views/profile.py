@@ -33,9 +33,9 @@ from profiles.models import MemberProfile, StudentRecord, WorkRecord, ToolbarSta
 from profiles.forms import StudentRecordForm, WorkRecordForm, MembershipForm, MembershipFormPreview, PhoneNumberForm, SettingsForm 
 
 from networks.models import Network
-from networks.forms import NetworkBulkImportForm
 from networks.helpers import is_exec_over
 from base_groups.models import GroupMember
+from base_groups.forms import GroupBulkImportForm
 from creditcard.forms import PaymentForm
 from creditcard.models import Payment, Product
 from friends_app.forms import InviteFriendForm
@@ -726,9 +726,9 @@ def impersonate (request, username):
 @permission_required('profiles.admin')
 def mass_delete(request):
     if request.method == 'POST':
-        # re-use NetworkBulkImportForm because it does all we need
+        # re-use GroupBulkImportForm because it does all we need
         # (TODO: genericize that =) )
-        form = NetworkBulkImportForm(request.POST)
+        form = GroupBulkImportForm(request.POST)
         if form.is_valid():
             raw_emails = form.cleaned_data['emails']
             emails = raw_emails.split()   # splits by whitespace characters
@@ -743,7 +743,7 @@ def mass_delete(request):
             request.user.message_set.create(message="Deleted %d of %d" % (success, len(emails)))
             return HttpResponseRedirect(reverse('home'))
     else:
-        form = NetworkBulkImportForm()
+        form = GroupBulkImportForm()
     return render_to_response("profiles/mass_delete.html", {
         "form": form,
     }, context_instance=RequestContext(request))
