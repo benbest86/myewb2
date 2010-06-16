@@ -13,7 +13,6 @@ from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.test.client import Client
 
-from mailer.models import Message
 from emailconfirmation.models import EmailAddress
 from base_groups.models import GroupMember
 from base_groups.forms import GroupMemberForm
