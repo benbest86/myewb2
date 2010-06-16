@@ -1,6 +1,7 @@
 {% extends "base_groups/base.html" %}
 
 {% load i18n %}
+{% load base_groups_tags %}
 
 {% block body_class %}communities orange{% endblock %}
 
@@ -22,6 +23,14 @@
             <div class="toolbarcontent">
 		        <a href="{% url community_new_member group.slug %}">{% trans "Add users" %}</a><br/>
 		        <a href="{% url community_invite_member group.slug %}">{% trans "Invite users" %}</a><br/>
+
+				{% can_bulk_add group user as can_bulkadd %}
+				{% if can_bulkadd %}
+	            	<a href="{% url community_bulk_import group.slug %}">{% trans "Bulk-add email addresses" %}</a><br/>
+	            	<a href="{% url community_bulk_remove group.slug %}">{% trans "Bulk-remove email addresses" %}</a><br/>
+	            {% endif %}
+
+				<br/>
 		        <a href="{% url community_stats group.slug %}">{% trans "Group statistics" %}</a><br/>
 	            <br/>
 	            

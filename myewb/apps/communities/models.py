@@ -22,6 +22,15 @@ class Community(BaseGroup):
     
     def get_absolute_url(self):
         return reverse('community_detail', kwargs={'group_slug': self.slug})
+    
+    def can_bulk_add(self, user):
+        if self.parent:
+            try:
+                return self.parent.network.can_bulk_add(user)   # bit of a hack... but self.parent
+            except:                                             # is a BaseGroup when we want to access
+                return self.parent.can_bulk_add(user)           # the overridden Network.can_bulk_add
+        else:
+            return False
        
     def save(self, force_insert=False, force_update=False):
         self.model = "Community"

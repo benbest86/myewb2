@@ -187,3 +187,32 @@ def do_group_is_visible(parser, token):
     return GroupIsVisibleNode(group_name, username, context_name)
 
 register.tag('group_is_visible', do_group_is_visible)
+
+class CanBulkAddNode(template.Node):
+    def __init__(self, group_name, username, context_name):
+        self.group = template.Variable(group_name)
+        self.user = template.Variable(username)
+        self.context_name = context_name
+
+    def render(self, context):
+        try:
+            group = self.group.resolve(context)
+            user = self.user.resolve(context)
+        except template.VariableDoesNotExist:
+            return u''
+        
+        context[self.context_name] = group.can_bulk_add(user)
+        return u''
+
+def do_can_bulk_add(parser, token):
+    """
+    Provides the template tag {% can_bulk_add GROUP USER as VARIABLE %}
+    """
+    try:
+        _tagname, group_name, username, _as, context_name = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError(u'%(tagname)r tag syntax is as follows: '
+            '{%% %(tagname)r GROUP for USER as VARIABLE %%}' % {'tagname': _tagname})
+    return CanBulkAddNode(group_name, username, context_name)
+
+register.tag('can_bulk_add', do_can_bulk_add)

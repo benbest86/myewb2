@@ -136,11 +136,9 @@ def ajax_search(request, network_type):
         "networks": networks        
     }, context_instance=RequestContext(request))
     
-@group_admin_required()
 def network_bulk_import(request, group_slug, template_name='networks/bulk_import.html'):
     return bulk_import(request, group_slug, model=Network, template_name=template_name)
     
-@group_admin_required()
 def network_bulk_remove(request, group_slug, template_name='networks/bulk_remove.html'):
     return bulk_remove(request, group_slug, model=Network, template_name=template_name)
     

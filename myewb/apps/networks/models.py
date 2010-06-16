@@ -43,6 +43,9 @@ class Network(BaseGroup):
         
     def is_chapter(self):
         return hasattr(self, "chapter_info")
+    
+    def can_bulk_add(self, user):
+        return self.user_is_admin(user)
 
     def user_is_president(self, user):
         if self.is_chapter():

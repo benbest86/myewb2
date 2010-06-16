@@ -97,3 +97,9 @@ def delete_member(request, group_slug, username, template_name=MEM_DELETE_TEMPLA
 @group_admin_required()
 def community_stats(request, group_slug):
     return stats(request, group_slug, Community, "communities/stats.html")
+
+def community_bulk_import(request, group_slug, template_name='communities/bulk_import.html'):
+    return bulk_import(request, group_slug, model=Community, template_name=template_name)
+    
+def community_bulk_remove(request, group_slug, template_name='communities/bulk_remove.html'):
+    return bulk_remove(request, group_slug, model=Community, template_name=template_name)

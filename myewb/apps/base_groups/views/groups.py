@@ -316,9 +316,12 @@ def stats(request, group_slug, model=None, template=None):
                               context_instance=RequestContext(request)
     )
 
-@group_admin_required()
 def bulk_import(request, group_slug, model=BaseGroup, form_class=GroupBulkImportForm, template_name=None):
     group = get_object_or_404(model, slug=group_slug)
+    
+    if not group.can_bulk_add(request.user):
+        return render_to_response('denied.html', context_instance=RequestContext(request))
+    
     if request.method == 'POST':
         form = form_class(request.POST)
         if form.is_valid():
@@ -337,9 +340,12 @@ def bulk_import(request, group_slug, model=BaseGroup, form_class=GroupBulkImport
         "form": form,
     }, context_instance=RequestContext(request))
     
-@group_admin_required()
 def bulk_remove(request, group_slug, model=BaseGroup, form_class=GroupBulkImportForm, template_name=None):
     group = get_object_or_404(model, slug=group_slug)
+
+    if not group.can_bulk_add(request.user):
+        return render_to_response('denied.html', context_instance=RequestContext(request))
+    
     if request.method == 'POST':
         form = form_class(request.POST)
         if form.is_valid():

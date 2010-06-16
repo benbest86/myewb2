@@ -128,6 +128,10 @@ class BaseGroup(Group):
                 return True
         
         return False
+    
+    # subclasses should override this...
+    def can_bulk_add(self, user):
+        return False
 
     def get_absolute_url(self):
         return reverse('group_detail', kwargs={'group_slug': self.slug})
