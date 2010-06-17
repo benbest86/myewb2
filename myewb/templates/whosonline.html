@@ -1,6 +1,12 @@
-{% for online in online_users %}
-    <div style="padding-bottom: 4px;"><a href="{% url profile_detail online %}">{{ online.visible_name }}</a></div>
-{% endfor %} <br/>
-{% if online_anon %}
-	and {{ online_anon }} guest{{ online_anon|pluralize }}
-{% endif %}
+<div id="whos_online_ajax">
+	{% for online in online_users %}
+	    <div style="padding-bottom: 4px;"><a href="{% url profile_detail online %}">{{ online.visible_name }}</a></div>
+	{% endfor %} <br/>
+	{% if online_anon %}
+		and {{ online_anon }} guest{{ online_anon|pluralize }}
+	{% endif %}
+</div>
+
+<div id="inbox_count_ajax" style="display: none;">
+	<a href="{% url messages_inbox %}">{{ messages_inbox_count }} unread message{% ifnotequal messages_inbox_count 1 %}s{% endifnotequal %}</a>
+</div>

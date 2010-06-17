@@ -114,7 +114,9 @@ $(document).ready(function(){
     {% if user.is_authenticated %}
 		Signed in as <a class="username" href="{% url profile_detail user %}"><strong>{{ user.visible_name }}</strong></a>.
 		<br/>
-		<a href="{% url messages_inbox %}">{{ messages_inbox_count }} unread message{% ifnotequal messages_inbox_count 1 %}s{% endifnotequal %}</a>
+		<div id="inbox_count">
+			<a href="{% url messages_inbox %}">{{ messages_inbox_count }} unread message{% ifnotequal messages_inbox_count 1 %}s{% endifnotequal %}</a>
+		</div>
 		
 		<a class="signout" href="{% url acct_logout %}">{% trans "sign out" %}</a>
     {% else %}
@@ -207,7 +209,9 @@ $(document).ready(function(){
         jQuery.get('{% url whosonline_refresh %}',
                 function(data)
                 {
-            		$('#box-online').html(data);
+            		$('#box-online-contents').html(data);
+            		var new_inbox = $('#box-online-contents div#inbox_count_ajax').html()
+               		$('#inbox_count').html(new_inbox);
                 });
         setTimeout('keepalive()', 5 * 60 * 1000);
     }
