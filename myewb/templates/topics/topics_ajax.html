@@ -3,6 +3,8 @@
 {% load group_tags %}
 {% load cache %}
 
+{% if not hideheader %}
+
 {% if group %}
 	<div class="ajaxpoststitle">
 	
@@ -20,18 +22,26 @@
 
 	       <li><a href="{{ group.get_absolute_url }}">View group info &raquo;</a></li>
 	       
-	       {% if request.REQUEST.page %}
-    	       {% ifnotequal request.REQUEST.page "1" %}
-        	       <li><span>Page: <strong>{{ request.REQUEST.page }}</strong></span></li>
-        	   {% endifnotequal %}
-           {% endif %}	   
-
 	   </ul>
 	   </div>
 
+    	<h2 style="margin:0 0 5px 0;"><a href="{{ group.get_absolute_url }}">{{ group.name }}</a></h2>
+    	{% if request.REQUEST.page %}
+   	       {% ifnotequal request.REQUEST.page "1" %}
+       	       <span>Page: <strong>{{ request.REQUEST.page }}</strong></span>
+       	   {% endifnotequal %}
+        {% endif %}	   
 	
-    	<h1>{% blocktrans with group.get_absolute_url as group_url and group.name as group_name %}Posts for <a href="{{ group_url }}">{{ group_name }}</a>{% endblocktrans %}</h1>
-	
+		<span style="margin: 0 0 0 10px;">
+			{% if request.REQUEST.short %}
+				<a href="#" id="collapse-posts" style="display: none;">Collapse posts</a>
+				<a href="#" id="expand-posts">Show post previews</a>
+			{% else %}
+				<a href="#" id="collapse-posts">Collapse posts</a>
+				<a href="#" id="expand-posts" style="display: none;">Show post previews</a>
+			{% endif %}
+		</span>
+
 	   <div style="clear:both"></div>
 	
 	</div>
@@ -45,46 +55,50 @@
 
         {% if user.is_authenticated %}
 			<li><a href="{% groupurl topic_new group %}">Create a new post<br/>on the front page &raquo;</a></li>
-			{% else %}
+		{% else %}
 			<li><span>Sign in to post to myEWB.</span></li>
 			
 
 		{% endif %}
-
 	       
-	       {% ifnotequal request.REQUEST.page "1" %}
-    	       <li><span>Page: <strong>{{ request.REQUEST.page }}</strong></span></li>
-    	   {% endifnotequal %}
-	   
 	   </ul>
 	   </div>
 
 	
-    	<h1>Latest myEWB Posts</h1>
+    	<h2 style="margin: 0 0 5px 0;">
+		{% ifequal mode "featured" %}
+			{% trans "Featured Posts" %}
+		{% else %}
+			{% ifequal mode "frontpage %}
+				{% trans "Front-page Posts" %}
+			{% else %}
+				{% trans "Latest Posts" %}
+			{% endifequal %}
+		{% endifequal %}	
+    	</h2>
 	
+    	{% if request.REQUEST.page %}
+	       {% ifnotequal request.REQUEST.page "1" %}
+    	       <span>Page: <strong>{{ request.REQUEST.page }}</strong></span>
+    	   {% endifnotequal %}
+    	{% endif %}
+	   
+		<span style="margin: 0 0 0 10px;">
+			{% if request.REQUEST.short %}
+				<a href="#" id="collapse-posts" style="display: none;">Collapse posts</a>
+				<a href="#" id="expand-posts">Show post previews</a>
+			{% else %}
+				<a href="#" id="collapse-posts">Collapse posts</a>
+				<a href="#" id="expand-posts" style="display: none;">Show post previews</a>
+			{% endif %}
+		</span>
+
 	   <div style="clear:both"></div>
 	
 	</div>
-
-
-
-{# none of these other modes seem to work; although only the featured posts is still accessible #}
-
-	{% ifequal mode "newposts" %}
-		<h2>{% trans "New posts since last sign-in" %}</h2>
-	{% endifequal %}
-
-	{% ifequal mode "newreplies" %}
-		<h2>{% trans "New replies since last sign-in" %}</h2>
-	{% endifequal %}
-
-	{% ifequal mode "featured" %}
-		<h2>{% trans "Featured Posts" %}</h2>
-	{% endifequal %}
-
 {% endif %}
 
-
+{% endif %}
 
 {% if request.REQUEST.short %}
 
@@ -115,3 +129,21 @@ $('div.postheader').addClass('shortpost');
 </script>
 
 {% endif %}
+
+<script type="text/javascript">
+	$('#collapse-posts').click(function(){
+		var state = {};
+		state['short'] = 1;
+		$.bbq.pushState( state );
+
+		return false;
+	});
+
+	$('#expand-posts').click(function(){
+		var state = {};
+		state['short'] = 0;
+		$.bbq.pushState( state );
+
+		return false;
+	});
+</script>

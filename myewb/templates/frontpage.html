@@ -126,7 +126,7 @@ function load_posts(group,page,short)   // now, this'll be a behind-the-scenes f
 	/* misc. display stuff */
 	if (group) {
     	$('.frontpage-mygroups-actions').hide();
-		  $('.frontpage-mygroups-actions').parent().removeClass('bkgd-light');
+		  $('.frontpage-mygroups-div').removeClass('bkgd-light');
 			  
 		  $('#frontpage-update-'+group).parent().addClass('bkgd-light');
 		  $('#frontpage-update-'+group).siblings('.frontpage-mygroups-actions').show();
@@ -134,7 +134,7 @@ function load_posts(group,page,short)   // now, this'll be a behind-the-scenes f
 	} else {
 	   // the maingroup
 	   $('.frontpage-mygroups-actions').hide();
-	  $('.frontpage-mygroups-actions').parent().removeClass('bkgd-light');
+	  $('.frontpage-mygroups-div').removeClass('bkgd-light');
 	}
 
 
@@ -273,29 +273,6 @@ $(document).ready(function() {
 
           	  });
           	  
-          	  
-            $('#collapse-posts').click(function(){	
-            
-                var state = {};
-                state['short'] = 1;
-                $.bbq.pushState( state );
-            
-                
-                return false;
-
-          	  });
-          	  
-            $('#expand-posts').click(function(){	
-            
-                var state = {};
-                state['short'] = 0;
-                $.bbq.pushState( state );
-            
-                
-                return false;
-          	  
-          	   });
-
 {% endblock %}
 
 
@@ -306,27 +283,6 @@ $(document).ready(function() {
 	<div class="frontpage-loading"><a href="#" id="frontpage-loading-refreshlink">[refresh]</a>Loading...</div>     
  
  	<div id="topiclisting">
- 		{% comment %}
-		{% ifequal mode "newposts" %}
-			<h2>{% trans "New posts since last sign-in" %}</h2>
-		{% endifequal %}
-
-		{% ifequal mode "newreplies" %}
-			<h2>{% trans "New replies since last sign-in" %}</h2>
-		{% endifequal %}
-
-		{% ifequal mode "featured" %}
-			<h2>{% trans "Featured Posts" %}</h2>
-		{% endifequal %}
-
-	    {% autopaginate topics 10 %}
-    
-	    {% for topic in topics %}
-        	{% include "topics/topic_item.html" %}
-    	{% endfor %}
-    
-    	{% paginate %}
-    	{% endcomment %}
     </div>
             
 {% endblock %}
@@ -334,32 +290,27 @@ $(document).ready(function() {
 {% block toolbar_left %}
     {% if user.is_authenticated %}
     
-        
-        
-		{% ifnotequal mode "newposts" %}
-			{% ifnotequal mode "newreplies" %}
-				{% ifnotequal mode "featured" %}
         {# my groups #}
         {% cache CACHE_TIMEOUT "frontpagegroups" user.username LATEST_POST CACHE_STAMP adminovision %} 
-        <div class="toolbarheader bkgd" id="box-frontpage-mygroups">{% trans "Latest posts" %}</div>
+        <div class="toolbarheader bkgd" id="box-frontpage-mygroups">{% trans "Recent Activity" %}</div>
         <div class="toolbarcontent">
         
-        	<span style="display:block;margin-bottom:4px;">
-        		<a href="#" id="collapse-posts"><span>Collapse posts</span></a>
-        		<a href="#" id="expand-posts" style="display: none;"><span>Show post previews</span></a>
-        	</span>
-        
-        
-        
-				<a href="#" class="frontpage-reset" {#style="display: none;"#}>All posts{% if posts_since_login %}&nbsp;&nbsp;<small>({{posts_since_login}} recent){% endif %}</small></a>
+				<a href="#" class="frontpage-reset">Latest posts</a>
+                <div class="frontpage-mygroups-div">
+					<a href="#" class="frontpage-update" id="frontpage-update-featured">Featured posts</a><br/>
+				</div>
+				<hr/>
 
+                <div class="frontpage-mygroups-div">
+					<a href="#" class="frontpage-update" id="frontpage-update-ewb">Front-page posts only</a><br/>
+				</div>
              	{% for group in user.get_groups %}
              		{% if not group.recent_topic_count %}
              		<div class="frontpage-mygroups-nonew" style="display: none;">
              		{% endif %}
 	                <div class="frontpage-mygroups-div">
-	                	<a href="#" class="frontpage-update" id="frontpage-update-{{ group.slug }}">{{ group.name }}</a>
-	                	{% if group.recent_topic_count %}&nbsp;&nbsp;<small>({{group.recent_topic_count}} recent)</small>{% endif %}
+	                	<a href="#" class="frontpage-update" id="frontpage-update-{{ group.slug }}">{{ group.name }}</a><br/>
+	                	{% if group.recent_topic_count %}<small style="padding-left: 10px;">({{group.recent_topic_count}} recent)</small>{% endif %}
 
 		                <div class="frontpage-mygroups-actions">
 		                	{# {{group.recent_topic_count}} recent posts<br/> #}
@@ -398,15 +349,9 @@ $(document).ready(function() {
                 {% endif %}
            	{% endif %}
             		
-            		
-
-            		
             	</div>
         </div>
         {% endcache %}
-        {% endifnotequal %}
-        {% endifnotequal %}
-        {% endifnotequal %}
         
         
     {% else %}

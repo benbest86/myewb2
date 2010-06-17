@@ -592,12 +592,11 @@ margin-bottom:0.2em;
 }
 
 
-#collapse-posts span, #expand-posts span {
+a#collapse-posts, a#expand-posts {
 background:url("images/collapse-icon.png") no-repeat 0 -21px transparent;
-display:block;
 padding:1px 1px 1px 17px;
 }
-#expand-posts span {
+a#expand-posts {
 background-position:0 3px;
 }
 

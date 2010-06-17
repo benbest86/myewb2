@@ -102,6 +102,11 @@ def topics(request, group_slug=None, form_class=GroupTopicForm,
     if request.is_ajax() or request.GET.get('ajax', None):
         template_name = "topics/topics_ajax.html"
 
+    # kinda hack-ish.  but the easiest way; doesn't feel worth adding an AJAX param for this.
+    if group_slug == 'featured':
+        mode = 'featured'
+        group_slug = None
+
     is_member = False
     group = None
     if group_slug is not None:
@@ -136,7 +141,7 @@ def topics(request, group_slug=None, form_class=GroupTopicForm,
         topics = GroupTopic.objects.since(request.user.get_profile().previous_login, qs=topics)
     elif mode == 'newreplies':
         topics = GroupTopic.objects.replies_since(request.user.get_profile().previous_login, qs=topics)
-        
+
     if request.user.is_authenticated():
         can_adminovision = user_can_adminovision(request.user)
         can_execovision = user_can_execovision(request.user)
@@ -149,6 +154,13 @@ def topics(request, group_slug=None, form_class=GroupTopicForm,
         can_adminovision = False
         can_execovision = False
         adminovision = False
+        
+    # also kinda hackish
+    if group and group.slug == "ewb":
+        group = None
+        mode = "frontpage"
+    elif not group and not mode:
+        mode = "latest" 
         
     return render_to_response(template_name, {
         "group": group,
@@ -364,7 +376,8 @@ def topics_by_user(request, username):
     return render_to_response("topics/topics.html",
                               {"topics": topics,
                                "group": None,
-                               "mode": "byuser-%s" % username},
+                               "mode": "byuser-%s" % username,
+                               "hideheader": True},
                               context_instance=RequestContext(request)
                              )
 
@@ -394,7 +407,8 @@ def watchlist(request, list_id):
     return render_to_response("topics/topics.html",
                               {"topics": topics,
                                "group": None,
-                               "mode": "forwatchlist-%s" % list_id},
+                               "mode": "watchlist-%s" % list_id,
+                               "hideheader": True},
                               context_instance=RequestContext(request)
                              )
     
