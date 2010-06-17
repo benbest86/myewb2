@@ -138,12 +138,10 @@ function load_posts(group,page,short)   // now, this'll be a behind-the-scenes f
 	}
 
 
-   {% comment %}  {# this needs to be put back in sometime #}
    {% if not current_timezone %}
 	  	var d = new Date();
 	  	url = url + "&tzoffset=" + d.getTimezoneOffset();
 	  {% endif %}
-    {% endcomment %}
    
 	
 	//console.log(url);
@@ -155,10 +153,9 @@ function load_posts(group,page,short)   // now, this'll be a behind-the-scenes f
     //$('#topiclisting').hide();
 	  
 	$('.frontpage-loading').slideDown();  // @@@ this should be adjusted so it doesn't move everything around.
-
     $('#topiclisting').load(url,
         function() {
-            $('.frontpage-loading').hide();
+            $('.frontpage-loading').stop().hide();
 			  
 			  //$('#topiclisting').show();
 			  
