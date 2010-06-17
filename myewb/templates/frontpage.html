@@ -440,29 +440,12 @@ $(document).ready(function() {
     
     <div class="toolbarheader bkgd" id="box-online">{% trans "Who's Online" %}</div>
     <div class="toolbarcontent">
-        {% for online in online_users %}
-            <div style="padding-bottom: 4px;"><a href="{% url profile_detail online %}">{{ online.visible_name }}</a></div>
-        {% endfor %} <br/>
-        {% if online_anon %}
-        	and {{ online_anon }} guest{{ online_anon|pluralize }}
-        {% endif %}
+    	{% include "whosonline.html" %}
     </div>
     
     <div class="toolbarheader bkgd" id="box-status">{% trans "myEWB status" %}</div>
     <div class="toolbarcontent">
- 		<img src="{{STATIC_URL}}images/status_icons/svn_conflicted.png" style="float: left; padding: 0.8em 3px 0 0;"/>
- 		myEWB is: <br/>
-    	<a href="{% url about %}#status">online with minor problems</a> 
-		{% comment %}
-		<img src="{{STATIC_URL}}images/status_icons/bug.png" style="float: left; padding: 0.1em 3px 0 0 ;"/>
-		myEWB is: <br/>
-		<a href="{% url about %}#status">online with some bugs</a>
-		{% endcomment %}
-		
-		<br/>
-<br/><br/>The FIFA World Cup in South Africa has started! You can watch it <a href="http://www.cbc.ca/sports/soccer/fifaworldcup/" target="_blank" title="We're not *actually* sponsored by CBC... we just think it's awesome. :)">streaming online on CBC</a>. We are!
-		
-		
+	    {% include "myewbstatus.html" %}
     </div>
 {% endblock %}
 
