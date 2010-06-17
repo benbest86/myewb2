@@ -106,8 +106,8 @@ class MembershipFormPreview(PaymentFormPreview):
 class SettingsForm(forms.ModelForm):
     """Edit form for additional MemberProfile settings"""
     
-    show_emails = forms.BooleanField(label="Include emailed posts",
-                                     required=False)
+    #show_emails = forms.BooleanField(label="Include emailed posts",
+    #                                 required=False)
     #show_replies = forms.BooleanField(label="Include replies",
     #                                  required=False)
     sort_by = forms.ChoiceField(label="Sorting",
@@ -130,7 +130,7 @@ class SettingsForm(forms.ModelForm):
     # for custom uni_form layout
     helper = FormHelper()
     layout = Layout(Fieldset('Front page settings',
-                             'show_emails',
+                             #'show_emails',
                              #'show_replies',
                              'sort_by',
                              css_class='inlineLabels'),
@@ -145,7 +145,7 @@ class SettingsForm(forms.ModelForm):
 
     class Meta:
         model = MemberProfile
-        fields = ('show_emails',
+        fields = (#'show_emails',
                   #'show_replies',
                   'sort_by',
                   'replies_as_emails',

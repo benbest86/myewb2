@@ -106,7 +106,7 @@ class GroupTopicManager(models.Manager):
         """
         if qs == None:
             qs = self.visible(user)
-        return qs.order_by('-score')
+        return qs.order_by('-score', '-last_reply')
     
     def since(self, date, qs=None, user=None):
         """
