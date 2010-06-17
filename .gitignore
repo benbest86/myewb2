@@ -23,6 +23,7 @@ myewb/myewb_index
 # ignore any diff/patch files
 *.diff
 *.patch
+*.log
 
 # eclipse settings files
 .project
@@ -34,3 +35,19 @@ myewb/myewb_index
 
 # ignore code coverage results (but keep the folder)
 myewb/coverage_report/*
+
+# this is updated on the live site, keep it out of the repo...
+myewb/templates/myewbstatus.html
+
+# and some random server stuff
+.bash_history
+.bashrc
+.lesshst
+.mysql_history
+.ssh
+.subversion
+.toprc
+.viminfo
+myewb/errors.log
+myewb/out.log
+pinax
