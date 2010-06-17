@@ -49,29 +49,6 @@ class MktimeNode(template.Node):
         if not isinstance(d, datetime.datetime) and not isinstance(d, datetime.date):
             return u''
 
-        # find the user's timezone - either through their profile or session variable 
-        tzone = None
-        if request.user.is_authenticated():
-            tzone = request.user.get_profile().timezone
-        
-        if not tzone:
-            tzone = request.session.get("timezone", None)
-            
-        # modify the date to match the new timezone 
-        if tzone and isinstance(d, datetime.datetime):
-            # I use some non-conventional names... fix them here:
-            if tznames.get(tzone, None):
-                tzone = tznames[tzone]
-
-            # and do the match.
-            tzone = timezone(tzone)
-            current_offset = timezone(settings.TIME_ZONE).utcoffset(d)
-            new_offset = tzone.utcoffset(d)
-            
-            if current_offset != new_offset:
-                delta = new_offset - current_offset
-                d = d + delta
-            
         # within the past 12 hours, present it as an hour offset
         if d > (datetime.datetime.now() - datetime.timedelta(seconds=43200)):
             delta = datetime.datetime.now() - d     # find the time difference
@@ -92,12 +69,36 @@ class MktimeNode(template.Node):
                 return "%s minutes ago" % minutes
         
         # otherwise do the full date/time
-        elif d.date() == datetime.date.today():
-            return "today at %s" % defaultfilters.time(d)
-        elif d.date() == (datetime.date.today() - datetime.timedelta(1)):
-            return "yesterday at %s" % defaultfilters.time(d)
         else:
-            return "on %s at %s" % (defaultfilters.date(d), defaultfilters.time(d))
+            # find the user's timezone - either through their profile or session variable 
+            tzone = None
+            if request.user.is_authenticated():
+                tzone = request.user.get_profile().timezone
+            
+            if not tzone:
+                tzone = request.session.get("timezone", None)
+                
+            # modify the date to match the new timezone 
+            if tzone and isinstance(d, datetime.datetime):
+                # I use some non-conventional names... fix them here:
+                if tznames.get(tzone, None):
+                    tzone = tznames[tzone]
+    
+                # and do the match.
+                tzone = timezone(tzone)
+                current_offset = timezone(settings.TIME_ZONE).utcoffset(d)
+                new_offset = tzone.utcoffset(d)
+                
+                if current_offset != new_offset:
+                    delta = new_offset - current_offset
+                    d = d + delta
+                
+            if d.date() == datetime.date.today():
+                return "today at %s" % defaultfilters.time(d)
+            elif d.date() == (datetime.date.today() - datetime.timedelta(1)):
+                return "yesterday at %s" % defaultfilters.time(d)
+            else:
+                return "on %s at %s" % (defaultfilters.date(d), defaultfilters.time(d))
 
 @register.tag
 def mktime(parser, token):
