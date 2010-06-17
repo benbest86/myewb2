@@ -7,7 +7,7 @@ from datetime import datetime
 # thanks to http://www.codepaste.ru/2212/
 
 # Maximum page view time (in seconds).
-USER_PAGE_VIEW_TIME = 10 * 60
+USER_PAGE_VIEW_TIME = 8 * 60
 
 CACHE_ONLINE_USER_ID_PREFIX = "online_u_"
 CACHE_ONLINE_USER_SESSION_PREFIX = "online_s_"

@@ -199,6 +199,25 @@ $(document).ready(function(){
 
 {% block extra_body_base %}
     {#{% urchin %}    #}
+    
+    {# javascript keepalive for who's online counter #}
+    <script type="text/javascript">
+    function keepalive()
+    {
+        jQuery.get('{% url whosonline_refresh %}',
+                function(data)
+                {
+            		$('#box-online').html(data);
+                });
+        setTimeout('keepalive()', 5 * 60 * 1000);
+    }
+                        
+    $(document).ready(function() {
+        setTimeout('keepalive()', 5 * 60 * 1000);
+    });
+    
+    </script>
+    
     {% block extra_body %}{% endblock %}
     
     {% if grandfathered %}

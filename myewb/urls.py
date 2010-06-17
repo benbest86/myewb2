@@ -84,6 +84,9 @@ urlpatterns = patterns('',
     
     url(r'^newpost/$', 'group_topics.views.topics.new_topic', name="topic_new"),
     
+    # ajax keepalive call that also updates the whos-online bar
+    url(r'^keepalive/$', direct_to_template, {"template": "whosonline.html"}, name="whosonline_refresh"),
+    
     # legacy URLs from myEWB 1
     url(r'^home/', include('legacy_urls.home')),
     url(r'^profile/', include('legacy_urls.profile')),
