@@ -48,6 +48,12 @@ div.toolbarcontent_right
         margin-bottom: 5px;
 }
 
+.toolbarcontent_right ul
+{
+	list-style-type: none;
+	padding-left: 0px;
+}
+
 .toolbarbottom_right
 {
         background-repeat:no-repeat;

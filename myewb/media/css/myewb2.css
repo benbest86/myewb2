@@ -704,13 +704,13 @@ display: inline; margin-right: 10px;
 }
 
 
-ul.linker-list li a {
-display: block;
-padding:0.2em;
+ul.linker-list li {
+padding-bottom:0.4em;
 }
 
-
-
+ul.linker-list li a {
+padding:0.2em;
+}
 
 .chapter-executive-sidebox-img {
 float: left; 
