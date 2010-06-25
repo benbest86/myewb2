@@ -26,7 +26,7 @@
     <p><em>We expect to have this back within the next day or two - sorry for the inconvenience!</em></p>
     
     {% autosort forwards %}
-    {% autopaginate forwards 10 %}
+{% comment %}    {% autopaginate forwards 10 %} {% endcomment %}
     {% if forwards %}
         {% comment %}
         <p>{% trans "Order by:" %}
@@ -34,6 +34,8 @@
             {% anchor created Date %}
         </p>
         {% endcomment %}
+
+{% comment %}
         <dl>
         {% for fwd in forwards %}
             <dt>{{ fwd.user.visible_name }} ({{fwd.user.email}})</dt>
@@ -47,10 +49,43 @@
         {% endfor %}
         </dl>
         {% paginate %}
+
+{% endcomment %}
+
+	<h3>Add a new forward</h3>
+	<form method="POST" action="" class="uniForm">
+		<fieldset class="inlineLabels">
+			{{ form|as_uni_form }}
+			<input type="submit" value="Add" />
+		</fieldset>
+	</form>
+	<hr/>
+
+	<table border="1" cellpadding=5>
+		<tr>
+			<th>Name</th>
+			<th>Actual email</th>
+			<th>Email forward</th>
+			<th>&nbsp;</th>
+		</tr>
+
+		{% for fwd in forwards %}
+			<tr>
+				<td>{{fwd.user.visible_name}}</td>
+				<td>{{fwd.user.email}}</td>
+				<td>{{fwd.address}}</td>
+				<td>
+					<form action="{% url email_forwards_delete network.slug fwd.id %}" method="post">
+					<input type="hidden" name="user" value="{{fwd.user.pk}}"/>
+					<input type="submit" value="Delete"/>
+					</form>
+				</td>
+			</tr>
+		{% endfor %}
+	</table>
     {% endif %}
 
-    {% comment %}
-    
+{% comment %}
 	<h3>Add a new forward</h3>    
 	<form method="POST" action="">
 		{{ form|as_uni_form }}

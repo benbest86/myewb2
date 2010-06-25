@@ -136,6 +136,10 @@ class MemberProfile(Profile):
     grandfathered = models.BooleanField(_('grandfathered'),
                                         help_text=_('imported from old myewb and has not accepted new terms of service'),
                                         default=False)
+    
+    ldap_sync = models.BooleanField("Needs LDAP sync",
+                                    default=False,
+                                    editable=False)
 
     objects = MemberProfileManager()
     
@@ -265,6 +269,12 @@ post_save.connect(create_member_profile, sender=User)
 #            emailforwards.updateUser(user, instance.email)
 #
 #post_save.connect(set_primary_email, sender=EmailAddress)
+
+def update_ldap_email(sender, instance=None, **kwargs):
+    if instance is not None and instance.verified and instance.primary:
+        instance.user.get_profile().ldap_sync = True
+        instance.user.get_profile().save()
+post_save.connect(update_ldap_email, sender=EmailAddress)
     
 class StudentRecordManager(models.Manager):
     def get_from_view_args(self, *args, **kwargs):

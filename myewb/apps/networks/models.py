@@ -91,13 +91,19 @@ class EmailForward(models.Model):
     address = models.EmailField(unique=True)
 
     def save(self, force_insert=False, force_update=False):
-        emailforwards.addAddress(self.user, self.address)
         super(EmailForward, self).save(force_insert, force_update)
 
+        #work around a python bug... dammit!
+        #emailforwards.addAddress(self.user, self.address)
+        self.user.get_profile().ldap_sync = True
+        self.user.get_profile().save()
+
     def delete(self):
-        emailforwards.removeAddress(self.user, self.address)
         super(EmailForward, self).delete()
-        
+
+        #emailforwards.removeAddress(self.user, self.address)
+        self.user.get_profile().ldap_sync = True
+        self.user.get_profile().save()
 
 def add_users_to_default_networks(sender, instance=None, created=False, **kwargs):
     if created:
