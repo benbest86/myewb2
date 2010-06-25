@@ -112,9 +112,10 @@ def email_forwards_index(request, group_slug):
         form = EmailForwardForm()
         
     return render_to_response('networks/emailforwards.html',
-                              {"network": network,
+                              {"group": network,
                                "forwards": forwards,
-                               "form": form},
+                               "form": form,
+                               "is_admin": network.user_is_admin(request.user)},
                               context_instance=RequestContext(request))
         
 @group_admin_required()

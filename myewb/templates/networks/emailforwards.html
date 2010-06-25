@@ -14,16 +14,10 @@
 	{{ form.media }}
 {% endblock %}
 
-{% block head_title %}{% blocktrans %}Members of{% endblocktrans %} {{network.name}}{% endblock %}
+{% block head_title %}{% blocktrans %}Email forwards for {% endblocktrans %} {{group.name}}{% endblock %}
 
 {% block body %}
-	<p><a href="{% url network_detail network.slug %}">{{ network.name }}</a></p>
-    <h1>{% trans "Email forwards" %}</h1>
-    
-    <p><em>Sorry - email forwards are temporarily disabled.  Existing forwards 
-    will continue to work, but listing/adding/removing forwards is offline.</em></p>
-    
-    <p><em>We expect to have this back within the next day or two - sorry for the inconvenience!</em></p>
+    <h1>{% trans "Email forwards" %}: {{ group.name }}</h1>
     
     {% autosort forwards %}
 {% comment %}    {% autopaginate forwards 10 %} {% endcomment %}
@@ -35,24 +29,8 @@
         </p>
         {% endcomment %}
 
-{% comment %}
-        <dl>
-        {% for fwd in forwards %}
-            <dt>{{ fwd.user.visible_name }} ({{fwd.user.email}})</dt>
-			<dd>
-				{{ fwd.address }}<br/>
-				<form action="{% url email_forwards_delete network.slug fwd.id %}" method="post">
-					<input type="hidden" name="user" value="{{ fwd.user.pk }}"/>
-					<input type="submit" value="Delete"/>
-				</form>
-			</dd>
-        {% endfor %}
-        </dl>
-        {% paginate %}
-
-{% endcomment %}
-
 	<h3>Add a new forward</h3>
+	<em>Please allow up to 15 minutes for new forwards to come into effect.</em>
 	<form method="POST" action="" class="uniForm">
 		<fieldset class="inlineLabels">
 			{{ form|as_uni_form }}
@@ -75,7 +53,7 @@
 				<td>{{fwd.user.email}}</td>
 				<td>{{fwd.address}}</td>
 				<td>
-					<form action="{% url email_forwards_delete network.slug fwd.id %}" method="post">
+					<form action="{% url email_forwards_delete group.slug fwd.id %}" method="post">
 					<input type="hidden" name="user" value="{{fwd.user.pk}}"/>
 					<input type="submit" value="Delete"/>
 					</form>
@@ -85,15 +63,6 @@
 	</table>
     {% endif %}
 
-{% comment %}
-	<h3>Add a new forward</h3>    
-	<form method="POST" action="">
-		{{ form|as_uni_form }}
-        <input type="submit" value="Add" />
-    </form>
-    
-    {% endcomment %}
-    
 {% endblock %}
 
 {% block extra_body %}
