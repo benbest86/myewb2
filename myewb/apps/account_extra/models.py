@@ -35,6 +35,10 @@ def create_bulk_user_method(self, email):
     if emailaddress.count() > 0:
         return emailaddress[0].user
     
+    emailaddress2 = User.objects.filter(email=email)  # hmm.. would happen if a bulk user already exists, i think?
+    if emailaddress2.count() > 0:
+        return emailaddress2[0]
+
     # create random username
     username = User.objects.make_random_password()
     while User.objects.filter(username=username).count() > 0:   # ensure uniqueness
