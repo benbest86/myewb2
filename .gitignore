@@ -13,6 +13,7 @@
 
 # ignore local_settings and files
 myewb/local_settings.py
+myewb/settings.php
 myewb/site_media
 myewb/media/attachments
 myewb/media/avatars
