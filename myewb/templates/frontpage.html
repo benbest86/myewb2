@@ -30,6 +30,8 @@ var currentGroup = '';
 var currentPage = ''; // not the actual default of 1, so that it'll actually load the first time.
 var shortPosts = 0;
 
+var timeout_id = 0;
+
 $(window).bind( 'hashchange', function(e) {
     rockAjaxPosts(0);
 });
@@ -69,7 +71,7 @@ function rockAjaxPosts(forceReload) {
         
         //console.log('changegroup to ' + group + ' and page to ' + page);
         
-        load_posts(group,page,short);
+        load_posts(group,page,short,false);
         
         currentGroup = group;
         currentPage = page; // is this always intended? probably.
@@ -81,7 +83,7 @@ function rockAjaxPosts(forceReload) {
         
         //console.log('changegroup to ' + group);
         
-        load_posts(group,1,short);
+        load_posts(group,1,short,false);
         
         currentGroup = group;
         currentPage = 1; 
@@ -91,7 +93,7 @@ function rockAjaxPosts(forceReload) {
         
         //console.log('changepage to ' + page);
         
-        load_posts(group,page,short);
+        load_posts(group,page,short,false);
         
         currentPage = page;
     }
@@ -100,100 +102,75 @@ function rockAjaxPosts(forceReload) {
 
 }
 
-function load_posts(group,page,short)   // now, this'll be a behind-the-scenes function that's only called by hashchanges.
+function load_posts(group,page,short,silent)   // now, this'll be a behind-the-scenes function that's only called by hashchanges.
 {
+	clearTimeout(timeout_id)
     var url = '';
 
+	// no group yet; load default
 	if(group=='') {
-	   // no group yet; load default
 	   url = "/?ajax=1";
-	   
-	}
-	else {
+	} else {
 	   url = '/groups/' + group + '/posts/?ajax=1';
 	}
 	
 	if(page && page!=0) {
 	   url = url + '&page=' + page;
 	}
-
 	if (short==1) {
     	url += '&short=1';
 	}
 	
-	
-	
-	/* misc. display stuff */
+	/* update highlighting in the groups listing */
 	if (group) {
     	$('.frontpage-mygroups-actions').hide();
-		  $('.frontpage-mygroups-div').removeClass('bkgd-light');
-			  
-		  $('#frontpage-update-'+group).parent().addClass('bkgd-light');
-		  $('#frontpage-update-'+group).siblings('.frontpage-mygroups-actions').show();
-	
+    	$('.frontpage-mygroups-div').removeClass('bkgd-light');
+
+    	$('#frontpage-update-'+group).parent().addClass('bkgd-light');
+    	$('#frontpage-update-'+group).siblings('.frontpage-mygroups-actions').show();
 	} else {
-	   // the maingroup
-	   $('.frontpage-mygroups-actions').hide();
-	  $('.frontpage-mygroups-div').removeClass('bkgd-light');
+		$('.frontpage-mygroups-actions').hide();
+		$('.frontpage-mygroups-div').removeClass('bkgd-light');
 	}
 
-
-   {% if not current_timezone %}
-	  	var d = new Date();
-	  	url = url + "&tzoffset=" + d.getTimezoneOffset();
-	  {% endif %}
+	{# if there is no current timezone selected, auto-detect one #}
+	{% if not current_timezone %}
+		var d = new Date();
+		url = url + "&tzoffset=" + d.getTimezoneOffset();
+	{% endif %}
    
-	
-	//console.log(url);
-	
-	
-    
     currentURL = url;
-	  
-    //$('#topiclisting').hide();
-	  
-	$('.frontpage-loading').slideDown();  // @@@ this should be adjusted so it doesn't move everything around.
+
+    if (silent == false)
+    {
+    	// maybe bring this back...?  dunno...!
+    	//$('#topiclisting').hide();
+		$('.frontpage-loading').slideDown();  // @@@ this should be adjusted so it doesn't move everything around.
+    }
+    
     $('#topiclisting').load(url,
         function() {
             $('.frontpage-loading').stop().hide();
-			  
-			  //$('#topiclisting').show();
-			  
-			  // $.deparam('?page=224&ajax=1')['?page']
 
+            // if hidden earlier, need to re-show here
+            //$('#topiclisting').show();
+
+            // catch pagination-related clicks and load via ajax
             $('.pagination a').click(function() {
-                
-                
-                targetPage =  $.deparam( $(this).attr('href') )['?page'] ;
-                
-                ////console.log(targetPage);
-                
-                //newTarget = $.param.fragment( '/#'+$.param.fragment(), 'page='+targetPage, 0);
-                
-                
-                //$(this).attr('href',newTarget.substring(1));  // But! this isn't even used; we replace the .click function right away:
-                
-
-                var state = {};
-                state['page'] = targetPage;
-                $.bbq.pushState( state );
-                
-                if(shortPosts!=true)
+               	targetPage =  $.deparam( $(this).attr('href') )['?page'] ;
+               	var state = {};
+               	state['page'] = targetPage;
+               	$.bbq.pushState( state );
+               	if(shortPosts!=true)
                 {
-                    $().scrollTo(0,600);
+                	$().scrollTo(0,600);
                 }
                 return false;
-
-                
             });
+		});
 
-			 
-  		  
-  		  
-  		  
-
-		    }
-	  );				  
+	// and set a timer to auto-refresh... every half hour, let's say?
+    timeout_id = setTimeout('load_posts(\'' + group + '\',\'' + page + '\',\'' + short + '\')', 30 * 60 * 1000, true);
 }
 	
 $(document).ready(function() {
