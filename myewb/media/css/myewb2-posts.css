@@ -3,6 +3,7 @@
 div.post
 {
 	margin-bottom: 12px;
+	clear: both;
 }
 
 .pagination
@@ -168,15 +169,12 @@ margin:0;
 margin-bottom:0.5em;
 }
 
-div#topiclisting div.post h1 {
-font-size: 18px;
+div#topiclisting div.post h1, div#topiclisting div.post h2, div#topiclisting div.post h3, div#topiclisting div.post h4, div#topiclisting div.post h5, div#topiclisting div.post h6 {
+font-size: 13px;
 }
-div#topiclisting div.post h2 {
-font-size: 16px;
+div#topiclisting div.post img {
+display: none;
 }
-div#topiclisting div.post h3 {
-font-size: 14px;
-}
-div#topiclisting div.post h4, h5, h6 {
-font-size: 12px;
+div#topiclisting div.post img.posthumbnail {
+display: block;
 }
