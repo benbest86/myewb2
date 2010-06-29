@@ -68,7 +68,8 @@ def edit_network(request, group_slug, form_class=NetworkForm, template_name=EDIT
 
 @permission_required('networks.delete')
 def delete_network(request, group_slug, form_class=NetworkForm, detail_template_name=DETAIL_TEMPLATE):
-    return delete_group(request, group_slug, Network, GroupMember, form_class, detail_template_name, DEFAULT_OPTIONS)
+    return render_to_response('denied.html', context_instance=RequestContext(request))
+    #return delete_group(request, group_slug, Network, GroupMember, form_class, detail_template_name, DEFAULT_OPTIONS)
             
 @group_admin_required()
 def edit_network_location(request, group_slug, form_class=GroupLocationForm, template_name=LOCATION_TEMPLATE):

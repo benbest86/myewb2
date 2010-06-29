@@ -6,7 +6,7 @@
 {% load time_filters %}
 
 {% if not wb.content and not force %}
-	{% if member %}
+	{% if member and group.is_active %}
 		{% trans "No whiteboard" %} - <a href="{% groupurl wiki_edit group title=wb.title %}">{% trans "create a whiteboard..." %}</a>
 		<br/><br/>
 	{% endif %}
@@ -50,7 +50,7 @@
             No whiteboard edits yet
         {% endif %}
             
-		{% if member %}
+		{% if member and group.is_active %}
             | 
 			<a href="{% groupurl wiki_edit group title=wb.title %}">{% trans "Edit this article" %}</a>
 			|

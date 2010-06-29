@@ -56,14 +56,16 @@
     {% block grouptitle %}
         <h1 class="posts-title">{{ group.name }}</h1>
         
-{% if group.parent %}
-		<h2 class="posts-parent-partof lighter">{% trans "Part of the " %} <a href="{{ group.parent.get_absolute_url }}">{{ group.parent.name }}</a>
+		{% if group.parent %}
+			<h2 class="posts-parent-partof lighter">
+				{% trans "Part of the " %} <a href="{{ group.parent.get_absolute_url }}">{{ group.parent.name }}</a>
+			</h2>
+		{% endif %}
 		
-		</h2>
-	{% endif %}
+		{% if not group.is_active %}
+			<h2>(deleted)</h2>
+		{% endif %}
 
-        
-        
     {% endblock %}
 
 
@@ -87,20 +89,16 @@
 
 		<h2>{% trans "Discussions" %}{% if group.topics.all.count %} ({{ group.topics.all.count }}){% endif %}</h2>
 
-	    {% if member and member.is_accepted %}
+	    {% if member and member.is_accepted and group.is_active %}
 			<p style="font-size: 14px;">
 	    		<a href="{% groupurl topic_new group %}">Create a new post</a>
 		    </p>
-		    
-		    
         {% else %}
-        
-            {% if is_admin %}
+            {% if is_admin and group.is_active %}
     			<p style="font-size: 14px;">
     	    		<a href="{% groupurl topic_new group %}" title="You're not a member of this group, but as an admin you can post to it.">Create a new post</a>
     		    </p>
             {% endif %}
-                    
 	    {% endif %}
 	    
         {% get_grouptopics_for_group group as topic_queryset %}
@@ -117,39 +115,38 @@
                 <p>
                     {% trans "No posts. " %}
                     
-	    {% if is_member %}
-	    	<a href="{% groupurl topic_new group %}">Create a new post</a>
-	    {% else %}
-	    	You need to 
+        			{% if group.is_active %}
+	    				{% if is_member %}
+		    				<a href="{% groupurl topic_new group %}">Create a new post</a>
+	    				{% else %}
+		    				You need to 
 	    	
-	    	{% if user.is_authenticated %}
-	    	<a href="{% groupurl new_member group %}">join this group</a>
-	    	{% else %}
-	    	join this group
-	    	{% endif %}
-	    	 before you can post to it.
-	    {% endif %}
-                    
-                    
+		    				{% if user.is_authenticated %}
+	    						<a href="{% groupurl new_member group %}">join this group</a>
+	    					{% else %}
+	    						join this group
+	    					{% endif %}
+	    	 				before you can post to it.
+	    				{% endif %}
+	    			{% endif %}
                 </p>
             {% endif %}
         {% endwith %}
 
 
 	</div>
+	
 	<div id="group-events">
 		<h2>{% trans "Upcoming Events" %}</h2>
         {% events_upcoming user group %} <br/>
         <a href="{% link_to_events_for group 'css_class' 1 %}">Go to the {{group}} calendar</a><br/>
-
-
 	</div>
+	
 	<div id="group-whiteboard">
-		        <h2>{% trans "Whiteboard" %}</h2>
+		<h2>{% trans "Whiteboard" %}</h2>
 
         {% get_membership group request.user as member %}
         {% show_whiteboard_force group.whiteboard group member %}
-        
 	</div>
 	
 </div>
@@ -181,11 +178,9 @@
 
 {% block toolbar_left %}
 
+{% if group.is_active %}
 
-
-
-
-{% if not user.is_authenticated %}
+	{% if not user.is_authenticated %}
         <div class="toolbarheader bkgd" id="box-membership">{% trans "Sign Up" %}</div>
         <div class="toolbarcontent">
             <p>Enter your email address below to sign up for the {{ group.name }} mailing list!</p>
@@ -195,13 +190,7 @@
 				<input type="submit" value="Subscribe"/>
 			</form>
         </div>
-		{% endif %}
-
-
-
-
-
-
+	{% endif %}
 
     {% if group and user.is_authenticated %}
         <div class="toolbarheader bkgd" id="box-membership">{% trans "Membership" %}</div>
@@ -226,69 +215,61 @@
                 {% endif %}
                 
                 {% if member.is_invited %}
-
-		<div class="bkgd-light" style="border: 1px; width: 75%; margin: 0 auto; padding: 5px;">
-			{% trans "You have been invited to join this group." %}<br/>
-			<form method="POST" action="{% groupurl accept_invitation group username=member.user.username %}">
-				<input type="submit" value="{% trans "Join group" %}" style="float: left;"/>
-			</form>            			
-			<form method="POST" action="{% groupurl delete_member group username=member.user.username %}">
-				&nbsp;&nbsp;&nbsp;<input type="submit" value="{% trans "Decline" %}" />
-			</form>
-		</div>
-		
-
+					<div class="bkgd-light" style="border: 1px; width: 75%; margin: 0 auto; padding: 5px;">
+						{% trans "You have been invited to join this group." %}<br/>
+						<form method="POST" action="{% groupurl accept_invitation group username=member.user.username %}">
+							<input type="submit" value="{% trans "Join group" %}" style="float: left;"/>
+						</form>            			
+						<form method="POST" action="{% groupurl delete_member group username=member.user.username %}">
+							&nbsp;&nbsp;&nbsp;<input type="submit" value="{% trans "Decline" %}" />
+						</form>
+					</div>
                 {% endif %}
                 
                 {% if member.is_requested %}
-		<div class="bkgd-light" style="border: 1px; width: 75%; margin: 0 auto; padding: 5px;">
-			{% trans "You have requested membership in this group and your request is pending." %}
-			<form method="POST" action="{% groupurl delete_member group username=member.user.username %}">
-				&nbsp;&nbsp;&nbsp;<input type="submit" value="{% trans "cancel request" %}" />
-			</form>
-		</div>
-		                {% endif %}
-                
-                
+					<div class="bkgd-light" style="border: 1px; width: 75%; margin: 0 auto; padding: 5px;">
+						{% trans "You have requested membership in this group and your request is pending." %}
+						<form method="POST" action="{% groupurl delete_member group username=member.user.username %}">
+							&nbsp;&nbsp;&nbsp;<input type="submit" value="{% trans "cancel request" %}" />
+						</form>
+					</div>
+		        {% endif %}
                 {# Dropping these here from further up the page. @@@ might need formatting. #}
                 
-	{% if member and member.is_invited %}
-		<div class="bkgd-light" style="border: 1px; width: 75%; margin: 0 auto; padding: 5px;">
-			{% trans "You have been invited to join this group." %}<br/>
-			<form method="POST" action="{% groupurl accept_invitation group username=member.user.username %}">
-				<input type="submit" value="{% trans "Join group" %}" style="float: left;"/>
-			</form>            			
-			<form method="POST" action="{% groupurl delete_member group username=member.user.username %}">
-				&nbsp;&nbsp;&nbsp;<input type="submit" value="{% trans "Decline" %}" />
-			</form>
-		</div>
-		
-	{% endif %}
+				{% if member and member.is_invited %}
+					<div class="bkgd-light" style="border: 1px; width: 75%; margin: 0 auto; padding: 5px;">
+						{% trans "You have been invited to join this group." %}<br/>
+						<form method="POST" action="{% groupurl accept_invitation group username=member.user.username %}">
+							<input type="submit" value="{% trans "Join group" %}" style="float: left;"/>
+						</form>            			
+						<form method="POST" action="{% groupurl delete_member group username=member.user.username %}">
+							&nbsp;&nbsp;&nbsp;<input type="submit" value="{% trans "Decline" %}" />
+						</form>
+					</div>
+				{% endif %}
 
-
-	{% if requests_outstanding %}
-		<div class="bkgd-light" style="border: 1px; width: 75%; margin: 0 auto; padding: 5px;">
-			{% trans "There are outstanding membership requests." %}
-			<a href="{% groupurl members_index group %}">{% trans "Click here to manage" %}</a>
-		</div>		
-	{% endif %}
-                
-                
-                
-                
-            {% else %}
+				{% if requests_outstanding %}
+					<div class="bkgd-light" style="border: 1px; width: 75%; margin: 0 auto; padding: 5px;">
+						{% trans "There are outstanding membership requests." %}
+						<a href="{% groupurl members_index group %}">{% trans "Click here to manage" %}</a>
+					</div>		
+				{% endif %}
+            {% else %}		{# if is_member #}
 				<a href="{% groupurl new_member group %}">{% trans "Join group" %}</a><br/>
             {% endif %}
         </div>        
-    {% endif %}
+    {% endif %}		{# if group and user.is_authenticated #}
+    
+{% else %}			{# if group.is_active #}
+	<div class="toolbarheader bkgd" id="box-membership">{% trans "Membership" %}</div>
+	<div class="toolbarcontent">
+		This group has been deleted.
+	</div>
+{% endif %}
 {% endblock %}
 
-
-
-
-
 {% block toolbar_right %}
-    {% if group and user.is_authenticated %}
+    {% if group and group.is_active and user.is_authenticated %}
         <div class="toolbarheader bkgd" id="box-members">{% trans "Members" %}</div>
         <div class="toolbarcontent">
             <form method="GET" action="{% groupurl members_index group %}">

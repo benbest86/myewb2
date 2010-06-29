@@ -30,6 +30,7 @@ INDEX_TEMPLATE = 'communities/communities_index.html'
 NEW_TEMPLATE = 'communities/new_community.html'
 EDIT_TEMPLATE = 'communities/edit_community.html'
 DETAIL_TEMPLATE = 'communities/community_detail.html'
+DELETE_TEMPLATE = 'communities/delete_confirm.html'
 
 LOCATION_TEMPLATE = 'communities/edit_community_location.html'
 
@@ -63,8 +64,8 @@ def edit_community(request, group_slug, form_class=CommunityForm, template_name=
     return edit_group(request, group_slug, Community, GroupMember, form_class, template_name, detail_template_name, DEFAULT_OPTIONS)
 
 @group_admin_required()
-def delete_community(request, group_slug, form_class=CommunityForm, detail_template_name=DETAIL_TEMPLATE):
-    return delete_group(request, group_slug, Community, GroupMember, form_class, detail_template_name, DEFAULT_OPTIONS)
+def delete_community(request, group_slug, form_class=CommunityForm, template_name=DELETE_TEMPLATE):
+    return delete_group(request, group_slug, Community, template_name)
     
         
 def members_index(request, group_slug, form_class=GroupMemberForm, template_name=MEM_INDEX_TEMPLATE, 

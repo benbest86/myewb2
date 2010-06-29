@@ -235,6 +235,14 @@ class BaseGroup(Group):
         super(BaseGroup, self).save(force_insert=force_insert, force_update=force_update)
         post_save.send(sender=BaseGroup, instance=self, created=created)
 
+    def delete(self):
+        for m in self.member_users.all():
+            self.remove_member(m)
+
+        self.is_active = False
+        self.save()
+        #super(BaseGroup, self).delete()
+
     def get_url_kwargs(self):
         return {'group_slug': self.slug}
         

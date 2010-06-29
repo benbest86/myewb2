@@ -1,0 +1,20 @@
+{% extends "communities/base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Delete Group" %}{% endblock %}
+
+{% block body %}
+
+    <h1>Are you sure</h1>
+    
+    <p>Are you sure you want to delete the <em>{{ group.name }}</em> community?
+    
+    Posts to this group will remain, but all members will be removed from the group and 
+    no new members can be added.</p>
+    
+    <form method="post" action="">
+    	<input type="submit" name="delete" value="delete"/>
+    </form>
+
+{% endblock %}
