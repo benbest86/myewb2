@@ -136,6 +136,7 @@ div#body {
 
 div#content {
     padding: 1em;
+    clear:both;
 }
 
 div#tabhead {
@@ -161,6 +162,8 @@ ul.tabs {
 ul.tabs li {
     list-style: none;
     display: inline-block;
+    
+    display:inline;
     text-align: center;
 
 }
@@ -257,6 +260,8 @@ div#subnavsearchbox {
 float: right; 
 width: 225px; 
 padding: 0.2em 1em 0.2em 0pt;
+
+height:23px;
 }
 
 
