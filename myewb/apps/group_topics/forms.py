@@ -14,6 +14,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from group_topics.models import GroupTopic
 from tag_app.models import TagAlias
+from lxml.html.clean import clean_html, autolink_html, Cleaner
+from siteutils.helpers import autolink_email
 
 class GroupTopicForm(forms.ModelForm):
     
@@ -83,3 +85,18 @@ class GroupTopicForm(forms.ModelForm):
         
         return tags
         
+    # do HTML validation and auto-linking
+    def clean_body(self):
+        body = self.cleaned_data.get('body', '')
+        
+        # validate HTML content
+        # Additional options at http://codespeak.net/lxml/lxmlhtml.html#cleaning-up-html
+        body = clean_html(body)
+        body = autolink_html(body)
+        
+        # emails too
+        body = autolink_email(body)
+        
+        return body
+    
+    

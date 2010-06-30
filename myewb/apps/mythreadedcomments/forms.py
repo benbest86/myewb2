@@ -4,6 +4,7 @@ from threadedcomments.forms import ThreadedCommentForm, FreeThreadedCommentForm
 from threadedcomments.models import ThreadedComment, FreeThreadedComment
 from tag_app.models import TagAlias
 from lxml.html.clean import clean_html, autolink_html
+from siteutils.helpers import autolink_email
 
 class MyThreadedCommentForm(ThreadedCommentForm):
     comment = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}),
@@ -13,6 +14,7 @@ class MyThreadedCommentForm(ThreadedCommentForm):
     def clean_comment(self):
         self.cleaned_data['comment'] = clean_html(self.cleaned_data['comment'])
         self.cleaned_data['comment'] = autolink_html(self.cleaned_data['comment'])
+        self.cleaned_data['comment'] = autolink_email(self.cleaned_data['comment'])
         return self.cleaned_data['comment']
     
     # Check tag aliases: see tag_app.TagAlias
@@ -53,6 +55,7 @@ class MyFreeThreadedCommentForm(FreeThreadedCommentForm):
     def clean_comment(self):
         self.cleaned_data['comment'] = clean_html(self.cleaned_data['comment'])
         self.cleaned_data['comment'] = autolink_html(self.cleaned_data['comment'])
+        self.cleaned_data['comment'] = autolink_email(self.cleaned_data['comment'])
         return self.cleaned_data['comment']
 
     # Check tag aliases: see tag_app.TagAlias

@@ -8,6 +8,7 @@ Created on: 2009-08-13
 @author: Joshua Gorner
 """
 
+import re
 from datetime import datetime
 from django.db import models
 from django.db.models import Q
@@ -181,11 +182,6 @@ class GroupTopic(Topic):
     def save(self, force_insert=False, force_update=False):
         if not self.pk:
             self.last_reply = datetime.now()
-            
-        # validate HTML content
-        # Additional options at http://codespeak.net/lxml/lxmlhtml.html#cleaning-up-html
-        self.body = clean_html(self.body)
-        self.body = autolink_html(self.body)
         
         # set parent group
         group = BaseGroup.objects.get(id=self.object_id)
