@@ -37,7 +37,9 @@ def user_search(request):
         if not request.user.has_module_perms("profiles"):
             # don't show grandfathered users
             # (this is a huge performance hit, as it adds an outer join... =( )
-            qry = qry & Q(memberprofile__grandfathered=False)
+            # (removed 06/30/10 - no privacy concern here, I think.  this is different
+            #  than a general profile search...)
+            #qry = qry & Q(memberprofile__grandfathered=False)
             
             # restrict results to friends or people in your chapter, too
             mygrps = BaseGroup.objects.filter(member_users=request.user, is_active=True).exclude(model="LogisticalGroup")

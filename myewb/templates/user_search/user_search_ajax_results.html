@@ -33,10 +33,12 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 			        {% endif %}
 			        {% endcomment %}
 			        
-			        <br/>
-			        <a target="_blank" href="{% url profile_detail result_user.username %}">
-			        	<small>Show profile</small>
-			        </a>
+			        {% if not result_user.get_profile.grandfathered %}
+			        	<br/>
+			        	<a target="_blank" href="{% url profile_detail result_user.username %}">
+				        	<small>Show profile</small>
+			        	</a>
+			        {% endif %}
 			        
 			    </li>
 		    {% endfor %}
