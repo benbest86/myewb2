@@ -107,8 +107,9 @@ class Event(models.Model):
         
         # validate HTML content
         # Additional options at http://codespeak.net/lxml/lxmlhtml.html#cleaning-up-html
-        self.description = clean_html(self.description)
-        self.description = autolink_html(self.description)
+        if self.description:
+            self.description = clean_html(self.description)
+            self.description = autolink_html(self.description)
         
         super(Event, self).save(force_insert, force_update)
 
