@@ -183,6 +183,14 @@ class BaseGroup(Group):
         
         if sender == None:
             sender = '%s <%s@ewb.ca>' % (self.name, self.slug)
+            
+        lang = 'en'
+        try:
+            # is there a cleaner way to do this???!!!
+            if self.network.chapter_info.francophone:
+                lang = 'fr'
+        except:
+            pass
 
         send_mail(subject=subject,
                   txtMessage=None,
@@ -190,7 +198,8 @@ class BaseGroup(Group):
                   fromemail=sender,
                   recipients=self.get_member_emails(),
                   context=context,
-                  shortname=self.slug)
+                  shortname=self.slug,
+                  lang=lang)
     
     def save(self, force_insert=False, force_update=False):
         # if we are updating a group, don't change the slug (for consistency)

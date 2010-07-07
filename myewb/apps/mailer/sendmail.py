@@ -6,7 +6,8 @@ from lxml.html.clean import clean_html, autolink_html, Cleaner
 
 def send_mail(subject=None, txtMessage=None, htmlMessage=None,
               fromemail=None, recipients=None, shortname=None,
-              priority=None, context={}, use_template=True):
+              priority=None, context={}, use_template=True,
+              lang='en'):
     # try to be backwards-compatible
     if htmlMessage and not recipients:
         recipients = fromemail
@@ -40,16 +41,19 @@ def send_mail(subject=None, txtMessage=None, htmlMessage=None,
     recips = ",".join(recipients)
             
     if shortname:
+        shortname = shortname.lower()
         Email.objects.create(recipients=recips,
                              shortName=shortname,
                              sender=fromemail,
                              subject=subject,
                              textMessage=txtMessage,
-                             htmlMessage=htmlMessage)
+                             htmlMessage=htmlMessage,
+                             lang=lang)
     else:
         Email.objects.create(recipients=recips,
                              shortName=shortname,
                              sender=fromemail,
                              subject=subject,
                              textMessage=txtMessage,
-                             htmlMessage=htmlMessage)
+                             htmlMessage=htmlMessage,
+                             lang=lang)

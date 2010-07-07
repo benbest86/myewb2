@@ -16,5 +16,6 @@ class Email(models.Model):
     subject = models.CharField(max_length=255)
     textMessage = models.TextField()
     htmlMessage = models.TextField()
+    lang = models.CharField(max_length=2)
     numSentTo = models.IntegerField(blank=True, null=True)
     date = models.CharField(max_length=255)
