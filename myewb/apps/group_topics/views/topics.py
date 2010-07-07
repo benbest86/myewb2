@@ -234,8 +234,11 @@ def new_topic(request, group_slug=None, bridge=None):
                 return HttpResponseRedirect(topic.get_absolute_url())
             
             # confirmation was cancelled, so delete the temp post and bump back to edit screen
-            elif request.POST.get("goback", None) and request.POST.get("postid", None):
-                topic = GroupTopic.objects.get(id=request.POST['postid'], pending=True, creator=request.user)
+            topic = None
+            if request.POST.get("goback", None) and request.POST.get("postid", None):
+                topic = get_object_or_none(GroupTopic, id=request.POST['postid'], pending=True, creator=request.user)
+                
+            if topic: 
                 topic_form = GroupTopicForm(instance=topic, user=request.user, group=group)
                 attach_forms = []
                 topic.delete()
