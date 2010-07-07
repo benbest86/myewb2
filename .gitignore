@@ -37,6 +37,14 @@ myewb/myewb_index
 # ignore code coverage results (but keep the folder)
 myewb/coverage_report/*
 
+# cron logs, etc
+myewb/cron/running.txt
+myewb/cron/notrunning.txt
+myewb/cron/lasterror.txt
+myewb/cron/Mail/bad.txt
+myewb/cron/Mail/banned.txt
+myewb/cron/Mail/error.txt
+
 # this is updated on the live site, keep it out of the repo...
 myewb/templates/myewbstatus.html
 
