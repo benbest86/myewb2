@@ -20,6 +20,8 @@ from profiles.models import MemberProfile
 from profile_query.forms.export import CsvForm
 from profile_query.views.query import build_profile_query, parse_profile_term
 
+from siteutils.helpers import fix_encoding
+
 @permission_required('profiles')
 def download(request):
     terms = request.session.get('profilequery', [])
@@ -63,7 +65,7 @@ def download(request):
                     row.append(p.language)
                 if form.cleaned_data['date_of_birth']:
                     row.append(p.date_of_birth)
-                writer.writerow(row)
+                writer.writerow([fix_encoding(s) for s in row])
                 
             return response
     else:

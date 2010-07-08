@@ -1,4 +1,6 @@
-import re
+import re, csv, codecs
+encoder = codecs.getencoder("utf8")
+
 from lxml.html.clean import clean_html, autolink_html, Cleaner
 
 from django.contrib.auth.models import User
@@ -149,3 +151,9 @@ def autolink_email(text):
     text = named_link_re.sub('<a href="mailto:\g<1>">\g<2></a>', text)
     
     return text
+
+def fix_encoding(text):
+    try:
+        return encoder(text)[0]
+    except:
+        return text

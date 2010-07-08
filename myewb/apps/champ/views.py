@@ -10,8 +10,7 @@ define a different template segment for each, then build a list and include/pars
 (instead of having them fixed in run_stats() here)....
 """
 
-import csv, codecs
-encoder = codecs.getencoder("utf8")
+import csv
 from datetime import date
 
 from django.contrib.admin.views.decorators import staff_member_required
@@ -29,6 +28,7 @@ from networks.models import Network
 from champ.models import *
 from champ.forms import *
 from siteutils import schoolyear
+from siteutils.helpers import fix_encoding
 
 def run_query(query, filters):
     for f in filters:
@@ -790,10 +790,3 @@ def run_full_csv(group=None):
         writer.writerow([fix_encoding(s) for s in row])
             
     return response
-
-def fix_encoding(text):
-    try:
-        return encoder(text)[0]
-    except:
-        return text
-    
