@@ -54,6 +54,10 @@
     
     {% if is_admin %}
     
+    	{% if not search_terms %}
+    		<p><a href="{% url group_member_export group.slug %}">Download as spreadsheet</a></p>
+    	{% endif %}
+    	
         <table id="membersList"  class="standard" width="100%">
             <tr>
                 <th>{% trans "Name" %}</th>

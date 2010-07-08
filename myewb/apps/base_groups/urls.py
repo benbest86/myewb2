@@ -50,6 +50,7 @@ urlpatterns += patterns('base_groups.views.members',
     url(r'^(?P<group_slug>[-\w]+)/members/new/join/$', 'new_member', kwargs={'force_join': True}, name='new_member',),
 
     url(r'^(?P<group_slug>[-\w]+)/members/new/email$', 'new_email_member', name='new_email_member',),
+    url(r'^(?P<group_slug>[-\w]+)/members/export/$', 'members_csv', name='group_member_export',),
 
     # GET - retrieve member detail
     # POST - update member

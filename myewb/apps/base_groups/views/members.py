@@ -8,10 +8,12 @@ Last modified on 2009-08-02
 @author Joshua Gorner, Benjamin Best
 """
 
+import csv
 from time import time
+
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
-from django.http import HttpResponseRedirect, HttpResponseNotFound, Http404
+from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, Http404
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
@@ -23,6 +25,7 @@ from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from base_groups.models import BaseGroup, GroupMember, PendingMember, InvitationToJoinGroup, RequestToJoinGroup
 from base_groups.forms import GroupMemberForm, EditGroupMemberForm, GroupAddEmailForm
 from base_groups.decorators import own_member_object_required, group_admin_required, visibility_required
+from siteutils.helpers import fix_encoding
 
 @visibility_required()
 def members_index(request, group_slug, group_model=None, form_class=None,
@@ -69,6 +72,29 @@ def members_index(request, group_slug, group_model=None, form_class=None,
         },
         context_instance=RequestContext(request),
     )
+
+@group_admin_required()
+def members_csv(request, group_slug):
+    # get basic objects
+    user = request.user    
+    group = get_object_or_404(BaseGroup, slug=group_slug)
+    members = group.member_users.all()
+
+    # set up csv
+    response = HttpResponse(mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=myewb-export.csv'
+    writer = csv.writer(response)
+
+    # headings
+    row = ['First Name', 'Last Name', 'Email']
+    writer.writerow(row)
+
+    # populate csv
+    for u in members:
+        row = [u.first_name, u.last_name, u.email]
+        writer.writerow([fix_encoding(s) for s in row])
+        
+    return response
 
 def single_new_member(group, myself, other_user, is_admin=False, admin_title=""):
     existing_members = group.members.filter(user=other_user)
