@@ -799,8 +799,17 @@ def toolbar_action(request, action=None, toolbar_id=None):
     if action == None or toolbar_id == None:
         return HttpResponseForbidden
     
-    state, created = ToolbarState.objects.get_or_create(user=request.user,
-                                                        toolbar=toolbar_id)
+    try:
+        state, created = ToolbarState.objects.get_or_create(user=request.user,
+                                                            toolbar=toolbar_id)
+    # i guess this happens very rarely as a race condition???
+    except ToolbarState.MultipleObjectsReturned:
+        states = ToolbarState.objects.filter(user=request.user,
+                                             toolbar=toolbar_id)
+        state = states[0]
+        for s in states[1:]:
+            s.delete()
+        
     if action == "close":
         state.state = "c"
     else:
