@@ -29,8 +29,30 @@
     {% if group and group.is_chapter %}
         <div class="toolbarheader bkgd" id="box-chapterinfo">{% trans "Chapter Info" %}</div>
         <div class="toolbarcontent">
-            <a href="http://{{ group.slug }}.ewb.ca" target="_blank"><img src="{{STATIC_URL}}images/chapterlogos/{{ group.slug }}.jpg" style="width:100%; border:0;" /></a><br/>
-            <a href="http://{{ group.slug }}.ewb.ca" target="_blank">http://{{ group.slug }}.ewb.ca</a><br/>Email: <a href="mailto:{{ group.slug }}@ewb.ca">{{ group.slug }}@ewb.ca</a>
+            <a href="http://{{ group.slug }}.ewb.ca" target="_blank"><img src="{{STATIC_URL}}images/chapterlogos/{{ group.slug }}_small.jpg" style="width:100%; border:0;" /></a>
+
+            <p>
+            	<a href="http://{{ group.slug }}.ewb.ca" target="_blank">http://{{ group.slug }}.ewb.ca</a><br/>
+            	Email: <a href="mailto:{{ group.slug }}@ewb.ca">{{ group.slug }}@ewb.ca</a><br/>
+            </p>
+            
+            <p>
+            	Logos:
+            	<a href="{{STATIC_URL}}images/chapterlogos/{{ group.slug }}.jpg">jpg</a>&nbsp;
+            	<a href="{{STATIC_URL}}images/chapterlogos/{{ group.slug }}.eps">eps</a>&nbsp;
+            	<a href="{{STATIC_URL}}images/chapterlogos/{{ group.slug }}.svg">svg</a>&nbsp;
+            	<a href="{{STATIC_URL}}images/chapterlogos/{{ group.slug }}.pdf">pdf</a>
+            	<br/>
+            	
+            	Feeds:
+            	<a href="{% url topic_feed_group group.slug %}">
+            		<img src="{{STATIC_URL}}images/feeds/rss.gif"/>RSS
+            	</a>&nbsp;&nbsp;
+            	{# kinda hack-ish, but we can assume this since we have "if group.is_chapter" earlier... #}
+            	<a href="{% url events_feed_for_instance "networks" "network" group.pk %}">
+            		<img src="{{STATIC_URL}}images/feeds/ical.gif"/>
+				</a>
+            </p>
             
         </div>
     {% endif %}
