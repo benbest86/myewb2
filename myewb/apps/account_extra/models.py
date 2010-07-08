@@ -21,7 +21,13 @@ def clean_up_email_addresses(sender, instance, created, **kwargs):
             u = o.user
             o.delete()
             if u.emailaddress_set.count() == 0:
-                u.delete()
+                try:
+                    u.delete()
+                except:
+                    # sometimes the db can generate a ForeignKey error on the delete...
+                    # so do this as a fallback
+                    u.is_active = False
+                    u.save()
 post_save.connect(clean_up_email_addresses, sender=EmailAddress)
 
 # some duck punches to the User class and extras Manager
