@@ -15,7 +15,7 @@ function onAddressUpdateSuccess(data, ui, prevLabel) {
         errorList = $('#edit-address-errors-' + prevLabel);
         errorList.empty();
         if(data.label_error) {
-            errorList.append('<li>{% trans "Error: Label is already used" %}</li>')
+            errorList.append('<li>Error: Label is already used</li>')
         }
         $.each(data.errors, function(i, error) {
             errorList.append('<li>' + error + '</li>')

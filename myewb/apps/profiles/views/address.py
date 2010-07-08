@@ -85,10 +85,15 @@ def create_address(request, username, object=None):
             label_error = not is_label_unique_for_user(other_user, form.cleaned_data['label'], None)
             
         if request.is_ajax():
+            errorlist = []
+            for field in form:
+                if field.errors:
+                    errorlist.append(field.errors)
+            
             error_data = {
                 'valid': False,
                 'label': label,
-                'errors': form.errors,
+                'errors': errorlist,
                 'label_error': label_error
             }
             return JsonResponse(error_data)
