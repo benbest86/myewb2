@@ -25,13 +25,9 @@ from siteutils.decorators import owner_required
 
 
 def is_label_unique_for_user(user, label, instance=None):
-    print user.username + " " + label
     profile = user.get_profile()
     content_type = ContentType.objects.get_for_model(profile)
     existing_list = Address.objects.filter(content_type__pk=content_type.id, object_id=profile.id, label=label)
-    print existing_list.count()
-    if (existing_list.count() > 0):
-        print existing_list[0].label
     if existing_list.count() == 0 or existing_list[0] == instance:
         return True
     else:
