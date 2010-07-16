@@ -8,15 +8,20 @@ from datetime import datetime
 
 class Session(models.Model):
   name = models.CharField(max_length=200)
-  en_instructions = models.TextField(null=True)
-  fr_instructions = models.TextField(null=True)
-  close_email = models.TextField(null=True)
-  rejection_email = models.TextField(null=True)
-  completed_application = models.TextField(null=True)
   open_date = models.DateField(null=True)
-  close_date = models.DateField(null=True)
   due_date = models.DateField(null=True)
+  close_date = models.DateField(null=True)
   email_sent = models.NullBooleanField(null=True)
+  en_instructions = models.TextField("English instructions",
+                                     null=True)
+  fr_instructions = models.TextField("French instructions",
+                                     null=True)
+  completed_application = models.TextField("Thank you message",
+                                           null=True)
+  close_email = models.TextField("Session closing email",
+                                 null=True)
+  rejection_email = models.TextField("Rejected application email",
+                                     null=True)
   
   def __unicode__(self):
     return self.name
