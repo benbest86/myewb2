@@ -1,14 +1,54 @@
 from django import forms
 from django.contrib.admin import widgets
+
+from lxml.html.clean import clean_html, autolink_html, Cleaner
+from siteutils.helpers import autolink_email
+
 from volunteering.models import *
+
 
 class SessionForm(forms.ModelForm):
   open_date = forms.DateField(widget=widgets.AdminDateWidget)
   close_date = forms.DateField(widget=widgets.AdminDateWidget)
   due_date = forms.DateField(widget=widgets.AdminDateWidget)
-  email_sent = forms.BooleanField()
+  email_sent = forms.BooleanField(required=False)
+
+  en_instructions = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
+  fr_instructions = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
+  completed_application = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
+  close_email = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
+  rejection_email = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
+  
   class Meta:
     model = Session
+    
+  def clean_en_instructions(self):
+      return self.html_clean(self.cleaned_data.get('en_instructions', ''))
+  
+  def clean_fr_instructions(self):
+      return self.html_clean(self.cleaned_data.get('fr_instructions', ''))
+  
+  def clean_completed_applications(self):
+      return self.html_clean(self.cleaned_data.get('completed_applications', ''))
+  
+  def clean_close_email(self):
+      return self.html_clean(self.cleaned_data.get('close_email', ''))
+  
+  def clean_rejection_email(self):
+      return self.html_clean(self.cleaned_data.get('rejection_email', ''))
+  
+  # do HTML validation and auto-linking
+  def html_clean(self, body):
+    # validate HTML content
+    # Additional options at http://codespeak.net/lxml/lxmlhtml.html#cleaning-up-html
+    body = clean_html(body)
+    body = autolink_html(body)
+        
+    # emails too
+    body = autolink_email(body)
+        
+    return body
+
 
 class ApplicationForm(forms.ModelForm):
   class Meta:

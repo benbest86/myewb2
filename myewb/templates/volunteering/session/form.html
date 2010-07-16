@@ -1,5 +1,7 @@
 {% extends "volunteering/base.html" %}
 
+{% load uni_form_tags %}
+
 {% block head_title %}
 Volunteering » Sessions »
 {% if session %}
@@ -18,10 +20,13 @@ Volunteering » Sessions »
 	{% endif %}
 </h2>
 
-<form action="{{ action }}" method="post">
-	<table>
-	{{ form.as_p }}
-	</table>
+<form action="{{ action }}" method="post" class="uniForm">
+	{{ form|as_uni_form }}
 	<input type="submit" name="session" value="Save Session" id="session">
 </form>
+{% endblock %}
+
+{% block extra_body %}
+	{{ block.super }}
+	{% include "tinymce.html" %}
 {% endblock %}
