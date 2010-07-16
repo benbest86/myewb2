@@ -10,7 +10,14 @@ Volunteering » Sessions »
 {% endblock %}
 
 {% block body %}
-<h2>Create a new session</h2>
+<h2>
+	{% if session %}
+		Edit session
+	{% else %}
+		Create a new session
+	{% endif %}
+</h2>
+
 <form action="{{ action }}" method="post">
 	<table>
 	{{ form.as_p }}

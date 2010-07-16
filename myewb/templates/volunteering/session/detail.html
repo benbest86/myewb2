@@ -1,0 +1,91 @@
+{% extends "volunteering/base.html" %}
+
+{% load boolean_icon %}
+
+{% block head_title %}
+Volunteering » Sessions » {{ session.name }}
+{% endblock %}
+
+{% block body %}
+<style>
+.editlink {
+font-size: 10px;
+font-weight: normal;
+margin-left: 10px;
+}
+</style>
+
+<h2>{{session.name}}</h2>
+
+<p>Open: {{session.open_date}}<br/>
+Close: {{session.close_date}}<br/>
+Due: {{session.due_date}}<br/>
+Email sent: {{ session.email_sent|boolean_icon}}</p>
+
+<a href="#" id="session_display_all">show all details</a> | 
+<a href="#" id="session_hide_all">hide all details</a> 
+<hr/>
+
+<h2><a href="#" id="session_logistics_toggle" class="session_toggle">Logistics</a>
+<a href="{% url session_edit session.id %}" class="editlink">(edit)</a>
+</h2>
+
+<div id="session_logistics" class="session" style="display: none;">
+	<h3>English instructions</h3>
+	<p>{{session.en_instructions}}</p>
+
+	<h3>French instructions</h3>
+	<p>{{session.fr_instructions}}</p>
+
+	<h3>Close email</h3>
+	<p>{{session.close_email}}</p>
+
+	<h3>Rejection email</h3>
+	<p>{{session.rejection_email}}</p>
+
+	<h3>Completed application email</h3>
+	<p>{{session.completed_application}}</p>
+</div>
+
+<hr/>
+
+<h2><a href="#" id="session_questions_toggle" class="session_toggle">Questions</a></h2>
+
+<div id="session_questions" class="session" style="display: none;">
+	<p>TODO</p>
+</div>
+
+<hr/>
+
+<h2><a href="#" id="session_criteria_toggle" class="session_toggle">Criteria</a></h2>
+
+<div id="session_criteria" class="session" style="display: none;">
+	<p>TODO</p>
+</div>
+
+<hr/>
+
+<a href="{% url sessions %}">Back to session list</a>
+
+{% endblock %}
+
+{% block extra_body %}
+<script type="text/javascript">
+	$().ready(function() {
+		$('#session_display_all').click(function() {
+			$('div.session').slideDown();
+			return false;
+		});
+		$('#session_hide_all').click(function() {
+			$('div.session').slideUp();
+			return false;
+		});
+
+		$('a.session_toggle').click(function() {
+			var divname = $(this).attr('id').replace('_toggle', '');
+			$('div#' + divname).slideToggle();
+			return false;
+		});
+	});
+</script>
+{% endblock %}

@@ -93,7 +93,7 @@ urlpatterns += patterns('',
   url(r'^placements/new$', create_update.create_object, placement_info_new, name="placement_new"),
 )
 
-
+"""
 session_info = {
   'queryset': Session.objects.all(),
   'template_name': 'volunteering/session/list.html',
@@ -117,6 +117,14 @@ urlpatterns += patterns('',
   url(r'^sessions/$', list_detail.object_list, session_info, name="sessions"),
   url(r'^sessions/(?P<object_id>\d+)/$', create_update.update_object, session_info_edit, name="session_detail"),
   url(r'^sessions/new$', create_update.create_object, session_info_new, name="session_new"),
+)
+"""
+urlpatterns += patterns('volunteering.views.applications',
+  url(r'^sessions/$', 'sessions', name="sessions"),
+  url(r'^sessions/(?P<object_id>\d+)/$', 'session_detail', name="session_detail"),
+  url(r'^sessions/(?P<object_id>\d+)/edit/$', 'session_edit', name="session_edit"),
+  url(r'^sessions/(?P<new_id>\d+)/new/$', 'session_edit', name="session_new"),
+  url(r'^sessions/new$', 'session_edit', name="session_new"),
 )
 
 

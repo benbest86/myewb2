@@ -9,33 +9,52 @@ Volunteering » Sessions
 {% endblock %}
 
 {% block body %}
+<style>
+table {
+  width: 100%;
+}
+th {
+  text-align: left;
+  border: 1px solid;
+}
+th, td {
+  padding: 5px;
+}
+</style>
 
 	{% new_button "session" %}
 
 	{% if session_list %}
-	  {% autopaginate session_list 10 %}
-	  {% paginate %}
+		{% autopaginate session_list 10 %}
+		{% paginate %}
 		<div class="clear"></div>
 		<table>
 			<tr>
-       <th>{% anchor name Name %}</th>
-       <th>{% anchor open_date "Open Date" %}</th>
-       <th>{% anchor close_date "Close Date" %}</th>
-       <th>{% anchor due_date "Due Date" %}</th>
-       <th>{% anchor email_sent "Email Sent" %}</th>
+       			<th>{% anchor name Name %}</th>
+       			<th>{% anchor open_date "Open Date" %}</th>
+       			<th>{% anchor close_date "Close Date" %}</th>
+       			<th>{% anchor due_date "Due Date" %}</th>
+       			<th>{% anchor email_sent "Email Sent" %}</th>
+       			<th>&nbsp;</th>
+       			<th>&nbsp;</th>
+       			<th>&nbsp;</th>
 			</tr>
-		{% for session in session_list %}
-			<tr>
-				<td><a href="{% url session_detail session.id %}">{{ session.name }}</a></td>
-				<td>{{ session.open_date|date:"d M Y"}}</td>
-				<td>{{ session.close_date|date:"d M Y"}}</td>
-				<td>{{ session.due_date|date:"d M Y"}}</td>
-				<td>{{ session.email_sent|boolean_icon }}</td>
-			</tr>
-		{% endfor %}
+			
+			{% for session in session_list %}
+				<tr style="{% cycle 'background: #ffffff;' 'background: #eee;' %}">
+					<td>{{ session.name }}</td>
+					<td>{{ session.open_date|date:"d M Y"}}</td>
+					<td>{{ session.close_date|date:"d M Y"}}</td>
+					<td>{{ session.due_date|date:"d M Y"}}</td>
+					<td>{{ session.email_sent|boolean_icon }}</td>
+					<td><a href="{% url session_detail session.id %}">session details</a></td>
+					<td><a href="{% url session_detail session.id %}">view applications</a></td>
+					<td><a href="{% url session_new session.id %}">clone</a></td>
+				</tr>
+			{% endfor %}
 		</table>
+		
 	{% else %}
-	<p>No sessions found.</p>
+		<p>No sessions found.</p>
 	{% endif %}
 {% endblock %}
-
