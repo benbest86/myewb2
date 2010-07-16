@@ -78,7 +78,8 @@ def members_csv(request, group_slug):
     # get basic objects
     user = request.user    
     group = get_object_or_404(BaseGroup, slug=group_slug)
-    members = group.member_users.all()
+    #members = group.member_users.all()
+    members = group.get_accepted_members()
 
     # set up csv
     response = HttpResponse(mimetype='text/csv')
@@ -86,12 +87,25 @@ def members_csv(request, group_slug):
     writer = csv.writer(response)
 
     # headings
-    row = ['First Name', 'Last Name', 'Email']
+    row = ['First Name', 'Last Name', 'Email', 'Exec title', 'Chapter', 'Date joined this list']
     writer.writerow(row)
 
     # populate csv
-    for u in members:
-        row = [u.first_name, u.last_name, u.email]
+    for m in members:
+        u = m.user
+        chapters_list = u.get_profile().chapters()
+        chapters  = ""
+        for c in chapters_list:
+            chapters = chapters + c.name + "\n"
+            
+        titles_list = GroupMember.objects.filter(user=u,
+                                                 group__in=chapters_list,
+                                                 is_admin=True)
+        titles = ""
+        for t in titles_list: 
+            titles = titles + t.admin_title + "\n"
+        
+        row = [u.first_name, u.last_name, u.email, titles, chapters, m.joined]
         writer.writerow([fix_encoding(s) for s in row])
         
     return response
