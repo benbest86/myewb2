@@ -10,6 +10,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% load uni_form_tags %}
 {% load profile_tags %}
 {% load group_topics_tags %}
+{% load base_groups_tags %}
 
 {% block head_title %}{% blocktrans with other_user.visible_name as username %}Profile for {{ username }}{% endblocktrans %}{% endblock %}
 
@@ -78,9 +79,20 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 
 <table class="standard standard-right search-form">
     <tbody>
-	
-	
-<tr>
+
+		{% for c in other_user.get_profile.chapters %}
+			{% get_membership c other_user as title %}
+				{% if title.admin_title %}
+					<tr>
+						<th>&nbsp;</th>
+						<td>
+							<strong>{{title.admin_title}}, {{ c.name }}</strong>
+						</td>
+					</tr>
+				{% endif %}
+		{% endfor %}
+
+		<tr>
             <th>Profile Info</th>
             <td>
             
@@ -99,9 +111,6 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
             </td>
         </tr>
 	
-	
-	
-	
 		{% if regular %}
         <tr>
             <th>{% trans "Membership status" %}</th>
@@ -110,31 +119,6 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
             </td>
         </tr>
 	   {% endif %}
-		
-		
-		{% comment %}
-        <h2>{% trans "Contact Information" %}</h2>
-		{% if other_user.get_profile.street_address %}
-			<div style="width: 33%; float: left; text-align: center; text-align: right;">
-		        <b>{% trans "Street address" %}</b>
-			</div>
-			<div style="margin-left: 33%; padding-left: 10px;">
-			    {{ other_user.get_profile.street_address }}<br/>
-			    
-    			{% if other_user.get_profile.street_address_two %}
-    			    {{ other_user.get_profile.street_address_two }}<br/>
-    			{% endif %}
-    			{% if other_user.get_profile.location %}
-    			    {{ other_user.get_profile.location }}<br/>
-    			{% endif %}
-		        {% if other_user.get_profile.postal_code %}
-		            {{ other_user.get_profile.postal_code }}<br/>
-		        {% endif %}
-			</div>
-			<br/>
-		{% endif %}
-		{% endcomment %}
-		
 		
         <tr>
             <th>{% trans "Emails" %}</th>
@@ -180,9 +164,6 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
             
             </td>
         </tr>
-
-	
-	
 
         <tr>
             <th>{% trans "Addresses" %}</th>
