@@ -51,6 +51,9 @@ class Question(models.Model):
   question = models.TextField()
   question_order = models.PositiveSmallIntegerField()
   session = models.ForeignKey("Session")
+  
+  class Meta:
+    ordering = ('question_order', 'session')
 
 class Answer(models.Model):
   answer = models.TextField()
@@ -128,8 +131,12 @@ class Stipend(models.Model):
 
 class EvaluationCriterion(models.Model):
   criteria = models.TextField()
+  criteria_order = models.PositiveSmallIntegerField()
   column_header = models.CharField(max_length=100)
   session = models.ForeignKey("Session")
+  
+  class Meta:
+    ordering = ('criteria_order', 'session')
 
 class EvaluationResponse(models.Model):
   response = models.PositiveIntegerField()

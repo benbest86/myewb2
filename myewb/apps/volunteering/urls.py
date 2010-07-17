@@ -123,8 +123,8 @@ urlpatterns += patterns('volunteering.views.applications',
   url(r'^sessions/$', 'sessions', name="sessions"),
   url(r'^sessions/(?P<object_id>\d+)/$', 'session_detail', name="session_detail"),
   url(r'^sessions/(?P<object_id>\d+)/edit/$', 'session_edit', name="session_edit"),
-  url(r'^sessions/(?P<new_id>\d+)/new/$', 'session_edit', name="session_new"),
-  url(r'^sessions/new$', 'session_edit', name="session_new"),
+  url(r'^sessions/(?P<new_id>\d+)/new/$', 'session_clone', name="session_new"),
+  url(r'^sessions/new/$', 'session_edit', name="session_new"),
 )
 
 
@@ -254,6 +254,7 @@ urlpatterns += patterns('',
   url(r'^stipends/new$', create_update.create_object, stipend_info_new, name="stipend_new"),
 )
 
+"""
 evaluationcriterion_info = {
   'queryset': EvaluationCriterion.objects.all(),
   'template_name': 'volunteering/evaluationcriterion/list.html',
@@ -278,7 +279,7 @@ urlpatterns += patterns('',
   url(r'^evaluationcriterions/(?P<object_id>\d+)/$', create_update.update_object, evaluationcriterion_info_edit, name="evaluationcriterion_detail"),
   url(r'^evaluationcriterions/new$', create_update.create_object, evaluationcriterion_info_new, name="evaluationcriterion_new"),
 )
-
+"""
 
 evaluationresponse_info = {
   'queryset': EvaluationResponse.objects.all(),
@@ -381,28 +382,18 @@ urlpatterns += patterns('',
   url(r'^answers/new$', create_update.create_object, answer_info_new, name="answer_new"),
 )
 
-question_info = {
-  'queryset': Question.objects.all(),
-  'template_name': 'volunteering/question/list.html',
-  'template_object_name': 'question',
-  'paginate_by': 10,
-}
+urlpatterns += patterns('volunteering.views.applications',
+  url(r'^questions/(?P<object_id>\d+)/$', 'question_edit', name="question_edit"),
+  url(r'^questions/new/(?P<session_id>\d+)/$', 'question_new',name="question_new"),
+  url(r'^questions/reorder/$', 'question_reorder',name="question_reorder"),
+  url(r'^questions/delete/$', 'question_delete',name="question_delete"),
+)
 
-question_info_edit = {
-  'template_name': 'volunteering/question/form.html',
-  'template_object_name': 'question',
-  'form_class':  QuestionForm,
-}
-
-question_info_new = {
-  'template_name': 'volunteering/question/form.html',
-  'form_class':  QuestionForm,
-  'post_save_redirect': '/volunteering/questions/',
-}
-urlpatterns += patterns('',
-  url(r'^questions/$', list_detail.object_list, question_info, name="questions"),
-  url(r'^questions/(?P<object_id>\d+)/$', create_update.update_object, question_info_edit, name="question_detail"),
-  url(r'^questions/new$', create_update.create_object, question_info_new, name="question_new"),
+urlpatterns += patterns('volunteering.views.applications',
+  url(r'^criteria/(?P<object_id>\d+)/$', 'criteria_edit', name="criteria_edit"),
+  url(r'^criteria/new/(?P<session_id>\d+)/$', 'criteria_new',name="criteria_new"),
+  url(r'^criteria/reorder/$', 'criteria_reorder',name="criteria_reorder"),
+  url(r'^criteria/delete/$', 'criteria_delete',name="criteria_delete"),
 )
 
 sendinggroup_info = {

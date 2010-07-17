@@ -6,6 +6,18 @@ from siteutils.helpers import autolink_email
 
 from volunteering.models import *
 
+# do HTML validation and auto-linking
+def html_clean(body):
+  # validate HTML content
+  # Additional options at http://codespeak.net/lxml/lxmlhtml.html#cleaning-up-html
+  body = clean_html(body)
+  body = autolink_html(body)
+    
+  # emails too
+  body = autolink_email(body)
+    
+  return body
+
 
 class SessionForm(forms.ModelForm):
   open_date = forms.DateField(widget=widgets.AdminDateWidget)
@@ -23,32 +35,19 @@ class SessionForm(forms.ModelForm):
     model = Session
     
   def clean_en_instructions(self):
-      return self.html_clean(self.cleaned_data.get('en_instructions', ''))
+      return html_clean(self.cleaned_data.get('en_instructions', ''))
   
   def clean_fr_instructions(self):
-      return self.html_clean(self.cleaned_data.get('fr_instructions', ''))
+      return html_clean(self.cleaned_data.get('fr_instructions', ''))
   
   def clean_completed_applications(self):
-      return self.html_clean(self.cleaned_data.get('completed_applications', ''))
+      return html_clean(self.cleaned_data.get('completed_applications', ''))
   
   def clean_close_email(self):
-      return self.html_clean(self.cleaned_data.get('close_email', ''))
+      return html_clean(self.cleaned_data.get('close_email', ''))
   
   def clean_rejection_email(self):
-      return self.html_clean(self.cleaned_data.get('rejection_email', ''))
-  
-  # do HTML validation and auto-linking
-  def html_clean(self, body):
-    # validate HTML content
-    # Additional options at http://codespeak.net/lxml/lxmlhtml.html#cleaning-up-html
-    body = clean_html(body)
-    body = autolink_html(body)
-        
-    # emails too
-    body = autolink_email(body)
-        
-    return body
-
+      return html_clean(self.cleaned_data.get('rejection_email', ''))
 
 class ApplicationForm(forms.ModelForm):
   class Meta:
@@ -57,7 +56,8 @@ class ApplicationForm(forms.ModelForm):
 class QuestionForm(forms.ModelForm):
   class Meta:
     model = Question
-
+    fields = ('question')
+    
 class AnswerForm(forms.ModelForm):
   class Meta:
     model = Answer
@@ -79,6 +79,7 @@ class StipendForm(forms.ModelForm):
 class EvaluationCriterionForm(forms.ModelForm):
   class Meta:
     model = EvaluationCriterion
+    fields = ('criteria', 'column_header')
 
 class EvaluationResponseForm(forms.ModelForm):
   class Meta:

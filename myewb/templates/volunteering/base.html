@@ -16,21 +16,22 @@
 {% block subnav %}
 <ul class="subnav">
 <!-- user/guest -->
-<li class="current">Volunteering with EWB</li>
+<li>Volunteering with EWB</li>
 
 <!-- admins -->
-<li><a href="{% url placements %}">Placements</a></li>
-<li><a href="{% url sessions %}">Sessions</a></li>
-<li><a href="{% url applications %}">Applications</a></li>
+<li><a href="{% url placements %}">APS Placements</a></li>
+<li><a href="{% url sessions %}">Application Sessions</a></li>
 
+{% comment %}
 <li><a href="{% url casestudies %}">Case Studies</a></li>
 <li><a href="{% url sectors %}">Sectors</a></li>
 <li><a href="{% url stipends %}">Stipends</a></li>
 <li><a href="{% url travelsegments %}">Travel Segments</a></li>
 <li><a href="{% url insuranceinstances %}">Insurance</a></li>
 <li><a href="{% url sendinggroups %}">Sending Groups</a></li>
-
 <li><a href="{% url ov_info %}">OV Info</a></li>
+
+{% endcomment %}
 
 </ul>
 {% endblock %}
