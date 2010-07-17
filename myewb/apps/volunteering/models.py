@@ -25,6 +25,9 @@ class Session(models.Model):
   
   def __unicode__(self):
     return self.name
+    
+  class Meta:
+    ordering = ('-close_date', '-open_date')
   
 class Application(models.Model):
   en_writing = models.PositiveSmallIntegerField(_("English writing (1-10)"), null=True)
