@@ -8,6 +8,15 @@ Volunteering » Sessions » {{ session.name }}
 
 {% block body %}
 <style>
+span.ui-icon {
+float: left;
+}
+span.ui-icon-arrow-4 {
+background-color: #f0f0f0;
+-moz-border-radius: 3px;
+-webkit-border-radius: 3px;
+margin-right: 6px;
+}
 .editlink {
 font-size: 10px;
 font-weight: normal;
@@ -20,7 +29,7 @@ border: 1px solid;
 background: #f0f0f0;
 padding: 10px;
 }
-.ui-icon-arrowthick-2-n-s {
+.ui-icon-arrow-4 {
 float: left;
 cursor: pointer;
 }
@@ -49,7 +58,7 @@ height: 150px;
 		<li><a href="#criteria">Criteria</a></li>
 	</ul>
 	
-	<div id="logistics">
+	<div id="logistics" class="ui-state-default">
         <h2>
             Logistics
             <a href="{% url session_edit session.id %}" class="editlink">(edit)</a>
@@ -64,28 +73,43 @@ height: 150px;
         <a href="#" id="session_hide_all">hide all details</a> 
         <hr/>
         
-	    <h3><a href="#" class="session_toggle" id="eninstruc_toggle">English instructions</a></h3>
-	    <div id="eninstruc" class="htmlbox">
+	    <h3><a href="#" class="session_toggle" id="eninstruc_toggle">
+            <span class="ui-icon ui-icon-circle-triangle-s"></span>
+	        English instructions
+	    </a></h3>
+	    <div id="eninstruc" class="htmlbox ui-corner-all">
 	        {{session.en_instructions|safe}}
 	    </div>
 
-	    <h3><a href="#" class="session_toggle" id="frinstruc_toggle">French instructions</a></h3>
-	    <div id="frinstruc" class="htmlbox">
+	    <h3><a href="#" class="session_toggle" id="frinstruc_toggle">
+            <span class="ui-icon ui-icon-circle-triangle-s"></span>
+	        French instructions
+	    </a></h3>
+	    <div id="frinstruc" class="htmlbox ui-corner-all">
 	        {{session.fr_instructions|safe}}
 	    </div>
 
-	    <h3><a href="#" class="session_toggle" id="closeemail_toggle">Close email</a></h3>
-	    <div id="closeemail" class="htmlbox">
+	    <h3><a href="#" class="session_toggle" id="closeemail_toggle">
+            <span class="ui-icon ui-icon-circle-triangle-s"></span>
+	        Close email
+	    </a></h3>
+	    <div id="closeemail" class="htmlbox ui-corner-all">
 	        {{session.close_email|safe}}
 	    </div>
 
-	    <h3><a href="#" class="session_toggle" id="rejemail_toggle">Rejection email</a></h3>
-	    <div id="rejemail" class="htmlbox">
+	    <h3><a href="#" class="session_toggle" id="rejemail_toggle">
+            <span class="ui-icon ui-icon-circle-triangle-s"></span>
+	        Rejection email
+	    </a></h3>
+	    <div id="rejemail" class="htmlbox ui-corner-all">
 	        {{session.rejection_email|safe}}
 	    </div>
 
-	    <h3><a href="#" class="session_toggle" id="comemail_toggle">Completed application email</a></h3>
-	    <div id="comemail" class="htmlbox">
+	    <h3><a href="#" class="session_toggle" id="comemail_toggle">
+            <span class="ui-icon ui-icon-circle-triangle-s"></span>
+	        Completed application email
+	    </a></h3>
+	    <div id="comemail" class="htmlbox ui-corner-all">
 	        {{session.completed_application|safe}}
 	    </div>
     </div>
@@ -99,8 +123,8 @@ height: 150px;
 
         <div id="sortable-questions">
 	    {% for q in session.question_set.all %}
-	        <p class="question" id="question-{{q.id}}">
-	            <span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
+	        <p class="question ui-corner-all" id="question-{{q.id}}">
+	            <span class="ui-icon ui-icon-arrow-4"></span>
         	    {{ q.question }}<br/>
         	    &nbsp;&nbsp;&nbsp;&nbsp;
         	    <a href="{% url question_edit q.id %}" class="question_edit">(edit)</a>
@@ -120,8 +144,8 @@ height: 150px;
 
         <div id="sortable-criteria">
 	    {% for c in session.evaluationcriterion_set.all %}
-	        <p class="criteria" id="criteria-{{c.id}}">
-	            <span class="ui-icon ui-icon-arrowthick-2-n-s"></span>
+	        <p class="criteria ui-corner-all" id="criteria-{{c.id}}">
+	            <span class="ui-icon ui-icon-arrow-4"></span>
         	    {{ c.criteria }} ({{c.column_header}})<br/>
         	    &nbsp;&nbsp;&nbsp;&nbsp;
         	    <a href="{% url criteria_edit c.id %}" class="criteria_edit">(edit)</a>
@@ -157,16 +181,23 @@ height: 150px;
 
 		$('#session_display_all').click(function() {
 			$('div.htmlbox').slideDown();
+		    $('div#logistics span.ui-icon').removeClass('ui-icon-circle-triangle-s');
+			$('div#logistics span.ui-icon').addClass('ui-icon-circle-triangle-n');
 			return false;
 		});
 		$('#session_hide_all').click(function() {
 			$('div.htmlbox').slideUp();
+		    $('div#logistics span.ui-icon').removeClass('ui-icon-circle-triangle-n');
+			$('div#logistics span.ui-icon').addClass('ui-icon-circle-triangle-s');
 			return false;
 		});
 
 		$('a.session_toggle').click(function() {
 			var divname = $(this).attr('id').replace('_toggle', '');
 			$('div#' + divname).slideToggle();
+		    $(this).children('span.ui-icon').toggleClass('ui-icon-circle-triangle-s');
+		    $(this).children('span.ui-icon').toggleClass('ui-icon-circle-triangle-n');
+			//$('div#logistics span.ui-icon').addClass('ui-icon-minus');
 			return false;
 		});
 
