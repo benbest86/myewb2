@@ -18,7 +18,7 @@ def html_clean(body):
     
   return body
 
-
+### APPLICATION SESSIONS
 class SessionForm(forms.ModelForm):
   open_date = forms.DateField(widget=widgets.AdminDateWidget)
   close_date = forms.DateField(widget=widgets.AdminDateWidget)
@@ -49,19 +49,42 @@ class SessionForm(forms.ModelForm):
   def clean_rejection_email(self):
       return html_clean(self.cleaned_data.get('rejection_email', ''))
 
-class ApplicationForm(forms.ModelForm):
-  class Meta:
-    model = Application
-
 class QuestionForm(forms.ModelForm):
   class Meta:
     model = Question
     fields = ('question')
     
+class EvaluationCriterionForm(forms.ModelForm):
+  class Meta:
+    model = EvaluationCriterion
+    fields = ('criteria', 'column_header')
+
+class CaseStudyForm(forms.ModelForm):
+  class Meta:
+    model = CaseStudy
+
+
+### APPLICATIONS
+class ApplicationForm(forms.ModelForm):
+  class Meta:
+    model = Application
+
 class AnswerForm(forms.ModelForm):
   class Meta:
     model = Answer
 
+
+### EVALUATION
+class EvaluationResponseForm(forms.ModelForm):
+  class Meta:
+    model = EvaluationResponse
+
+class EvaluationForm(forms.ModelForm):
+  class Meta:
+    model = Evaluation
+
+
+### PLACEMENT TRACKING
 class SectorForm(forms.ModelForm):
   class Meta:
     model = Sector
@@ -75,19 +98,6 @@ class PlacementForm(forms.ModelForm):
 class StipendForm(forms.ModelForm):
   class Meta:
     model = Stipend
-
-class EvaluationCriterionForm(forms.ModelForm):
-  class Meta:
-    model = EvaluationCriterion
-    fields = ('criteria', 'column_header')
-
-class EvaluationResponseForm(forms.ModelForm):
-  class Meta:
-    model = EvaluationResponse
-
-class EvaluationForm(forms.ModelForm):
-  class Meta:
-    model = Evaluation
 
 class InsuranceInstanceForm(forms.ModelForm):
   start_date = forms.DateField(widget=widgets.AdminDateWidget)
@@ -103,12 +113,7 @@ class TravelSegmentForm(forms.ModelForm):
   class Meta:
     model = TravelSegment
 
-class CaseStudyForm(forms.ModelForm):
-  class Meta:
-    model = CaseStudy
-
 class SendingGroupForm(forms.ModelForm):
   class Meta:
     model = SendingGroup
-
 

@@ -6,6 +6,7 @@ from siteutils.countries import CountryField, COUNTRY_MAP
 from siteutils.models import ServiceProvider
 from datetime import datetime
 
+### APPLICATION SESSIONS
 class Session(models.Model):
   name = models.CharField(max_length=200)
   open_date = models.DateField(null=True)
@@ -28,7 +29,36 @@ class Session(models.Model):
     
   class Meta:
     ordering = ('-close_date', '-open_date')
+
+class Question(models.Model):
+  question = models.TextField()
+  question_order = models.PositiveSmallIntegerField()
+  session = models.ForeignKey("Session")
   
+  class Meta:
+    ordering = ('question_order', 'session')
+
+class EvaluationCriterion(models.Model):
+  criteria = models.TextField()
+  criteria_order = models.PositiveSmallIntegerField()
+  column_header = models.CharField(max_length=100)
+  session = models.ForeignKey("Session")
+  
+  class Meta:
+    ordering = ('criteria_order', 'session')
+
+class CaseStudy(models.Model):
+  name = models.CharField(blank=True, max_length=100, verbose_name='Case Study')
+  html = models.TextField(blank=True)
+  
+  def __unicode__(self):
+    return self.name
+
+  class Meta:
+    verbose_name_plural = "Case Studies"
+    ordering = ["name"]  
+  
+### APPLICATIONS
 class Application(models.Model):
   en_writing = models.PositiveSmallIntegerField(_("English writing (1-10)"), null=True)
   en_reading = models.PositiveSmallIntegerField(null=True)
@@ -50,26 +80,53 @@ class Application(models.Model):
   def __unicode__(self):
     return "%s: %s" % (self.profile.name, self.session.name)
 
-class Question(models.Model):
-  question = models.TextField()
-  question_order = models.PositiveSmallIntegerField()
-  session = models.ForeignKey("Session")
-  
-  class Meta:
-    ordering = ('question_order', 'session')
-
 class Answer(models.Model):
   answer = models.TextField()
   application = models.ForeignKey("Application")
   question = models.ForeignKey("Question")
 
+
+### EVALUATIONS
+class EvaluationResponse(models.Model):
+  response = models.PositiveIntegerField()
+  evaluation = models.ForeignKey("Evaluation")
+  evaluation_criterion = models.ForeignKey("EvaluationCriterion")
+
+class Evaluation(models.Model):
+  INTERVIEW_CHOICES = (
+      ('Y', _('Yes')),
+      ('N', _('No')),
+      ('N/A', _('Not needed (hire)')),
+  )
+
+  application = models.ForeignKey("Application")
+  rank = models.PositiveSmallIntegerField()
+  
+  # yes/no 
+  interview1 = models.BooleanField()
+  interview2 = models.CharField(_('interview'), max_length=10, choices=INTERVIEW_CHOICES, null=True, blank=True)
+
+  rejection_sent = models.BooleanField()
+  offer_accepted = models.BooleanField(default=True)
+  
+  interview1_notes = models.TextField(blank=True)
+  interview2_notes = models.TextField(blank=True)
+  
+  ewb_experience = models.TextField(blank=True)
+
+
+  application_score = models.PositiveSmallIntegerField()
+  # interview_score = sum(interview_score_leadership, interview_score_problem_solving, _africa_ready, _interpersonal, _attitudes_personal)
+  # criterion table??
+  
+
+### PLACEMENT TRACKING
 class Sector(models.Model):
   name = models.CharField(blank=True, max_length=100)
   abbreviation = models.CharField(blank=True, max_length=30)
 
   def __unicode__(self):
     return self.name
-
 
 class Placement(models.Model):
   description = models.TextField()
@@ -132,50 +189,6 @@ class Stipend(models.Model):
   def adjusted_payment(self):
     return (float(self.daily_rate) * 90 + float(self.adjustment))
 
-class EvaluationCriterion(models.Model):
-  criteria = models.TextField()
-  criteria_order = models.PositiveSmallIntegerField()
-  column_header = models.CharField(max_length=100)
-  session = models.ForeignKey("Session")
-  
-  class Meta:
-    ordering = ('criteria_order', 'session')
-
-class EvaluationResponse(models.Model):
-  response = models.PositiveIntegerField()
-  evaluation = models.ForeignKey("Evaluation")
-  evaluation_criterion = models.ForeignKey("EvaluationCriterion")
-
-class Evaluation(models.Model):
-  INTERVIEW_CHOICES = (
-      ('Y', _('Yes')),
-      ('N', _('No')),
-      ('N/A', _('Not needed (hire)')),
-  )
-
-  application = models.ForeignKey("Application")
-  rank = models.PositiveSmallIntegerField()
-  
-  # yes/no 
-  interview1 = models.BooleanField()
-  interview2 = models.CharField(_('interview'), max_length=10, choices=INTERVIEW_CHOICES, null=True, blank=True)
-
-  rejection_sent = models.BooleanField()
-  offer_accepted = models.BooleanField(default=True)
-  
-  interview1_notes = models.TextField(blank=True)
-  interview2_notes = models.TextField(blank=True)
-  
-  ewb_experience = models.TextField(blank=True)
-
-
-  application_score = models.PositiveSmallIntegerField()
-  # interview_score = sum(interview_score_leadership, interview_score_problem_solving, _africa_ready, _interpersonal, _attitudes_personal)
-  # criterion table??
-  
-  
-
-
 class InsuranceInstance(models.Model):
   placement = models.ForeignKey(Placement)
 
@@ -220,17 +233,6 @@ class TravelSegment(models.Model):
   
   def __unicode__(self):
     return "%s (%s)" % (self.profile.name, self.booking_code)
-
-class CaseStudy(models.Model):
-  name = models.CharField(blank=True, max_length=100, verbose_name='Case Study')
-  html = models.TextField(blank=True)
-  
-  def __unicode__(self):
-    return self.name
-
-  class Meta:
-    verbose_name_plural = "Case Studies"
-    ordering = ["name"]
 
 class SendingGroup(models.Model):
   group_type = models.CharField(blank=True, max_length=100)
