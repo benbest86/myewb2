@@ -16,7 +16,7 @@ urlpatterns = patterns('volunteering.views',
 )
 
 ### APPLICATION SESSIONS
-urlpatterns += patterns('volunteering.views.applications',
+urlpatterns += patterns('volunteering.views.sessions',
   url(r'^sessions/$', 'sessions', name="sessions"),
   url(r'^sessions/(?P<object_id>\d+)/$', 'session_detail', name="session_detail"),
   url(r'^sessions/(?P<object_id>\d+)/edit/$', 'session_edit', name="session_edit"),
@@ -24,14 +24,14 @@ urlpatterns += patterns('volunteering.views.applications',
   url(r'^sessions/new/$', 'session_edit', name="session_new"),
 )
 
-urlpatterns += patterns('volunteering.views.applications',
+urlpatterns += patterns('volunteering.views.sessions',
   url(r'^questions/(?P<object_id>\d+)/$', 'question_edit', name="question_edit"),
   url(r'^questions/new/(?P<session_id>\d+)/$', 'question_new',name="question_new"),
   url(r'^questions/reorder/$', 'question_reorder',name="question_reorder"),
   url(r'^questions/delete/$', 'question_delete',name="question_delete"),
 )
 
-urlpatterns += patterns('volunteering.views.applications',
+urlpatterns += patterns('volunteering.views.sessions',
   url(r'^criteria/(?P<object_id>\d+)/$', 'criteria_edit', name="criteria_edit"),
   url(r'^criteria/new/(?P<session_id>\d+)/$', 'criteria_new',name="criteria_new"),
   url(r'^criteria/reorder/$', 'criteria_reorder',name="criteria_reorder"),

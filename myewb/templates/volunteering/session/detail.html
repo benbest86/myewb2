@@ -30,6 +30,10 @@ padding: 5px;
 border: 1px solid;
 background: #ffffff;
 }
+#dialog textarea {
+width: 100%;
+height: 150px;
+}
 </style>
 
 <h2>{{session.name}}</h2>
@@ -131,7 +135,7 @@ background: #ffffff;
 
 <a href="{% url sessions %}">Back to session list</a>
 
-<div id="dialog" title="Edit">
+<div id="dialog">
     <div id="dialog-contents">
 	</div>
 </div>
@@ -141,6 +145,10 @@ background: #ffffff;
 {% block extra_body %}
 <script type="text/javascript">
 	$().ready(function() {
+		$("#dialog").dialog({ modal: true,
+		                      width: '70%',
+		                      autoOpen: false});
+		                      
 		$("#session-tabs").tabs({
 			show: function(event, ui) {
 				parent.location.hash = ui.panel.id;
@@ -164,6 +172,7 @@ background: #ffffff;
 
         var submit_url = "";
         function add_question_callback() {
+    		$("#dialog").dialog('open');
             $('#dialog form').submit(function() {
     		    $('#dialog-contents').html("saving...");
                 $.post(submit_url,
@@ -188,10 +197,7 @@ background: #ffffff;
     	}
 		
 		$('a#add_question').click(function() {
-		    $('#dialog').attr('title', 'New Question');
-		    $('#dialog-contents').html("loading...");
-    		$("#dialog").dialog({ modal: true,width: 460});
-    		$("#dialog").dialog('open');
+    		$("#dialog").dialog('option', 'title', 'New Question');
 		    
             submit_url = '{% url question_new session.id %}';
 		    $('#dialog-contents').load($(this).attr('href'),
@@ -200,10 +206,7 @@ background: #ffffff;
 		});
 		
 		$('a.question_edit').click(function() {
-            $('#dialog').attr('title', 'Edit Question');
-            $('#dialog-contents').html("loading...");
-            $('#dialog').dialog({model: true, width: 460});
-            $('#dialog').dialog('open');
+    		$("#dialog").dialog('option', 'title', 'Edit Question');
             
             submit_url = $(this).attr('href');
             $('#dialog-contents').load($(this).attr('href'),
@@ -238,10 +241,7 @@ background: #ffffff;
 	    });
 	    
 		$('a#add_criteria').click(function() {
-		    $('#dialog').attr('title', 'New Criteria');
-		    $('#dialog-contents').html("loading...");
-    		$("#dialog").dialog({ modal: true,width: 460});
-    		$("#dialog").dialog('open');
+    		$("#dialog").dialog('option', 'title', 'New Criteria');
 		    
             submit_url = '{% url criteria_new session.id %}';
 		    $('#dialog-contents').load($(this).attr('href'),
@@ -250,11 +250,8 @@ background: #ffffff;
 		});
 		
 		$('a.criteria_edit').click(function() {
-            $('#dialog').attr('title', 'Edit Criteria');
-            $('#dialog-contents').html("loading...");
-            $('#dialog').dialog({model: true, width: 460});
-            $('#dialog').dialog('open');
-            
+    		$("#dialog").dialog('option', 'title', 'Edit Criteria');
+		    
             submit_url = $(this).attr('href');
             $('#dialog-contents').load($(this).attr('href'),
                                         add_question_callback);

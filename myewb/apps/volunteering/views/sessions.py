@@ -216,7 +216,7 @@ def criteria_edit(request, object_id):
             return HttpResponse("success");
         
     else:
-        form = EvaluationCriterionForm(instance=question)
+        form = EvaluationCriterionForm(instance=criteria)
     
     return render_to_response('volunteering/question/form.html',
                               {'question': criteria,
