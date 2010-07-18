@@ -28,6 +28,12 @@ class Session(models.Model):
   def __unicode__(self):
     return self.name
     
+  def complete_applications(self):
+    return self.application_set.filter(complete=True)
+    
+  def draft_applications(self):
+    return self.application_set.filter(complete=False)
+    
   class Meta:
     ordering = ('-close_date', '-open_date')
 
@@ -88,7 +94,7 @@ class Application(models.Model):
     for a in answers:
         answer_list[a.question.id] = a.answer
     return answer_list
-
+    
 class Answer(models.Model):
   answer = models.TextField()
   application = models.ForeignKey("Application")

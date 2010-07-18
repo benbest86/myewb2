@@ -35,7 +35,8 @@ th, td {
        			<th>{% anchor close_date "Close Date" %}</th>
        			<th>{% anchor due_date "Due Date" %}</th>
        			<th>{% anchor email_sent "Email Sent" %}</th>
-       			<th>&nbsp;</th>
+       			<th>{% anchor complete_applications.count "Complete applications" %}</th>
+       			<th>{% anchor draft_applications.count "Draft applications" %}</th>
        			<th>&nbsp;</th>
        			<th>&nbsp;</th>
 			</tr>
@@ -47,8 +48,9 @@ th, td {
 					<td>{{ session.close_date|date:"d M Y"}}</td>
 					<td>{{ session.due_date|date:"d M Y"}}</td>
 					<td>{{ session.email_sent|boolean_icon }}</td>
+					<td><a href="{% url session_detail session.id %}">{{ session.complete_applications.count }} (view)</a></td>
+					<td><a href="{% url session_detail session.id %}">{{ session.draft_applications.count }} (view)</a></td>
 					<td><a href="{% url session_detail session.id %}">session details</a></td>
-					<td><a href="{% url session_detail session.id %}">view applications</a></td>
 					<td><a href="{% url session_new session.id %}">clone</a></td>
 				</tr>
 			{% endfor %}

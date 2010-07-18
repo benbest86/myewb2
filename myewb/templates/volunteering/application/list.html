@@ -45,20 +45,20 @@ Volunteering » Applications
 	{% if past %}
 	    <h2>Past applications</h2>
 		<div class="clear"></div>
-		<table>
+		<table style="width: 100%">
 		    <tr>
-		       <th>Date</th>
-		       <th>Session</th>
-		       <th>Status</th>
+		       <th align="left">Date</th>
+		       <th align="left">Session</th>
+		       <th align="left">Status</th>
 		       <th>&nbsp;</th>
 		    </tr>
 		    
     		{% for a in past %}
-        		<tr>
-			        <td>{{ a.session.close_date }}</td>
+        		<tr style="background: {% cycle "#ffffff;" "#e0e0e0;"%}">
+			        <td>{{ a.session.close_date|date }}</td>
 			        <td>{{ a.session.name }}</td>
 			        <td>{% if a.complete %}complete{%else%}incomplete{%endif%}</td>
-			        <td><a href="">view</a></td>
+			        <td>{#<a href="">view</a>#}</td>
 			     </tr>
     		{% endfor %}
 		</table>
