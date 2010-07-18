@@ -35,7 +35,7 @@ class Session(models.Model):
     return self.application_set.filter(complete=False)
     
   class Meta:
-    ordering = ('-close_date', '-open_date')
+    ordering = ('-active', '-close_date', '-open_date')
 
 class Question(models.Model):
   question = models.TextField()

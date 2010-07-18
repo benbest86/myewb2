@@ -30,10 +30,11 @@ th, td {
 		<div class="clear"></div>
 		<table>
 			<tr>
+			    <th>{% anchor active "Open" %}</th>
        			<th>{% anchor name Name %}</th>
        			<th>{% anchor open_date "Open Date" %}</th>
        			<th>{% anchor close_date "Close Date" %}</th>
-       			<th>{% anchor due_date "Due Date" %}</th>
+       			{#<th>{% anchor due_date "Due Date" %}</th>#}
        			<th>{% anchor email_sent "Email Sent" %}</th>
        			<th>{% anchor complete_applications.count "Complete applications" %}</th>
        			<th>{% anchor draft_applications.count "Draft applications" %}</th>
@@ -43,10 +44,11 @@ th, td {
 			
 			{% for session in session_list %}
 				<tr style="{% cycle 'background: #ffffff;' 'background: #eee;' %}">
-					<td>{{ session.name }}</td>
+					<td>{{ session.active|boolean_icon }}</td>
+					<td>{% if session.active %}<strong>{% endif %}{{ session.name }}{% if session.active %}</strong>{% endif %}</td>
 					<td>{{ session.open_date|date:"d M Y"}}</td>
 					<td>{{ session.close_date|date:"d M Y"}}</td>
-					<td>{{ session.due_date|date:"d M Y"}}</td>
+					{#<td>{{ session.due_date|date:"d M Y"}}</td>#}
 					<td>{{ session.email_sent|boolean_icon }}</td>
 					<td><a href="{% url session_detail session.id %}">{{ session.complete_applications.count }} (view)</a></td>
 					<td><a href="{% url session_detail session.id %}">{{ session.draft_applications.count }} (view)</a></td>
