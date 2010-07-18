@@ -26,16 +26,45 @@ div.eval {
     width: 40%;
     float: right;
 }
+div.eval textarea {
+    width: 100%;
+    margin-bottom: 3px;
+}
 hr.clear {
     clear: both;
 }
+div.leftpanel {
+    width: 55%;
+}
+.htmlbox {
+    margin-left: 25px;
+    border: 1px solid;
+    padding: 10px;
+/*    background: #f0f0f0;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px; */
+}
+.inputbox {
+    border: 0px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    margin: 3px;
+    padding: 3px;
+    background: #f0f0f0;
+    color: #000000;
+}
+.loading {
+    background:url("{{ STATIC_URL}}images/ajax-loader.gif") no-repeat scroll right center;
+    padding-right: 10px;
+}
 </style>
 
-<div id="" class="eval">
-    <h3>Evaluation</h3>
+<div id="" class="eval" style="padding-bottom: 5px;">
+    <h3>Evaluation (click to edit)</h3>
 
     {% for c in application.session.evaluationcriterion_set.all %}
-        {{ c.criteria }}: <input type="text" style="width: 50px;" value="0"/><br/>
+        <input type="text" style="width: 50px;" value="0" class="uhh" />&nbsp;&nbsp;
+        <label>{{ c.criteria }}</label><br/>
     {% endfor %}
 </div>
 
@@ -61,33 +90,110 @@ hr.clear {
 	</ul>
 
     <div id="notes">
-        <div class="eval">
-            <textarea>blah blah</textarea>
+        <div class="eval" style="width: 100%;">
+            <textarea name="notes">{% for k, c in evaluation.comments.items %}{% ifequal k "notes" %}{{c}}{% endifequal %}{% endfor %}</textarea>
         </div>
 
-        <div class="leftpanel">
-            woot
-        </div>
+{#        <div class="leftpanel"> #}
+{#        </div> #}
     </div>
     
     <div id="info">
         <div class="eval">
-            <textarea>blah blah2</textarea>
+            <textarea name="language">{% for k, c in evaluation.comments.items %}{% ifequal k "language" %}{{c}}{% endifequal %}{% endfor %}</textarea>
         </div>
 
         <div class="leftpanel">
-            woot2
+            <strong style="width: 10em;">English language</strong>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            Reading: {{ application.en_reading }}
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            Writing: {{ application.en_writing }}
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            Speaking: {{ application.en_speaking }}
+            <br/>
+            
+            <strong>French language</strong>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            Reading: {{ application.fr_reading }}
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            Writing: {{ application.fr_writing }}
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            Speaking: {{ application.fr_speaking }}
+            <br/>
+            
+            <strong>GPA</strong>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            {{ application.gpa }}
+        </div>
+        
+        <hr class="clear"/>
+
+        <div class="eval">
+            <h3>&nbsp;</h3>
+            <textarea name="schooling">{% for k, c in evaluation.comments.items %}{% ifequal k "schooling" %}{{c}}{% endifequal %}{% endfor %}</textarea>
+        </div>
+
+        <div class="leftpanel">
+            <h3>Schooling</h3>
+            <div class="htmlbox">
+                {{ application.schooling|safe }}
+            </div>
+        </div>
+
+        <hr class="clear"/>
+
+        <div class="eval">
+            <h3>&nbsp;</h3>
+            <textarea name="resume">{% for k, c in evaluation.comments.items %}{% ifequal k "resume" %}{{c}}{% endifequal %}{% endfor %}</textarea>
+        </div>
+
+        <div class="leftpanel">
+            <h3>Resume</h3>
+            <div class="htmlbox">
+                {{ application.resume|safe }}
+            </div>
+        </div>
+
+        <hr class="clear"/>
+
+        <div class="eval">
+            <h3>&nbsp;</h3>
+            <textarea name="references">{% for k, c in evaluation.comments.items %}{% ifequal k "references" %}{{c}}{% endifequal %}{% endfor %}</textarea>
+        </div>
+
+        <div class="leftpanel">
+            <h3>References</h3>
+            <div class="htmlbox">
+                {{ application.references|safe }}
+            </div>
         </div>
     </div>
     
     <div id="questions">
-        <div class="eval">
-            <textarea>3blah blah</textarea>
-        </div>
+        {% for q in application.session.question_set.all %}
+            <div class="eval">
+                <h3>&nbsp;</h3>
+                <textarea name="{{q.id}}">{% for k, c in evaluation.comments.items %}{% ifequal k q.id %}{{c}}{% endifequal %}{% endfor %}</textarea>
+            </div>
 
-        <div class="leftpanel">
-            woot3
-        </div>
+            <div class="leftpanel">
+                <h3>{{ q.question }}</h3>
+                <div class="htmlbox">
+                    {% for qid, ans in application.get_answers.items %}
+                        {% ifequal q.id qid %}
+                            {{ans|safe}}
+                        {% endifequal %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <hr class="clear"/>
+
+        {% endfor %}
     </div>
     
 </div>
@@ -95,16 +201,52 @@ hr.clear {
 {% endblock %}
 
 {% block extra_body %}
+<script type="text/javascript" src="{{STATIC_URL}}js/autoresize.jquery.min.js"></script>
 <script type="text/javascript">
 	$().ready(function() {
 		$("#eval-tabs").tabs({
-/*
-			show: function(event, ui) {
-			    $('#eval-tabs .eval').hide();
-			    $('#' + ui.panel.id + ' .eval').show();
-			}
-*/
+			//show: function(event, ui) {
+			    //$('#eval-tabs .eval').hide();
+			    //$('#' + ui.panel.id + ' .eval').show();
+			//}
 		});
+		
+    	$('.eval input[type=text]').addClass('inputbox');
+		$('.eval input[type=text]').click(function() {
+	        $(this).removeClass('inputbox');
+		    $(this).blur(function() {
+		        var myself = $(this);
+    	        myself.addClass('loading');
+    	        $.post('/',
+    	               {'a': 'a'},
+    	               function(data) {
+            	            myself.removeClass('loading');
+            	            myself.addClass('inputbox');
+            	       });
+		    });
+    	});
+
+    	$('.eval textarea').addClass('inputbox').autoResize().trigger('change');
+		$('.eval textarea').click(function() {
+		    var original_text = $(this).val();
+	        $(this).removeClass('inputbox');
+		    $(this).blur(function() {
+		        var myself = $(this);
+		        if (original_text != myself.val())
+		        {
+        	        myself.addClass('loading');
+        	        $.post('{% url evaluation_comment application.id %}',
+        	               {'key': myself.attr('name'),
+        	                'comment': myself.val()},
+        	               function(data) {
+                	            myself.removeClass('loading');
+                	            myself.addClass('inputbox');
+                	       });
+                }
+                else
+                    myself.addClass('inputbox');
+		    });
+    	});
 	});
 		
 </script>

@@ -149,6 +149,20 @@ class Evaluation(models.Model):
     for e in self.evaluationresponse_set.all():
         scores[e.evaluation_criterion.id] = e.response
     return scores
+    
+  def comments(self):
+    comments = {}
+    for c in self.evaluationcomment_set.all():
+        comments[c.key] = c.comment
+        print "in the model"
+        print "key", c.key
+        print "comment", c.comment
+    return comments
+    
+class EvaluationComment(models.Model):
+  evaluation = models.ForeignKey("Evaluation")
+  key = models.TextField()
+  comment = models.TextField()
   
 
 ### PLACEMENT TRACKING

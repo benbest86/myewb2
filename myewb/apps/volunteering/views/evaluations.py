@@ -17,7 +17,8 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext, Context, loader
 from django.utils.translation import ugettext_lazy as _
 
-from volunteering.models import Session, Question, EvaluationCriterion, Evaluation, Application
+from siteutils.shortcuts import get_object_or_none
+from volunteering.models import Session, Question, EvaluationCriterion, Evaluation, Application, EvaluationComment
 from volunteering.forms import SessionForm, QuestionForm, EvaluationCriterionForm
 
 @permission_required('overseas')
@@ -36,11 +37,38 @@ def evaluation_list(request, session_id):
 @permission_required('overseas')
 def evaluation_detail(request, app_id):
     application = get_object_or_404(Application, id=app_id)
-    evaluation = Evaluation.objects.get_or_create(application=application)
-
+    evaluation, created = Evaluation.objects.get_or_create(application=application)
+    
     return render_to_response('volunteering/evaluation/detail.html',
                               {'evaluation': evaluation,
                                'application': application
                               },
                               context_instance=RequestContext(request))
 
+@permission_required('overseas')
+def evaluation_comment(request, app_id):
+    application = get_object_or_404(Application, id=app_id)
+    
+    print "uhh"
+    
+    if request.method == 'POST' and request.POST.get('key', None):
+        key = request.POST.get('key', None)
+        comment = request.POST.get('comment', None)
+        
+        print "key", key
+        print "comment", comment
+        
+        if comment:
+            evalcomment, created = EvaluationComment.objects.get_or_create(evaluation=application.evaluation,
+                                                                           key=key)
+            evalcomment.comment = comment
+            evalcomment.save()
+        else:
+            comment = get_object_or_none(EvaluationComment,
+                                         evaluation=application.evaluation,
+                                         key=key)
+            if comment:
+                comment.delete()
+        return HttpResponse("success")
+    return HttpResponse("invalid")
+        
