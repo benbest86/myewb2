@@ -85,6 +85,9 @@ class Application(models.Model):
   session = models.ForeignKey(Session)
   complete = models.BooleanField(default=False)
   
+  created = models.DateTimeField(auto_now_add=True)
+  updated = models.DateTimeField(auto_now=True)
+  
   def __unicode__(self):
     return "%s: %s" % (self.profile.name, self.session.name)
     
@@ -114,8 +117,9 @@ class Evaluation(models.Model):
       ('N/A', _('Not needed (hire)')),
   )
 
-  application = models.ForeignKey("Application")
-  rank = models.PositiveSmallIntegerField()
+  application = models.OneToOneField("Application")
+  #application = models.ForeignKey("Application")    # django-evolve only recognizes this
+  rank = models.PositiveSmallIntegerField(blank=True, null=True)
   
   # yes/no 
   interview1 = models.BooleanField()
@@ -124,15 +128,27 @@ class Evaluation(models.Model):
   rejection_sent = models.BooleanField()
   offer_accepted = models.BooleanField(default=True)
   
-  interview1_notes = models.TextField(blank=True)
-  interview2_notes = models.TextField(blank=True)
+  interview1_notes = models.TextField(blank=True, null=True)
+  interview2_notes = models.TextField(blank=True, null=True)
   
-  ewb_experience = models.TextField(blank=True)
+  ewb_experience = models.TextField(blank=True, null=True)
 
 
-  application_score = models.PositiveSmallIntegerField()
+  application_score = models.PositiveSmallIntegerField(blank=True, null=True)
   # interview_score = sum(interview_score_leadership, interview_score_problem_solving, _africa_ready, _interpersonal, _attitudes_personal)
   # criterion table??
+  
+  def total_score(self):
+    score = 0
+    for e in self.evaluationresponse_set.all():
+        score = score + e.response
+    return score
+    
+  def scores(self):
+    scores = {}
+    for e in self.evaluationresponse_set.all():
+        scores[e.evaluation_criterion.id] = e.response
+    return scores
   
 
 ### PLACEMENT TRACKING

@@ -48,7 +48,9 @@ height: 150px;
 <h2>{{session.name}}</h2>
 
 <p>
-    <a href="#">X applications</a>
+    <a href="{% url evaluation_list session.id %}">{{ session.application_set.count }} applications
+    ({{ session.complete_applications.count }} complete - 
+    {{ session.draft_applications.count }} draft)</a>
 </p>
 
 <div id="session-tabs">

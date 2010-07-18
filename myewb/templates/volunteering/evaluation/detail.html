@@ -1,0 +1,111 @@
+{% extends "volunteering/base.html" %}
+
+{% load avatar_tags %}
+
+{% block head_title %}
+Volunteering » Evaluations
+{% endblock %}
+
+{% block body %}
+<style>
+select {
+    display: inline;
+}
+#submit_link {
+    color: red;
+    margin-left: 25px;
+}
+table#evaluations {
+    border: 0px;
+    width: 100%;
+}
+table#evaluations td {
+    vertical-align: top;
+}
+div.eval {
+    width: 40%;
+    float: right;
+}
+hr.clear {
+    clear: both;
+}
+</style>
+
+<div id="" class="eval">
+    <h3>Evaluation</h3>
+
+    {% for c in application.session.evaluationcriterion_set.all %}
+        {{ c.criteria }}: <input type="text" style="width: 50px;" value="0"/><br/>
+    {% endfor %}
+</div>
+
+<div id="" class="leftpanel">
+    <div style="float: left; width: 125px; height: 125px;">
+    	<a href="{% avatar_url application.profile.user2 500 %}" id="avatar">
+        	{% avatar application.profile.user2 110 %}
+        </a>
+    </div>
+
+    <h2>{{ application.profile.first_name }} {{ application.profile.first_name }}</h2>
+    <h3>{{ application.session.name }}</h3>
+
+    <p>Application created: {{ application.created|date }}<br/>
+    Application modified: {{ application.updated|date }}</p>
+</div>
+
+<div id="eval-tabs" style="clear: both; position: relative; border-top: 1px solid;">
+	<ul style="width: 50%; position: absolute; top: -2.7em;">
+		<li><a href="#notes">Notes</a></li>
+		<li><a href="#info">General Info</a></li>
+		<li><a href="#questions">Questions</a></li>
+	</ul>
+
+    <div id="notes">
+        <div class="eval">
+            <textarea>blah blah</textarea>
+        </div>
+
+        <div class="leftpanel">
+            woot
+        </div>
+    </div>
+    
+    <div id="info">
+        <div class="eval">
+            <textarea>blah blah2</textarea>
+        </div>
+
+        <div class="leftpanel">
+            woot2
+        </div>
+    </div>
+    
+    <div id="questions">
+        <div class="eval">
+            <textarea>3blah blah</textarea>
+        </div>
+
+        <div class="leftpanel">
+            woot3
+        </div>
+    </div>
+    
+</div>
+
+{% endblock %}
+
+{% block extra_body %}
+<script type="text/javascript">
+	$().ready(function() {
+		$("#eval-tabs").tabs({
+/*
+			show: function(event, ui) {
+			    $('#eval-tabs .eval').hide();
+			    $('#' + ui.panel.id + ' .eval').show();
+			}
+*/
+		});
+	});
+		
+</script>
+{% endblock %}

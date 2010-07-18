@@ -1,0 +1,106 @@
+{% extends "volunteering/base.html" %}
+
+{% load sorting_tags pagination_tags %}
+{% load truncate helpers %}
+{% load boolean_icon %}
+
+{% block head_title %}
+Volunteering » Evaluations
+{% endblock %}
+
+{% block body %}
+<style>
+table {
+  width: 100%;
+}
+th {
+  text-align: left;
+}
+th, td {
+  padding: 5px;
+  border: 1px solid;
+}
+</style>
+
+<h2>{{ session.name }}</h2>
+
+<div id="evaluation-tabs">
+	<ul>
+		<li><a href="#complete">Complete evaluations</a></li>
+		<li><a href="#draft">Draft evaluations</a></li>
+	</ul>
+
+	<div id="complete">
+        <h2>Complete evaluations</h2>
+        
+        {% autosort complete %}
+		<table>
+			<tr>
+       			<th>&nbsp;</th>
+			    <th>{% anchor profile.last_name "Name" %}</th>
+       			<th>{% anchor profile.gender "Gndr %}</th>
+       			<th>{% anchor profile.language "Lang" %}</th>
+       			<th>{% anchor gpa "GPA" %}</th>
+       			<th>{% anchor evaluation.total_score "Total" %}</th>
+       			{% for c in session.evaluationcriterion_set.all %}
+       			    <th>{{ c.column_header }}</th>
+       			{% endfor %}
+			</tr>
+			
+			{% for app in complete %}
+				<tr style="{% cycle 'background: #ffffff;' 'background: #eee;' %}">
+					<td><input type="checkbox"/></td>
+					<td><a href="{% url evaluation_detail app.id %}">{{ app.profile.last_name}}, {{ app.profile.first_name }}</a></td>
+					<td>{{ app.profile.gender }}</td>
+					<td>{{ app.profile.lang }}</td>
+					<td>{{ app.gpa }}</td>
+					<td>{{ app.evaluation.total_score|default_if_none:"&nbsp;" }}</td>
+					{% for c in session.evaluationcriterion_set.all %}
+					    {% with c.id as cid %}
+    					    <td>{{ app.evaluation.scores.cid|default_if_none:"&nbsp;" }}</td>
+    					{% endwith %}
+    				{% endfor %}
+				</tr>
+			{% endfor %}
+		</table>
+		
+	</div>
+	
+	<div id="draft">
+	    <h2>Draft applications</h2>
+		<table>
+			<tr>
+       			<th>&nbsp;</th>
+			    <th>Name</th>
+       			<th>Gender</th>
+       			<th>Lang</th>
+			</tr>
+			
+			{% for app in draft %}
+				<tr style="{% cycle 'background: #ffffff;' 'background: #eee;' %}">
+					<td><input type="checkbox"/></td>
+					<td><a href="{% url evaluation_detail app.id %}">{{ app.profile.last_name}}, {{ app.profile.first_name }}</a></td>
+					<td>{{ app.profile.gender }}</td>
+					<td>{{ app.profile.lang }}</td>
+				</tr>
+			{% endfor %}
+		</table>
+	</div>
+</div>
+		
+{% endblock %}
+
+{% block extra_body %}
+<script type="text/javascript">
+	$().ready(function() {
+		$("#evaluation-tabs").tabs({
+			show: function(event, ui) {
+				parent.location.hash = ui.panel.id;
+			}
+		});
+	});
+</script>
+{% endblock %}
+
+		
+

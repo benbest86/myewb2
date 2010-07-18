@@ -65,33 +65,6 @@ urlpatterns += patterns('',
 
 
 ### APPLICATIONS
-"""
-application_info = {
-  'queryset': Application.objects.all(),
-  'template_name': 'volunteering/application/list.html',
-  'template_object_name': 'application',
-  'paginate_by': 10,
-}
-
-application_info_edit = {
-  'template_name': 'volunteering/application/form.html',
-  'template_object_name': 'application',
-  'form_class':  ApplicationForm,
-}
-
-application_info_new = {
-  'template_name': 'volunteering/application/form.html',
-  'form_class':  ApplicationForm,
-  'post_save_redirect': '/volunteering/applications/',
-}
-
-urlpatterns += patterns('',
-  url(r'^applications/$', list_detail.object_list, application_info, name="applications"),
-  url(r'^applications/(?P<object_id>\d+)/$', create_update.update_object, application_info_edit, name="application_detail"),
-  url(r'^applications/new$', create_update.create_object, application_info_new, name="application_new"),
-)
-"""
-
 urlpatterns += patterns('volunteering.views.applications',
   url(r'^applications/$', 'applications', name="applications"),
   url(r'^applications/new/(?P<session_id>\d+)/$', 'application_new', name="applications_new"),
@@ -101,33 +74,15 @@ urlpatterns += patterns('volunteering.views.applications',
   url(r'^applications/(?P<app_id>\d+)/submit/$', 'application_submit', name="applications_submit"),
 )
 
-answer_info = {
-  'queryset': Answer.objects.all(),
-  'template_name': 'volunteering/answer/list.html',
-  'template_object_name': 'answer',
-  'paginate_by': 10,
-}
-
-answer_info_edit = {
-  'template_name': 'volunteering/answer/form.html',
-  'template_object_name': 'answer',
-  'form_class':  AnswerForm,
-}
-
-answer_info_new = {
-  'template_name': 'volunteering/answer/form.html',
-  'form_class':  AnswerForm,
-  'post_save_redirect': '/volunteering/answers/',
-}
-
-urlpatterns += patterns('',
-  url(r'^answers/$', list_detail.object_list, answer_info, name="answers"),
-  url(r'^answers/(?P<object_id>\d+)/$', create_update.update_object, answer_info_edit, name="answer_detail"),
-  url(r'^answers/new$', create_update.create_object, answer_info_new, name="answer_new"),
-)
 
 ### EVALUATIONS
+urlpatterns += patterns('volunteering.views.evaluations',
+  url(r'^evaluations/session/(?P<session_id>\d+)/$', 'evaluation_list', name="evaluation_list"),
+  url(r'^evaluations/(?P<app_id>\d+)/$', 'evaluation_detail', name="evaluation_detail"),
+)
 
+
+"""
 evaluationresponse_info = {
   'queryset': EvaluationResponse.objects.all(),
   'template_name': 'volunteering/evaluationresponse/list.html',
@@ -177,7 +132,7 @@ urlpatterns += patterns('',
   url(r'^evaluations/(?P<object_id>\d+)/$', create_update.update_object, evaluation_info_edit, name="evaluation_detail"),
   url(r'^evaluations/new$', create_update.create_object, evaluation_info_new, name="evaluation_new"),
 )
-
+"""
 
 ### PLACEMENTS AND TRACKING
 
