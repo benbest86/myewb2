@@ -11,6 +11,10 @@ Volunteering » Applications
 select {
     display: inline;
 }
+#submit_link {
+    color: red;
+    margin-left: 25px;
+}
 </style>
 <h2>Application: {{ application.session.name }}</h2>
 
@@ -21,7 +25,13 @@ select {
 		<li><a href="#questions">Questions</a></li>
 		<li><a href="#submit">Submit</a></li>
 	</ul>
-	
+
+    {% if not application.complete %}
+        <p>	
+    	    <a href="#" id="submit_link">Your application is not complete until you submit it.</a>
+        </p>
+    {% endif %}
+        
 	<div id="instructions">
         <h2>Instructions</h2>
         
@@ -47,7 +57,7 @@ select {
     <div id="questions">
         {% for question in application.session.question_set.all %}
             <p>
-                ({{ question.id }}) {{ question.question }}?<br/>
+                {{ question.question }}<br/>
                 <div style="padding-left: 20px;">
                     {% with question.id as qid %}
                         <form action="" id="question_{{ qid }}" class="question" method="post">
@@ -55,7 +65,7 @@ select {
                             <input type="hidden" name="question" value="{{qid}}"/>
                             <input type="hidden" name="application" value="{{application.id}}"/>
                             <br/>
-                            <input type="submit" value="save">
+                            <input type="submit" value="save" class="ui-widget ui-button ui-state-default ui-corner-all">
                             &nbsp;&nbsp;&nbsp;
                             <span class="save-status" id="save-status-{{qid}}"></span>
                         </form>
@@ -67,7 +77,7 @@ select {
         <br/>
         
         <button id="continue3" class="ui-widget ui-button ui-state-default ui-corner-all">
-            <span class="ui-button-text">Complete application</span>
+            <span class="ui-button-text">Continue application</span>
         </button>
     </div>
     
@@ -144,7 +154,7 @@ select {
 		    return false;
 		});
 
-		$('#continue3').click(function() {
+		$('#continue3, #submit_link').click(function() {
 		    $('#application-tabs').tabs('select',3);
 		    return false;
 		});

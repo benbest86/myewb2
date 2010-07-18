@@ -122,7 +122,7 @@ def application_submit(request, app_id):
     if not application.fr_writing or not application.fr_reading or not application.fr_speaking:
         application_errors.append('Please complete your French language evaluation.')
     if not application.schooling:
-        application_errors.append('Please complete your schooling information.' + str(application.id))
+        application_errors.append('Please complete your schooling information.')
     if not application.resume_text:
         application_errors.append('Please include your resume.')
     if not application.references:
