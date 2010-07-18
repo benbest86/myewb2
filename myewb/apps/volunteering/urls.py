@@ -65,7 +65,7 @@ urlpatterns += patterns('',
 
 
 ### APPLICATIONS
-
+"""
 application_info = {
   'queryset': Application.objects.all(),
   'template_name': 'volunteering/application/list.html',
@@ -89,6 +89,16 @@ urlpatterns += patterns('',
   url(r'^applications/$', list_detail.object_list, application_info, name="applications"),
   url(r'^applications/(?P<object_id>\d+)/$', create_update.update_object, application_info_edit, name="application_detail"),
   url(r'^applications/new$', create_update.create_object, application_info_new, name="application_new"),
+)
+"""
+
+urlpatterns += patterns('volunteering.views.applications',
+  url(r'^applications/$', 'applications', name="applications"),
+  url(r'^applications/new/(?P<session_id>\d+)/$', 'application_new', name="applications_new"),
+  url(r'^applications/(?P<app_id>\d+)/$', 'application_edit', name="applications_edit"),
+  url(r'^applications/(?P<app_id>\d+)/save/$', 'application_save', name="applications_save"),
+  url(r'^applications/answer/$', 'application_answer', name="applications_answer"),
+  url(r'^applications/(?P<app_id>\d+)/submit/$', 'application_submit', name="applications_submit"),
 )
 
 answer_info = {

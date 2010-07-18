@@ -1,7 +1,7 @@
 {% extends "volunteering/base.html" %}
+
 {% load sorting_tags pagination_tags %}
 {% load truncate helpers %}
-{% autosort application_list %}
 
 {% block head_title %}
 Volunteering » Applications
@@ -9,26 +9,59 @@ Volunteering » Applications
 
 {% block body %}
 
-	{% new_button "application" %}
-
-	{% if application_list %}
+    {% if sessions %}
+        <h2>Open application sessions</h2>
+        {% for s in sessions %}
+            <strong>{{ s.name }}</strong> (due {{ s.close_date }})<br/>
+            {% if s.application %}
+                {% if not s.application.complete %}
+                    <a href="{% url applications_edit s.application.id %}">view draft</a><br/>
+                {% else %}
+                    <a href="{% url applications_edit s.application.id %}">view application</a><br/>
+                {% endif %}
+            {% else %}
+{#	            {% new_button "application" %} #}
+                <a href="{% url applications_new s.id %}">begin application</a><br/>
+            {% endif %}
+            
+            {% comment %}
+            {% for a in current %}
+                {% ifequal a.session s %}
+                    {% if not a.complete %}
+                        <a href="">view draft</a><br/>
+                    {% else %}
+                        <a href="">view application</a><br/>
+                    {% endif %}
+                {% else %}
+	                {% new_button "application" %}
+                    <a href="">begin application</a><br/>
+                {% endifequal %}
+            {% endfor %}
+            {% endcomment %}
+            <br/>
+        {% endfor %}
+    {% endif %}
+    
+	{% if past %}
+	    <h2>Past applications</h2>
 		<div class="clear"></div>
 		<table>
 		    <tr>
-		       <th>{% anchor profile.name Name %}</th>
-		       <th>{% anchor session.name Session %}</th>
-		       <th>{% anchor gpa GPA %}</th>
+		       <th>Date</th>
+		       <th>Session</th>
+		       <th>Status</th>
+		       <th>&nbsp;</th>
 		    </tr>
-		{% for application in application_list %}
-		<tr>
-			<td><a href="{% url application_detail application.id %}">{{ application.profile.name }}</a></td>
-			<td>{{ application.session.name }}</td>
-			<td>{{ application.gpa|floatformat:2 }}</td>
-		</tr>
-		{% endfor %}
+		    
+    		{% for a in past %}
+        		<tr>
+			        <td>{{ a.session.close_date }}</td>
+			        <td>{{ a.session.name }}</td>
+			        <td>{% if a.complete %}complete{%else%}incomplete{%endif%}</td>
+			        <td><a href="">view</a></td>
+			     </tr>
+    		{% endfor %}
 		</table>
-	{% else %}
-		<p>No applications found.</p>
 	{% endif %}
 
 {% endblock %}

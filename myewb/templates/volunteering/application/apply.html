@@ -1,0 +1,167 @@
+{% extends "volunteering/base.html" %}
+
+{% load uni_form_tags %}
+
+{% block head_title %}
+Volunteering » Applications
+{% endblock %}
+
+{% block body %}
+<style>
+select {
+    display: inline;
+}
+</style>
+<h2>Application: {{ application.session.name }}</h2>
+
+<div id="application-tabs">
+	<ul>
+		<li><a href="#instructions">Instructions</a></li>
+		<li><a href="#about">About Me</a></li>
+		<li><a href="#questions">Questions</a></li>
+		<li><a href="#submit">Submit</a></li>
+	</ul>
+	
+	<div id="instructions">
+        <h2>Instructions</h2>
+        
+        <div id="instructions-english">
+            <a href="#" id="fr-toggle">en fran&ccedil;ais</a>
+            {{ application.session.en_instructions|safe}}
+        </div>
+        
+        <div id="instructions-french" style="display: none;">
+            <a href="#" id="en-toggle">english</a>
+            {{ application.session.fr_instructions|safe}}
+        </div>
+        
+        <button id="continue1" class="ui-widget ui-button ui-state-default ui-corner-all">
+            <span class="ui-button-text">Continue to application</span>
+        </button>
+    </div>
+    
+    <div id="about">
+        {% include "volunteering/application/form.html" %}
+    </div>
+    
+    <div id="questions">
+        {% for question in application.session.question_set.all %}
+            <p>
+                ({{ question.id }}) {{ question.question }}?<br/>
+                <div style="padding-left: 20px;">
+                    {% with question.id as qid %}
+                        <form action="" id="question_{{ qid }}" class="question" method="post">
+                            <textarea name="answer" {#class="tinymce"#} style="width: 100%; height: 75px;">{% for id, answer in application.get_answers.items %}{% ifequal id qid %}{{ answer }}{% endifequal %}{% endfor %}</textarea>
+                            <input type="hidden" name="question" value="{{qid}}"/>
+                            <input type="hidden" name="application" value="{{application.id}}"/>
+                            <br/>
+                            <input type="submit" value="save">
+                            &nbsp;&nbsp;&nbsp;
+                            <span class="save-status" id="save-status-{{qid}}"></span>
+                        </form>
+                    {% endwith %}
+                </div>
+            </p>
+        {% endfor %}
+        
+        <br/>
+        
+        <button id="continue3" class="ui-widget ui-button ui-state-default ui-corner-all">
+            <span class="ui-button-text">Complete application</span>
+        </button>
+    </div>
+    
+    <div id="submit">
+        <p>
+            Your application is not complete until you submit it.
+        </p>
+        
+        <div class="ui-state-error ui-corner-all" style="padding: 10px; display: none;" id="application_errors">
+        </div>
+        <br/>
+
+        <form method="post" action="{% url applications_submit application.id %}" id="submit_application">
+            <input type="submit" value="Submit application" class="ui-widget ui-button ui-state-default ui-corner-all"/>
+        </form>    
+    </div>
+</div>
+
+{% endblock %}
+
+{% block extra_body %}
+{% include "tinymce.html" %}
+<script type="text/javascript">
+	$().ready(function() {
+		$("#application-tabs").tabs({
+			show: function(event, ui) {
+				parent.location.hash = ui.panel.id;
+				$('#application_errors').html('').hide();
+			}
+		});
+		
+		$('#fr-toggle').click(function() {
+		    $('#instructions-english').slideUp();
+		    $('#instructions-french').slideDown();
+		});
+		$('#en-toggle').click(function() {
+		    $('#instructions-french').slideUp();
+		    $('#instructions-english').slideDown();
+		});
+		
+		$('#continue1').click(function() {
+		    $('#application-tabs').tabs('select',1);
+		    return false;
+		});
+		
+        function submit_callback() {
+    		$('#about_form').submit(function() {
+    		    $.post('{% url applications_save application.id %}',
+                   $(this).serialize(),
+                   function(data) {
+                        if (data == "success")
+                        {
+		                    $('#application-tabs').tabs('select',2);
+                        }
+                        else
+                        {
+                            $('#about').html(data);
+                            submit_callback();
+                        }
+                    });
+                return false;
+            });
+        }
+        submit_callback();
+        
+		$('form.question').submit(function() {
+		    var id = $(this).attr('id').substr(9);
+		    $('#save-status-' + id).html('saving...');
+		    $.post('{% url applications_answer %}',
+		           $(this).serialize(),
+		           function(data) {
+          		     $('#save-status-' + id).html(data);
+		           });
+		    return false;
+		});
+
+		$('#continue3').click(function() {
+		    $('#application-tabs').tabs('select',3);
+		    return false;
+		});
+		
+		$('#submit_application').submit(function() {
+		    $.post($(this).attr('action'),
+		           $(this).serialize(),
+		           function(data) {
+		               if (data == "success")
+		                   window.location = '{% url applications %}';
+		               else
+		                   $('#application_errors').html(data).show();
+   		           });
+		    return false;
+		});
+		
+	});
+</script>
+
+{% endblock %}

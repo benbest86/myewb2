@@ -9,6 +9,7 @@ from datetime import datetime
 ### APPLICATION SESSIONS
 class Session(models.Model):
   name = models.CharField(max_length=200)
+  active = models.BooleanField(default=False)
   open_date = models.DateField(null=True)
   due_date = models.DateField(null=True)
   close_date = models.DateField(null=True)
@@ -60,25 +61,33 @@ class CaseStudy(models.Model):
   
 ### APPLICATIONS
 class Application(models.Model):
-  en_writing = models.PositiveSmallIntegerField(_("English writing (1-10)"), null=True)
-  en_reading = models.PositiveSmallIntegerField(null=True)
-  en_speaking = models.PositiveSmallIntegerField(null=True)
+  en_writing = models.PositiveSmallIntegerField(_("English writing"), null=True, blank=True)
+  en_reading = models.PositiveSmallIntegerField(null=True, blank=True)
+  en_speaking = models.PositiveSmallIntegerField(null=True, blank=True)
 
-  fr_writing = models.PositiveSmallIntegerField(null=True)
-  fr_reading = models.PositiveSmallIntegerField(null=True)
-  fr_speaking = models.PositiveSmallIntegerField(null=True)
+  fr_writing = models.PositiveSmallIntegerField(null=True, blank=True)
+  fr_reading = models.PositiveSmallIntegerField(null=True, blank=True)
+  fr_speaking = models.PositiveSmallIntegerField(null=True, blank=True)
   
-  schooling = models.TextField()
-  resume_text = models.TextField()
+  schooling = models.TextField(blank=True, null=True)
+  resume_text = models.TextField(blank=True, null=True)
   resume_attachment = models.FileField(upload_to="XXXX") #fixme
-  references = models.TextField()
-  gpa = models.PositiveIntegerField(null=True)
+  references = models.TextField(blank=True, null=True)
+  gpa = models.PositiveIntegerField(null=True, blank=True)
   
   profile = models.ForeignKey(MemberProfile)
   session = models.ForeignKey(Session)
+  complete = models.BooleanField(default=False)
   
   def __unicode__(self):
     return "%s: %s" % (self.profile.name, self.session.name)
+    
+  def get_answers(self):
+    answers = self.answer_set.all()
+    answer_list = {} 
+    for a in answers:
+        answer_list[a.question.id] = a.answer
+    return answer_list
 
 class Answer(models.Model):
   answer = models.TextField()

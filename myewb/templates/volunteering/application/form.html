@@ -1,25 +1,57 @@
-{% extends "volunteering/base.html" %}
+<form action="" method="post" id="about_form">
+    <fieldset>
+        <legend>English language</legend>
+        <div>
+            {{ form.en_writing.errors }}
+            {{ form.en_reading.errors }}
+            {{ form.en_speaking.errors }}
+            Writing: {{ form.en_writing }}
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            Reading: {{ form.en_reading }}
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            Speaking: {{ form.en_speaking }}
+        </div>
+    </fieldset>
+    <br/>
+    
+    <fieldset>
+        <legend>French language</legend>
+        <div>
+            {{ form.fr_writing.errors }}
+            {{ form.fr_reading.errors }}
+            {{ form.fr_speaking.errors }}
+            Writing: {{ form.fr_writing }}
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            Reading: {{ form.fr_reading }}
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            Speaking: {{ form.fr_speaking }}
+        </div>
+    </fieldset>
+    <br/>
+    
+    <fieldset>
+        {{ form.gpa.errors }}
+        <legend>GPA</legend>
+        {{ form.gpa }}
+    </fieldset>
+    <br/>
+    
+    <strong>Schooling<strong><br/>
+    {{ form.schooling.errors }}
+    {{ form.schooling }}
+    <br/><br/>
+    
+    <strong>Resume<strong><br/>
+    {{ form.resume_text.errors }}
+    {{ form.resume_text }}
+    <br/><br/>
 
-{% block head_title %}
-Volunteering » Applications »
-{% if application %}
-	Edit » {{ application.profile.name }}
-{% else %}
-	Create
-{% endif %}
-{% endblock %}
-
-{% block body %}
-{% if object %}
-<h2>Edit a application</h2>
-{% else %}
-<h2>Create a application</h2>
-{% endif %}
-
-<form action="{{ action }}" method="post">
-	<table>
-	{{ form.as_p }}
-	</table>
-	<input type="submit" name="application" value="Save Application" id="application">
+    <strong>References<strong><br/>
+    {{ form.references.errors }}
+    {{ form.references }}
+    <br/><br/>
+    
+    <input type="submit" name="application" value="Continue to next part" id="application">
 </form>
-{% endblock %}
+
+{% include "tinymce.html" %}

@@ -65,10 +65,43 @@ class CaseStudyForm(forms.ModelForm):
 
 
 ### APPLICATIONS
+onetofive = ((0,''), (1, 1), (2, 2), (3, 3), (4, 4), (5, 5))
 class ApplicationForm(forms.ModelForm):
-  class Meta:
-    model = Application
+    en_writing = forms.CharField(widget=forms.Select(choices=onetofive), required=False)
+    en_reading = forms.CharField(widget=forms.Select(choices=onetofive), required=False)
+    en_speaking = forms.CharField(widget=forms.Select(choices=onetofive), required=False)
+    fr_writing = forms.CharField(widget=forms.Select(choices=onetofive), required=False)
+    fr_reading = forms.CharField(widget=forms.Select(choices=onetofive), required=False)
+    fr_speaking = forms.CharField(widget=forms.Select(choices=onetofive), required=False)
 
+    schooling = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}),
+                                required=False)
+    resume_text = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}),	
+                                  required=False)
+    references = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}),
+                                 required=False)
+
+    def clean_schooling(self):
+        data = self.cleaned_data.get('schooling', '')
+        if data:
+            return html_clean(data)
+
+    def clean_resume_text(self):
+        data = self.cleaned_data.get('resume_text', '')
+        if data:
+            return html_clean(data)
+
+    def clean_references(self):
+        data = self.cleaned_data.get('references', '')
+        if data:
+            return html_clean(data)
+
+    class Meta:
+        model = Application
+        fields = ('en_writing', 'en_reading', 'en_speaking',
+                  'fr_writing', 'fr_reading', 'fr_speaking',
+                  'schooling', 'resume_text', 'references', 'gpa')
+    
 class AnswerForm(forms.ModelForm):
   class Meta:
     model = Answer
