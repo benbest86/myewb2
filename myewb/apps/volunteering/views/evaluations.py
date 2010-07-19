@@ -19,7 +19,7 @@ from django.template import RequestContext, Context, loader
 from django.utils.translation import ugettext_lazy as _
 
 from siteutils.shortcuts import get_object_or_none
-from volunteering.models import Session, Question, EvaluationCriterion, Evaluation, Application, EvaluationComment
+from volunteering.models import Session, Question, EvaluationCriterion, Evaluation, Application, EvaluationComment, EvaluationResponse
 from volunteering.forms import SessionForm, QuestionForm, EvaluationCriterionForm
 
 @permission_required('overseas')
@@ -73,4 +73,23 @@ def evaluation_comment(request, app_id):
         response = HttpResponse(mimetype='application/json')
         json.serialize(comments, stream=response)
         return response
+    return HttpResponse("invalid")
+
+@permission_required('overseas')
+def evaluation_criteria(request, app_id, criteria_id):
+    application = get_object_or_404(Application, id=app_id)
+    criteria = get_object_or_404(EvaluationCriterion, id=criteria_id, session=application.session)
+    
+    if request.method == 'POST':
+        value = request.POST.get('value', None)
+        
+        response, created = EvaluationResponse.objects.get_or_create(evaluation=application.evaluation,
+                                                                     evaluation_criterion=criteria)
+        try:
+            if value and int(str(value)) and value >= 0:
+                response.response = value
+                response.save()
+                return HttpResponse(response.response)
+        except:
+            pass
     return HttpResponse("invalid")

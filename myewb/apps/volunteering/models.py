@@ -109,7 +109,7 @@ class Answer(models.Model):
 
 ### EVALUATIONS
 class EvaluationResponse(models.Model):
-  response = models.PositiveIntegerField()
+  response = models.PositiveIntegerField(null=True)
   evaluation = models.ForeignKey("Evaluation")
   evaluation_criterion = models.ForeignKey("EvaluationCriterion")
 
@@ -158,6 +158,13 @@ class Evaluation(models.Model):
     for c in self.evaluationcomment_set.all():
         comments[c.key] = c.comment
     return comments
+
+  def criteria(self):
+    criteria = {}
+    for c in self.evaluationresponse_set.all():
+        if c.response:
+            criteria[c.evaluation_criterion.id] = c.response
+    return criteria
     
 class EvaluationComment(models.Model):
   evaluation = models.ForeignKey("Evaluation")
