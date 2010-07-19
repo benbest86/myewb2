@@ -10,6 +10,7 @@ from copy import copy
 
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import User
+from django.core import serializers
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseForbidden
@@ -49,26 +50,27 @@ def evaluation_detail(request, app_id):
 def evaluation_comment(request, app_id):
     application = get_object_or_404(Application, id=app_id)
     
-    print "uhh"
-    
-    if request.method == 'POST' and request.POST.get('key', None):
-        key = request.POST.get('key', None)
-        comment = request.POST.get('comment', None)
+    if request.method == 'POST':
+        if request.POST.get('key', None):
+            key = request.POST.get('key', None)
+            comment = request.POST.get('comment', None)
         
-        print "key", key
-        print "comment", comment
-        
-        if comment:
-            evalcomment, created = EvaluationComment.objects.get_or_create(evaluation=application.evaluation,
-                                                                           key=key)
-            evalcomment.comment = comment
-            evalcomment.save()
-        else:
-            comment = get_object_or_none(EvaluationComment,
-                                         evaluation=application.evaluation,
-                                         key=key)
             if comment:
-                comment.delete()
-        return HttpResponse("success")
+                evalcomment, created = EvaluationComment.objects.get_or_create(evaluation=application.evaluation,
+                                                                               key=key)
+                evalcomment.comment = comment
+                evalcomment.save()
+            else:
+                comment = get_object_or_none(EvaluationComment,
+                                             evaluation=application.evaluation,
+                                             key=key)
+                if comment:
+                    comment.delete()
+            return HttpResponse("success")
+    elif request.is_ajax():
+        comments = EvaluationComment.objects.filter(evaluation=application.evaluation)
+        json = serializers.get_serializer('json')()
+        response = HttpResponse(mimetype='application/json')
+        json.serialize(comments, stream=response)
+        return response
     return HttpResponse("invalid")
-        

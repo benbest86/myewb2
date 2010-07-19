@@ -57,6 +57,9 @@ div.leftpanel {
     background:url("{{ STATIC_URL}}images/ajax-loader.gif") no-repeat scroll right center;
     padding-right: 10px;
 }
+.loading-topleft {
+    background:url("{{ STATIC_URL}}images/ajax-loader.gif") no-repeat scroll left top;
+}
 </style>
 
 <div id="" class="eval" style="padding-bottom: 5px;">
@@ -84,20 +87,13 @@ div.leftpanel {
 
 <div id="eval-tabs" style="clear: both; position: relative; border-top: 1px solid;">
 	<ul style="width: 50%; position: absolute; top: -2.7em;">
-		<li><a href="#notes">Notes</a></li>
 		<li><a href="#info">General Info</a></li>
 		<li><a href="#questions">Questions</a></li>
+		<li><a href="#interview">Interview</a></li>
+		<li><a href="#notes">Notes</a></li>
+		<li><a href="#summary">Summary</a></li>
 	</ul>
 
-    <div id="notes">
-        <div class="eval" style="width: 100%;">
-            <textarea name="notes">{% for k, c in evaluation.comments.items %}{% ifequal k "notes" %}{{c}}{% endifequal %}{% endfor %}</textarea>
-        </div>
-
-{#        <div class="leftpanel"> #}
-{#        </div> #}
-    </div>
-    
     <div id="info">
         <div class="eval">
             <textarea name="language">{% for k, c in evaluation.comments.items %}{% ifequal k "language" %}{{c}}{% endifequal %}{% endfor %}</textarea>
@@ -154,7 +150,7 @@ div.leftpanel {
         <div class="leftpanel">
             <h3>Resume</h3>
             <div class="htmlbox">
-                {{ application.resume|safe }}
+                {{ application.resume_text|safe }}
             </div>
         </div>
 
@@ -177,7 +173,7 @@ div.leftpanel {
         {% for q in application.session.question_set.all %}
             <div class="eval">
                 <h3>&nbsp;</h3>
-                <textarea name="{{q.id}}">{% for k, c in evaluation.comments.items %}{% ifequal k q.id %}{{c}}{% endifequal %}{% endfor %}</textarea>
+                <textarea name="{{q.id}}">{% for k, c in evaluation.comments.items %}{% ifequal k q.strid %}{{c}}{% endifequal %}{% endfor %}</textarea>
             </div>
 
             <div class="leftpanel">
@@ -196,6 +192,22 @@ div.leftpanel {
         {% endfor %}
     </div>
     
+    <div id="interview">
+    	what goes here, if anything?
+    </div>
+    
+    <div id="notes">
+        <div class="eval" style="width: 100%;">
+        	<strong>General notes</strong> (click to edit):<br/>
+            <textarea name="notes" id="notes">{% for k, c in evaluation.comments.items %}{% ifequal k "notes" %}{{c}}{% endifequal %}{% endfor %}</textarea>
+        </div>
+    </div>
+    
+    <div id="summary">
+    	<div id="summary-content">
+    	</div>
+    </div>
+    
 </div>
 
 {% endblock %}
@@ -205,10 +217,24 @@ div.leftpanel {
 <script type="text/javascript">
 	$().ready(function() {
 		$("#eval-tabs").tabs({
-			//show: function(event, ui) {
-			    //$('#eval-tabs .eval').hide();
-			    //$('#' + ui.panel.id + ' .eval').show();
-			//}
+			show: function(event, ui) {
+				if (ui.panel.id == 'summary')
+				{
+					$('#summary-content').addClass('loading-topleft');
+					$.getJSON('{% url evaluation_comment evaluation.id %}',
+							function(data) {
+								var html = "";
+								for (k in data)
+								{
+									html = html + "<p>";
+									html = html + data[k]['fields']['comment']
+									html = html + "</p>";
+								}
+								$('#summary-content').removeClass('loading-topleft');
+								$('#summary-content').html(html);
+							});
+				}
+			}
 		});
 		
     	$('.eval input[type=text]').addClass('inputbox');
@@ -227,7 +253,20 @@ div.leftpanel {
     	});
 
     	$('.eval textarea').addClass('inputbox').autoResize().trigger('change');
-		$('.eval textarea').click(function() {
+
+		function editPrompt(obj) {
+			if (obj.val())
+			{
+				obj.val("click to edit");
+				obj.addClass('editPrompt');
+			}
+			else
+			{
+				obj.removeClass('editPrompt');
+			}
+		}
+    	$('.eval textarea').addClass('inputbox').autoResize().trigger('change');
+    	$('.eval textarea').click(function() {
 		    var original_text = $(this).val();
 	        $(this).removeClass('inputbox');
 		    $(this).blur(function() {

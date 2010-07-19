@@ -42,6 +42,9 @@ class Question(models.Model):
   question_order = models.PositiveSmallIntegerField()
   session = models.ForeignKey("Session")
   
+  def strid(self):
+      return str(self.id)
+  
   class Meta:
     ordering = ('question_order', 'session')
 
@@ -154,9 +157,6 @@ class Evaluation(models.Model):
     comments = {}
     for c in self.evaluationcomment_set.all():
         comments[c.key] = c.comment
-        print "in the model"
-        print "key", c.key
-        print "comment", c.comment
     return comments
     
 class EvaluationComment(models.Model):
