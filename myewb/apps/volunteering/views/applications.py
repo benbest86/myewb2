@@ -82,8 +82,14 @@ def application_save(request, app_id):
     if request.method == 'POST' and request.is_ajax():
         form = ApplicationForm(request.POST, instance=application)
         
+        print "post schooling", request.POST.get('schooling', None)
+        for p in request.POST:
+            print p
+            print request.POST[p]
+        
         if form.is_valid():
             app = form.save()
+            print "in app", app.schooling
             return HttpResponse("success")
             
         return render_to_response('volunteering/application/form.html',

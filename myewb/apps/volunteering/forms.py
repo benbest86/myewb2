@@ -74,17 +74,20 @@ class ApplicationForm(forms.ModelForm):
     fr_reading = forms.CharField(widget=forms.Select(choices=onetofive), required=False)
     fr_speaking = forms.CharField(widget=forms.Select(choices=onetofive), required=False)
 
-    schooling = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}),
-                                required=False)
-    resume_text = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}),	
-                                  required=False)
-    references = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}),
-                                 required=False)
+#    schooling = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}),
+#                                required=False)
+#    resume_text = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}),	
+#                                  required=False)
+#    references = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}),
+#                                 required=False)
 
     def clean_schooling(self):
         data = self.cleaned_data.get('schooling', '')
+        print "data is", data
         if data:
+            print "cleaned"
             return html_clean(data)
+        print "or not"
 
     def clean_resume_text(self):
         data = self.cleaned_data.get('resume_text', '')

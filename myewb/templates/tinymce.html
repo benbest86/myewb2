@@ -1,9 +1,10 @@
 <script type="text/javascript">
 
-$(function() {
+$().ready(function() {
+	tinymce_on();
+});
 
-
-
+function tinymce_on() {
 	$('textarea.tinymce').each(function() {
 		$(this).tinymce({
        	// Location of TinyMCE script
@@ -60,9 +61,6 @@ $(function() {
         	}
         });
     });
-    
-    
-    
-});
+}
 
 </script>

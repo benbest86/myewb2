@@ -99,12 +99,21 @@ select {
 {% endblock %}
 
 {% block extra_body %}
+{% include "tinymce.html" %} 
 <script type="text/javascript">
 	$().ready(function() {
+		var tinymce_loaded = false;
 		$("#application-tabs").tabs({
 			show: function(event, ui) {
 				parent.location.hash = ui.panel.id;
 				$('#application_errors').html('').hide();
+
+				if (ui.panel.id == 'about' && !tinymce_loaded)
+				{
+					$('#about textarea').addClass('tinymce');
+					tinymce_on();
+					tinymce_loaded = true;
+				}
 			}
 		});
 		
@@ -128,14 +137,11 @@ select {
                    $(this).serialize(),
                    function(data) {
                         if (data == "success")
-                        {
 		                    $('#application-tabs').tabs('select',2);
-                        }
                         else
-                        {
                             $('#about').html(data);
-                            submit_callback();
-                        }
+                        $('#about_form').unbind('submit');
+                        submit_callback();
                     });
                 return false;
             });
