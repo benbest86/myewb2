@@ -78,6 +78,7 @@ urlpatterns += patterns('volunteering.views.applications',
 
 ### EVALUATIONS
 urlpatterns += patterns('volunteering.views.evaluations',
+  url(r'^evaluations/session/(?P<session_id>\d+)/bulkedit/$', 'evaluation_bulkedit', name="evaluation_bulkedit"),
   url(r'^evaluations/session/(?P<session_id>\d+)/$', 'evaluation_list', name="evaluation_list"),
   url(r'^evaluations/(?P<app_id>\d+)/$', 'evaluation_detail', name="evaluation_detail"),
   url(r'^evaluations/(?P<app_id>\d+)/comment/$', 'evaluation_comment', name="evaluation_comment"),

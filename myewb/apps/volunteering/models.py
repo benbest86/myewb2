@@ -87,6 +87,16 @@ class Application(models.Model):
   profile = models.ForeignKey(MemberProfile)
   session = models.ForeignKey(Session)
   complete = models.BooleanField(default=False)
+
+  APPLICATION_STATUS = (
+      ('d', _('Draft')),
+      ('s', _('Submitted')),
+      ('i', _('Selected for interview')),
+      ('p', _('Decision pending')),
+      ('a', _('Accepted - hired')),
+      ('u', _('Unsuccessful')),
+  )
+  status = models.CharField(max_length=1, choices=APPLICATION_STATUS, default='d')
   
   created = models.DateTimeField(auto_now_add=True)
   updated = models.DateTimeField(auto_now=True)

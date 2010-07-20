@@ -93,3 +93,7 @@ def evaluation_criteria(request, app_id, criteria_id):
         except:
             pass
     return HttpResponse("invalid")
+
+@permission_required('overseas')
+def evaluation_bulkedit(request, session_id):
+    pass

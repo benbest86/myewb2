@@ -57,7 +57,7 @@ Volunteering » Applications
         		<tr style="background: {% cycle "#ffffff;" "#e0e0e0;"%}">
 			        <td>{{ a.session.close_date|date }}</td>
 			        <td>{{ a.session.name }}</td>
-			        <td>{% if a.complete %}complete{%else%}incomplete{%endif%}</td>
+			        <td>{{ a.status }}</td>
 			        <td><a href="{% url applications_detail s.application.id %}">view</a></td>
 			     </tr>
     		{% endfor %}
