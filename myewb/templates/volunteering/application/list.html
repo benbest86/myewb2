@@ -17,7 +17,7 @@ Volunteering » Applications
                 {% if not s.application.complete %}
                     <a href="{% url applications_edit s.application.id %}">view draft</a><br/>
                 {% else %}
-                    <a href="{% url applications_edit s.application.id %}">view application</a><br/>
+                    <a href="{% url applications_detail s.application.id %}">view application</a><br/>
                 {% endif %}
             {% else %}
 {#	            {% new_button "application" %} #}
@@ -58,7 +58,7 @@ Volunteering » Applications
 			        <td>{{ a.session.close_date|date }}</td>
 			        <td>{{ a.session.name }}</td>
 			        <td>{% if a.complete %}complete{%else%}incomplete{%endif%}</td>
-			        <td>{#<a href="">view</a>#}</td>
+			        <td><a href="{% url applications_detail s.application.id %}">view</a></td>
 			     </tr>
     		{% endfor %}
 		</table>

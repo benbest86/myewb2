@@ -80,11 +80,14 @@ div.leftpanel {
         </a>
     </div>
 
-    <h2>{{ application.profile.first_name }} {{ application.profile.first_name }}</h2>
-    <h3>{{ application.session.name }}</h3>
+	<div style="height: 125px;">
+    	<h2>{{ application.profile.first_name }} {{ application.profile.first_name }}</h2>
+    	<h3>{{ application.session.name }}</h3>
 
-    <p>Application created: {{ application.created|date }}<br/>
-    Application modified: {{ application.updated|date }}</p>
+    	<p>Application created: {{ application.created|date }}<br/>
+    	Application modified: {{ application.updated|date }}</p>
+    </div>
+    <div style="height: 2em;"></div>
 </div>
 
 <div id="eval-tabs" style="clear: both; position: relative; border-top: 1px solid;">

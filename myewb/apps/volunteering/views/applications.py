@@ -59,7 +59,7 @@ def application_edit(request, app_id):
     # application no longer valid?
     if not application.session.active:
         request.user.message_set.create(message='The application session has ended; you cannot edit your application any more.')
-        return HttpResponseRedirect(reverse('applications'))
+        return HttpResponseRedirect(reverse('application_detail', kwargs={'app_id': application.id}))
 
     form = ApplicationForm(instance=application)
     
@@ -67,6 +67,21 @@ def application_edit(request, app_id):
     return render_to_response('volunteering/application/apply.html', 
                               {"application": application,
                                "form": form,
+                              },
+                              context_instance=RequestContext(request))
+
+@login_required
+def application_detail(request, app_id):
+    application = get_object_or_404(Application, id=app_id, profile=request.user.get_profile())
+    
+    # application no longer valid?
+    if not application.session.active:
+        request.user.message_set.create(message='The application session has ended; you cannot edit your application any more.')
+        return HttpResponseRedirect(reverse('applications'))
+
+    # render response.  (no processing done here; that's all elsewhere in AJAX)
+    return render_to_response('volunteering/application/detail.html', 
+                              {"application": application,
                               },
                               context_instance=RequestContext(request))
 
