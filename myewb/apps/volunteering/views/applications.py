@@ -71,6 +71,22 @@ def application_edit(request, app_id):
                               context_instance=RequestContext(request))
 
 @login_required
+def application_reopen(request, app_id):
+    application = get_object_or_404(Application, id=app_id, profile=request.user.get_profile())
+    
+    # application no longer valid?
+    if not application.session.active:
+        request.user.message_set.create(message='The application session has ended; you cannot edit your application any more.')
+        return HttpResponseRedirect(reverse('application_detail', kwargs={'app_id': application.id}))
+
+    if application.complete:
+        application.complete = False
+        application.save()
+        request.user.message_set.create(message="Your application has been re-opened.<br/>You must re-submit it for your application to be considered (even if you don't make any changes).")
+
+    return HttpResponseRedirect(reverse('applications_edit', kwargs={'app_id': application.id}))
+
+@login_required
 def application_detail(request, app_id):
     application = get_object_or_404(Application, id=app_id, profile=request.user.get_profile())
     

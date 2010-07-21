@@ -25,17 +25,23 @@ select {
 		<li><a href="#questions">Questions</a></li>
 	</ul>
 
-    <p><strong>
+    <p>
 	    {% if application.complete %}
-    		Your application has been submitted.  Thank you!
+    		<strong>Your application has been submitted.  Thank you!</strong>
+    		{% if application.session.active %}
+    		<br/>
+    		<a href="{% url applications_reopen application.id %}">You can re-open you application and edit it until the session deadline</a>.
+    		{% endif %}
     	{% else %}
-    		{% if application.session.complete %}
+    		<strong>
+    		{% if not application.session.active %}
 				Your application was not submitted, and will not be considered.
 			{% else %}
 				Your application has not been submitted yet - <a href="{% url applications_edit application.id %}">continue it here</a>
     		{% endif %}
+    		</strong>
     	{% endif %}
-    </strong></p>
+    </p>
         
 	<div id="instructions">
         <h2>Instructions</h2>
