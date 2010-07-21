@@ -21,7 +21,7 @@ from django.utils.translation import ugettext_lazy as _
 from mailer import send_mail
 from siteutils.shortcuts import get_object_or_none
 from volunteering.models import Session, Question, EvaluationCriterion, Evaluation, Application, EvaluationComment, EvaluationResponse
-from volunteering.forms import SessionForm, QuestionForm, EvaluationCriterionForm
+from volunteering.forms import SessionForm, QuestionForm, EvaluationCriterionForm, EmailForm
 
 @permission_required('overseas')
 def evaluation_list(request, session_id):
@@ -112,9 +112,13 @@ def evaluation_bulkedit(request, session_id):
                 pass
     applications = Application.objects.filter(id__in=app_id, session=session)
 
+    if not applications.count():
+        request.user.message_set.create(message='No applications selected.')
+        return HttpResponseRedirect(reverse('evaluation_list', kwargs={'session_id': session_id}))
+
     if action == 'email':
-        request.user.message_set.create(message='Not yet implemented')
-    
+        #return HttpResponseRedirect(reverse('evaluation_emailform'))
+        return evaluation_emailform(request, session_id)
     # bulk actions for state changes
     # (do i want to iterate and individually save each app, to emit post-save signals?)
     # TODO: validation check for bad state changes 
@@ -139,6 +143,102 @@ def evaluation_bulkedit(request, session_id):
                   fromemail=session.rejection_email_from,
                   recipients=emails,
                   use_template=False)
-    
+        
     request.user.message_set.create(message='Evaluations updated')
     return HttpResponseRedirect(reverse('evaluation_list', kwargs={'session_id': session_id}))
+
+@permission_required('overseas')
+def evaluation_emailform(request, session_id):
+    """
+    Display new email form
+    """
+    session = get_object_or_404(Session, id=session_id)
+
+    if request.method == 'POST':
+        app_id = []
+        for field in request.POST:
+            if field[0:4] == 'app-':
+                try:
+                    app_id.append(int(field[4:]))
+                except:
+                    pass
+        applications = Application.objects.filter(id__in=app_id, session=session)
+    
+    form = EmailForm()
+        
+    return render_to_response("volunteering/evaluation/email_compose.html",
+                              {'form': form,
+                               'applications': applications, 
+                               'session': session},
+                              context_instance=RequestContext(request))
+
+@permission_required('overseas')
+def evaluation_emailpreview(request, session_id):
+    """
+    Preview email - including HTML body, and ability to edit email
+    """
+    session = get_object_or_404(Session, id=session_id)
+
+    if request.method == 'POST':
+        app_id = []
+        for field in request.POST:
+            if field[0:4] == 'app-':
+                try:
+                    app_id.append(int(field[4:]))
+                except:
+                    pass
+        applications = Application.objects.filter(id__in=app_id, session=session)
+    
+        form = EmailForm(request.POST)
+        
+        if form.is_valid():
+            data = form.cleaned_data
+        else:
+            data = None
+            
+        return render_to_response("volunteering/evaluation/email_preview.html",
+                                  {'form': form,
+                                   'data': data,
+                                   'applications': applications,
+                                   'session': session},
+                                   context_instance=RequestContext(request))
+    else:
+        return HttpResponseForbidden()
+    
+@permission_required('overseas')
+def evaluation_emailsend(request, session_id):
+    session = get_object_or_404(Session, id=session_id)
+
+    if request.method == 'POST':
+        app_id = []
+        for field in request.POST:
+            if field[0:4] == 'app-':
+                try:
+                    app_id.append(int(field[4:]))
+                except:
+                    pass
+        applications = Application.objects.filter(id__in=app_id, session=session)
+    
+        form = EmailForm(request.POST)
+        
+        if form.is_valid():     # should always be true..!!!
+            
+            sender = '"%s" <%s>' % (form.cleaned_data['sendername'],
+                                    form.cleaned_data['senderemail'])
+    
+            emails = []
+            for app in applications:
+                emails.append(app.profile.user2.email)
+    
+            send_mail(subject=form.cleaned_data['subject'],
+                      txtMessage=None,
+                      htmlMessage=form.cleaned_data['body'],
+                      fromemail=sender,
+                      recipients=emails,
+                      use_template=False)
+    
+        request.user.message_set.create(message="Email sent")
+        return HttpResponseRedirect(reverse('evaluation_list', kwargs={'session_id': session.id}))
+    else:
+        return HttpResponseForbidden()
+    

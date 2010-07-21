@@ -42,7 +42,7 @@ th, td {
         	<option value="status-hired">Hired</option>
         	<option value="status-rejected">Rejected</option>
         </select><br/><br/>
-        <form action="{% url evaluation_bulkedit session.id %}" method="post">
+        <form action="{% url evaluation_bulkedit session.id %}" method="post" id="evaluation-bulkedit">
 		<table>
 			<tr>
        			<th>&nbsp;</th>
@@ -80,7 +80,7 @@ th, td {
 		</table>
 		<br/>
 		With selected applications: 
-		<select name="action">
+		<select name="action" id="evaluation-action">
 			<option value="email">send an email</option>
 			<option value="state-accept">accept for interview</option>
 			<option value="state-interviewed">interview complete</option>
@@ -156,6 +156,7 @@ th, td {
 				$('.app-status-u').fadeIn();
 			}
 		});
+
 	});
 </script>
 {% endblock %}

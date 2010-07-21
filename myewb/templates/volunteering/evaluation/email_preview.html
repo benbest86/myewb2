@@ -1,0 +1,107 @@
+{% extends "volunteering/base.html" %}
+
+{% load i18n %}
+{% load uni_form_tags %}
+
+{% block head_title %}
+Volunteering » Sessions » Send Email
+{% endblock %}
+
+{% block body %}
+	<style>
+	table {
+	  width: 100%;
+	}
+	th {
+	  text-align: left;
+	}
+	th, td {
+	  padding: 5px;
+	  border: 1px solid;
+	}
+	</style>
+	
+	<h2>Email applicants</h2>
+
+	<table>
+		<tr>
+		    <th>Status</th>
+		    <th>Name</th>
+      			<th>Gndr</th>
+      			<th>Lang</th>
+      			<th>GPA</th>
+      			<th>Total</th>
+      			{% for c in session.evaluationcriterion_set.all %}
+      			    <th>{{ c.column_header }}</th>
+      			{% endfor %}
+		</tr>
+		
+		{% for app in applications %}
+			<tr style="{% cycle 'background: #ffffff;' 'background: #eee;' %}" class="app-status app-status-{{app.status}}">
+				<td>{% for a,b in app.APPLICATION_STATUS %}{% ifequal a app.status %}{{b}}{% endifequal %}{% endfor %}</td>
+				<td><a href="{% url evaluation_detail app.id %}">{{ app.profile.last_name}}, {{ app.profile.first_name }}</a></td>
+				<td>{{ app.profile.gender }}</td>
+				<td>{{ app.profile.lang }}</td>
+				<td>{{ app.gpa }}</td>
+				<td>{{ app.evaluation.total_score|default_if_none:"&nbsp;" }}</td>
+				{% for c in session.evaluationcriterion_set.all %}
+  					    <td>{% for k, v in app.evaluation.criteria.items %}{% ifequal k c.id %}{{v}}{% endifequal %}{% endfor %}</td>
+   				{% endfor %}
+			</tr>
+		{% endfor %}
+	</table>
+	<br/><br/>
+
+	{% if data %}
+		<h3>Preview</h3>
+		<div>
+			<strong>From: "{{ data.sendername }}" &lt;{{data.senderemail}}&gt;</strong>
+		</div>
+		
+		<div>
+			<strong>Subject: {{ data.subject }}</strong>
+		</div>
+		
+		<div style="padding: 10px; margin: 25px; border: 1px solid;">
+			{{ data.body|safe }}
+		</div>
+		
+		<form method="post" action="{% url evaluation_emailsend session.id %}" id="hiddenform">
+			<div style="display: none;">
+				{{ form|as_uni_form }}
+			</div>
+	
+			{% for app in applications %}
+				<input type="hidden" name="app-{{app.id}}" value="on"/>
+			{% endfor %}
+			<input type="submit" value="send to {{recipients}} people"/>
+		</form>
+		<br/>
+		
+		<hr/>
+		Or, edit again...<br/>
+	{% endif %}
+	
+	<form method="post" class="uniForm" action="">
+		{{ form|as_uni_form }}
+		
+		{% for app in applications %}
+			<input type="hidden" name="app-{{app.id}}" value="on"/>
+		{% endfor %}
+		<input type="submit" value="preview"/>
+	</form>
+
+{% endblock %}
+
+{% block extra_body %}
+	{{ block.super }}
+	
+	<script type="text/javascript">
+		$('#hiddenform :input').each(function() {
+			$(this).attr('id', 'final-' + $(this).attr('id'));
+			$(this).removeClass('tinymce');
+		});
+	</script>
+
+	{% include "tinymce.html" %}
+{% endblock %}

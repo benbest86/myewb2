@@ -6,6 +6,7 @@ from siteutils.helpers import autolink_email
 
 from volunteering.models import *
 
+
 # do HTML validation and auto-linking
 def html_clean(body):
   # validate HTML content
@@ -153,3 +154,18 @@ class SendingGroupForm(forms.ModelForm):
   class Meta:
     model = SendingGroup
 
+class EmailForm(forms.Form):
+    subject = forms.CharField(max_length=250)
+    body = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
+    sendername = forms.CharField(max_length=75)
+    senderemail = forms.EmailField()
+
+    def clean_body(self):
+        body = self.cleaned_data.get('body', '')
+
+        # validate HTML content
+        # Additional options at http://codespeak.net/lxml/lxmlhtml.html#cleaning-up-html
+        body = clean_html(body)
+    
+        self.cleaned_data['body'] = body
+        return self.cleaned_data['body']
