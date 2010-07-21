@@ -95,7 +95,8 @@ span.ui-icon {
 
 <div id="eval-tabs" style="clear: both; position: relative; border-top: 1px solid;">
 	<ul style="width: 50%; position: absolute; top: -2.7em;">
-		<li><a href="#info">General Info</a></li>
+		<li><a href="#profile">Profile</a></li>
+		<li><a href="#info">General</a></li>
 		<li><a href="#questions">Questions</a></li>
 		{% if application.complete %}
 			<li><a href="#interview">Interview</a></li>
@@ -103,6 +104,12 @@ span.ui-icon {
 			<li><a href="#summary">Summary</a></li>
 		{% endif %}
 	</ul>
+
+	<div id="profile">
+		{% with application.profile.user2 as other_user %}
+			{% include "profiles/profile_info.html" %}
+		{% endwith %}
+	</div>
 
     <div id="info">
         <div class="eval">

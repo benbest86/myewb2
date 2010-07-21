@@ -43,7 +43,8 @@ def evaluation_detail(request, app_id):
     
     return render_to_response('volunteering/evaluation/detail.html',
                               {'evaluation': evaluation,
-                               'application': application
+                               'application': application,
+                               'is_me': False
                               },
                               context_instance=RequestContext(request))
 

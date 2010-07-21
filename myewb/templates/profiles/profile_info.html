@@ -1,0 +1,185 @@
+{% load i18n %}
+{% load profile_tags %}
+{% load group_topics_tags %}
+
+<table class="standard standard-right search-form">
+    <tbody>
+	
+	
+<tr>
+            <th>Profile Info</th>
+            <td>
+            
+                <p class="profile_info">
+            	    Account created {{ other_user.date_joined|timesince }} ago
+            		<br/>
+            		Last signed in {{ other_user.get_profile.current_login|timesince }} ago
+            		<br/>
+            		{{ other_user.get_profile.login_count }} logins
+            		<br/>
+            		<a href="{% url topic_list_by_user other_user %}">
+            			{% num_topics_for_user other_user %} posts/replies
+            		</a>
+            	</p>
+            
+            </td>
+        </tr>
+	
+	
+	
+	
+		{% if regular %}
+        <tr>
+            <th>{% trans "Membership status" %}</th>
+            <td>
+                Regular member, expiring on {{ other_user.get_profile.membership_expiry }}
+            </td>
+        </tr>
+	   {% endif %}
+		
+		
+		{% comment %}
+        <h2>{% trans "Contact Information" %}</h2>
+		{% if other_user.get_profile.street_address %}
+			<div style="width: 33%; float: left; text-align: center; text-align: right;">
+		        <b>{% trans "Street address" %}</b>
+			</div>
+			<div style="margin-left: 33%; padding-left: 10px;">
+			    {{ other_user.get_profile.street_address }}<br/>
+			    
+    			{% if other_user.get_profile.street_address_two %}
+    			    {{ other_user.get_profile.street_address_two }}<br/>
+    			{% endif %}
+    			{% if other_user.get_profile.location %}
+    			    {{ other_user.get_profile.location }}<br/>
+    			{% endif %}
+		        {% if other_user.get_profile.postal_code %}
+		            {{ other_user.get_profile.postal_code }}<br/>
+		        {% endif %}
+			</div>
+			<br/>
+		{% endif %}
+		{% endcomment %}
+		
+		
+        <tr>
+            <th>{% trans "Emails" %}</th>
+            <td>
+    			{% for address in other_user.get_profile.email_addresses %}
+    				<br/>{{ address.email }}
+    			{% endfor %}
+    			
+    			{% if is_me %}
+    			    <br/>
+    	            (<a href="{% url acct_email %}">{% trans "edit emails" %}</a>)<br/>
+    	        {% else %}
+    	        	{% if perms.profiles %}
+    				    <br/>
+    		            (<a href="{% url acct_email_user other_user.username %}">{% trans "edit emails" %}</a>)<br/>
+    	        	{% endif %}
+    			{% endif %}
+    			
+            </td>
+        </tr>
+		
+
+        <tr>
+            <th>{% trans "Phone numbers" %}</th>
+            <td>
+                {% for phone in other_user.get_profile.phone_numbers.all %}
+    				<div>
+    					{{ phone.label }}: {{ phone.number }}
+    				</div>
+    			{% endfor %}
+    
+    			{% if is_me %}
+    			    <br/>
+    	            (<a href="{% url profile_edit %}#phone">{% trans "edit phone numbers" %}</a>)<br/>
+    	        {% comment %}
+    	        {% else %}
+    	        	{% if perms.profiles %}
+    				    <br/>
+    		            (<a href="{% url acct_email_user other_user.username %}">{% trans "edit phone numbers" %}</a>)<br/>
+    	        	{% endif %}
+    	        {% endcomment %}
+    			{% endif %}
+            
+            </td>
+        </tr>
+
+	
+	
+
+        <tr>
+            <th>{% trans "Addresses" %}</th>
+            <td>
+                {% for address in other_user.get_profile.addresses.all %}
+    				<div>
+    					<a href="#" onclick="$('#profile-address-{{address.pk}}').slideToggle(); return false;">{{ address.label }}</a> ({{address.city}})
+    					<div style="display: none; padding-left: 10px;" id="profile-address-{{ address.pk}}">
+    						{{ address.street}}<br/>
+    						{{ address.city }}, {{ address.province }}<br/>
+    						{{ address.postal_code }}<br/>
+    						{{ address.country }}<br/>
+    					</div>
+    				</div>
+    			{% endfor %}
+    
+    			{% if is_me %}
+    			    <br/>
+    	            (<a href="{% url profile_edit %}#address">{% trans "edit addresses" %}</a>)<br/>
+    	        {% comment %}
+    	        {% else %}
+    	        	{% if perms.profiles %}
+    				    <br/>
+    		            (<a href="{% url acct_email_user other_user.username %}">{% trans "edit addresses" %}</a>)<br/>
+    	        	{% endif %}
+    	        {% endcomment %}
+    			{% endif %}
+            </td>
+        </tr>
+
+
+		{% if other_user.get_profile.website %}
+            <tr>
+                <th>{% trans "Website" %}</th>
+                <td>
+                    <a href="{{ other_user.get_profile.website }}">{{ other_user.get_profile.website }}</a>
+                </td>
+            </tr>
+        {% endif %}
+                
+                
+
+    </tbody>
+</table>
+
+{# end main profile info content table #}
+                
+                
+                
+        <h2>{% trans "School/Work History" %}</h2>
+        
+<table class="standard standard-right search-form">
+    <tbody>
+
+        <tr>
+            <th>{% trans "School History" %}</th>
+            <td>{% show_student_records other_user is_me %}
+			{% if is_me %}
+			    <a href="{% url new_student_record other_user.username %}">Add a school</a>
+			{% endif %}
+			</td>
+        </tr>
+
+
+        <tr>
+            <th>{% trans "Work History" %}</th>
+            <td>{% show_work_records other_user is_me %}
+			{% if is_me %}
+			    <a href="{% url new_work_record other_user.username %}">Add a workplace</a>
+			{% endif %}</td>
+        </tr>        
+        
+</tbody>
+</table>
