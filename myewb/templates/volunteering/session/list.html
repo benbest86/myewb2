@@ -52,7 +52,10 @@ th, td {
 					<td>{{ session.email_sent|boolean_icon }}</td>
 					<td><a href="{% url evaluation_list session.id %}">{{ session.complete_applications.count }} (view)</a></td>
 					<td><a href="{% url evaluation_list session.id %}#draft">{{ session.draft_applications.count }} (view)</a></td>
-					<td><a href="{% url session_detail session.id %}">session details</a></td>
+					<td>
+						<a href="{% url session_detail session.id %}">session details</a>
+						(<a href="{% url session_edit session.id %}">edit</a>)
+					</td>
 					<td><a href="{% url session_new session.id %}">clone</a></td>
 				</tr>
 			{% endfor %}

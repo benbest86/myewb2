@@ -10,37 +10,33 @@ Volunteering » Applications
 {% block body %}
 
     {% if sessions %}
-        <h2>Open application sessions</h2>
+    	<h2>Open application sessions</h2>
         {% for s in sessions %}
-            <strong>{{ s.name }}</strong> (due {{ s.close_date }})<br/>
-            {% if s.application %}
-                {% if not s.application.complete %}
-                    <a href="{% url applications_edit s.application.id %}">view draft</a><br/>
-                {% else %}
-                    <a href="{% url applications_detail s.application.id %}">view application</a><br/>
-                {% endif %}
-            {% else %}
-{#	            {% new_button "application" %} #}
-                <a href="{% url applications_new s.id %}">begin application</a><br/>
-            {% endif %}
-            
-            {% comment %}
-            {% for a in current %}
-                {% ifequal a.session s %}
-                    {% if not a.complete %}
-                        <a href="">view draft</a><br/>
-                    {% else %}
-                        <a href="">view application</a><br/>
-                    {% endif %}
-                {% else %}
-	                {% new_button "application" %}
-                    <a href="">begin application</a><br/>
-                {% endifequal %}
-            {% endfor %}
-            {% endcomment %}
+            <h3>{{ s.name }}</h3>
+            <div style="padding-left: 25px;">
+	            Due: {{ s.close_date|date }}<br/>
+	            {% if s.application %}
+	                {% if not s.application.complete %}
+	                    <a href="{% url applications_edit s.application.id %}">continue application</a><br/>
+	                {% else %}
+	                    <a href="{% url applications_detail s.application.id %}">your application has been submitted</a><br/>
+	                {% endif %}
+	            {% else %}
+	                <a href="{% url applications_new s.id %}">begin application</a><br/>
+	            {% endif %}
+	        </div>
             <br/>
+            
         {% endfor %}
+    {% else  %}
+    	<h3 style="text-align: center;">We are not currently accepting applications for any positions.<br/>
+    	We look forward to seeing your application in the future</h3>
+    	
+    	<p style="text-align: center;">For further information on becoming an overseas volunteer please visit 
+    	<a href="http://www.ewb.ca/en/whatyoucando/volunteer/index.html" target="_new">EWB's website</a>.<br/>
+    	Overseas placement applications are typically accepted in February and August each year.</p>
     {% endif %}
+    <br/>
     
 	{% if past %}
 	    <h2>Past applications</h2>
@@ -57,8 +53,8 @@ Volunteering » Applications
         		<tr style="background: {% cycle "#ffffff;" "#e0e0e0;"%}">
 			        <td>{{ a.session.close_date|date }}</td>
 			        <td>{{ a.session.name }}</td>
-			        <td>{{ a.status }}</td>
-			        <td><a href="{% url applications_detail s.application.id %}">view</a></td>
+			        <td>{% for x,y in a.APPLICATION_STATUS %}{% ifequal x a.status %}{{y}}{% endifequal %}{% endfor %}</td>
+			        <td><a href="{% url applications_detail a.id %}">view</a></td>
 			     </tr>
     		{% endfor %}
 		</table>

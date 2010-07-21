@@ -94,9 +94,11 @@ div.leftpanel {
 	<ul style="width: 50%; position: absolute; top: -2.7em;">
 		<li><a href="#info">General Info</a></li>
 		<li><a href="#questions">Questions</a></li>
-		<li><a href="#interview">Interview</a></li>
-		<li><a href="#notes">Notes</a></li>
-		<li><a href="#summary">Summary</a></li>
+		{% if application.complete %}
+			<li><a href="#interview">Interview</a></li>
+			<li><a href="#notes">Notes</a></li>
+			<li><a href="#summary">Summary</a></li>
+		{% endif %}
 	</ul>
 
     <div id="info">
@@ -197,21 +199,23 @@ div.leftpanel {
         {% endfor %}
     </div>
     
-    <div id="interview">
-    	what goes here, if anything?
-    </div>
-    
-    <div id="notes">
-        <div class="eval" style="width: 100%;">
-        	<strong>General notes</strong> (click to edit):<br/>
-            <textarea name="notes" id="notes">{% for k, c in evaluation.comments.items %}{% ifequal k "notes" %}{{c}}{% endifequal %}{% endfor %}</textarea>
-        </div>
-    </div>
-    
-    <div id="summary">
-    	<div id="summary-content">
-    	</div>
-    </div>
+    {% if application.complete %}
+	    <div id="interview">
+	    	what goes here, if anything?
+	    </div>
+	    
+	    <div id="notes">
+	        <div class="eval" style="width: 100%;">
+	        	<strong>General notes</strong> (click to edit):<br/>
+	            <textarea name="notes" id="notes">{% for k, c in evaluation.comments.items %}{% ifequal k "notes" %}{{c}}{% endifequal %}{% endfor %}</textarea>
+	        </div>
+	    </div>
+	    
+	    <div id="summary">
+	    	<div id="summary-content">
+	    	</div>
+	    </div>
+	{% endif %}
     
 </div>
 
@@ -221,6 +225,10 @@ div.leftpanel {
 <script type="text/javascript" src="{{STATIC_URL}}js/autoresize.jquery.min.js"></script>
 <script type="text/javascript">
 	$().ready(function() {
+		{% if not application.complete %}
+			$('.eval').hide();
+		{% endif %}
+		
 		$("#eval-tabs").tabs({
 			show: function(event, ui) {
 				// ajax-load the summary tab when selected
