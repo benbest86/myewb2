@@ -86,58 +86,6 @@ urlpatterns += patterns('volunteering.views.evaluations',
 )
 
 
-"""
-evaluationresponse_info = {
-  'queryset': EvaluationResponse.objects.all(),
-  'template_name': 'volunteering/evaluationresponse/list.html',
-  'template_object_name': 'evaluationresponse',
-  'paginate_by': 10,
-}
-
-evaluationresponse_info_edit = {
-  'template_name': 'volunteering/evaluationresponse/form.html',
-  'template_object_name': 'evaluationresponse',
-  'form_class':  EvaluationResponseForm,
-}
-
-evaluationresponse_info_new = {
-  'template_name': 'volunteering/evaluationresponse/form.html',
-  'form_class':  EvaluationResponseForm,
-  'post_save_redirect': '/volunteering/evaluationresponses/',
-}
-
-urlpatterns += patterns('',
-  url(r'^evaluationresponses/$', list_detail.object_list, evaluationresponse_info, name="evaluationresponses"),
-  url(r'^evaluationresponses/(?P<object_id>\d+)/$', create_update.update_object, evaluationresponse_info_edit, name="evaluationresponse_detail"),
-  url(r'^evaluationresponses/new$', create_update.create_object, evaluationresponse_info_new, name="evaluationresponse_new"),
-)
-
-evaluation_info = {
-  'queryset': Evaluation.objects.all(),
-  'template_name': 'volunteering/evaluation/list.html',
-  'template_object_name': 'evaluation',
-  'paginate_by': 10,
-}
-
-evaluation_info_edit = {
-  'template_name': 'volunteering/evaluation/form.html',
-  'template_object_name': 'evaluation',
-  'form_class':  EvaluationForm,
-}
-
-evaluation_info_new = {
-  'template_name': 'volunteering/evaluation/form.html',
-  'form_class':  EvaluationForm,
-  'post_save_redirect': '/volunteering/evaluations/',
-}
-
-urlpatterns += patterns('',
-  url(r'^evaluations/$', list_detail.object_list, evaluation_info, name="evaluations"),
-  url(r'^evaluations/(?P<object_id>\d+)/$', create_update.update_object, evaluation_info_edit, name="evaluation_detail"),
-  url(r'^evaluations/new$', create_update.create_object, evaluation_info_new, name="evaluation_new"),
-)
-"""
-
 ### PLACEMENTS AND TRACKING
 
 def placements_all(request):

@@ -20,8 +20,16 @@ class Session(models.Model):
                                      null=True)
   completed_application = models.TextField("Thank you message",
                                            null=True)
+  close_email_subject = models.CharField("Session closing email subject",
+                                 null=True, max_length=255)
+  close_email_from = models.CharField("Session closing email from", max_length=255,
+                                 default="Engineers Without Borders Canada <info@ewb.ca>")
   close_email = models.TextField("Session closing email",
                                  null=True)
+  rejection_email_subject = models.CharField("Rejected application email subject",
+                                 null=True, max_length=255)
+  rejection_email_from = models.CharField("Rejected application email from", max_length=255,
+                                 default="Engineers Without Borders Canada <info@ewb.ca>")
   rejection_email = models.TextField("Rejected application email",
                                      null=True)
   

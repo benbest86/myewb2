@@ -73,11 +73,12 @@ th, td {
 		<br/>
 		With selected applications: 
 		<select name="action">
-			<option name="email">send an email</option>
-			<option name="state-accept">accept for interview</option>
-			<option name="state-interviewed">interview complete</option>
-			<option name="state-hire">hire</option>
-			<option name="state-reject">reject</option>
+			<option value="email">send an email</option>
+			<option value="state-accept">accept for interview</option>
+			<option value="state-interviewed">interview complete</option>
+			<option value="state-hire">hire</option>
+			<option value="state-reject-email">reject (send auto email)</option>
+			<option value="state-reject-nomail">reject (do not email)</option>
 		</select>
 		&nbsp;&nbsp;
 		<input type="submit" value="submit" class="ui-widget ui-button ui-state-default ui-corner-all"/>

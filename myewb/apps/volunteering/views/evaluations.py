@@ -18,6 +18,7 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext, Context, loader
 from django.utils.translation import ugettext_lazy as _
 
+from mailer import send_mail
 from siteutils.shortcuts import get_object_or_none
 from volunteering.models import Session, Question, EvaluationCriterion, Evaluation, Application, EvaluationComment, EvaluationResponse
 from volunteering.forms import SessionForm, QuestionForm, EvaluationCriterionForm
@@ -96,4 +97,48 @@ def evaluation_criteria(request, app_id, criteria_id):
 
 @permission_required('overseas')
 def evaluation_bulkedit(request, session_id):
-    pass
+    session = get_object_or_404(Session, id=session_id)
+    
+    if request.method != 'POST':
+        return HttpResponseForbidden()
+    
+    action = request.POST.get('action', None)
+    app_id = []
+    for field in request.POST:
+        if field[0:4] == 'app-':
+            try:
+                app_id.append(int(field[4:]))
+            except:
+                pass
+    applications = Application.objects.filter(id__in=app_id, session=session)
+
+    if action == 'email':
+        request.user.message_set.create(message='Not yet implemented')
+    
+    # bulk actions for state changes
+    # (do i want to iterate and individually save each app, to emit post-save signals?)
+    # TODO: validation check for bad state changes 
+    elif action == 'state-accept':
+        applications.update(status='i')
+    elif action == 'state-interviewed':
+        applications.update(status='p')
+    elif action == 'state-hire':
+        applications.update(status='a')
+    elif action == 'state-reject-nomail':
+        applications.update(status='u')
+    elif action == 'state-reject-email':
+        applications.update(status='u')
+        # need to send rejection email in this case too
+        emails = []
+        for app in applications:
+            emails.append(app.profile.user2.email)
+
+        send_mail(subject=session.rejection_email_subject,
+                  txtMessage=None,
+                  htmlMessage=session.rejection_email,
+                  fromemail=session.rejection_email_from,
+                  recipients=emails,
+                  use_template=False)
+    
+    request.user.message_set.create(message='Evaluations updated')
+    return HttpResponseRedirect(reverse('evaluation_list', kwargs={'session_id': session_id}))

@@ -96,6 +96,8 @@ height: 150px;
 	        Close email
 	    </a></h3>
 	    <div id="closeemail" class="htmlbox ui-corner-all">
+	    	From: {{ session.close_email_from }}<br/>
+	    	Subject: {{ session.close_email_subject }}<br/><br/>
 	        {{session.close_email|safe}}
 	    </div>
 
@@ -104,6 +106,8 @@ height: 150px;
 	        Rejection email
 	    </a></h3>
 	    <div id="rejemail" class="htmlbox ui-corner-all">
+	    	From: {{ session.rejection_email_from }}<br/>
+	    	Subject: {{ session.rejection_email_subject }}<br/><br/>
 	        {{session.rejection_email|safe}}
 	    </div>
 
