@@ -34,6 +34,14 @@ th, td {
         <h2>Complete evaluations</h2>
         
         {% autosort complete %}
+        Show: <select id="evaluation-display-filter">
+        	<option value="status-all">All applications</option>
+        	<option value="status-new">New applications</option>
+        	<option value="status-accepted">Accepted for interview</option>
+        	<option value="status-interviewed">Interviewed - decision pending</option>
+        	<option value="status-hired">Hired</option>
+        	<option value="status-rejected">Rejected</option>
+        </select><br/><br/>
         <form action="{% url evaluation_bulkedit session.id %}" method="post">
 		<table>
 			<tr>
@@ -56,7 +64,7 @@ th, td {
 			</tr>
 			
 			{% for app in complete %}
-				<tr style="{% cycle 'background: #ffffff;' 'background: #eee;' %}">
+				<tr style="{% cycle 'background: #ffffff;' 'background: #eee;' %}" class="app-status app-status-{{app.status}}">
 					<td><input type="checkbox" name="app-{{app.id}}"/></td>
 					<td>{% for a,b in app.APPLICATION_STATUS %}{% ifequal a app.status %}{{b}}{% endifequal %}{% endfor %}</td>
 					<td><a href="{% url evaluation_detail app.id %}">{{ app.profile.last_name}}, {{ app.profile.first_name }}</a></td>
@@ -116,6 +124,36 @@ th, td {
 		$("#evaluation-tabs").tabs({
 			show: function(event, ui) {
 				parent.location.hash = ui.panel.id;
+			}
+		});
+
+		$('#evaluation-display-filter').change(function() {
+			if ($(this).val() == 'status-all')
+				$('.app-status').show();
+			else if ($(this).val() == 'status-new')
+			{
+				$('.app-status').hide();
+				$('.app-status-n').show();
+			}
+			else if ($(this).val() == 'status-accepted')
+			{
+				$('.app-status').hide();
+				$('.app-status-a').show();
+			}
+			else if ($(this).val() == 'status-interviewed')
+			{
+				$('.app-status').hide();
+				$('.app-status-i').show();
+			}
+			else if ($(this).val() == 'status-hired')
+			{
+				$('.app-status').hide();
+				$('.app-status-h').show();
+			}
+			else if ($(this).val() == 'status-rejected')
+			{
+				$('.app-status').hide();
+				$('.app-status-u').show();
 			}
 		});
 	});
