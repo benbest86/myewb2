@@ -60,6 +60,9 @@ div.leftpanel {
 .loading-topleft {
     background:url("{{ STATIC_URL}}images/ajax-loader.gif") no-repeat scroll left top;
 }
+span.ui-icon {
+	float: left;
+}
 </style>
 
 <div id="" class="eval" style="padding-bottom: 5px;">
@@ -177,15 +180,25 @@ div.leftpanel {
     </div>
     
     <div id="questions">
+    	{% if application.complete %}
+        	<a href="#" id="q_display_all">show all answers</a> | 
+        	<a href="#" id="q_hide_all">hide all answers</a> 
+        	<hr/>
+        {% endif %}
+        
         {% for q in application.session.question_set.all %}
-            <div class="eval">
+            <div class="eval {% if application.complete %}question-{{q.id}}{% endif %}">
                 <h3>&nbsp;</h3>
                 <textarea name="{{q.id}}">{% for k, c in evaluation.comments.items %}{% ifequal k q.strid %}{{c}}{% endifequal %}{% endfor %}</textarea>
             </div>
 
             <div class="leftpanel">
+				<a href="#" class="q_toggle" id="toggle_question-{{q.id}}">
+	            	<span class="ui-icon ui-icon-circle-triangle-s"></span>
+	            </a>
+            	
                 <h3>{{ q.question }}</h3>
-                <div class="htmlbox">
+                <div class="htmlbox question-{{q.id}}">
                     {% for qid, ans in application.get_answers.items %}
                         {% ifequal q.id qid %}
                             {{ans|safe}}
@@ -307,6 +320,30 @@ div.leftpanel {
                     myself.addClass('inputbox');
 		    });
     	});
+
+    	// display toggles
+		$('#q_display_all').click(function() {
+			$('div#questions .htmlbox, div#questions .eval').slideDown();
+		    $('div#questions span.ui-icon').removeClass('ui-icon-circle-triangle-s');
+			$('div#questions span.ui-icon').addClass('ui-icon-circle-triangle-n');
+			return false;
+		});
+		$('#q_hide_all').click(function() {
+			$('div#questions .htmlbox, div#questions .eval').slideUp();
+		    $('div#logistics span.ui-icon').removeClass('ui-icon-circle-triangle-n');
+			$('div#logistics span.ui-icon').addClass('ui-icon-circle-triangle-s');
+			return false;
+		});
+
+		$('a.q_toggle').click(function() {
+			var divname = $(this).attr('id').replace('toggle_', '');
+			$('.' + divname).slideToggle();
+		    $(this).children('span.ui-icon').toggleClass('ui-icon-circle-triangle-s');
+		    $(this).children('span.ui-icon').toggleClass('ui-icon-circle-triangle-n');
+			//$('div#logistics span.ui-icon').addClass('ui-icon-minus');
+			return false;
+		});
+
 	});
 		
 </script>
