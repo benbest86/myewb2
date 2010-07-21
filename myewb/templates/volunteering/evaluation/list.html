@@ -42,6 +42,11 @@ th, td {
         	<option value="status-hired">Hired</option>
         	<option value="status-rejected">Rejected</option>
         </select><br/><br/>
+        
+        &nbsp;
+        <a href="#" id="select-all">select all</a> |
+        <a href="#" id="select-none">select none</a> | 
+        <a href="#" id="select-invert">invert selection</a><br/>
         <form action="{% url evaluation_bulkedit session.id %}" method="post" id="evaluation-bulkedit">
 		<table>
 			<tr>
@@ -155,6 +160,27 @@ th, td {
 				$('.app-status').fadeOut();
 				$('.app-status-u').fadeIn();
 			}
+
+			$('#evaluation-bulkedit input[type=checkbox]').attr('checked', false); 
+			
+		});
+
+		$('#select-all').click(function() {
+			$('#evaluation-bulkedit input[type=checkbox]:visible').attr('checked', 'checked'); 
+			return false;
+		});
+		$('#select-none').click(function() {
+			$('#evaluation-bulkedit input[type=checkbox]').attr('checked', false); 
+			return false;
+		});
+		$('#select-invert').click(function() {
+			$('#evaluation-bulkedit input[type=checkbox]').each(function() {
+				if ($(this).attr('checked'))
+					$(this).attr('checked', false);
+				else
+					$(this).attr('checked', 'checked');
+			}); 
+			return false;
 		});
 
 	});
