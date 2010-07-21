@@ -154,7 +154,8 @@ class Evaluation(models.Model):
   def total_score(self):
     score = 0
     for e in self.evaluationresponse_set.all():
-        score = score + e.response
+        if e.response:
+            score = score + e.response
     return score
     
   def scores(self):

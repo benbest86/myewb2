@@ -65,9 +65,7 @@ th, td {
 					<td>{{ app.gpa }}</td>
 					<td>{{ app.evaluation.total_score|default_if_none:"&nbsp;" }}</td>
 					{% for c in session.evaluationcriterion_set.all %}
-					    {% with c.id as cid %}
-    					    <td>{{ app.evaluation.scores.cid|default_if_none:"&nbsp;" }}</td>
-    					{% endwith %}
+   					    <td>{% for k, v in app.evaluation.criteria.items %}{% ifequal k c.id %}{{v}}{% endifequal %}{% endfor %}</td>
     				{% endfor %}
 				</tr>
 			{% endfor %}
