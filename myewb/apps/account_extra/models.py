@@ -149,6 +149,7 @@ def set_google_password(username, password):
             return True
         except:
             return False
+    return True
 
 def check_password(self, raw_password):
     result = check_password2(self, raw_password)
@@ -160,9 +161,11 @@ def check_password(self, raw_password):
     return result
 
 def set_password(self, raw_password):
-    self.google_sync = set_google_password(self.google_username, raw_password)
-    self.save()
-    return set_password2(self, raw_password)
+    result = set_google_password(self.google_username, raw_password)
+    if result:
+        self.google_sync = True
+        set_password2(self, raw_password)
+    return result
 
 User.check_password = check_password
 User.set_password = set_password

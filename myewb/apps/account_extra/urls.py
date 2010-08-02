@@ -10,7 +10,7 @@ urlpatterns = patterns('',
     url(r'^login/$', 'account_extra.views.login', name="acct_login"),
     url(r'^login/openid/$', 'account_extra.views.login', {'associate_openid': True},
         name="acct_login_openid"),
-    url(r'^password_change/$', 'account.views.password_change', name="acct_passwd"),
+    url(r'^password_change/$', 'account_extra.views.password_change', name="acct_passwd"),
     url(r'^password_set/$', 'account.views.password_set', name="acct_passwd_set"),
     url(r'^password_delete/$', 'account.views.password_delete', name="acct_passwd_delete"),
     url(r'^password_delete/done/$', 'django.views.generic.simple.direct_to_template', {

@@ -72,6 +72,11 @@ class EmailLoginForm(forms.Form):
             online_middleware.remove_user(request)
             login(request, self.user)
             
+            # prompt to change password if too simple
+            if self.user.google_username and not self.user.google_sync:
+                self.user.message_set.create(message="<b>Your password is too simple - you must change it before signing into your @ewb.ca email account<br/> \
+                <a href='" + reverse('acct_passwd') + "'>click here to change your password</a></b>")
+            
             # update stats
             self.user.get_profile().login_count += 1
             

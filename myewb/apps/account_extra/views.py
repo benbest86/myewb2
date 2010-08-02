@@ -1,4 +1,5 @@
 import re
+from django import forms
 from django.conf import settings
 from django.shortcuts import render_to_response, get_object_or_404
 from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponseNotFound, HttpResponse
@@ -7,6 +8,7 @@ from django.contrib.auth import login as auth_login
 from django.contrib.auth.views import logout as pinaxlogout
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import User
+from django.contrib.auth.forms import PasswordChangeForm
 from django.core.urlresolvers import reverse
 from django.forms import fields
 from django.template import RequestContext
@@ -140,3 +142,25 @@ def silent_signup(request, email):
     group = get_object_or_404(LogisticalGroup, slug="silent_signup_api")
     group.add_email(email)
     return HttpResponse("success")
+
+@login_required
+def password_change(request, template_name='account/password_change.html',
+                    post_change_redirect=None):
+    if post_change_redirect is None:
+        post_change_redirect = reverse('profile_detail', kwargs={'username': request.user.username})
+    if request.method == "POST":
+        form = PasswordChangeForm(request.user, request.POST)
+        if form.is_valid():
+            result = request.user.set_password(form.cleaned_data['new_password1'])
+            
+            if not result:
+                form._errors[forms.forms.NON_FIELD_ERRORS] = ["New password is too simple"]
+            else:
+                request.user.save()
+                request.user.message_set.create(message="Password changed.")
+                return HttpResponseRedirect(post_change_redirect)
+    else:
+        form = PasswordChangeForm(request.user)
+    return render_to_response(template_name, {
+        'password_change_form': form,
+    }, context_instance=RequestContext(request))
