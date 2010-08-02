@@ -113,27 +113,55 @@ User.get_communities = get_communities
 check_password2 = User.check_password
 set_password2 = User.set_password
 User.add_to_class('google_username', models.CharField(null=True, blank=True, max_length=255))
+User.add_to_class('google_sync', models.BooleanField(default=False))
 
 def set_google_password(username, password):
     if settings.GOOGLE_APPS and username:
-        import gdata.apps.service
-        service = gdata.apps.service.AppsService(email=settings.GOOGLE_ADMIN,
-                                                 domain=settings.GOOGLE_DOMAIN,
-                                                 password=settings.GOOGLE_PASSWORD)
-        service.ProgrammaticLogin()
+        try:
+            # update google account
+            import gdata.apps.service
+            service = gdata.apps.service.AppsService(email=settings.GOOGLE_ADMIN,
+                                                     domain=settings.GOOGLE_DOMAIN,
+                                                     password=settings.GOOGLE_PASSWORD)
+            service.ProgrammaticLogin()
         
-        user = service.RetrieveUser(username)
-        user.login.password = password
-        service.UpdateUser(username, user)
+            user = service.RetrieveUser(username)
+            user.login.password = password
+            service.UpdateUser(username, user)
+
+            # update legacy ldap accounts
+            import ldap
+            from ldap import modlist as ml
+            import hashlib, base64
+        
+            myewbIdField = 'uid'
+            basedn = 'ou=people,dc=ewb,dc=ca'
+            scope = ldap.SCOPE_ONELEVEL
+            
+            l = ldap.initialize(settings.LDAP_HOST)
+            l.bind_s(settings.LDAP_BIND_DN, settings.LDAP_BIND_PW)
+            
+            name = "%s=%s,%s" % (myewbIdField, username, basedn)
+            h = hashlib.sha1(password)
+            result = l.modify_s(name, [(ldap.MOD_REPLACE,
+                                        'userPassword',
+                                        "{SHA}" + base64.encodestring(h.digest()).strip())])
+            return True
+        except:
+            return False
 
 def check_password(self, raw_password):
     result = check_password2(self, raw_password)
-    if result:
-        set_google_password(self.google_username, raw_password)
+    if result and not self.google_sync:
+        sync = set_google_password(self.google_username, raw_password)
+        if sync:
+            self.google_sync = True
+            self.save()
     return result
 
 def set_password(self, raw_password):
-    set_google_password(self.google_username, raw_password)
+    self.google_sync = set_google_password(self.google_username, raw_password)
+    self.save()
     return set_password2(self, raw_password)
 
 User.check_password = check_password
