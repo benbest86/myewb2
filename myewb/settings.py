@@ -322,6 +322,13 @@ LDAP_HOST = 'ldap://127.0.0.1'
 LDAP_BIND_DN = 'cn=myewb,ou=accra,ou=services,dc=ewb,dc=ca'
 LDAP_BIND_PW = ''
 
+# set this to true if doing Google Apps integration, and be sure to override
+# the values in local_settings
+GOOGLE_APPS = False
+GOOGLE_ADMIN = ""
+GOOGLE_DOMAIN = ""
+GOOGLE_PASSWORD = ""
+
 # debug login
 LOGGING_OUTPUT_ENABLED = True
 LOGGING_LOG_SQL = True

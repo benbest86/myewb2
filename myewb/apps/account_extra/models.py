@@ -10,6 +10,8 @@ from communities.models import Community
 from base_groups.helpers import get_counts, get_recent_counts
 from base_groups.models import BaseGroup
 
+import settings
+
 def clean_up_email_addresses(sender, instance, created, **kwargs):
     """
     Cleans up unverified emails with the same email and deletes any users who
@@ -106,3 +108,33 @@ User.get_groups = get_groups
 def get_communities(self):
     return Community.objects.filter(member_users=self, is_active=True).order_by('name')
 User.get_communities = get_communities
+
+# override user password management so that I can integrate with Google Apps
+check_password2 = User.check_password
+set_password2 = User.set_password
+User.add_to_class('google_username', models.CharField(null=True, blank=True, max_length=255))
+
+def set_google_password(username, password):
+    if settings.GOOGLE_APPS and username:
+        import gdata.apps.service
+        service = gdata.apps.service.AppsService(email=settings.GOOGLE_ADMIN,
+                                                 domain=settings.GOOGLE_DOMAIN,
+                                                 password=settings.GOOGLE_PASSWORD)
+        service.ProgrammaticLogin()
+        
+        user = service.RetrieveUser(username)
+        user.login.password = password
+        service.UpdateUser(username, user)
+
+def check_password(self, raw_password):
+    result = check_password2(self, raw_password)
+    if result:
+        set_google_password(self.google_username, raw_password)
+    return result
+
+def set_password(self, raw_password):
+    set_google_password(self.google_username, raw_password)
+    return set_password2(self, raw_password)
+
+User.check_password = check_password
+User.set_password = set_password
