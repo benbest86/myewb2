@@ -128,7 +128,10 @@ def set_google_password(username, password):
             user = service.RetrieveUser(username)
             user.login.password = password
             service.UpdateUser(username, user)
-
+        except:
+            return False
+        
+        try:
             # update legacy ldap accounts
             import ldap
             from ldap import modlist as ml
@@ -146,9 +149,8 @@ def set_google_password(username, password):
             result = l.modify_s(name, [(ldap.MOD_REPLACE,
                                         'userPassword',
                                         "{SHA}" + base64.encodestring(h.digest()).strip())])
-            return True
         except:
-            return False
+            pass
     return True
 
 def check_password(self, raw_password):
