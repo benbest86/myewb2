@@ -261,10 +261,12 @@
     {% endif %}		{# if group and user.is_authenticated #}
     
 {% else %}			{# if group.is_active #}
-	<div class="toolbarheader bkgd" id="box-membership">{% trans "Membership" %}</div>
-	<div class="toolbarcontent">
-		This group has been deleted.
-	</div>
+	{% if group %}
+		<div class="toolbarheader bkgd" id="box-membership">{% trans "Membership" %}</div>
+		<div class="toolbarcontent">
+			This group has been deleted.
+		</div>
+	{% endif %}
 {% endif %}
 {% endblock %}
 
