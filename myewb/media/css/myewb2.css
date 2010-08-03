@@ -443,6 +443,8 @@ div#messages {
 
 div.site_wide_announcements {
     background: blue;
+    width: 80%;
+    margin: 0 10%;
 }
 
 div.site_wide_announcements p {
