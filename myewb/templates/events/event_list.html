@@ -39,9 +39,7 @@
 {% endfor %}
 </div>
 <div id="hidden-helper" style="display: none;">
-<div id="hidden-helper2">
-{% for e in events %}{{e.start|date:"Y/m/d"}}{% if not forloop.last %}
-{% endif %}{% endfor %}</div>
+<div id="hidden-helper2">{% for e in events %}{{e.start|date:"Y/m/d"}}{% if not forloop.last %}|{% endif %}{% endfor %}</div>
 </div>
 
 <div id="loading" style="height: 1; width: 1; overflow: visible; position: relative; top: 0.8em; left: 2em; display: none;">loading...</div>
@@ -71,11 +69,11 @@
     $("div#calendar").html('');
 
 	function checkEvents(date){
-		var events = $('#hidden-helper2').html().split("\n");
+		var events = $('#hidden-helper2').html().split("|");
 		
 		{# probably efficiency gains in here somewhere! #}
 		{#  (but at 3AM, I'll go for functional)  #}
-		for (i in events)
+		for (var i = 0; i < events.length; i++)
 			if (events[i] == $.datepicker.formatDate("yy/mm/dd", date))
 			{
 	           	var a = new Array(true, '');
@@ -101,14 +99,16 @@
 								  });
 	}
 
+	var is_loading = false;
     var datepicker = $("div#calendar").datepicker({
         dateFormat: 'yy/mm/dd',
         changeMonth: true,
         changeYear: true,
         beforeShowDay: checkEvents,
         onChangeMonthYear: function(year, month, inst){
-        	if ($('#hidden-helper2').html() != '')
+        	if (!is_loading)
         	{
+            	is_loading = true;
 				$('#hidden-helper2').html('');
         		$('#hidden-helper').load('{% link_to_events_for parent "css_class" 1 %}' + year + '/' + month + '/' + ' #hidden-helper2',
         					null,
@@ -120,6 +120,7 @@
 									month = "0" + month;
 								$("div#calendar").datepicker("setDate", 
 															$.datepicker.parseDate("y/m/d", year + '/' + month + '/01'));
+								is_loading = false;
          					});
          	}
         },
