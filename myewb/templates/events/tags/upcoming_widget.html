@@ -5,9 +5,7 @@
 {% endfor %}
 </div>
 <div id="hidden-helper" style="display: none;">
-<div id="hidden-helper2">
-{% for e in events %}{{e.start|date:"Y/m/d"}}{% if not forloop.last %}
-{% endif %}{% endfor %}</div>
+<div id="hidden-helper2">{% for e in events %}{{e.start|date:"Y/m/d"}}{% if not forloop.last %}|{% endif %}{% endfor %}</div>
 </div>
 
 <div id="loading" style="height: 1; width: 1; overflow: visible; position: relative; top: 0.8em; left: 2em; display: none;">loading...</div>
@@ -29,16 +27,18 @@
     $("div#calendar").html('');
 
 	function checkEvents(date){
-		var events = $('#hidden-helper2').html().split("\n");
-		
+		var events = $('#hidden-helper2').html().split("|");
+
 		{# probably efficiency gains in here somewhere! #}
 		{#  (but at 3AM, I'll go for functional)  #}
-		for (i in events)
+		for (var i = 0; i < events.length; i++)
+		{
 			if (events[i] == $.datepicker.formatDate("yy/mm/dd", date))
 			{
 	           	var a = new Array(true, '');
 	            return a;
 	        }
+		}
    	    var a = new Array(false, '');
        	return a;
     }

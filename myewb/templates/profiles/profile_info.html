@@ -4,9 +4,20 @@
 
 <table class="standard standard-right search-form">
     <tbody>
+
+        {% for c in other_user.get_profile.chapters %}
+            {% get_membership c other_user as title %}
+            {% if title.admin_title %}
+                <tr>
+                    <th>&nbsp;</th>
+                    <td>
+                        <strong>{{title.admin_title}}, {{ c.name }}</strong>
+                    </td>
+                </tr>
+            {% endif %}
+        {% endfor %}	
 	
-	
-<tr>
+        <tr>
             <th>Profile Info</th>
             <td>
             

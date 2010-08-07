@@ -9,18 +9,16 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% load uni_form_tags %}
 
 <div class="usi-form" id="usi_form_{{ field }}">
-    <form class="uniForm" id="search-users" method="POST" action="{% url profile_user_search %}">
     	<fieldset class="inlineLabels">  
     		{{ user_search_form|as_uni_form }}
     		<div class="form_block">
-            <input type="hidden" name="action" value="search" />
-            <input type="hidden" name="field" class="usi-field" value="{{ field }}" />
+            <input type="hidden" name="usi_action" value="search" />
+            <input type="hidden" name="usi_field" class="usi-field" value="{{ field }}" />
             <input class="usi-submit" id="usi_submit_{{ field }}" type="submit" value="{% trans "search" %}"/>
             <span><a href="#" class="usi-add-link">Close search</a></span>
             
             </div>
     	</fieldset>
-    </form>
 
     <div class="usi-search-results" id="usi_search_results_{{field}}"></div>
 </div>

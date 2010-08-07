@@ -39,18 +39,20 @@ function onSearchSubmit(event) {
     form = $(event.target).closest('.usi-form')[0]    
     field = $(form).find('.usi-field')[0].value;
     
-    event.preventDefault();
-	first_name = $( '#id_' + field + '-first_name' ).val();
-	last_name = $( '#id_' + field + '-last_name' ).val();
-    chapter = $( '#id_' + field + '-chapter' ).val();
+    //event.preventDefault();
+	first_name = $( '#id_' + field + '-usi_first_name' ).val();
+	last_name = $( '#id_' + field + '-usi_last_name' ).val();
+    chapter = $( '#id_' + field + '-usi_chapter' ).val();
     
-    results_div = $(form).children('.usi-search-results' )[0];
-	$(results_div).html( '&nbsp;' ).load(
+    //results_div = $(form).children('.usi-search-results' )[0];
+    results_div = $('div.usi-search-results');
+	$(results_div).html( '&nbsp;' );
+	$(results_div).load(
         getUserSearchUrl(), {
-            'first_name': first_name, 
-            'last_name': last_name,
-            'chapter': chapter,
-            'field': field
+            'usi_first_name': first_name, 
+            'usi_last_name': last_name,
+            'usi_chapter': chapter,
+            'usi_field': field
         },
         onSearchResultsLoad
     );
@@ -65,6 +67,6 @@ function onAddSelection(event) {
 
 $(document).ready(function() {
     $( '.usi-search' ).hide();
-    $( '.usi-submit' ).click( function(event) { onSearchSubmit(event) } );
+    $( '.usi-submit' ).click( function(event) { onSearchSubmit(event); return false; } );
     $( '.usi-add-link' ).click( function(event) { onAddSelection(event); return false; } );      
 });

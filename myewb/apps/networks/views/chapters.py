@@ -1,9 +1,10 @@
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import permission_required
 
+from account_extra.models import set_google_password
 from base_groups.models import GroupMember
 from base_groups.decorators import group_admin_required
 from communities.models import ExecList
@@ -130,3 +131,25 @@ def email_forwards_delete(request, group_slug, fwd_id):
         request.user.message_set.create(message="Deleted")  #should template-ize?
             
     return HttpResponseRedirect(reverse('email_forwards_index', kwargs={'group_slug': group_slug}))
+
+@group_admin_required()
+def email_account_reset(request, group_slug):
+    if request.method == 'POST':
+        if request.POST.get("newpass", None):
+            network = get_object_or_404(Network, slug=group_slug)
+            chapter = get_object_or_404(ChapterInfo, network=network)   # ensure is a chapter
+            
+            # you've gotta stop changing your name.
+            if group_slug == 'grandriver':
+                group_slug = 'waterloopro'
+                
+            result = set_google_password(group_slug, request.POST.get("newpass", ""))
+            if result:
+                return HttpResponse("ok")
+            else:
+                return HttpResponse("password too simple")
+        else:
+            return HttpResponse("enter a new password")
+    else:
+        return HttpResponse("invalid")
+        

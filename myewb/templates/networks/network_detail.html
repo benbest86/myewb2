@@ -76,7 +76,45 @@
         
         <tr>
             <th>{% trans "Email:" %}</th>
-            <td><a href="mailto:{{ group.slug }}@ewb.ca">{{ group.slug }}@ewb.ca</a></td>
+            <td>
+            	<a href="mailto:{{ group.slug }}@ewb.ca">{{ group.slug }}@ewb.ca</a>
+			    {% if group and group.is_chapter and is_admin %}
+			    	<br/>
+			    	<div style="padding-left: 20px;">
+			    		(<a href="#" id="reset-email-password">reset password</a> - 
+			    		<a href="http://mail.ewb.ca" target="_new">login here</a>)
+			    		<div id="reset-email-password-box" style="display: none;">
+			    			<form action="" method="post" id="reset-email-password-form">
+			    				<input type="password" id="reset-email-password-value" name="new_password"/>
+			    				<input type="submit" value="reset"/>
+			    				<span id="reset-email-password-result"></span>
+			    			</form>
+			    		</div>
+			    	</div>
+
+					<script type="text/javascript">
+					$().ready(function() {
+						$('#reset-email-password').click(function() {
+							$('#reset-email-password-box').slideDown();
+						});
+						$('#reset-email-password-form').submit(function() {
+							var confirmed = confirm("Are you sure you want to change the password?");
+							if (confirmed)
+							{
+								$('#reset-email-password-result').html("saving...");
+								$.post('{% url chapter_email_password group.slug %}',
+										{newpass: $('#reset-email-password-value').val()},
+										function(data) {
+											$('#reset-email-password-result').html(data);
+										});
+							}
+							return false;
+						});
+					});
+					</script>
+
+			    {% endif %}
+            </td>
         </tr>
         
 

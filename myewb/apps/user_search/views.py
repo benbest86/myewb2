@@ -18,9 +18,9 @@ from networks.models import Network
 from base_groups.models import BaseGroup
 
 def user_search(request):
-    field = request.POST.get('field', '')
-    first_name = request.POST.get('first_name', None)
-    last_name = request.POST.get('last_name', None)
+    field = request.POST.get('usi_field', '')
+    first_name = request.POST.get('usi_first_name', None)
+    last_name = request.POST.get('usi_last_name', None)
     #chapter = request.POST.get('chapter', None)
     #chapters = Network.objects.filter(chapter_info__isnull=False)
     

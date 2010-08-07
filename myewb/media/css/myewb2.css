@@ -153,10 +153,11 @@ div#tabhead {
 }
 
 ul.tabs {
-    padding: 0;
+    padding: 0 0 0 2px;
     margin: 0.5em auto 0 auto;
     width: 100%;
     text-align: center;
+    clear: both;
 }
 
 ul.tabs li {
@@ -443,6 +444,8 @@ div#messages {
 
 div.site_wide_announcements {
     background: blue;
+    width: 80%;
+    margin: 0 10%;
 }
 
 div.site_wide_announcements p {

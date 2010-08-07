@@ -10,7 +10,7 @@ urlpatterns = patterns('',
     url(r'^login/$', 'account_extra.views.login', name="acct_login"),
     url(r'^login/openid/$', 'account_extra.views.login', {'associate_openid': True},
         name="acct_login_openid"),
-    url(r'^password_change/$', 'account.views.password_change', name="acct_passwd"),
+    url(r'^password_change/$', 'account_extra.views.password_change', name="acct_passwd"),
     url(r'^password_set/$', 'account.views.password_set', name="acct_passwd_set"),
     url(r'^password_delete/$', 'account.views.password_delete', name="acct_passwd_delete"),
     url(r'^password_delete/done/$', 'django.views.generic.simple.direct_to_template', {
@@ -28,7 +28,7 @@ urlpatterns = patterns('',
     url(r'^confirm_email/(\w+)/$', 'emailconfirmation.views.confirm_email', name="acct_confirm_email"),
 
     # Setting the permanent password after getting a key by email
-    url(r'^password_reset_key/(\w+)/$', 'account.views.password_reset_from_key', name="acct_passwd_reset_key"),
+    url(r'^password_reset_key/(\w+)/$', 'account_extra.views.password_reset_from_key', name="acct_passwd_reset_key"),
 
     # ajax validation    
     (r'^validate/$', 'ajax_validation.views.validate', {'form_class': EmailSignupForm}, 'signup_form_validate'),

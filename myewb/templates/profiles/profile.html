@@ -10,6 +10,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% load uni_form_tags %}
 {% load profile_tags %}
 {% load group_topics_tags %}
+{% load base_groups_tags %}
 
 {% block head_title %}{% blocktrans with other_user.visible_name as username %}Profile for {{ username }}{% endblocktrans %}{% endblock %}
 
@@ -77,7 +78,6 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 	{% if is_me or has_visibility %}
 
 		{% include "profiles/profile_info.html" %}        
-        
 	{# end of, is_me or is friend #}
     {% else %}
     

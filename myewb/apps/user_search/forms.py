@@ -18,16 +18,16 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
 class UserSearchForm(forms.Form):
-    first_name = forms.CharField(required=False)
-    last_name = forms.CharField(required=False)
-    chapters = [('none', _('Any chapter'))]
+    usi_first_name = forms.CharField(label="First name", required=False)
+    usi_last_name = forms.CharField(label="Last name", required=False)
+    usi_chapters = [('none', _('Any chapter'))]
     #chapter = forms.ChoiceField(choices=chapters, required=False)
   
     def __init__(self, *args, **kwargs):
         chapterlist = kwargs.pop('chapters', None)
         
-        self.base_fields['first_name'].initial = kwargs.pop('first_name', None)
-        self.base_fields['last_name'].initial = kwargs.pop('last_name', None)
+        self.base_fields['usi_first_name'].initial = kwargs.pop('first_name', None)
+        self.base_fields['usi_last_name'].initial = kwargs.pop('last_name', None)
   
         """
         for chapter in chapterlist:
