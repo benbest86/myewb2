@@ -18,10 +18,12 @@ from django.template import RequestContext, Context, loader
 from django.utils.translation import ugettext_lazy as _
 
 from siteutils.countries import EWB_PLACEMENTS
+from siteutils.decorators import secure_required
 from volunteering.models import Placement, Sector
 from volunteering.forms import PlacementForm
 
 @permission_required('overseas')
+@secure_required
 def placements(request):
     placements = Placement.objects.filter(deleted=False)
     sectors = Sector.objects.all()
@@ -33,6 +35,7 @@ def placements(request):
     }, context_instance=RequestContext(request))
 
 @permission_required('overseas')
+@secure_required
 def detail(request, placement_id):
     placement = get_object_or_404(Placement, id=placement_id)
     
@@ -41,6 +44,7 @@ def detail(request, placement_id):
                               context_instance=RequestContext(request))
     
 @permission_required('overseas')
+@secure_required
 def new(request):
     if request.method == 'POST':
         form = PlacementForm(request.POST)
