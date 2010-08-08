@@ -164,10 +164,14 @@ placement_info_new = {
 }
 
 urlpatterns += patterns('',
-  url(r'^placements/$', placements_all, name="placements"),
+#  url(r'^placements/$', placements_all, name="placements"),
   url(r'^placements/(?P<placement_type>(all|active|past))/$', placements_by_type),
-  url(r'^placements/(?P<object_id>\d+)/$', create_update.update_object, placement_info_edit, name="placement_detail"),
-  url(r'^placements/new$', create_update.create_object, placement_info_new, name="placement_new"),
+)
+
+urlpatterns += patterns('volunteering.views.placements',
+  url(r'^placements/$', 'placements', name="placements"),
+  url(r'^placements/(?P<placement_id>\d+)/$', 'detail', name="placement_detail"),
+  url(r'^placements/new/$', 'new', name="placement_new"),
 )
 
 sector_info = {

@@ -200,8 +200,11 @@ class Sector(models.Model):
     return self.name
 
 class Placement(models.Model):
+  PLACEMENT_TYPES = (('jf', "Junior Fellow"),
+                     ('lt', "Long-term"))
+  
   description = models.TextField()
-  longterm = models.BooleanField()
+  type = models.CharField(max_length=2, choices=PLACEMENT_TYPES, default='lt')
   deleted = models.BooleanField(default=False)
   start_date = models.DateField(null=True)
   end_date = models.DateField(null=True)
@@ -210,13 +213,19 @@ class Placement(models.Model):
   flight_request_made = models.BooleanField(default=True)
 
   sector = models.ForeignKey(Sector, null=True)
-  coach = models.ForeignKey(MemberProfile, related_name='coach', null=True)
+  coach = models.ForeignKey(MemberProfile, related_name='placement_coach', null=True)
   profile = models.ForeignKey(MemberProfile, related_name='placement')
   
   def country_name(self):
     if self.country and COUNTRY_MAP.has_key(self.country):
       return COUNTRY_MAP[self.country]
+    return None
 
+  def type_name(self):
+    if self.type:
+        for x,y in self.PLACEMENT_TYPES:
+            if self.type == x:
+                return y
     return None
 
   def local_phone_numbers(self):

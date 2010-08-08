@@ -1,5 +1,7 @@
 {% extends "volunteering/base.html" %}
 
+{% load uni_form_tags %}
+
 {% block head_title %}
 Volunteering » Placements »
 {% if placement %}
@@ -10,11 +12,14 @@ Volunteering » Placements »
 {% endblock %}
 
 {% block body %}
+	<link rel="stylesheet" href="{{ STATIC_URL }}css/autocomplete.css" />
+    <script type="text/javascript" src="{{STATIC_URL}}jquery.autocomplete.min.js"></script>
+    
 <h2>Create a new placement</h2>
-<form action="{{ action }}" method="post">
-	<table>
-	{{ form.as_p }}
-	</table>
+<form action="{{ action }}" method="post" class="uniForm">
+	<fieldset class="inlineLabels">
+		{{ form|as_uni_form }}
+	</fieldset>
 	<input type="submit" name="placement" value="Save Placement" id="placement">
 </form>
 {% endblock %}

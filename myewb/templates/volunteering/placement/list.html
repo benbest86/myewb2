@@ -12,10 +12,11 @@ Volunteering » Placements
 	{% new_button "placement" %}
 
   {% if placement_list %}	
-	  {% segmented_control base_url type page_list %}
+	  {#{% segmented_control base_url type page_list %} #}
 	  {% autopaginate placement_list 10 %}
 	  {% paginate %}
 
+{% comment %}
 		<form class="filter" action="{{ base_url }}" method="get">
 		<select name="sector" onchange="this.form.submit();">
 		{% select_box sector_list selected_sector %}
@@ -27,14 +28,14 @@ Volunteering » Placements
 		{% select_box sending_group_list selected_sending_group %}
 		</select>
 		</form>
-	
+	{% endcomment %}
 		<div class="clear"></div>
 		<table>
 		<tr>
 	    <th>{% anchor country_name "Country" %}</th>
 
 	    <th>{% anchor profile.name "Volunteer" %}</th>
-	    <th>{% anchor rown "Location" %}</th>
+	    <th>{% anchor town "Location" %}</th>
 	    <th>{% anchor start_date "Arrival" %}</th>
 	    <th>{% anchor end_date "Departure" %}</th>
 	    <th>Phone number</th>

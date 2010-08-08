@@ -1,0 +1,27 @@
+{% extends "volunteering/base.html" %}
+
+{% load uni_form_tags %}
+
+{% block head_title %}
+Volunteering » Placements
+{% endblock %}
+
+{% block body %}
+    
+<h2>{{ placement.profile.name }}</h2>
+
+<p>
+<strong>{{placement.type_name}}</strong><br/>
+{{placement.start_date}} to {{ placement.end_date}}
+</p>
+
+<p>
+{{ placement.sector.name }}<br/>
+{{ placement.town}}, {{placement.country_name }}
+</p>
+
+<p><em>{{ placement.description }}</em></p>
+
+<p>Coach: {{ placement.coach.name }}</p>
+
+{% endblock %}

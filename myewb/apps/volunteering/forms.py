@@ -1,9 +1,12 @@
 from django import forms
 from django.contrib.admin import widgets
+from django.contrib.auth.models import User
 
 from lxml.html.clean import clean_html, autolink_html, Cleaner
-from siteutils.helpers import autolink_email
 
+from profiles.models import MemberProfile
+from user_search.forms import UserField, AutocompleteField
+from siteutils.helpers import autolink_email
 from volunteering.models import *
 
 
@@ -129,9 +132,18 @@ class SectorForm(forms.ModelForm):
 class PlacementForm(forms.ModelForm):
   start_date = forms.DateField(widget=widgets.AdminDateWidget)
   end_date = forms.DateField(widget=widgets.AdminDateWidget)
+  #profile = UserField()
+  #sector = forms.CharField(widget=AutocompleteField(model=Sector))
+  #profile = AutocompleteField(model=MemberProfile)
+#  coach = forms.CharField(widget=AutocompleteField(model=MemberProfile))
+  sector = AutocompleteField(model=Sector, create=True)
+  profile = AutocompleteField(model=MemberProfile, create=False)
+  coach = AutocompleteField(model=MemberProfile, create=False)
+  
   class Meta:
     model = Placement
-
+    exclude=('deleted', 'flight_request_made')
+    
 class StipendForm(forms.ModelForm):
   class Meta:
     model = Stipend
