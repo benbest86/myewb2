@@ -17,15 +17,19 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext, Context, loader
 from django.utils.translation import ugettext_lazy as _
 
-from volunteering.models import Placement
+from siteutils.countries import EWB_PLACEMENTS
+from volunteering.models import Placement, Sector
 from volunteering.forms import PlacementForm
 
 @permission_required('overseas')
 def placements(request):
     placements = Placement.objects.filter(deleted=False)
+    sectors = Sector.objects.all()
     
     return render_to_response('volunteering/placement/list.html', {
         "placement_list": placements,
+        "sectors": sectors,
+        "countries": EWB_PLACEMENTS,
     }, context_instance=RequestContext(request))
 
 @permission_required('overseas')

@@ -8,90 +8,162 @@ Volunteering » Placements
 {% endblock %}
 
 {% block body %}
+	<style>
+	table {
+		width: 100%;
+	}
+	th {
+  		text-align: left;
+  		border: 1px solid;
+	}
+	th, td {
+	  	padding: 5px;
+	}
+	.options {
+		display: none;
+	}
+	input.show {
+		margin-left: 10px;
+	}
+	</style>
 
 	{% new_button "placement" %}
 
-  {% if placement_list %}	
-	  {#{% segmented_control base_url type page_list %} #}
-	  {% autopaginate placement_list 10 %}
-	  {% paginate %}
+	{% if placement_list %}
+		{% autopaginate placement_list 10 %}
+		{% paginate %}
 
-{% comment %}
-		<form class="filter" action="{{ base_url }}" method="get">
-		<select name="sector" onchange="this.form.submit();">
-		{% select_box sector_list selected_sector %}
-		</select>
-		<select name="country" onchange="this.form.submit();">
-		{% select_box country_list selected_country %}
-		</select>
-		<select name="sending_group" onchange="this.form.submit();">
-		{% select_box sending_group_list selected_sending_group %}
-		</select>
-		</form>
-	{% endcomment %}
 		<div class="clear"></div>
+		<br/>
+		
+		Filter by:
+			<select name="sector" id="filter-sector">
+				<option value="all">Sector (all)</option>
+				{% for s in sectors %}
+					<option value="{{s.id}}">{{s.name}}</option>
+				{% endfor %}
+			</select>
+			<select name="country" id="filter-country">
+				<option value="all">Country (all)</option>
+				{% for c, cname in countries %}
+					<option value="{{c}}">{{cname}}</option>
+				{% endfor %}
+			</select>
+		<br/><br/>
+		
+		Show:
+			<input type="radio" name="show" class="show" id="general" checked="checked"/>general info
+			<input type="radio" name="show" class="show" id="stipend"/>stipends
+			<input type="radio" name="show" class="show" id="insurance"/>insurance
+			<input type="radio" name="show" class="show" id="flights"/>flights
+		<br/><br/>
+		
 		<table>
-		<tr>
-	    <th>{% anchor country_name "Country" %}</th>
-
-	    <th>{% anchor profile.name "Volunteer" %}</th>
-	    <th>{% anchor town "Location" %}</th>
-	    <th>{% anchor start_date "Arrival" %}</th>
-	    <th>{% anchor end_date "Departure" %}</th>
-	    <th>Phone number</th>
-	    <th>{% anchor stipend.get.daily_rate "Daily Rate" %}</th>
-	    <th>Days in Quarter</th>
-			<th>Stipend</th>
-	    <th>{% anchor stipend.get.repatriation "Repatriation Paid (Quarter)" %}</th>
-	    <th>{% anchor stipend.get.repatriation "Repatriation Accrued (Quarter)" %}</th>
-	    <th>{% anchor stipend.get.repatriation "Repatriation Paid (Total)" %}</th>
-	    <th>{% anchor stipend.get.repatriation "Repatriation Paid (Total)" %}</th>
-	    <th>{% anchor stipend.get.adjustment "Adjustments" %}</th>
-	    <th>{% anchor stipend.get.payment "Payment" %}</th>
-	    <th>Notes</th>
-	    <th>Repatriation Notes</th>
-		</tr>
-		{% for placement in placement_list %}
 			<tr>
-			  <td>{{ placement.country_name }}</td>
+		    	<th>Name</th>
+		    	<th>Sector</th>
+	    		<th>Country</th>
+
+	    		<th class="options general">Location</th>
+	    		<th class="options general">Arrival</th>
+	    		<th class="options general">Departure</th>
+	    		<th class="options general">Phone</th>
+	    		<th class="options general">Coach</th>
+	    		
+	    		<th class="options stipend">Daily Rate</th>
+	    		<th class="options stipend">Days in Quarter</th>
+				<th class="options stipend">Stipend</th>
+	    		<th class="options stipend">Repatriation Paid (Quarter)</th>
+	    		<th class="options stipend">Repatriation Accrued (Quarter)</th>
+	    		<th class="options stipend">Repatriation Paid (Total)</th>
+	    		<th class="options stipend">Repatriation Paid (Total)</th>
+	    		<th class="options stipend">Adjustments</th>
+	    		<th class="options stipend">Payment</th>
+	    		<th class="options stipend">Notes</th>
+	    		<th class="options stipend">Repatriation Notes</th>
+			</tr>
+		
+		{% for placement in placement_list %}
+			<tr class="country_{{ placement.country }} sector_{{ placement.sector.id }} row">
 				<td><a href="{% url profile_detail placement.profile.user.username %}">{{ placement.profile.name }}</a></td>
-			  <td><a href="{% url placement_detail placement.id %}">{{ placement.town }}</a></td>
-			  <td class='right'>
-			    {% if placement.start_date %}
-			      {{ placement.start_date|date:"d M Y" }}
-			    {% endif %}
-			  </td>
-			  <td class='right'>
-			    {% if placement.end_date %}
-			      {{ placement.end_date|date:"d M Y" }}
-			    {% endif %}
-			  </td>
-			  <td>
-			    {% for pn in placement.local_phone_numbers %}
-			    {{ pn.number }}
-			    {% if not forloop.last %}<br/>{% endif %}
-			    {% endfor %}
-			  </td>
-			  <td>
+				<td>Sector</td>
+				<td>{{ placement.country_name }}</td>
+			  
+				<td class="options general"><a href="{% url placement_detail placement.id %}">{{ placement.town }}</a></td>
+			  	<td class="options general">{% if placement.start_date %}{{ placement.start_date|date:"d M Y" }}{% endif %}</td>
+			    <td class="options general">{% if placement.end_date %}{{ placement.end_date|date:"d M Y" }}{% endif %}</td>
+			    <td class="options general">
+			    	{% for pn in placement.local_phone_numbers %}
+			    		{{ pn.number }}
+			    		{% if not forloop.last %}<br/>{% endif %}
+			    	{% endfor %}
+			    </td>
+				<td class="options general"><a href="{% url profile_detail placement.coach.user.username %}">{{ placement.coach.name }}</a></td>
+			    
+			  	<td class="options stipend">
 					{% if placement.stipend.get %}
-					<a href="{% url stipend_detail placement.stipend.get.id %}">{{ placement.stipend.get.daily_rate|floatformat:2 }}</a>
+						<a href="{% url stipend_detail placement.stipend.get.id %}">{{ placement.stipend.get.daily_rate|floatformat:2 }}</a>
 					{% endif %}
 				</td>
-			  <td>90</td>
-				<td>{{ placement.stipend.get.payment|floatformat:2 }}</td>
-			  <td>{{ placement.stipend.get.repatriation_paid_quarter|floatformat:2 }}</td>
-			  <td>{{ placement.stipend.get.repatriation_accrued_quarter|floatformat:2 }}</td>
-			  <td>{{ placement.stipend.get.repatriation_paid_total|floatformat:2 }}</td>
-			  <td>{{ placement.stipend.get.repatriation_accrued_total|floatformat:2 }}</td>
-			  <td>{{ placement.stipend.get.adjustment|floatformat:2 }}</td>
-			  <td>{{ placement.stipend.get.adjusted_payment|floatformat:2 }}</td>
-			  <td>{{ placement.stipend.get.notes|truncate_tail:30 }}</td>
-			  <td>{{ placement.stipend.get.repatriation_notes|truncate_tail:30 }}</td>
+			  	<td class="options stipend">90</td>
+				<td class="options stipend">{{ placement.stipend.get.payment|floatformat:2 }}</td>
+			  	<td class="options stipend">{{ placement.stipend.get.repatriation_paid_quarter|floatformat:2 }}</td>
+			  	<td class="options stipend">{{ placement.stipend.get.repatriation_accrued_quarter|floatformat:2 }}</td>
+			  	<td class="options stipend">{{ placement.stipend.get.repatriation_paid_total|floatformat:2 }}</td>
+			  	<td class="options stipend">{{ placement.stipend.get.repatriation_accrued_total|floatformat:2 }}</td>
+			  	<td class="options stipend">{{ placement.stipend.get.adjustment|floatformat:2 }}</td>
+			  	<td class="options stipend">{{ placement.stipend.get.adjusted_payment|floatformat:2 }}</td>
+			  	<td class="options stipend">{{ placement.stipend.get.notes|truncate_tail:30 }}</td>
+			  	<td class="options stipend">{{ placement.stipend.get.repatriation_notes|truncate_tail:30 }}</td>
 			</tr>
 		{% endfor %}
-	</table>
+		</table>
+		
 	{% else %}
 		<p>No placements found.</p>
 	{% endif %}
 {% endblock %}
 
+{% block extra_body %}
+<script type="text/javascript">
+	$().ready(function() {
+		// handle anything that might be pre-selected
+		$('.show').each(function() {
+			if ($(this).attr('checked'))
+			{
+				var showtype = $(this).attr('id');
+				$('.' + showtype).show();
+			}
+		});
+
+		// and toggle between stipend/insurance/flight info as requested
+		$('.show').click(function() {
+			$('.options').hide();
+			var showtype = $(this).attr('id');
+			$('.' + showtype).show();
+		});
+
+		// trigger page reloads on filters
+		$('#filter-sector').change(function() {
+			var sector = $(this).val();
+			if (sector == 'all')
+				$('.row').show();
+			else
+			{
+				$('.row').hide();
+				$('.sector_' + sector).show();
+			}
+		});
+		$('#filter-country').change(function() {
+			var country = $(this).val();
+			if (country == 'all')
+				$('.row').show();
+			else
+			{
+				$('.row').hide();
+				$('.country_' + country).show();
+			}
+		});
+	});
+</script>
+{% endblock %}
