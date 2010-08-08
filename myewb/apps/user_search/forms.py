@@ -9,13 +9,18 @@ Last modified on 2009-12-29
 """
 from settings import STATIC_URL
 from django import forms
+from django.forms.util import flatatt, smart_unicode
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render_to_response
 from django.template import RequestContext, Context, loader
+from django.utils.html import escape
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
+
+from siteutils.shortcuts import get_object_or_none
 
 class UserSearchForm(forms.Form):
     usi_first_name = forms.CharField(label="First name", required=False)
@@ -188,3 +193,58 @@ class SampleMultiUserSearchForm(forms.Form):
     to = MultipleUserField(required=False)
     cc = MultipleUserField(required=False)
     bcc = MultipleUserField(required=False)
+
+class AutocompleteField(forms.CharField):
+    
+    def __init__(self, model, create, *args, **kwargs):
+        self.model = model
+        self.create = create
+        
+        self.widget = AutocompleteWidget(model=model)    
+        super(AutocompleteField, self).__init__(*args, **kwargs)
+
+    def clean(self, value):
+        value = super(AutocompleteField, self).clean(value)
+        
+        obj = get_object_or_none(self.model, name=value)
+        if obj:
+            return obj
+        
+        if self.create:
+            obj = self.model(name=value)
+            obj.save()
+            return obj
+        else:
+            raise forms.ValidationError("Invalid choice")
+
+class AutocompleteWidget(forms.TextInput):
+    def __init__(self, model, options={}, attrs={}):
+        self.model = model
+        self.options = options
+
+        self.attrs = {'autocomplete': 'off'}
+        self.attrs.update(attrs)
+
+    def render_js(self, field_id):
+        ctype = ContentType.objects.get_for_model(self.model)
+        return u"""$('#%s').autocomplete('%s',
+                                         {max: 30,
+                                         multiple: false});""" % (field_id,
+                                                                  reverse('form_widget_autocomplete',
+                                                                          kwargs={'app': ctype.app_label, 
+                                                                                  'model': ctype.model}))
+    
+    def render(self, name, value=None, attrs=None):
+        final_attrs = self.build_attrs(attrs, name=name)
+        if value:
+            final_attrs['value'] = escape(smart_unicode(value))
+            
+        if not self.attrs.has_key('id'):
+            final_attrs['id'] = 'id_%s' % name
+            
+        return mark_safe('''<input type="text" %(attrs)s/> 
+                <script type="text/javascript">
+                %(js)s
+                </script>''' % {'attrs': flatatt(final_attrs),
+                                'js': self.render_js(final_attrs['id'])})
+                

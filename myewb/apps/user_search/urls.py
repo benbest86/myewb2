@@ -10,4 +10,5 @@ urlpatterns = patterns('user_search.views',
     url(r'^samplesearch/$', 'sample_user_search', name='profile_sample_user_search'),
     url(r'^samplemultisearch/$', 'sample_multi_user_search', name='profile_sample_multi_user_search'),
     url(r'^selected/$', 'selected_user', name='selected_user'),
+    url(r'^autocomplete/(?P<app>\w+)/(?P<model>\w+)/$', 'autocomplete', name='form_widget_autocomplete')
 )

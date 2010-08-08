@@ -6,9 +6,10 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext, Context, loader
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
+from django.contrib.contenttypes.models import ContentType
 from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
@@ -126,3 +127,14 @@ def selected_user(request):
                     'sel_user': sel_user,
                     'field': field
                 }, context_instance=RequestContext(request))
+
+def autocomplete(request, app, model):
+    model_class = ContentType.objects.get(app_label=app, model=model).model_class()
+    if request.GET.get('q', None):
+        list = model_class.objects.filter(name__icontains=request.GET['q'])[:30]
+        results = ""
+        for l in list:
+            results = results + l.name + "\n" 
+        return HttpResponse(results)
+    
+    return HttpResponse('')
