@@ -87,11 +87,8 @@ class ApplicationForm(forms.ModelForm):
 
     def clean_schooling(self):
         data = self.cleaned_data.get('schooling', '')
-        print "data is", data
         if data:
-            print "cleaned"
             return html_clean(data)
-        print "or not"
 
     def clean_resume_text(self):
         data = self.cleaned_data.get('resume_text', '')
@@ -132,10 +129,6 @@ class SectorForm(forms.ModelForm):
 class PlacementForm(forms.ModelForm):
   start_date = forms.DateField(widget=widgets.AdminDateWidget)
   end_date = forms.DateField(widget=widgets.AdminDateWidget)
-  #profile = UserField()
-  #sector = forms.CharField(widget=AutocompleteField(model=Sector))
-  #profile = AutocompleteField(model=MemberProfile)
-#  coach = forms.CharField(widget=AutocompleteField(model=MemberProfile))
   sector = AutocompleteField(model=Sector, create=True)
   profile = AutocompleteField(model=MemberProfile, create=False)
   coach = AutocompleteField(model=MemberProfile, create=False)
