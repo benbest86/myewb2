@@ -196,11 +196,12 @@ class SampleMultiUserSearchForm(forms.Form):
 
 class AutocompleteField(forms.CharField):
     
-    def __init__(self, model, create, *args, **kwargs):
+    def __init__(self, model, create, chars=1, *args, **kwargs):
         self.model = model
         self.create = create
+        self.chars = chars
         
-        self.widget = AutocompleteWidget(model=model)    
+        self.widget = AutocompleteWidget(model=model, create=create, chars=chars)    
         super(AutocompleteField, self).__init__(*args, **kwargs)
 
     def clean(self, value):
@@ -218,8 +219,10 @@ class AutocompleteField(forms.CharField):
             raise forms.ValidationError("Invalid choice")
 
 class AutocompleteWidget(forms.TextInput):
-    def __init__(self, model, options={}, attrs={}):
+    def __init__(self, model, create, chars, options={}, attrs={}):
         self.model = model
+        self.mustmatch = not create
+        self.chars = chars
         self.options = options
 
         self.attrs = {'autocomplete': 'off'}
@@ -229,10 +232,13 @@ class AutocompleteWidget(forms.TextInput):
         ctype = ContentType.objects.get_for_model(self.model)
         return u"""$('#%s').autocomplete('%s',
                                          {max: 30,
-                                         multiple: false});""" % (field_id,
-                                                                  reverse('form_widget_autocomplete',
-                                                                          kwargs={'app': ctype.app_label, 
-                                                                                  'model': ctype.model}))
+                                         mustMatch: %s,
+                                         minChars: %s});""" % (field_id,
+                                                               reverse('form_widget_autocomplete',
+                                                                       kwargs={'app': ctype.app_label,
+                                                                               'model': ctype.model}),
+                                                               str(self.mustmatch).lower(), 
+                                                               self.chars)
     
     def render(self, name, value=None, attrs=None):
         final_attrs = self.build_attrs(attrs, name=name)
