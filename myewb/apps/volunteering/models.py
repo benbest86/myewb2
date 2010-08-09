@@ -153,25 +153,7 @@ class Evaluation(models.Model):
   )
 
   application = models.OneToOneField("Application")
-  #application = models.ForeignKey("Application")    # django-evolve only recognizes this
-  rank = models.PositiveSmallIntegerField(blank=True, null=True)
-  
-  # yes/no 
-  interview1 = models.BooleanField()
-  interview2 = models.CharField(_('interview'), max_length=10, choices=INTERVIEW_CHOICES, null=True, blank=True)
-
-  rejection_sent = models.BooleanField()
-  offer_accepted = models.BooleanField(default=True)
-  
-  interview1_notes = models.TextField(blank=True, null=True)
-  interview2_notes = models.TextField(blank=True, null=True)
-  
-  ewb_experience = models.TextField(blank=True, null=True)
-
-
-  application_score = models.PositiveSmallIntegerField(blank=True, null=True)
-  # interview_score = sum(interview_score_leadership, interview_score_problem_solving, _africa_ready, _interpersonal, _attitudes_personal)
-  # criterion table??
+  last_email = models.DateTimeField(blank=True, null=True)
   
   def total_score(self):
     score = 0

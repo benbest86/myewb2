@@ -59,6 +59,7 @@ th, td {
        			{% for c in session.evaluationcriterion_set.all %}
        			    <th>{{ c.column_header }}</th>
        			{% endfor %}
+       			<th>Last emailed</th>
 			</tr>
 			
 			{% for app in complete %}
@@ -72,6 +73,13 @@ th, td {
 					{% for c in session.evaluationcriterion_set.all %}
    					    <td>{% for k, v in app.evaluation.criteria.items %}{% ifequal k c.id %}{{v}}{% endifequal %}{% endfor %}</td>
     				{% endfor %}
+    				<td>
+    					{% if app.evaluation.last_email %}
+    						{{ app.evaluation.last_email|date }}
+    					{% else %}
+    						never
+    					{% endif %}
+    				</td>
 				</tr>
 			{% endfor %}
 		</table>

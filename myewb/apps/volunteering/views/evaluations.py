@@ -7,6 +7,7 @@ Copyright 2010 Engineers Without Borders Canada
 """
 
 from copy import copy
+from datetime import datetime
 
 from django.contrib.auth.decorators import permission_required
 from django.contrib.auth.models import User
@@ -260,6 +261,9 @@ def evaluation_emailsend(request, session_id):
             emails = []
             for app in applications:
                 emails.append(app.profile.user2.email)
+                eval = app.evaluation
+                eval.last_email = datetime.now()
+                eval.save()
     
             send_mail(subject=form.cleaned_data['subject'],
                       txtMessage=None,
