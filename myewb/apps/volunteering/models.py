@@ -85,10 +85,20 @@ class Question(models.Model):
     ordering = ('question_order', 'session')
 
 class ApplicationQuestion(Question):
+  def clone(self):  
+      return ApplicationQuestion(question=self.question,
+                                 question_order=self.question_order,
+                                 session=self.session)
+    
   class Meta:
     ordering = ('question_order', 'session')
 
 class InterviewQuestion(Question):
+  def clone(self):  
+      return InterviewQuestion(question=self.question,
+                               question_order=self.question_order,
+                               session=self.session)
+    
   class Meta:
     ordering = ('question_order', 'session')
 

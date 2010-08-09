@@ -76,7 +76,6 @@ def session_clone(request, new_id):
     
     session = Session(en_instructions=old_session.en_instructions,
                       fr_instructions=old_session.fr_instructions,
-                      completed_application=old_session.completed_application,
                       close_email_subject=old_session.close_email_subject,
                       close_email_from=old_session.close_email_from,
                       close_email=old_session.close_email,
@@ -93,14 +92,14 @@ def session_clone(request, new_id):
             # copy questions and criteria now too
             questions = ApplicationQuestion.objects.filter(session=old_session)
             for q in questions:
-                q2 = copy(q)
+                q2 = q.clone()
                 q2.pk = None
                 q2.session = session
                 q2.save()
 
             questions = InterviewQuestion.objects.filter(session=old_session)
             for q in questions:
-                q2 = copy(q)
+                q2 = q.clone()
                 q2.pk = None
                 q2.session = session
                 q2.save()
