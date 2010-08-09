@@ -15,6 +15,10 @@ table {
 }
 th {
   text-align: left;
+  background-image: url('{{STATIC_URL}}js/tablesort/bg.gif');
+  background-repeat: no-repeat;
+  background-position: center right;
+  cursor: pointer;
 }
 th, td {
   padding: 5px;
@@ -48,7 +52,8 @@ th, td {
         <a href="#" id="select-none">select none</a> | 
         <a href="#" id="select-invert">invert selection</a><br/>
         <form action="{% url evaluation_bulkedit session.id %}" method="post" id="evaluation-bulkedit">
-		<table>
+		<table class="tablesorter">
+			<thead>
 			<tr>
        			<th>&nbsp;</th>
 			    <th>{% anchor status "Status" %}</th>
@@ -61,7 +66,9 @@ th, td {
        			{% endfor %}
        			<th>Last emailed</th>
 			</tr>
+			</thead>
 			
+			<tbody>
 			{% for app in complete %}
 				<tr style="{% cycle 'background: #ffffff;' 'background: #eee;' %}" class="app-status app-status-{{app.status}}">
 					<td><input type="checkbox" name="app-{{app.id}}"/></td>
@@ -82,6 +89,7 @@ th, td {
     				</td>
 				</tr>
 			{% endfor %}
+			</tbody>
 		</table>
 		<br/>
 		With selected applications: 
@@ -101,7 +109,7 @@ th, td {
 	
 	<div id="draft">
 	    <h2>Draft applications</h2>
-		<table>
+		<table class="tablesorter">
 			<tr>
        			<th>&nbsp;</th>
 			    <th>Name</th>
@@ -124,8 +132,12 @@ th, td {
 {% endblock %}
 
 {% block extra_body %}
+<script type="text/javascript" src="{{ STATIC_URL }}js/tablesort/jquery.tablesorter.min.js"></script>
+
 <script type="text/javascript">
 	$().ready(function() {
+		$(".tablesorter").tablesorter();
+		 
 		$("#evaluation-tabs").tabs({
 			show: function(event, ui) {
 				parent.location.hash = ui.panel.id;
@@ -186,6 +198,3 @@ th, td {
 	});
 </script>
 {% endblock %}
-
-		
-
