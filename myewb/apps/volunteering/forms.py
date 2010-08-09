@@ -27,11 +27,10 @@ class SessionForm(forms.ModelForm):
   open_date = forms.DateField(widget=widgets.AdminDateWidget)
   close_date = forms.DateField(widget=widgets.AdminDateWidget)
   due_date = forms.DateField(widget=widgets.AdminDateWidget)
-  email_sent = forms.BooleanField(required=False)
 
   en_instructions = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
   fr_instructions = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
-  completed_application = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
+  #completed_application = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
   close_email = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
   rejection_email = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
   

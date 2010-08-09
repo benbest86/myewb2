@@ -18,8 +18,8 @@ class Session(models.Model):
                                      null=True)
   fr_instructions = models.TextField("French instructions",
                                      null=True)
-  completed_application = models.TextField("Thank you message",
-                                           null=True)
+  #completed_application = models.TextField("Thank you message",
+  #                                         null=True)
   close_email_subject = models.CharField("Session closing email subject",
                                  null=True, max_length=255)
   close_email_from = models.CharField("Session closing email from", max_length=255,

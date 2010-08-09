@@ -77,7 +77,11 @@ def session_clone(request, new_id):
     session = Session(en_instructions=old_session.en_instructions,
                       fr_instructions=old_session.fr_instructions,
                       completed_application=old_session.completed_application,
+                      close_email_subject=old_session.close_email_subject,
+                      close_email_from=old_session.close_email_from,
                       close_email=old_session.close_email,
+                      rejection_email_subject=old_session.rejection_email_subject,
+                      rejection_email_from=old_session.rejection_email_from,
                       rejection_email=old_session.rejection_email)
 
     if request.method == 'POST':
