@@ -57,7 +57,7 @@ select {
     <div id="questions">
         {% for question in application.session.application_questions %}
             <p>
-                {{ question.question }}<br/>
+                {{ question.question|linebreaksbr }}<br/>
                 <div style="padding-left: 20px;">
                     {% with question.id as qid %}
                         <form action="" id="question_{{ qid }}" class="question" method="post">

@@ -204,11 +204,11 @@ span.ui-icon {
 	            	<span class="ui-icon ui-icon-circle-triangle-s"></span>
 	            </a>
             	
-                <h3>{{ q.question }}</h3>
+                <h3>{{ q.question|linebreaksbr }}</h3>
                 <div class="htmlbox question-{{q.id}}">
                     {% for qid, ans in application.get_answers.items %}
                         {% ifequal q.id qid %}
-                            {{ans|safe}}
+                            {{ans|linebreaksbr}}
                         {% endifequal %}
                     {% endfor %}
                 </div>
@@ -236,7 +236,7 @@ span.ui-icon {
 		            	<span class="ui-icon ui-icon-circle-triangle-s"></span>
 		            </a>
 	            	
-	                <h3>{{ q.question }}</h3>
+	                <h3>{{ q.question|linebreaksbr }}</h3>
 		            <div class="intanswer question-{{q.id}}">
 		                <textarea name="{{q.id}}">{% for qid, ans in application.get_answers.items %}{% ifequal q.id qid %}{{ans|safe}}{% endifequal %}{% endfor %}</textarea>
 		            </div>
@@ -245,7 +245,7 @@ span.ui-icon {
 	                <div class="htmlbox question-{{q.id}}">
 	                    {% for qid, ans in application.get_answers.items %}
 	                        {% ifequal q.id qid %}
-	                            {{ans|safe}}
+	                            {{ans|linebreaksbr}}
 	                        {% endifequal %}
 	                    {% endfor %}
 	                </div>
@@ -297,7 +297,8 @@ span.ui-icon {
 								for (k in data)
 								{
 									html = html + "<p>";
-									html = html + data[k]['fields']['comment']
+									var content = data[k]['fields']['comment'];
+									html = html + content.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br/>$2');
 									html = html + "</p>";
 								}
 								$('#summary-content').removeClass('loading-topleft');

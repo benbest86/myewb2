@@ -131,7 +131,7 @@ height: 150px;
 	    {% for q in session.application_questions %}
 	        <p class="question ui-corner-all" id="question-{{q.id}}">
 	            <span class="ui-icon ui-icon-arrow-4"></span>
-        	    {{ q.question }}<br/>
+        	    {{ q.question|linebreaksbr }}<br/>
         	    &nbsp;&nbsp;&nbsp;&nbsp;
         	    <a href="{% url question_edit q.id %}" class="question_edit">(edit)</a>
         	    <a href="#" class="question_delete" id="question-delete-{{q.id}}">(delete)</a>
@@ -152,7 +152,7 @@ height: 150px;
 	    {% for q in session.interview_questions %}
 	        <p class="intquestion ui-corner-all" id="intquestion-{{q.id}}">
 	            <span class="ui-icon ui-icon-arrow-4"></span>
-        	    {{ q.question }}<br/>
+        	    {{ q.question|linebreaksbr }}<br/>
         	    &nbsp;&nbsp;&nbsp;&nbsp;
         	    <a href="{% url interview_question_edit q.id %}" class="question_edit">(edit)</a>
         	    <a href="#" class="intquestion_delete" id="interview-question-delete-{{q.id}}">(delete)</a>

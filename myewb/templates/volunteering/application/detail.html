@@ -110,11 +110,11 @@ select {
     <div id="questions">
         {% for question in application.session.application_questions %}
             <p>
-                <strong>{{ question.question }}</strong><br/>
+                <strong>{{ question.question|linebreaksbr }}</strong><br/>
                 <div style="padding-left: 20px;">
                     {% for qid, ans in application.get_answers.items %}
                         {% ifequal question.id qid %}
-                            {{ans|safe}}
+                            {{ans|linebreaksbr}}
                         {% endifequal %}
                     {% endfor %}
                 </div>
