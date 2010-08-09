@@ -37,7 +37,6 @@ th, td {
 	<div id="complete">
         <h2>Complete evaluations</h2>
         
-        {% autosort complete %}
         Show: <select id="evaluation-display-filter">
         	<option value="status-all">All applications</option>
         	<option value="status-new">New applications</option>
@@ -56,11 +55,11 @@ th, td {
 			<thead>
 			<tr>
        			<th>&nbsp;</th>
-			    <th>{% anchor status "Status" %}</th>
+			    <th>Status</th>
 			    <th>Name</th>
        			<th>Lang</th>
        			<th>GPA</th>
-       			<th>{% anchor evaluation.total_score "Total" %}</th>
+       			<th>Score</th>
        			{% for c in session.evaluationcriterion_set.all %}
        			    <th>{{ c.column_header }}</th>
        			{% endfor %}

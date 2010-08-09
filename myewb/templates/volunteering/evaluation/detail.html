@@ -84,7 +84,7 @@ span.ui-icon {
     </div>
 
 	<div style="height: 125px;">
-    	<h2>{{ application.profile.first_name }} {{ application.profile.first_name }}</h2>
+    	<h2>{{ application.profile.first_name }} {{ application.profile.last_name }}</h2>
     	<h3>{{ application.session.name }}</h3>
 
     	<p>Application created: {{ application.created|date }}<br/>
@@ -284,11 +284,14 @@ span.ui-icon {
 		
 		$("#eval-tabs").tabs({
 			show: function(event, ui) {
-				// ajax-load the summary tab when selected
+				// needs to happen each time, since hidden textarea's don't get resized
+		    	$('.eval textarea').trigger('change');
+
+	    		// ajax-load the summary tab when selected
 				if (ui.panel.id == 'summary')
 				{
 					$('#summary-content').addClass('loading-topleft');
-					$.getJSON('{% url evaluation_comment evaluation.id %}',
+					$.getJSON('{% url evaluation_comment application.id %}',
 							function(data) {
 								var html = "";
 								for (k in data)

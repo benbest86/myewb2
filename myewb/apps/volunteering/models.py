@@ -192,12 +192,18 @@ class Evaluation(models.Model):
   
   def total_score(self):
     score = 0
+    isNone = True
     for e in self.evaluationresponse_set.all():
         try:
             if int(e.response):
                 score = score + int(e.response)
+                isNone = False
         except:
             pass
+
+    if isNone:
+        return None
+    
     return score
     
   def scores(self):
