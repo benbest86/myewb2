@@ -204,17 +204,19 @@ class Placement(models.Model):
                      ('lt', "Long-term"))
   
   description = models.TextField()
+  profile = models.ForeignKey(MemberProfile, related_name='placement')
   type = models.CharField(max_length=2, choices=PLACEMENT_TYPES, default='lt')
-  deleted = models.BooleanField(default=False)
+  sector = models.ForeignKey(Sector, null=True)
+  
   start_date = models.DateField(null=True)
   end_date = models.DateField(null=True)
-  country = CountryField(ewb='placements')
   town = models.CharField(max_length=100)
-  flight_request_made = models.BooleanField(default=True)
+  country = CountryField(ewb='placements')
 
-  sector = models.ForeignKey(Sector, null=True)
-  coach = models.ForeignKey(MemberProfile, related_name='placement_coach', null=True)
-  profile = models.ForeignKey(MemberProfile, related_name='placement')
+  coach = models.ForeignKey(MemberProfile, related_name='placement_coach', blank=True, null=True)
+
+  flight_request_made = models.BooleanField(default=True)
+  deleted = models.BooleanField(default=False)
   
   def country_name(self):
     if self.country and COUNTRY_MAP.has_key(self.country):
@@ -270,7 +272,7 @@ class Stipend(models.Model):
     return (float(self.daily_rate) * 90 + float(self.adjustment))
 
 class InsuranceInstance(models.Model):
-  placement = models.ForeignKey(Placement)
+  placement = models.ForeignKey(Placement, related_name="insurance")
 
   insurance_company = models.ForeignKey(ServiceProvider)
   policy_number = models.CharField(blank=True, max_length=100)
@@ -296,7 +298,7 @@ class TravelSegment(models.Model):
   )
 
   profile = models.ForeignKey(MemberProfile, related_name='travel_segment')
-  placement = models.ForeignKey(Placement)
+  placement = models.ForeignKey(Placement, related_name='travel')
 
   start_date_time = models.DateTimeField(blank=True)
   end_date_time = models.DateTimeField(blank=True)

@@ -130,8 +130,8 @@ class PlacementForm(forms.ModelForm):
   start_date = forms.DateField(widget=widgets.AdminDateWidget)
   end_date = forms.DateField(widget=widgets.AdminDateWidget)
   sector = AutocompleteField(model=Sector, create=True)
-  profile = AutocompleteField(model=MemberProfile, create=False)
-  coach = AutocompleteField(model=MemberProfile, create=False)
+  profile = AutocompleteField(label="Name", model=MemberProfile, create=False, chars=3)
+  coach = AutocompleteField(model=MemberProfile, create=False, chars=3, required=False)
   
   class Meta:
     model = Placement

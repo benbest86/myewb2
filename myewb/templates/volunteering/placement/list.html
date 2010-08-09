@@ -27,15 +27,25 @@ Volunteering » Placements
 	}
 	</style>
 
-	<h2>Active APS Placements</h2>
-	{% new_button "placement" %}
-
+	<h2 style="display: inline; padding-right: 10px;">Active APS Placements</h2>
+	
 	{% if placement_list %}
 		{% autopaginate placement_list 10 %}
 		{% paginate %}
 
 		<div class="clear"></div>
 		<br/>
+
+		<a href="{% url placement_new %}">add a new placement</a>		
+        <br/><br/>
+
+		<div style="width: 50%; float: right; text-align: right; margin-right: 20px;">		
+			Show:
+			<input type="radio" name="show" class="show" id="general" checked="checked"/>general info
+			<input type="radio" name="show" class="show" id="stipend"/>stipends
+			<input type="radio" name="show" class="show" id="insurance"/>insurance
+			<input type="radio" name="show" class="show" id="flights"/>flights
+		</div>
 		
 		Filter by:
 			<select name="sector" id="filter-sector">
@@ -50,13 +60,6 @@ Volunteering » Placements
 					<option value="{{c}}">{{cname}}</option>
 				{% endfor %}
 			</select>
-		<br/><br/>
-		
-		Show:
-			<input type="radio" name="show" class="show" id="general" checked="checked"/>general info
-			<input type="radio" name="show" class="show" id="stipend"/>stipends
-			<input type="radio" name="show" class="show" id="insurance"/>insurance
-			<input type="radio" name="show" class="show" id="flights"/>flights
 		<br/><br/>
 		
 		<table>
@@ -82,15 +85,34 @@ Volunteering » Placements
 	    		<th class="options stipend">Payment</th>
 	    		<th class="options stipend">Notes</th>
 	    		<th class="options stipend">Repatriation Notes</th>
+
+	    		<th class="options insurance">Insurance company</th>
+	    		<th class="options insurance">Policy number</th>
+	    		<th class="options insurance">Certificate</th>
+	    		<th class="options insurance">Start</th>
+	    		<th class="options insurance">End</th>
+	    		<th class="options insurance">Price</th>
+
+	    		<th class="options flights">Start</th>
+	    		<th class="options flights">End</th>
+	    		<th class="options flights">Origin</th>
+	    		<th class="options flights">Destination</th>
+	    		<th class="options flights">Booking code</th>
+	    		<th class="options flights">Notes</th>
+	    		<th class="options flights">Payment method</th>
+	    		<th class="options flights">Purpose</th>
+	    		
+	    		<th>&nbsp;</th>
 			</tr>
-		
+
 		{% for placement in placement_list %}
 			<tr class="country_{{ placement.country }} sector_{{ placement.sector.id }} row">
-				<td><a href="{% url profile_detail placement.profile.user.username %}">{{ placement.profile.name }}</a></td>
+{#				<td><a href="{% url profile_detail placement.profile.user.username %}">{{ placement.profile.name }}</a></td> #}
+				<td><a href="{% url placement_detail placement.id %}">{{ placement.profile.name }}</a></td>
 				<td>Sector</td>
 				<td>{{ placement.country_name }}</td>
 			  
-				<td class="options general"><a href="{% url placement_detail placement.id %}">{{ placement.town }}</a></td>
+				<td class="options general">{{ placement.town }}</td>
 			  	<td class="options general">{% if placement.start_date %}{{ placement.start_date|date:"d M Y" }}{% endif %}</td>
 			    <td class="options general">{% if placement.end_date %}{{ placement.end_date|date:"d M Y" }}{% endif %}</td>
 			    <td class="options general">
@@ -99,7 +121,7 @@ Volunteering » Placements
 			    		{% if not forloop.last %}<br/>{% endif %}
 			    	{% endfor %}
 			    </td>
-				<td class="options general"><a href="{% url profile_detail placement.coach.user.username %}">{{ placement.coach.name }}</a></td>
+				<td class="options general">{{ placement.coach.name }}</td>
 			    
 			  	<td class="options stipend">
 					{% if placement.stipend.get %}
@@ -116,6 +138,24 @@ Volunteering » Placements
 			  	<td class="options stipend">{{ placement.stipend.get.adjusted_payment|floatformat:2 }}</td>
 			  	<td class="options stipend">{{ placement.stipend.get.notes|truncate_tail:30 }}</td>
 			  	<td class="options stipend">{{ placement.stipend.get.repatriation_notes|truncate_tail:30 }}</td>
+
+	    		<td class="options insurance">{{ placement.insurance.insurance_company }}</td>
+	    		<td class="options insurance">{{ placement.insurance.policy_number }}</td>
+	    		<td class="options insurance">{{ placement.insurance.certificate_number }}</td>
+	    		<td class="options insurance">{{ placement.insurance.start_date }}</td>
+	    		<td class="options insurance">{{ placement.insurance.end_date }}</td>
+	    		<td class="options insurance">{{ placement.insurance.price }}</td>
+
+	    		<td class="options flights">{{ placement.travel.start_date_time }}</td>
+	    		<td class="options flights">{{ placement.travel.end_date_time }}</td>
+	    		<td class="options flights">{{ placement.travel.start_location }}</td>
+	    		<td class="options flights">{{ placement.travel.end_location }}</td>
+	    		<td class="options flights">{{ placement.travel.booking_code }}</td>
+	    		<td class="options flights">{{ placement.travel.notes }}</td>
+	    		<td class="options flights">{{ placement.travel.payment_method }}</td>
+	    		<td class="options flights">{{ placement.travel.purpose }}</td>
+	    		
+	    		<td><a href="{% url placement_detail placement.id %}">edit</a></td>
 			</tr>
 		{% endfor %}
 		</table>
