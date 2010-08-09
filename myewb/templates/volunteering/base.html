@@ -3,9 +3,11 @@
 {% block extra_head %}
 <!-- 		<link href="/media/css/base.css" rel="stylesheet" type="text/css" media="screen" />  -->
 <!-- 		<link href="/media/css/forms.css" rel="stylesheet" type="text/css" media="screen" />  -->
+{% comment %}
 		<script type="text/javascript" src="/admin/jsi18n/"></script>
 		<script type="text/javascript" src="{{STATIC_URL}}js/core.js"></script>
 		<script type="text/javascript" src="{{STATIC_URL}}js/admin/RelatedObjectLookups.js"></script> 
+{% endcomment %}
 		{{ form.media }} 
 {% endblock %}
 
@@ -19,19 +21,10 @@
 <li><a href="{% url applications %}">Volunteering with EWB</a></li>
 
 <!-- admins -->
+{% if perms.overseas %}
 <li><a href="{% url placements %}">APS Placements</a></li>
 <li><a href="{% url sessions %}">Application Sessions</a></li>
-
-{% comment %}
-<li><a href="{% url casestudies %}">Case Studies</a></li>
-<li><a href="{% url sectors %}">Sectors</a></li>
-<li><a href="{% url stipends %}">Stipends</a></li>
-<li><a href="{% url travelsegments %}">Travel Segments</a></li>
-<li><a href="{% url insuranceinstances %}">Insurance</a></li>
-<li><a href="{% url sendinggroups %}">Sending Groups</a></li>
-<li><a href="{% url ov_info %}">OV Info</a></li>
-
-{% endcomment %}
+{% endif %}
 
 </ul>
 {% endblock %}

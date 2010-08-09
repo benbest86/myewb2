@@ -24,7 +24,8 @@ from datetime import datetime
 def applications(request):
     # do session handling (could also do this on a cron, but eh)
     open_sessions = Session.objects.filter(active=False,
-                                            open_date__lt=datetime.now())
+                                            open_date__lt=datetime.now(),
+                                            close_date__gt=datetime.now())
     for c in open_sessions:
         c.open()
         
