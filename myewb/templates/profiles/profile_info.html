@@ -36,9 +36,23 @@
             
             </td>
         </tr>
-	
-	
-	
+
+		{% if perms.overseas and other_user.get_profile.application_set.all %}
+	        <tr>
+	            <th>African Programs</th>
+	            <td>
+					{% for a in other_user.get_profile.application_set.all %}
+						<a href="{% url evaluation_detail a.id %}">{{ a.session.name }}</a>
+						{% if a.complete %}
+							(submitted)
+						{% else %}
+							(draft)
+						{% endif %}
+						<br/>
+					{% endfor %}	            
+	            </td>
+	        </tr>
+	    {% endif %}
 	
 		{% if regular %}
         <tr>
