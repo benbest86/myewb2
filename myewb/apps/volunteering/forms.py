@@ -53,9 +53,14 @@ class SessionForm(forms.ModelForm):
   def clean_rejection_email(self):
       return html_clean(self.cleaned_data.get('rejection_email', ''))
 
-class QuestionForm(forms.ModelForm):
+class ApplicationQuestionForm(forms.ModelForm):
   class Meta:
-    model = Question
+    model = ApplicationQuestion
+    fields = ('question')
+    
+class InterviewQuestionForm(forms.ModelForm):
+  class Meta:
+    model = InterviewQuestion
     fields = ('question')
     
 class EvaluationCriterionForm(forms.ModelForm):

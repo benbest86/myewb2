@@ -26,7 +26,7 @@ div.eval {
     width: 40%;
     float: right;
 }
-div.eval textarea {
+div.eval textarea, div.intanswer textarea {
     width: 100%;
     margin-bottom: 3px;
 }
@@ -193,7 +193,7 @@ span.ui-icon {
         	<hr/>
         {% endif %}
         
-        {% for q in application.session.question_set.all %}
+        {% for q in application.session.application_questions %}
             <div class="eval {% if application.complete %}question-{{q.id}}{% endif %}">
                 <h3>&nbsp;</h3>
                 <textarea name="{{q.id}}">{% for k, c in evaluation.comments.items %}{% ifequal k q.strid %}{{c}}{% endifequal %}{% endfor %}</textarea>
@@ -221,7 +221,40 @@ span.ui-icon {
     
     {% if application.complete %}
 	    <div id="interview">
-	    	what goes here, if anything?
+        	<a href="#" id="q_display_all">show all answers</a> | 
+        	<a href="#" id="q_hide_all">hide all answers</a> 
+        	<hr/>
+        
+	        {% for q in application.session.interview_questions %}
+	            <div class="eval question-{{q.id}}">
+	                <h3>&nbsp;</h3>
+	                <textarea name="{{q.id}}">{% for k, c in evaluation.comments.items %}{% ifequal k q.strid %}{{c}}{% endifequal %}{% endfor %}</textarea>
+	            </div>
+	
+	            <div class="leftpanel">
+					<a href="#" class="q_toggle" id="toggle_question-{{q.id}}">
+		            	<span class="ui-icon ui-icon-circle-triangle-s"></span>
+		            </a>
+	            	
+	                <h3>{{ q.question }}</h3>
+		            <div class="intanswer question-{{q.id}}">
+		                <textarea name="{{q.id}}">{% for qid, ans in application.get_answers.items %}{% ifequal q.id qid %}{{ans|safe}}{% endifequal %}{% endfor %}</textarea>
+		            </div>
+		            
+		            {% comment %}
+	                <div class="htmlbox question-{{q.id}}">
+	                    {% for qid, ans in application.get_answers.items %}
+	                        {% ifequal q.id qid %}
+	                            {{ans|safe}}
+	                        {% endifequal %}
+	                    {% endfor %}
+	                </div>
+	                {% endcomment %}
+	            </div>
+	
+	            <hr class="clear"/>
+	
+	        {% endfor %}
 	    </div>
 	    
 	    <div id="notes">
@@ -295,7 +328,10 @@ span.ui-icon {
         	               	{
 	            	            myself.val(data);
 	            	            myself.addClass('inputbox');
+	            	            window.alert("success");
         	               	}
+        	               	else
+            	               	window.alert("invalid");
                	            myself.unbind('blur');
             	       	  });
 		        }
@@ -315,6 +351,29 @@ span.ui-icon {
 		        {
         	        myself.addClass('loading');
         	        $.post('{% url evaluation_comment application.id %}',
+        	               {'key': myself.attr('name'),
+        	                'comment': myself.val()},
+        	               function(data) {
+                	            myself.removeClass('loading');
+                	            myself.addClass('inputbox');
+                	            myself.unbind('blur');
+                	       });
+                }
+                else
+                    myself.addClass('inputbox');
+		    });
+    	});
+
+    	$('.intanswer textarea').addClass('inputbox').autoResize().trigger('change');
+    	$('.intanswer textarea').click(function() {
+		    var original_text = $(this).val();
+	        $(this).removeClass('inputbox');
+		    $(this).blur(function() {
+		        var myself = $(this);
+		        if (original_text != myself.val())
+		        {
+        	        myself.addClass('loading');
+        	        $.post('{% url evaluation_interview_answer application.id %}',
         	               {'key': myself.attr('name'),
         	                'comment': myself.val()},
         	               function(data) {

@@ -29,6 +29,10 @@ urlpatterns += patterns('volunteering.views.sessions',
   url(r'^questions/new/(?P<session_id>\d+)/$', 'question_new',name="question_new"),
   url(r'^questions/reorder/$', 'question_reorder',name="question_reorder"),
   url(r'^questions/delete/$', 'question_delete',name="question_delete"),
+  url(r'^intquestions/(?P<object_id>\d+)/$', 'interview_question_edit', name="interview_question_edit"),
+  url(r'^intquestions/new/(?P<session_id>\d+)/$', 'interview_question_new',name="interview_question_new"),
+  url(r'^intquestions/reorder/$', 'interview_question_reorder',name="interview_question_reorder"),
+  url(r'^intquestions/delete/$', 'interview_question_delete',name="interview_question_delete"),
 )
 
 urlpatterns += patterns('volunteering.views.sessions',
@@ -86,6 +90,7 @@ urlpatterns += patterns('volunteering.views.evaluations',
   url(r'^evaluations/session/(?P<session_id>\d+)/$', 'evaluation_list', name="evaluation_list"),
   url(r'^evaluations/(?P<app_id>\d+)/$', 'evaluation_detail', name="evaluation_detail"),
   url(r'^evaluations/(?P<app_id>\d+)/comment/$', 'evaluation_comment', name="evaluation_comment"),
+  url(r'^evaluations/(?P<app_id>\d+)/intanswer/$', 'evaluation_interview_answer', name="evaluation_interview_answer"),
   url(r'^evaluations/(?P<app_id>\d+)/criteria/(?P<criteria_id>\d+)/$', 'evaluation_criteria', name="evaluation_criteria"),
 )
 

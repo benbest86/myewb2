@@ -33,6 +33,11 @@ class Session(models.Model):
   rejection_email = models.TextField("Rejected application email",
                                      null=True)
   
+  def application_questions(self):
+      return ApplicationQuestion.objects.filter(session=self)
+  def interview_questions(self):
+      return InterviewQuestion.objects.filter(session=self)
+  
   def __unicode__(self):
     return self.name
     
@@ -53,6 +58,14 @@ class Question(models.Model):
   def strid(self):
       return str(self.id)
   
+  class Meta:
+    ordering = ('question_order', 'session')
+
+class ApplicationQuestion(Question):
+  class Meta:
+    ordering = ('question_order', 'session')
+
+class InterviewQuestion(Question):
   class Meta:
     ordering = ('question_order', 'session')
 
@@ -127,7 +140,8 @@ class Answer(models.Model):
 
 ### EVALUATIONS
 class EvaluationResponse(models.Model):
-  response = models.PositiveIntegerField(null=True)
+  #response = models.PositiveIntegerField(null=True)
+  response = models.CharField(max_length=255, null=True)
   evaluation = models.ForeignKey("Evaluation")
   evaluation_criterion = models.ForeignKey("EvaluationCriterion")
 
@@ -162,8 +176,11 @@ class Evaluation(models.Model):
   def total_score(self):
     score = 0
     for e in self.evaluationresponse_set.all():
-        if e.response:
-            score = score + e.response
+        try:
+            if int(e.response):
+                score = score + int(e.response)
+        except:
+            pass
     return score
     
   def scores(self):

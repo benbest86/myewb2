@@ -17,8 +17,8 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext, Context, loader
 from django.utils.translation import ugettext_lazy as _
 
-from volunteering.models import Session, Question, EvaluationCriterion
-from volunteering.forms import SessionForm, QuestionForm, EvaluationCriterionForm
+from volunteering.models import Session, ApplicationQuestion, InterviewQuestion, EvaluationCriterion
+from volunteering.forms import SessionForm, ApplicationQuestionForm, InterviewQuestionForm, EvaluationCriterionForm
 
 @permission_required('overseas')
 def sessions(request):
@@ -87,7 +87,14 @@ def session_clone(request, new_id):
             session = form.save()
             
             # copy questions and criteria now too
-            questions = Question.objects.filter(session=old_session)
+            questions = ApplicationQuestion.objects.filter(session=old_session)
+            for q in questions:
+                q2 = copy(q)
+                q2.pk = None
+                q2.session = session
+                q2.save()
+
+            questions = InterviewQuestion.objects.filter(session=old_session)
             for q in questions:
                 q2 = copy(q)
                 q2.pk = None
@@ -114,17 +121,17 @@ def session_clone(request, new_id):
 
 @permission_required('overseas')
 def question_edit(request, object_id):
-    question = get_object_or_404(Question, id=object_id)
+    question = get_object_or_404(ApplicationQuestion, id=object_id)
         
     if request.method == 'POST':
-        form = QuestionForm(request.POST, instance=question)
+        form = ApplicationQuestionForm(request.POST, instance=question)
             
         if form.is_valid():
             form.save()
             return HttpResponse("success");
         
     else:
-        form = QuestionForm(instance=question)
+        form = ApplicationQuestionForm(instance=question)
     
     return render_to_response('volunteering/question/form.html',
                               {'question': question,
@@ -136,19 +143,19 @@ def question_new(request, session_id):
     session = get_object_or_404(Session, id=session_id)
     
     if request.method == 'POST':
-        form = QuestionForm(request.POST)
+        form = ApplicationQuestionForm(request.POST)
         
         if form.is_valid():
             question = form.save(commit=False)
             question.session = session
             
-            last_question = Question.objects.filter(session=session).count()
+            last_question = ApplicationQuestion.objects.filter(session=session).count()
             question.question_order = last_question + 1
             
             question.save()
             return HttpResponse("success")
     else:
-        form = QuestionForm()
+        form = ApplicationQuestionForm()
         
     return render_to_response('volunteering/question/form.html',
                                 {'question': None,
@@ -159,13 +166,13 @@ def question_new(request, session_id):
 def question_delete(request):
     if request.method == 'POST' and request.POST.get('question_id', None):
         question_id = request.POST.get('question_id', None)
-        question = get_object_or_404(Question, id=question_id)
+        question = get_object_or_404(ApplicationQuestion, id=question_id)
         session = question.session
         order = question.question_order
         question.delete()
         
-        later_questions = Question.objects.filter(session=session,
-                                                  question_order__gt=order)
+        later_questions = ApplicationQuestion.objects.filter(session=session,
+                                                             question_order__gt=order)
         for q in later_questions:
             q.question_order = q.question_order - 1
             q.save()
@@ -178,19 +185,109 @@ def question_delete(request):
 def question_reorder(request):
     if request.method == 'POST' and request.POST.get('question_id', None) and request.POST.get('new_order', None):
         question_id = request.POST.get('question_id', None)
-        question = get_object_or_404(Question, id=question_id)
+        question = get_object_or_404(ApplicationQuestion, id=question_id)
         current_order = question.question_order
         new_order = request.POST.get('new_order', None)
         
         if current_order != new_order:
-            later_questions = Question.objects.filter(session=question.session,
-                                                      question_order__gt=current_order)
+            later_questions = ApplicationQuestion.objects.filter(session=question.session,
+                                                                 question_order__gt=current_order)
             for q in later_questions:
                 q.question_order = q.question_order - 1
                 q.save()
                 
-            later_questions = Question.objects.filter(session=question.session,
-                                                      question_order__gte=new_order)
+            later_questions = ApplicationQuestion.objects.filter(session=question.session,
+                                                                 question_order__gte=new_order)
+            for q in later_questions:
+                q.question_order = q.question_order + 1
+                q.save()
+                
+            question.question_order = new_order
+            question.save()
+            
+        return HttpResponse("success")
+            
+    return HttpResponse("invalid")
+
+@permission_required('overseas')
+def interview_question_edit(request, object_id):
+    question = get_object_or_404(InterviewQuestion, id=object_id)
+        
+    if request.method == 'POST':
+        form = InterviewQuestionForm(request.POST, instance=question)
+            
+        if form.is_valid():
+            form.save()
+            return HttpResponse("success");
+        
+    else:
+        form = InterviewQuestionForm(instance=question)
+    
+    return render_to_response('volunteering/question/form.html',
+                              {'question': question,
+                               'form': form},
+                               context_instance=RequestContext(request))
+                                   
+@permission_required('overseas')
+def interview_question_new(request, session_id):
+    session = get_object_or_404(Session, id=session_id)
+    
+    if request.method == 'POST':
+        form = InterviewQuestionForm(request.POST)
+        
+        if form.is_valid():
+            question = form.save(commit=False)
+            question.session = session
+            
+            last_question = InterviewQuestion.objects.filter(session=session).count()
+            question.question_order = last_question + 1
+            
+            question.save()
+            return HttpResponse("success")
+    else:
+        form = InterviewQuestionForm()
+        
+    return render_to_response('volunteering/question/form.html',
+                                {'question': None,
+                                 'form': form},
+                                context_instance=RequestContext(request))
+
+@permission_required('overseas')
+def interview_question_delete(request):
+    if request.method == 'POST' and request.POST.get('question_id', None):
+        question_id = request.POST.get('question_id', None)
+        question = get_object_or_404(InterviewQuestion, id=question_id)
+        session = question.session
+        order = question.question_order
+        question.delete()
+        
+        later_questions = InterviewQuestion.objects.filter(session=session,
+                                                           question_order__gt=order)
+        for q in later_questions:
+            q.question_order = q.question_order - 1
+            q.save()
+            
+        return HttpResponse("success")
+            
+    return HttpResponse("invalid")
+
+@permission_required('overseas')
+def interview_question_reorder(request):
+    if request.method == 'POST' and request.POST.get('question_id', None) and request.POST.get('new_order', None):
+        question_id = request.POST.get('question_id', None)
+        question = get_object_or_404(InterviewQuestion, id=question_id)
+        current_order = question.question_order
+        new_order = request.POST.get('new_order', None)
+        
+        if current_order != new_order:
+            later_questions = InterviewQuestion.objects.filter(session=question.session,
+                                                               question_order__gt=current_order)
+            for q in later_questions:
+                q.question_order = q.question_order - 1
+                q.save()
+                
+            later_questions = InterviewQuestion.objects.filter(session=question.session,
+                                                               question_order__gte=new_order)
             for q in later_questions:
                 q.question_order = q.question_order + 1
                 q.save()

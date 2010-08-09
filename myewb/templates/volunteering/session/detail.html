@@ -33,7 +33,7 @@ padding: 10px;
 float: left;
 cursor: pointer;
 }
-.question, .criteria {
+.question, .intquestion, .criteria {
 margin: 5px;
 padding: 5px;
 border: 1px solid;
@@ -57,6 +57,7 @@ height: 150px;
 	<ul>
 		<li><a href="#logistics">Logistics</a></li>
 		<li><a href="#questions">Questions</a></li>
+		<li><a href="#interview">Interview</a></li>
 		<li><a href="#criteria">Criteria</a></li>
 	</ul>
 	
@@ -121,20 +122,41 @@ height: 150px;
     </div>
 
     <div id="questions">
-        <h2>Questions</h2>
+        <h2>Application Questions</h2>
 
 	    <p>
 	        <a href="{% url question_new session.id %}" id="add_question">add a question</a>
 	    </p>
 
         <div id="sortable-questions">
-	    {% for q in session.question_set.all %}
+	    {% for q in session.application_questions %}
 	        <p class="question ui-corner-all" id="question-{{q.id}}">
 	            <span class="ui-icon ui-icon-arrow-4"></span>
         	    {{ q.question }}<br/>
         	    &nbsp;&nbsp;&nbsp;&nbsp;
         	    <a href="{% url question_edit q.id %}" class="question_edit">(edit)</a>
         	    <a href="#" class="question_delete" id="question-delete-{{q.id}}">(delete)</a>
+            </p>
+	        
+	    {% endfor %}
+	    </div>
+    </div>
+
+    <div id="interview">
+        <h2>Interview Questions</h2>
+
+	    <p>
+	        <a href="{% url interview_question_new session.id %}" id="add_int_question">add a question</a>
+	    </p>
+
+        <div id="sortable-int-questions">
+	    {% for q in session.interview_questions %}
+	        <p class="intquestion ui-corner-all" id="intquestion-{{q.id}}">
+	            <span class="ui-icon ui-icon-arrow-4"></span>
+        	    {{ q.question }}<br/>
+        	    &nbsp;&nbsp;&nbsp;&nbsp;
+        	    <a href="{% url interview_question_edit q.id %}" class="question_edit">(edit)</a>
+        	    <a href="#" class="intquestion_delete" id="interview-question-delete-{{q.id}}">(delete)</a>
             </p>
 	        
 	    {% endfor %}
@@ -272,6 +294,41 @@ height: 150px;
 	            var q_id = ui.item.attr('id').substr(9);
 	            var new_pos = ui.item.parent().children().index(ui.item) + 1;
                 $.post('{% url question_reorder %}',
+                    {'question_id': q_id,
+                     'new_order': new_pos});
+	        }
+	    });
+	    
+		$('a#add_int_question').click(function() {
+    		$("#dialog").dialog('option', 'title', 'New Question');
+		    
+            submit_url = '{% url interview_question_new session.id %}';
+		    $('#dialog-contents').load($(this).attr('href'),
+		                                add_question_callback);
+    	    return false;
+		});
+		
+		$('a.int_question_delete').click(function() {
+		    var confirmed = confirm("Are you sure you want to delete this question? Any associated answers will also be deleted!");
+		    if (confirmed)
+		    {
+	            var q_id = $(this).attr('id').substr(16);
+                $.post('{% url interview_question_delete %}',
+                    {'question_id': q_id});
+                // TODO: js-ize this instead of reloading entire page?
+                window.location.reload();
+		    }
+		    return false;
+		});
+
+	    $('#sortable-int-questions').sortable({
+	        revert: true,
+	        handle: 'span',
+	        tolerance: 'pointer',
+	        update: function(event, ui) {
+	            var q_id = ui.item.attr('id').substr(9);
+	            var new_pos = ui.item.parent().children().index(ui.item) + 1;
+                $.post('{% url interview_question_reorder %}',
                     {'question_id': q_id,
                      'new_order': new_pos});
 	        }

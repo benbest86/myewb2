@@ -52,14 +52,7 @@ th, td {
 			<tr>
        			<th>&nbsp;</th>
 			    <th>{% anchor status "Status" %}</th>
-				{% comment %}
-			    <th>{% anchor profile.last_name "Name" %}</th>
-       			<th>{% anchor profile.gender "Gndr" %}</th>
-       			<th>{% anchor profile.language "Lang" %}</th>
-       			<th>{% anchor gpa "GPA" %}</th>
-       			{% endcomment %}
 			    <th>Name</th>
-       			<th>Gndr</th>
        			<th>Lang</th>
        			<th>GPA</th>
        			<th>{% anchor evaluation.total_score "Total" %}</th>
@@ -73,7 +66,6 @@ th, td {
 					<td><input type="checkbox" name="app-{{app.id}}"/></td>
 					<td>{% for a,b in app.APPLICATION_STATUS %}{% ifequal a app.status %}{{b}}{% endifequal %}{% endfor %}</td>
 					<td><a href="{% url evaluation_detail app.id %}">{{ app.profile.last_name}}, {{ app.profile.first_name }}</a></td>
-					<td>{{ app.profile.gender }}</td>
 					<td>{{ app.profile.lang }}</td>
 					<td>{{ app.gpa }}</td>
 					<td>{{ app.evaluation.total_score|default_if_none:"&nbsp;" }}</td>

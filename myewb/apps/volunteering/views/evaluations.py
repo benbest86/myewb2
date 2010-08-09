@@ -20,8 +20,8 @@ from django.utils.translation import ugettext_lazy as _
 
 from mailer import send_mail
 from siteutils.shortcuts import get_object_or_none
-from volunteering.models import Session, Question, EvaluationCriterion, Evaluation, Application, EvaluationComment, EvaluationResponse
-from volunteering.forms import SessionForm, QuestionForm, EvaluationCriterionForm, EmailForm
+from volunteering.models import Session, EvaluationCriterion, Evaluation, Application, EvaluationComment, EvaluationResponse, InterviewQuestion, Answer
+from volunteering.forms import SessionForm, EvaluationCriterionForm, EmailForm
 
 @permission_required('overseas')
 def evaluation_list(request, session_id):
@@ -78,6 +78,36 @@ def evaluation_comment(request, app_id):
     return HttpResponse("invalid")
 
 @permission_required('overseas')
+def evaluation_interview_answer(request, app_id):
+    application = get_object_or_404(Application, id=app_id)
+    
+    if request.method == 'POST':
+        if request.POST.get('key', None):
+            key = request.POST.get('key', None)
+            question = get_object_or_404(InterviewQuestion, id=key, session=application.session)
+            comment = request.POST.get('comment', None)
+        
+            if comment:
+                answer, created = Answer.objects.get_or_create(application=application,
+                                                               question=question)
+                answer.answer = comment
+                answer.save()
+            else:
+                answer = get_object_or_none(Answer,
+                                            application=application,
+                                            question=question)
+                if answer:
+                    answer.delete()
+            return HttpResponse("success")
+    elif request.is_ajax():
+        answers = Answer.objects.filter(application=application)
+        json = serializers.get_serializer('json')()
+        response = HttpResponse(mimetype='application/json')
+        json.serialize(comments, stream=response)
+        return response
+    return HttpResponse("invalid")
+
+@permission_required('overseas')
 def evaluation_criteria(request, app_id, criteria_id):
     application = get_object_or_404(Application, id=app_id)
     criteria = get_object_or_404(EvaluationCriterion, id=criteria_id, session=application.session)
@@ -88,8 +118,8 @@ def evaluation_criteria(request, app_id, criteria_id):
         response, created = EvaluationResponse.objects.get_or_create(evaluation=application.evaluation,
                                                                      evaluation_criterion=criteria)
         try:
-            if value and int(str(value)) and value >= 0:
-                response.response = value
+            if value:
+                response.response = value.strip()
                 response.save()
                 return HttpResponse(response.response)
         except:

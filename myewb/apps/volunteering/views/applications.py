@@ -15,7 +15,7 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext, Context, loader
 from django.utils.translation import ugettext_lazy as _
 
-from volunteering.models import Session, Application, Question, Answer
+from volunteering.models import Session, Application, ApplicationQuestion, Answer
 from volunteering.forms import SessionForm, ApplicationForm
 
 @login_required
@@ -131,7 +131,7 @@ def application_answer(request):
     application = get_object_or_404(Application, id=application_id,
                                                  profile=request.user.get_profile(),
                                                  session__active=True)
-    question = get_object_or_404(Question, id=question_id, session=application.session)
+    question = get_object_or_404(ApplicationQuestion, id=question_id, session=application.session)
     answer, created = Answer.objects.get_or_create(application=application, question=question)
     answer.answer = request.POST.get('answer', '')
     answer.save()
@@ -156,7 +156,7 @@ def application_submit(request, app_id):
     if not application.gpa:
         application_errors.append('Please enter your GPA.')
         
-    for q in application.session.question_set.all():
+    for q in application.session.application_questions():
         a = Answer.objects.filter(application=application, question=q)
         if a.count() and a[0].answer:
             pass

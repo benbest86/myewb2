@@ -55,7 +55,7 @@ select {
     </div>
     
     <div id="questions">
-        {% for question in application.session.question_set.all %}
+        {% for question in application.session.application_questions %}
             <p>
                 {{ question.question }}<br/>
                 <div style="padding-left: 20px;">
