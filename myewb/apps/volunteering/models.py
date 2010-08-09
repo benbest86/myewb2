@@ -112,7 +112,9 @@ class Application(models.Model):
   APPLICATION_STATUS = (
       ('d', _('Draft')),
       ('s', _('Submitted')),
-      ('i', _('Selected for interview')),
+      ('r', _('Reviewed')),
+      ('i', _('Selected for first interview')),
+      ('n', _('Selected for second interview')),
       ('p', _('Decision pending')),
       ('a', _('Accepted - hired')),
       ('u', _('Unsuccessful')),
