@@ -4,12 +4,13 @@ from pinax.apps.profiles.models import Profile
 from profiles.models import MemberProfile
 from siteutils.countries import CountryField, COUNTRY_MAP
 from siteutils.models import ServiceProvider
+from mailer import send_mail
 from datetime import datetime
 
 ### APPLICATION SESSIONS
 class Session(models.Model):
   name = models.CharField(max_length=200)
-  active = models.BooleanField(default=False)
+  active = models.BooleanField(default=False, editable=False)
   open_date = models.DateField(null=True)
   due_date = models.DateField(null=True)
   close_date = models.DateField(null=True)
@@ -46,6 +47,29 @@ class Session(models.Model):
     
   def draft_applications(self):
     return self.application_set.filter(complete=False)
+
+  def open(self):
+    self.active = True
+    self.save()
+    
+  def close(self):
+    self.active = False
+    self.save()
+    
+    sender = self.close_email_from
+    emails = []
+    for app in self.complete_applications():
+        emails.append(app.profile.user2.email)
+        eval = app.evaluation
+        eval.last_email = datetime.now()
+        eval.save()
+    
+    send_mail(subject=self.close_email_subject,
+              txtMessage=None,
+              htmlMessage=self.close_email,
+              fromemail=sender,
+              recipients=emails,
+              use_template=False)
     
   class Meta:
     ordering = ('-active', '-close_date', '-open_date')

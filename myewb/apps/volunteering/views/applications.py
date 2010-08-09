@@ -18,8 +18,22 @@ from django.utils.translation import ugettext_lazy as _
 from volunteering.models import Session, Application, ApplicationQuestion, Answer
 from volunteering.forms import SessionForm, ApplicationForm
 
+from datetime import datetime
+
 @login_required
 def applications(request):
+    # do session handling (could also do this on a cron, but eh)
+    open_sessions = Session.objects.filter(active=False,
+                                            open_date__lt=datetime.now())
+    for c in open_sessions:
+        c.open()
+        
+    close_sessions = Session.objects.filter(active=True,
+                                            close_date__lt=datetime.now())
+    for c in close_sessions:
+        c.close()
+    
+    # find application lists
     applications = Application.objects.filter(profile=request.user.get_profile())
     past_applications = applications.filter(session__active=False)
     current_applications = applications.filter(session__active=True)   # FIXME: not quite
