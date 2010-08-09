@@ -34,8 +34,7 @@ th, td {
        			<th>{% anchor name Name %}</th>
        			<th>{% anchor open_date "Open Date" %}</th>
        			<th>{% anchor close_date "Close Date" %}</th>
-       			{#<th>{% anchor due_date "Due Date" %}</th>#}
-       			<th>{% anchor email_sent "Email Sent" %}</th>
+       			<th>{% anchor due_date "Due Date" %}</th>
        			<th>{% anchor complete_applications.count "Complete applications" %}</th>
        			<th>{% anchor draft_applications.count "Draft applications" %}</th>
        			<th>&nbsp;</th>
@@ -48,8 +47,7 @@ th, td {
 					<td>{% if session.active %}<strong>{% endif %}{{ session.name }}{% if session.active %}</strong>{% endif %}</td>
 					<td>{{ session.open_date|date:"d M Y"}}</td>
 					<td>{{ session.close_date|date:"d M Y"}}</td>
-					{#<td>{{ session.due_date|date:"d M Y"}}</td>#}
-					<td>{{ session.email_sent|boolean_icon }}</td>
+					<td>{{ session.due_date|date:"d M Y"}}</td>
 					<td><a href="{% url evaluation_list session.id %}">{{ session.complete_applications.count }} (view)</a></td>
 					<td><a href="{% url evaluation_list session.id %}#draft">{{ session.draft_applications.count }} (view)</a></td>
 					<td>

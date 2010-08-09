@@ -14,7 +14,6 @@ class Session(models.Model):
   open_date = models.DateField(null=True)
   due_date = models.DateField(null=True)
   close_date = models.DateField(null=True)
-  email_sent = models.NullBooleanField(null=True)
   en_instructions = models.TextField("English instructions",
                                      null=True)
   fr_instructions = models.TextField("French instructions",
