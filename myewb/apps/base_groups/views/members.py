@@ -78,8 +78,8 @@ def members_csv(request, group_slug):
     # get basic objects
     user = request.user    
     group = get_object_or_404(BaseGroup, slug=group_slug)
-    #members = group.member_users.all()
-    members = group.get_accepted_members()
+    #members = group.get_accepted_members()
+    members = group.members.all()       # this includes bulk users...
 
     # set up csv
     response = HttpResponse(mimetype='text/csv')
