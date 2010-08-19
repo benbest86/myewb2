@@ -77,6 +77,8 @@ if(jQuery) (function($){
 								$(this).parent().removeClass('expanded').addClass('collapsed');
 							}
 						} else {
+							$('.tree-selected').removeClass('tree-selected');
+							$(this).parent().addClass('tree-selected');
 							h($(this).attr('rel'));
 						}
 						return false;
