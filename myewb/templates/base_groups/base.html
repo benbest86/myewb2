@@ -18,21 +18,6 @@
 <link rel="stylesheet" href="{{ STATIC_URL }}pinax/css/topics.css" />
 <link rel="stylesheet" href="{{ STATIC_URL }}css/myewb2-posts.css" />
 <script type="text/javascript" src="{{ STATIC_URL }}pinax/js/topics.js"></script>
-
-
-
-	<script type="text/javascript">
-	$(function() {
-		$("#chapter-tabs").tabs({
-			show: function(event, ui) {
-				parent.location.hash = ui.panel.id;
-			}
-		});
-	});
-	</script>
-
-
-
 {% endblock %}
 
 {# FIXME: how to choose between communities & networks? #}
@@ -78,6 +63,7 @@
 		<li><a href="#group-posts">Posts</a></li>
 		<li><a href="#group-events">Events</a></li>
 		<li><a href="#group-whiteboard">Whiteboard</a></li>
+		<li><a href="#group-workspace">Workspace</a></li>
 
 	</ul>
 	<div id="group-info">
@@ -147,6 +133,12 @@
 
         {% get_membership group request.user as member %}
         {% show_whiteboard_force group.whiteboard group member %}
+	</div>
+	
+	<div id="group-workspace">
+		<h2>{% trans "Workspace" %}</h2>
+		<div id="explorer">
+		</div>
 	</div>
 	
 </div>
@@ -301,9 +293,22 @@
     if it's just an empty block, for efficiency.
     {% endcomment %}
     
-	<script type="text/javascript" src="{{STATIC_URL}}js/colorbox.js"></script>
 	<link type="text/css" href="{{STATIC_URL}}css/colorbox.css" rel="stylesheet" />
+	<link type="text/css" href="{{STATIC_URL}}css/jqueryFileTree.css" rel="stylesheet" />
 
-    
+	<script type="text/javascript" src="{{STATIC_URL}}js/colorbox.js"></script>
+	<script type="text/javascript" src="{{STATIC_URL}}js/jqueryFileTree.js"></script>
+	
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$("#chapter-tabs").tabs({
+				show: function(event, ui) {
+					parent.location.hash = ui.panel.id;
+				}
+			});
+			
+			$('#explorer').fileTree({script: '{% url group_workspace_browse group.slug %}'});
+		});
+	</script>    
 {% endblock %}
 
