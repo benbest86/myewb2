@@ -47,7 +47,10 @@ class MktimeNode(template.Node):
             return u''
         
         if not isinstance(d, datetime.datetime) and not isinstance(d, datetime.date):
-            return u''
+            try:
+                d = datetime.datetime.fromtimestamp(d) 
+            except:
+                return u''
 
         # within the past 12 hours, present it as an hour offset
         if d > (datetime.datetime.now() - datetime.timedelta(seconds=43200)):
