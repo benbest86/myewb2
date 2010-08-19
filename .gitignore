@@ -17,6 +17,7 @@ myewb/settings.php
 myewb/site_media
 myewb/media/attachments
 myewb/media/avatars
+myewb/media/workspace
 
 # ignore search index
 myewb/myewb_index
