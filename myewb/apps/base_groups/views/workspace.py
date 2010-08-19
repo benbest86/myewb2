@@ -95,9 +95,13 @@ def detail(request, group_slug):
         
         if os.path.isfile(f):
             # retrieve misc info
-            path, filename = os.path.split(request.POST['dir'])
+            path, filename = os.path.split(request.POST['dir'][1:])
             stat = os.stat(f)
-            return HttpResponse("<strong>%s</strong><br/><br/>%s" % (filename, stat))
+            return render_to_response("base_groups/workspace/detail.html",
+                                      {'path': path,
+                                       'filename': filename,
+                                       'stat': stat},
+                                      context_instance=RequestContext(request))
         else:
             return HttpResponse("cannot find file")
 

@@ -1,0 +1,11 @@
+{% load filesize_tags %}
+{% load time_filters %}
+
+<strong>{{ filename }}</strong><br/>
+{% if path %}
+	<em style="padding-left: 15px;">in {{ path }}</em><br/>
+{% endif %}
+<br/>
+
+size: {{ stat.st_size|filesize }}<br/>
+last modified: {% mktime stat.st_mtime %}<br/>
