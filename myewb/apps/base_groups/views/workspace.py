@@ -45,9 +45,30 @@ def browse(request, group_slug):
         if os.path.isdir(dir):
             response = ['<ul class="jqueryFileTree" style="display: none;">']
             
+            # take all files/subdirectories and build lists
+            files = []
+            dirs = []
             for f in os.listdir(dir):
+                if os.path.isdir(os.path.join(dir, f)):
+                    dirs.append(f)
+                else:
+                    files.append(f)
+                    
+            # sort lists
+            dirs.sort()
+            files.sort()
+                
+            # output directories...
+            for f in dirs:
                 full_file = os.path.join(requestdir, f)
                 response.append('<li class="directory collapsed"><a href="#" rel="%s/">%s</a></li>' % (full_file, f))
+                
+            # output files
+            for f in files:
+                full_file = os.path.join(requestdir, f)
+                fname, ext = os.path.splitext(f)
+                ext = ext[1:]
+                response.append('<li class="file ext_%s"><a href="#" rel="%s/">%s</a></li>' % (ext, full_file, f))
     
             response.append('</ul>')
         
