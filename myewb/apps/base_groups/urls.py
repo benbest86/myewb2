@@ -63,7 +63,8 @@ urlpatterns += patterns('base_groups.views.members',
 )
 
 urlpatterns += patterns('base_groups.views.workspace',
-    url(r'(?P<group_slug>[-\w]+)/workspace/browse/$', 'browse', name='group_workspace_browse')
+    url(r'(?P<group_slug>[-\w]+)/workspace/browse/$', 'browse', name='group_workspace_browse'),
+    url(r'(?P<group_slug>[-\w]+)/workspace/detail/$', 'detail', name='group_workspace_detail')
 ) 
 
 urlpatterns += bridge.include_urls('whiteboard.urls', r'^(?P<group_slug>[-\w]+)/whiteboard/')

@@ -68,9 +68,37 @@ def browse(request, group_slug):
                 full_file = os.path.join(requestdir, f)
                 fname, ext = os.path.splitext(f)
                 ext = ext[1:]
-                response.append('<li class="file ext_%s"><a href="#" rel="%s/">%s</a></li>' % (ext, full_file, f))
+                response.append('<li class="file ext_%s"><a href="#" rel="%s">%s</a></li>' % (ext, full_file, f))
     
             response.append('</ul>')
         
     # return listing
     return HttpResponse(''.join(response))
+
+@group_admin_required()
+def detail(request, group_slug):
+    """
+    View the details of a file
+    """
+    group = get_object_or_404(BaseGroup, slug=group_slug)
+    
+    response = []
+    if request.method == 'POST' and request.POST.get('dir', None):
+        # the group's workspace root
+        dir = os.path.join(settings.MEDIA_ROOT, 'workspace', 'groups', group_slug)
+
+        # build the specific file
+        requestfile, ext = os.path.splitext(request.POST['dir'])
+        if requestfile.find('.') > -1:       # do not allow any periods in the path
+            return HttpResponse('invalid file requested')
+        f = dir + request.POST['dir']
+        
+        if os.path.isfile(f):
+            # retrieve misc info
+            path, filename = os.path.split(request.POST['dir'])
+            stat = os.stat(f)
+            return HttpResponse("<strong>%s</strong><br/><br/>%s" % (filename, stat))
+        else:
+            return HttpResponse("cannot find file")
+
+    return HttpResponse("error")

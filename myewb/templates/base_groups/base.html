@@ -137,7 +137,9 @@
 	
 	<div id="group-workspace">
 		<h2>{% trans "Workspace" %}</h2>
-		<div id="explorer">
+		<div id="filedetail" style="width: 60%; float: right; padding: 5px;">
+		</div>
+		<div id="explorer" style="width: 35%; background: #f0f0f0; padding: 5px;" class="ui-corner-all" ">
 		</div>
 	</div>
 	
@@ -307,7 +309,15 @@
 				}
 			});
 			
-			$('#explorer').fileTree({script: '{% url group_workspace_browse group.slug %}'});
+			$('#explorer').fileTree({script: '{% url group_workspace_browse group.slug %}'},
+									function(file) {
+										$('#filedetail').html("<p><img src='{{ STATIC_URL}}images/ajax-loader.gif'/>  Loading...</p>");
+										$.post('{% url group_workspace_detail group.slug %}',
+												{dir: file}, 	
+											    function(data) {
+												    $('#filedetail').html(data);
+											    });	
+									});
 		});
 	</script>    
 {% endblock %}
