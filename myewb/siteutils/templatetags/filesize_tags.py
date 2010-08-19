@@ -50,3 +50,12 @@ def filesize_for_filename(attachment_path):
             'filesize': formatted_size,
             }
 register.inclusion_tag('filesize_tags/filesize.html')(filesize_for_filename)
+
+@register.filter(name='filesize')
+def filesize(value):
+    try:
+        value = int(value)
+    except:
+        return ""
+    
+    return bytestr(value)
