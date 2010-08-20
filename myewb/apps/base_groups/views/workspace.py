@@ -23,6 +23,11 @@ from base_groups.decorators import group_admin_required, visibility_required
 import settings, os
 
 preview_extensions = ['jpg']
+preview_aliases = {'jpeg': 'jpg',
+                   'gif': 'jpg',
+                   'png': 'jpg',
+                   'ico': 'jpg',
+                   'bmp': 'jpg'}
 
 @group_admin_required()
 def browse(request, group_slug):
@@ -349,10 +354,16 @@ def preview(request, group_slug):
         if requestfile.find('.') > -1:       # do not allow any periods in the path
             return HttpResponse('invalid file requested')
         f = dir + requestdir
-
-        if ext[1:] in preview_extensions:
+        
+        # normalize the extension
+        ext = ext[1:]
+        if preview_aliases.get(ext, None):
+            ext = preview_aliases[ext]
+        
+        # load up the preview template
+        if ext in preview_extensions:
             if os.path.isfile(f):
-                return render_to_response("base_groups/workspace/preview/%s.html" % ext[1:],
+                return render_to_response("base_groups/workspace/preview/%s.html" % ext,
                                           {'file': requestdir,
                                            'group': group},
                                           context_instance=RequestContext(request))
