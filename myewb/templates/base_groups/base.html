@@ -387,7 +387,17 @@
 		}
 		function delete_file(file)
 		{
-			window.alert("delete file: not implemented - " + file);
+            var confirmed = confirm("Are you sure you want to delete this file?");
+            if (confirmed)
+            {
+                loading();
+                $.post('{% url group_workspace_delete group.slug %}',
+                		{dir: file},
+                		function(data) {
+                    		refresh_filetree();
+                    		$('#filedetail').html(data);
+                		});
+            }
 		}
 
 		function loading()

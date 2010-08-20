@@ -239,7 +239,24 @@ def replace(request, group_slug):
 @group_admin_required()
 def delete(request, group_slug):
     """
-    View the details of a file
+    Delete a file
     """
     group = get_object_or_404(BaseGroup, slug=group_slug)
-    return HttpResponse("not implemente")
+    
+    if request.method == 'POST' and request.POST.get('dir', None):
+        # the group's workspace root
+        dir = os.path.join(settings.MEDIA_ROOT, 'workspace', 'groups', group.slug)
+        requestdir = request.POST.get('dir', None)
+    
+        # build the specific file
+        requestfile, ext = os.path.splitext(requestdir)
+        if requestfile.find('.') > -1:       # do not allow any periods in the path
+            return HttpResponse('invalid file requested')
+        f = dir + requestdir
+        
+        if os.path.isfile(f):
+            os.remove(f)
+            
+            return HttpResponse("deleted")
+
+    return HttpResponse("error")
