@@ -103,5 +103,27 @@ class GroupBulkImportForm(forms.Form):
 
 class WorkspaceUploadForm(forms.Form):
     file = forms.FileField()
-    #folder = forms.CharField(widget=forms.Select)
+    folder = forms.CharField(widget=forms.Select)
+    
+    def __init__(self, *args, **kwargs):
+        folders = kwargs.pop('folders', None)
+        choices = []
+        for folder in folders:
+            if folder == '':
+                folder = '/'
+            choices.append((folder, folder))
+
+        self.base_fields['folder'].choices = choices
+        self.base_fields['folder'].widget.choices = choices
+            
+        super(WorkspaceUploadForm, self).__init__(*args, **kwargs)
+    
+    def clean_folder(self):
+        folder = self.cleaned_data['folder']
+        
+        # periods can be used to go up in the directory tree...
+        if folder.find('.') > -1:
+            return ValidationError("Invalid folder (nice hacking attempt)")
+        
+        return folder
     

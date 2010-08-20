@@ -114,6 +114,31 @@ def detail_display(request, group, requestdir):
     else:
         return HttpResponse("cannot find file")
 
+# recursive function to walk and build a file tree
+def build_dir_tree(fname, dir, folders, path, counter):
+    # currently in a directory?
+    # (the counter is for paranoia, just in case an infinite loop gets created)
+    if os.path.isdir(os.path.join(dir, fname)) and counter < 100:
+        # add directory to path, and full path to list of folders
+        path.append(fname)
+        folders.append('/'.join(path))
+        
+        # build list of all contents
+        subfolders = []
+        for f in os.listdir(os.path.join(dir, fname)):
+            subfolders.append(f)
+            
+        # sort.  WHY oh WHY doesn't os.listdir sort for you? :S
+        subfolders.sort()
+        
+        # and go through, adding all the subdirectories as well
+        for f in subfolders:
+            folders, path = build_dir_tree(f, dir + '/' + fname, folders, path, counter+1)
+        
+        path.pop()
+            
+    return (folders, path)
+
 @group_admin_required()
 def upload(request, group_slug):
     """
@@ -121,15 +146,28 @@ def upload(request, group_slug):
     """
     group = get_object_or_404(BaseGroup, slug=group_slug)
     
+    # build folder list
+    folders = []
+    path = []
+    dir = os.path.join(settings.MEDIA_ROOT, 'workspace', 'groups', group.slug)
+    folders, path = build_dir_tree('', dir, folders, path, 0)
+    
     if request.method == 'POST':
-        form = WorkspaceUploadForm(request.POST, request.FILES)
+        form = WorkspaceUploadForm(request.POST, request.FILES, folders=folders)
         if form.is_valid():
             # find absolute directory
             dir = os.path.join(settings.MEDIA_ROOT, 'workspace', 'groups', group.slug)
+            folder = request.POST.get('folder', '/')
             filename = request.FILES['file'].name
-
+            
+            if folder[0:1] != '/':
+                folder = '/' + folder
+                
+            if folder[0:-1] != '/':
+                folder = folder + '/'
+            
             # open file
-            file = open(dir + '/' + filename, 'wb+')
+            file = open(dir + folder + filename, 'wb+')
             
             # write file to disk
             for chunk in request.FILES['file'].chunks():
@@ -137,9 +175,9 @@ def upload(request, group_slug):
             file.close() 
             
             # redirect to file info display
-            return detail_display(request, group, '/' + filename)
+            return detail_display(request, group, folder + filename)
     else:
-        form = WorkspaceUploadForm()
+        form = WorkspaceUploadForm(folders=folders)
         
     return render_to_response("base_groups/workspace/upload.html",
                               {'form': form,
