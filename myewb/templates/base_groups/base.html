@@ -145,7 +145,7 @@
 			
 		<div id="filedetail" style="width: 60%; float: right; padding: 5px;">
 		</div>
-		<div style="width: 35%; background: #f0f0f0; padding: 5px;" class="ui-corner-all" ">
+		<div style="width: 35%; background: #f0f0f0; padding: 5px;" class="ui-corner-all">
 			<div id="explorer">
 			</div>
 		</div>
@@ -441,6 +441,19 @@
                     		$('#filedetail').html(data);
                 		});
             }
+			return false;
+		}
+		function preview_file(file)
+		{
+			//$('#show-preview').hide();
+			$('#workspace-preview').html("<img src='{{ STATIC_URL}}images/ajax-loader.gif'/>  Loading...");
+			$('#workspace-preview').slideDown();
+			$.post('{% url group_workspace_preview group.slug %}',
+					{dir: file},
+					function(data) {
+						$('#workspace-preview').html(data);
+					});
+			return false;
 		}
 
 		function loading()

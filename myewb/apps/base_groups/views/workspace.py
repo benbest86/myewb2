@@ -22,6 +22,8 @@ from base_groups.decorators import group_admin_required, visibility_required
 
 import settings, os
 
+preview_extensions = ['jpg']
+
 @group_admin_required()
 def browse(request, group_slug):
     """
@@ -335,3 +337,24 @@ def rmdir(request, group_slug):
                                'group': group},
                                context_instance=RequestContext(request))
 
+@group_admin_required()
+def preview(request, group_slug):
+    group = get_object_or_404(BaseGroup, slug=group_slug)
+    requestdir = request.POST.get('dir', None)
+    if request.method == 'POST' and request.POST.get('dir', None):
+        dir = os.path.join(settings.MEDIA_ROOT, 'workspace', 'groups', group.slug)
+    
+        # build the specific file
+        requestfile, ext = os.path.splitext(requestdir)
+        if requestfile.find('.') > -1:       # do not allow any periods in the path
+            return HttpResponse('invalid file requested')
+        f = dir + requestdir
+
+        if ext[1:] in preview_extensions:
+            if os.path.isfile(f):
+                return render_to_response("base_groups/workspace/preview/%s.html" % ext[1:],
+                                          {'file': requestdir,
+                                           'group': group},
+                                          context_instance=RequestContext(request))
+    
+    return HttpResponse("preview not available")

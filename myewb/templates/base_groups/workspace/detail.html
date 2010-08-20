@@ -5,7 +5,9 @@
 <div>
 <strong>{{ filename }}</strong><br/>
 {% if path %}
-	<em style="padding-left: 15px;">in {{ path }}</em><br/>
+	{% ifnotequal path '/' %}
+		<em style="padding-left: 15px;">in {{ path }}</em><br/>
+	{% endifnotequal %}
 {% endif %}
 
 <p>
@@ -21,4 +23,7 @@
 	size: {{ stat.st_size|filesize }}<br/>
 	last modified: {% mktime stat.st_mtime %}<br/>
 </p>
+
+<a href="#" id="show-preview" onclick="preview_file('{{relpath}}')">preview this file</a>
+<p id="workspace-preview" style="display: none"></p>
 </div>
