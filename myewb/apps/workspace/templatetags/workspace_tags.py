@@ -87,7 +87,7 @@ class PreviewNode(template.Node):
                 # dynamically load the preview renderer
                 m = __import__('workspace.previews.%s' % ext,
                                globals(), locals(), ['render'], -1)
-                return m.render(file)
+                return m.render(workspace, filepath)
             except:
                 pass
     

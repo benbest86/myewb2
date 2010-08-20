@@ -34,16 +34,29 @@ class Workspace(models.Model):
 
     # Get the filesystem directory for the workspace root, creating if needed
     def get_root(self):
-        dir = os.path.join(settings.MEDIA_ROOT, 'workspace', str(self.id))
+        dir = os.path.join(settings.MEDIA_ROOT, 'workspace/files', str(self.id))
         if not os.path.isdir(dir):
             os.makedirs(dir, 0755)
         return dir
     
-    # Gets the filesystem directory for the given relative directory.
-    # It will create the filesystem root if needed, but return an error if
-    # the requested subdirectory(ies) doesn't exist or if it is invalid
-    # (ie, contains invalid characters)
-    def get_dir(self, dir):
+    # Get the filesystem directory for the workspace's preview cache,
+    # creating if needed
+    def get_cache_root(self):
+        dir = os.path.join(settings.MEDIA_ROOT, 'workspace/cache', str(self.id))
+        if not os.path.isdir(dir):
+            os.makedirs(dir, 0755)
+        return dir
+    
+    # Gets the filesystem directory for the given relative directory,
+    # creating the filesystem root if needed.  If the requested directory 
+    # contains invalid characters, False is returned.
+    #
+    # The optional keyword root allows a different filesystem root
+    # (ie so we can use this for both files and caches)
+    #
+    #,The optional create flag controls whether the requested directory is created
+    # if it does not exist, or if that results in an error (return False), 
+    def get_dir(self, dir, root=None, create=False):
         if dir.find('.') > -1:       # do not allow any periods
             return False
         
@@ -52,9 +65,15 @@ class Workspace(models.Model):
         if dir[0:-1] != '/':
             dir = dir + '/'
         
-        dir = self.get_root() + dir
+        if root:
+            dir = root + dir
+        else:
+            dir = self.get_root() + dir
+            
         if os.path.isdir(dir):
             return dir
+        elif create:
+            os.makedirs(dir, 0755)
         else:
             return False
         
@@ -75,7 +94,18 @@ class Workspace(models.Model):
                 return fullpath + file
         
         return False
+    
+    # Get the cache directory for a given file.
+    # Returns False if the file does not exist or is invalid.  
+    def get_cache(self, filepath):
+        if not filepath or not self.get_file(filepath):
+            return False
 
+        # get or create the cache directory
+        # (no error checking, since self.get_file(filepath) should do all
+        #  the checking we need)
+        return self.get_dir(filepath, root=self.get_cache_root())
+    
     # returns a list of the workspace's directory tree
     def get_dir_tree(self):
         folders, path = build_dir_tree('', self.get_root(), [], [], 0)
