@@ -1,5 +1,6 @@
 {% load filesize_tags %}
 {% load time_filters %}
+{% load uni_form_tags %}
 
 <div>
 <strong>{{ filename }}</strong><br/>
@@ -11,6 +12,9 @@
 	[<a href="{{ STATIC_URL }}workspace/groups/{{ group.slug }}{{ relpath }}">download file</a>]&nbsp;&nbsp;
 	[<a href="#" onclick="move_file('{{relpath}}')">move file</a>]&nbsp;&nbsp;
 	[<a href="#" onclick="delete_file('{{relpath}}')">delete file</a>]&nbsp;&nbsp;
+</p>
+
+<p id="move-file-div" style="display: none;">
 </p>
 
 <p>

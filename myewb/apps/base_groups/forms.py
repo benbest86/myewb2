@@ -101,8 +101,7 @@ class GroupBulkImportForm(forms.Form):
             raise forms.ValidationError('\n'.join(['%s is not a valid email.' % bad_email for bad_email in bad_emails]))
         return data
 
-class WorkspaceUploadForm(forms.Form):
-    file = forms.FileField()
+class WorkspaceMoveForm(forms.Form):
     folder = forms.CharField(widget=forms.Select)
     
     def __init__(self, *args, **kwargs):
@@ -116,7 +115,7 @@ class WorkspaceUploadForm(forms.Form):
         self.base_fields['folder'].choices = choices
         self.base_fields['folder'].widget.choices = choices
             
-        super(WorkspaceUploadForm, self).__init__(*args, **kwargs)
+        super(WorkspaceMoveForm, self).__init__(*args, **kwargs)
     
     def clean_folder(self):
         folder = self.cleaned_data['folder']
@@ -127,3 +126,5 @@ class WorkspaceUploadForm(forms.Form):
         
         return folder
     
+class WorkspaceUploadForm(WorkspaceMoveForm):
+    file = forms.FileField()

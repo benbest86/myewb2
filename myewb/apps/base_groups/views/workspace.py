@@ -16,7 +16,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 
 from base_groups.models import BaseGroup
-from base_groups.forms import WorkspaceUploadForm
+from base_groups.forms import WorkspaceUploadForm, WorkspaceMoveForm
 from base_groups.helpers import group_search_filter, get_counts, get_recent_counts, enforce_visibility 
 from base_groups.decorators import group_admin_required, visibility_required
 
@@ -157,7 +157,7 @@ def upload(request, group_slug):
         if form.is_valid():
             # find absolute directory
             dir = os.path.join(settings.MEDIA_ROOT, 'workspace', 'groups', group.slug)
-            folder = request.POST.get('folder', '/')
+            folder = form.cleaned_data.get('folder', '/')
             filename = request.FILES['file'].name
             
             if folder[0:1] != '/':
@@ -187,10 +187,46 @@ def upload(request, group_slug):
 @group_admin_required()
 def move(request, group_slug):
     """
-    View the details of a file
+    Move a file
     """
     group = get_object_or_404(BaseGroup, slug=group_slug)
-    return HttpResponse("not implemente")
+    
+    # build folder list
+    folders = []
+    path = []
+    dir = os.path.join(settings.MEDIA_ROOT, 'workspace', 'groups', group.slug)
+    folders, path = build_dir_tree('', dir, folders, path, 0)
+    
+    if request.method == 'POST':
+        form = WorkspaceMoveForm(request.POST, folders=folders)
+        if form.is_valid():
+            # find absolute directory
+            dir = os.path.join(settings.MEDIA_ROOT, 'workspace', 'groups', group.slug)
+            folder = request.POST.get('folder', '/')
+            src = request.POST.get('file', None)        # source file, full path
+
+            leading, file = os.path.split(src)          # get just the filename
+            
+            # clean up destination folder and generate full path
+            if folder[0:1] != '/':
+                folder = '/' + folder
+                
+            if folder[0:-1] != '/':
+                folder = folder + '/'
+
+            dst = os.path.join(folder, file)
+            
+            # do the rename!
+            os.rename(dir + '/' + src, dir + '/' + dst)
+
+            return detail_display(request, group, dst)
+    else:
+        form = WorkspaceMoveForm(folders=folders)
+        
+    return render_to_response("base_groups/workspace/move.html",
+                              {'form': form,
+                               'group': group},
+                               context_instance=RequestContext(request))
 
 @group_admin_required()
 def replace(request, group_slug):

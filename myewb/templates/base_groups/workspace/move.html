@@ -1,0 +1,9 @@
+{% load uni_form_tags %}
+
+<form id="workspace-move-form" action="" method="post" class="uniForm">
+	{{ form|as_uni_form }}
+	<input type="hidden" name="file" value="" id="move-file-original"/> {# value will be set via javascript later #}
+	&nbsp;&nbsp;&nbsp;
+	<input type="submit" value="Move" class="fg-button ui-state-default ui-corner-all"/>
+		
+</form>

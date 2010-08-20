@@ -365,7 +365,21 @@
 		
 		function move_file(file)
 		{
-			window.alert("move file: not implemented - " + file);
+			$('#move-file-div').load('{% url group_workspace_move group.slug %}',
+									 function() {
+				 						$('#move-file-original').val(file);
+				 						$('#move-file-div').slideDown();
+										$('#workspace-move-form').submit(function() {
+											$.post('{% url group_workspace_move group.slug %}',
+													$(this).serialize(),
+													function(data) {
+														refresh_filetree();
+														$('#filedetail').html(data);
+													});	
+											return false;
+										});
+			 });
+			 return false;
 		}
 		function replace_file(file)
 		{
