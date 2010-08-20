@@ -62,18 +62,5 @@ urlpatterns += patterns('base_groups.views.members',
     url(r'^(?P<group_slug>[-\w]+)/members/(?P<username>[\w\._-]+)/delete/$', 'delete_member', name='delete_member',),
 )
 
-urlpatterns += patterns('base_groups.views.workspace',
-    url(r'(?P<group_slug>[-\w]+)/workspace/browse/$', 'browse', name='group_workspace_browse'),
-    url(r'(?P<group_slug>[-\w]+)/workspace/detail/$', 'detail', name='group_workspace_detail'),
-    url(r'(?P<group_slug>[-\w]+)/workspace/upload/$', 'upload', name='group_workspace_upload'),
-    url(r'(?P<group_slug>[-\w]+)/workspace/move/$', 'move', name='group_workspace_move'),
-    url(r'(?P<group_slug>[-\w]+)/workspace/replace/$', 'replace', name='group_workspace_replace'),
-    url(r'(?P<group_slug>[-\w]+)/workspace/delete/$', 'delete', name='group_workspace_delete'),
-    url(r'(?P<group_slug>[-\w]+)/workspace/mkdir/$', 'mkdir', name='group_workspace_mkdir'),
-    url(r'(?P<group_slug>[-\w]+)/workspace/rmdir/$', 'rmdir', name='group_workspace_rmdir'),
-
-    url(r'(?P<group_slug>[-\w]+)/workspace/preview/$', 'preview', name='group_workspace_preview')
-) 
-
 urlpatterns += bridge.include_urls('whiteboard.urls', r'^(?P<group_slug>[-\w]+)/whiteboard/')
 urlpatterns += bridge.include_urls('group_topics.urls.groups', r'^(?P<group_slug>[-\w]+)/posts/')

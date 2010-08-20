@@ -3,7 +3,7 @@
 <div>
 <strong>Upload a file</strong><br/>
 
-<form id="workspace-upload-form" action="{% url group_workspace_upload group.slug %}" method="post" enctype="multipart/form-data" class="uniForm" target="uploadframe">
+<form id="workspace-upload-form" action="{% url workspace_upload workspace.id %}" method="post" enctype="multipart/form-data" class="uniForm" target="uploadframe">
 	{{ form|as_uni_form }}
 	
 	<br/>

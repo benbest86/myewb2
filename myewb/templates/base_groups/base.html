@@ -13,6 +13,7 @@
 {% load avatar_tags %}
 {% load threadedcommentstags %}
 {% load pagination_tags %}
+{% load workspace_tags %}
 
 {% block extra_head %}
 <link rel="stylesheet" href="{{ STATIC_URL }}pinax/css/topics.css" />
@@ -137,19 +138,7 @@
 	
 	<div id="group-workspace">
 		<h2>{% trans "Workspace" %}</h2>
-		<div style="position: relative; top: -5px; padding-bottom: 5px;">
-			[<a href="#" id="workspace-new-file">upload file</a>] &nbsp;
-			[<a href="#" id="workspace-new-folder">create folder</a>] &nbsp;
-			[<a href="#" id="workspace-delete-folder">delete folder</a>]
-		</div>
-			
-		<div id="filedetail" style="width: 60%; float: right; padding: 5px;">
-		</div>
-		<div style="width: 35%; background: #f0f0f0; padding: 5px;" class="ui-corner-all">
-			<div id="explorer">
-			</div>
-		</div>
-		<iframe id="uploadframe" name="uploadframe" src="" style="height: 0px; width: 0px; border: 0px;"></iframe>
+		{% show_workspace group request.user %}
 	</div>
 	
 </div>
@@ -310,8 +299,6 @@
 	<script type="text/javascript" src="{{STATIC_URL}}js/colorbox.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/jqueryFileTree.js"></script>
 	
-	{% if group %}
-	
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$("#chapter-tabs").tabs({
@@ -319,151 +306,9 @@
 					parent.location.hash = ui.panel.id;
 				}
 			});
-
-			refresh_filetree();
-
-			// bring up the "upload new file" form
-			$('#workspace-new-file').click(function() {
-				// unselect any selected file in the tree
-				$('.tree-selected').removeClass('tree-selected');
-
-				// load file upload form by ajax 
-				loading();
-				$('#filedetail').load('{% url group_workspace_upload group.slug %}',
-									  function() {
-					  					$('#upload-progress').hide();
-										$('#workspace-upload-form').submit(function() {
-											$('#upload-progress').show();
-											return true;
-										});
-									  });
-				return false;
-			});
-
-			// if the hidden uploader iframe is updated, show the contents
-			// in the filedetail pane too (content needs to be in a <div>)
-			$('#uploadframe').load(function() {
-				$('#filedetail').html($('#uploadframe').contents().find('div').html());
-				refresh_filetree();
-			});
-
-			function new_folder_listener()
-			{
-				$('#workspace-mkdir-form').submit(function() {
-					$.post('{% url group_workspace_mkdir group.slug %}',
-							$(this).serialize(),
-							function(data) {
-								refresh_filetree();
-								$('#filedetail').html(data);
-								new_folder_listener();
-							});	
-					return false;
-				});
-			}
-			$('#workspace-new-folder').click(function() {
-				// unselect any selected file in the tree
-				$('.tree-selected').removeClass('tree-selected');
-
-				// load new folder form by ajax 
-				loading();
-				$('#filedetail').load('{% url group_workspace_mkdir group.slug %}',
-									  new_folder_listener);
-				return false;
-			});
-			
-			$('#workspace-delete-folder').click(function() {
-				// unselect any selected file in the tree
-				$('.tree-selected').removeClass('tree-selected');
-
-				// load delete folder form by ajax 
-				loading();
-				$('#filedetail').load('{% url group_workspace_rmdir group.slug %}',
-						 function() {
-								$('#workspace-rmdir-form').submit(function() {
-									$.post('{% url group_workspace_rmdir group.slug %}',
-											$(this).serialize(),
-											function(data) {
-												refresh_filetree();
-												$('#filedetail').html(data);
-											});	
-									return false;
-								});
-						});
-				return false;
-			});
 		});
 
-		// load or refresh the filetree
-		function refresh_filetree() {
-			$('#explorer').fileTree({script: '{% url group_workspace_browse group.slug %}'},
-									function(file) {
-										loading();
-										$.post('{% url group_workspace_detail group.slug %}',
-												{dir: file}, 	
-											    function(data) {
-												    $('#filedetail').html(data);
-											    });	
-									});
-		}
-		
-		function move_file(file)
-		{
-			$('#move-file-div').load('{% url group_workspace_move group.slug %}',
-									 function() {
-				 						$('#move-file-original').val(file);
-				 						$('#move-file-div').slideDown();
-										$('#workspace-move-form').submit(function() {
-											$.post('{% url group_workspace_move group.slug %}',
-													$(this).serialize(),
-													function(data) {
-														refresh_filetree();
-														$('#filedetail').html(data);
-													});	
-											return false;
-										});
-			 });
-			 return false;
-		}
-		function replace_file(file)
-		{
-			window.alert("replace file: not implemented - " + file);
-		}
-		function delete_file(file)
-		{
-            var confirmed = confirm("Are you sure you want to delete this file?");
-            if (confirmed)
-            {
-                loading();
-                $.post('{% url group_workspace_delete group.slug %}',
-                		{dir: file},
-                		function(data) {
-                    		refresh_filetree();
-                    		$('#filedetail').html(data);
-                		});
-            }
-			return false;
-		}
-		function preview_file(file)
-		{
-			//$('#show-preview').hide();
-			$('#workspace-preview').html("<img src='{{ STATIC_URL}}images/ajax-loader.gif'/>  Loading...");
-			$('#workspace-preview').slideDown();
-			$.post('{% url group_workspace_preview group.slug %}',
-					{dir: file},
-					function(data) {
-						$('#workspace-preview').html(data);
-					});
-			return false;
-		}
-
-		function loading()
-		{
-			$('#filedetail').html("<p><img src='{{ STATIC_URL}}images/ajax-loader.gif'/>  Loading...</p>");
-		}
-		
 	</script>
 	
-	{% endif %}
-	    
 {% endblock %}
 
