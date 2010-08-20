@@ -1,2 +1,5 @@
 def render(file):
-    return "This is a test"
+    f =  open(file, 'r')
+    contents = f.read()
+    f.close()
+    return contents
