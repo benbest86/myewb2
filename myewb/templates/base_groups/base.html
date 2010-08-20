@@ -310,6 +310,8 @@
 	<script type="text/javascript" src="{{STATIC_URL}}js/colorbox.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/jqueryFileTree.js"></script>
 	
+	{% if group %}
+	
 	<script type="text/javascript">
 		$(document).ready(function() {
 			$("#chapter-tabs").tabs({
@@ -368,20 +370,7 @@
 									  new_folder_listener);
 				return false;
 			});
-
-			function delete_folder_listener()
-			{
-				$('#workspace-rmdir-form').submit(function() {
-					$.post('{% url group_workspace_rmdir group.slug %}',
-							$(this).serialize(),
-							function(data) {
-								refresh_filetree();
-								$('#filedetail').html(data);
-								delete_folder_listener();
-							});	
-					return false;
-				});
-			}
+			
 			$('#workspace-delete-folder').click(function() {
 				// unselect any selected file in the tree
 				$('.tree-selected').removeClass('tree-selected');
@@ -389,7 +378,17 @@
 				// load delete folder form by ajax 
 				loading();
 				$('#filedetail').load('{% url group_workspace_rmdir group.slug %}',
-									  delete_folder_listener);
+						 function() {
+								$('#workspace-rmdir-form').submit(function() {
+									$.post('{% url group_workspace_rmdir group.slug %}',
+											$(this).serialize(),
+											function(data) {
+												refresh_filetree();
+												$('#filedetail').html(data);
+											});	
+									return false;
+								});
+						});
 				return false;
 			});
 		});
@@ -406,7 +405,7 @@
 											    });	
 									});
 		}
-
+		
 		function move_file(file)
 		{
 			$('#move-file-div').load('{% url group_workspace_move group.slug %}',
@@ -449,6 +448,9 @@
 			$('#filedetail').html("<p><img src='{{ STATIC_URL}}images/ajax-loader.gif'/>  Loading...</p>");
 		}
 		
-	</script>    
+	</script>
+	
+	{% endif %}
+	    
 {% endblock %}
 
