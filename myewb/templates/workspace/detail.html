@@ -1,6 +1,7 @@
 {% load filesize_tags %}
 {% load time_filters %}
 {% load uni_form_tags %}
+{% load workspace_tags %}
 
 <div>
 <strong>{{ filename }}</strong><br/>
@@ -24,6 +25,10 @@
 	last modified: {% mktime stat.st_mtime %}<br/>
 </p>
 
-<a href="#" id="show-preview" onclick="preview_file('{{relpath}}'); return false;">preview this file</a>
-<p id="workspace-preview" style="display: none"></p>
+{% can_preview relpath as preview %}
+{% if preview %}
+	<a href="#" id="show-preview" onclick="preview_file('{{relpath}}'); return false;">preview this file</a>
+	<p id="workspace-preview" style="display: none"></p>
+{% endif %}
+
 </div>
