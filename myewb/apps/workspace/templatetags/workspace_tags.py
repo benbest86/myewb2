@@ -83,6 +83,10 @@ class PreviewNode(template.Node):
     
         file = workspace.get_file(filepath)
         if file and ext in preview_extensions:
+            # dynamically load the preview renderer
+            m = __import__('workspace.previews.%s' % ext,
+                           globals(), locals(), ['render'], -1)
+            return m.render(workspace, filepath)
             try:
                 # dynamically load the preview renderer
                 m = __import__('workspace.previews.%s' % ext,

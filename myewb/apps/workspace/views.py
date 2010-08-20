@@ -17,7 +17,8 @@ from workspace.forms import WorkspaceUploadForm, WorkspaceMoveForm, WorkspaceNew
 import settings, os
 
 preview_extensions = ['jpg',
-                      'txt']
+                      'txt',
+                      'pdf']
 preview_aliases = {'jpeg': 'jpg',
                    'gif': 'jpg',
                    'png': 'jpg',

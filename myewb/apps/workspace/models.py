@@ -48,16 +48,16 @@ class Workspace(models.Model):
         return dir
     
     # Gets the filesystem directory for the given relative directory,
-    # creating the filesystem root if needed.  If the requested directory 
-    # contains invalid characters, False is returned.
+    # creating the filesystem root if needed.  If the requested directory
+    # does not exist or contains invalid characters, False is returned.
     #
-    # The optional keyword root allows a different filesystem root
-    # (ie so we can use this for both files and caches)
-    #
-    #,The optional create flag controls whether the requested directory is created
-    # if it does not exist, or if that results in an error (return False), 
-    def get_dir(self, dir, root=None, create=False):
-        if dir.find('.') > -1:       # do not allow any periods
+    # The optional cache flag indicates that we are creating a cache directory;
+    # this changes the behaviour in a few ways:
+    # - it uses the cache root instead of workspace root
+    # - security-checking is relaxed to allow periods in the directory
+    # - the directory is created if it does not exist instead of returning False
+    def get_dir(self, dir, cache=False):
+        if dir.find('.') > -1 and not cache:       # do not allow any periods
             return False
         
         if dir[0:1] != '/':
@@ -65,14 +65,14 @@ class Workspace(models.Model):
         if dir[0:-1] != '/':
             dir = dir + '/'
         
-        if root:
-            dir = root + dir
+        if cache:
+            dir = self.get_cache_root() + dir
         else:
             dir = self.get_root() + dir
             
         if os.path.isdir(dir):
             return dir
-        elif create:
+        elif cache:
             os.makedirs(dir, 0755)
         else:
             return False
@@ -104,7 +104,7 @@ class Workspace(models.Model):
         # get or create the cache directory
         # (no error checking, since self.get_file(filepath) should do all
         #  the checking we need)
-        return self.get_dir(filepath, root=self.get_cache_root())
+        return self.get_dir(filepath, cache=True)
     
     # returns a list of the workspace's directory tree
     def get_dir_tree(self):
