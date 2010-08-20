@@ -1,0 +1,15 @@
+{% load uni_form_tags %}
+
+<div>
+<strong>Upload a file</strong><br/>
+
+<form id="workspace-upload-form" action="{% url group_workspace_upload group.slug %}" method="post" enctype="multipart/form-data" class="uniForm" target="uploadframe">
+	{{ form|as_uni_form }}
+	
+	<br/>
+	&nbsp;&nbsp;&nbsp;
+	<input type="submit" value="Upload" class="fg-button ui-state-default ui-corner-all"/>
+	<span id="upload-progress" style="display: none;"><img src='{{ STATIC_URL}}images/ajax-loader.gif'/></span>
+		
+</form>
+</div>

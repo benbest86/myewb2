@@ -100,3 +100,8 @@ class GroupBulkImportForm(forms.Form):
         if bad_emails:
             raise forms.ValidationError('\n'.join(['%s is not a valid email.' % bad_email for bad_email in bad_emails]))
         return data
+
+class WorkspaceUploadForm(forms.Form):
+    file = forms.FileField()
+    #folder = forms.CharField(widget=forms.Select)
+    

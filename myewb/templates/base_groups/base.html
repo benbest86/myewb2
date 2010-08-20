@@ -137,9 +137,15 @@
 	
 	<div id="group-workspace">
 		<h2>{% trans "Workspace" %}</h2>
+		<iframe id="uploadframe" name="uploadframe" src="" style="height: 2px; width: 2px; border: 0px;"></iframe>
 		<div id="filedetail" style="width: 60%; float: right; padding: 5px;">
 		</div>
-		<div id="explorer" style="width: 35%; background: #f0f0f0; padding: 5px;" class="ui-corner-all" ">
+		<div style="width: 35%; background: #f0f0f0; padding: 5px;" class="ui-corner-all" ">
+			[<a href="#" id="workspace-new-file">new file</a>] &nbsp;
+			[<a href="#" id="workspace-new-folder">new folder</a>]
+			<br/><br/>
+			<div id="explorer">
+			</div>
 		</div>
 	</div>
 	
@@ -308,17 +314,73 @@
 					parent.location.hash = ui.panel.id;
 				}
 			});
+
+			refresh_filetree();
+
+			// bring up the "upload new file" form
+			$('#workspace-new-file').click(function() {
+				// unselect any selected file in the tree
+				$('.tree-selected').removeClass('tree-selected');
+
+				// load file upload form by ajax 
+				loading();
+				$('#filedetail').load('{% url group_workspace_upload group.slug %}',
+									  function() {
+					  					$('#upload-progress').hide();
+										$('#workspace-upload-form').submit(function() {
+											$('#upload-progress').show();
+											return true;
+										});
+									  });
+				return false;
+			});
+
+			// if the hidden uploader iframe is updated, show the contents
+			// in the filedetail pane too (content needs to be in a <div>)
+			$('#uploadframe').load(function() {
+				$('#filedetail').html($('#uploadframe').contents().find('div').html());
+				refresh_filetree();
+			});
 			
+			$('#workspace-new-folder').click(function() {
+				$('.tree-selected').removeClass('tree-selected');
+				$('#filedetail').html("");
+				window.alert("not implemented");
+				return false;
+			});
+		});
+
+		// load or refresh the filetree
+		function refresh_filetree() {
 			$('#explorer').fileTree({script: '{% url group_workspace_browse group.slug %}'},
 									function(file) {
-										$('#filedetail').html("<p><img src='{{ STATIC_URL}}images/ajax-loader.gif'/>  Loading...</p>");
+										loading();
 										$.post('{% url group_workspace_detail group.slug %}',
 												{dir: file}, 	
 											    function(data) {
 												    $('#filedetail').html(data);
 											    });	
 									});
-		});
+		}
+		
+		function move_file(file)
+		{
+			window.alert("move file: not implemented - " + file);
+		}
+		function replace_file(file)
+		{
+			window.alert("replace file: not implemented - " + file);
+		}
+		function delete_file(file)
+		{
+			window.alert("delete file: not implemented - " + file);
+		}
+
+		function loading()
+		{
+			$('#filedetail').html("<p><img src='{{ STATIC_URL}}images/ajax-loader.gif'/>  Loading...</p>");
+		}
+		
 	</script>    
 {% endblock %}
 

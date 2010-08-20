@@ -1,11 +1,20 @@
 {% load filesize_tags %}
 {% load time_filters %}
 
+<div>
 <strong>{{ filename }}</strong><br/>
 {% if path %}
 	<em style="padding-left: 15px;">in {{ path }}</em><br/>
 {% endif %}
-<br/>
 
-size: {{ stat.st_size|filesize }}<br/>
-last modified: {% mktime stat.st_mtime %}<br/>
+<p>
+	[<a href="{{ STATIC_URL }}workspace/groups/{{ group.slug }}{{ relpath }}">download file</a>]&nbsp;&nbsp;
+	[<a href="#" onclick="move_file('{{relpath}}')">move file</a>]&nbsp;&nbsp;
+	[<a href="#" onclick="delete_file('{{relpath}}')">delete file</a>]&nbsp;&nbsp;
+</p>
+
+<p>
+	size: {{ stat.st_size|filesize }}<br/>
+	last modified: {% mktime stat.st_mtime %}<br/>
+</p>
+</div>
