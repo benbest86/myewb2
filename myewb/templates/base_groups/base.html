@@ -344,7 +344,20 @@
 				$('#filedetail').html($('#uploadframe').contents().find('div').html());
 				refresh_filetree();
 			});
-			
+
+			function new_folder_listener()
+			{
+				$('#workspace-mkdir-form').submit(function() {
+					$.post('{% url group_workspace_mkdir group.slug %}',
+							$(this).serialize(),
+							function(data) {
+								refresh_filetree();
+								$('#filedetail').html(data);
+								new_folder_listener();
+							});	
+					return false;
+				});
+			}
 			$('#workspace-new-folder').click(function() {
 				// unselect any selected file in the tree
 				$('.tree-selected').removeClass('tree-selected');
@@ -352,20 +365,23 @@
 				// load new folder form by ajax 
 				loading();
 				$('#filedetail').load('{% url group_workspace_mkdir group.slug %}',
-									 function() {
-											$('#workspace-mkdir-form').submit(function() {
-												$.post('{% url group_workspace_mkdir group.slug %}',
-														$(this).serialize(),
-														function(data) {
-															refresh_filetree();
-															$('#filedetail').html(data);
-														});	
-												return false;
-											});
-									});
+									  new_folder_listener);
 				return false;
 			});
-			
+
+			function delete_folder_listener()
+			{
+				$('#workspace-rmdir-form').submit(function() {
+					$.post('{% url group_workspace_rmdir group.slug %}',
+							$(this).serialize(),
+							function(data) {
+								refresh_filetree();
+								$('#filedetail').html(data);
+								delete_folder_listener();
+							});	
+					return false;
+				});
+			}
 			$('#workspace-delete-folder').click(function() {
 				// unselect any selected file in the tree
 				$('.tree-selected').removeClass('tree-selected');
@@ -373,17 +389,7 @@
 				// load delete folder form by ajax 
 				loading();
 				$('#filedetail').load('{% url group_workspace_rmdir group.slug %}',
-						 function() {
-								$('#workspace-rmdir-form').submit(function() {
-									$.post('{% url group_workspace_rmdir group.slug %}',
-											$(this).serialize(),
-											function(data) {
-												refresh_filetree();
-												$('#filedetail').html(data);
-											});	
-									return false;
-								});
-						});
+									  delete_folder_listener);
 				return false;
 			});
 		});
@@ -400,7 +406,7 @@
 											    });	
 									});
 		}
-		
+
 		function move_file(file)
 		{
 			$('#move-file-div').load('{% url group_workspace_move group.slug %}',
