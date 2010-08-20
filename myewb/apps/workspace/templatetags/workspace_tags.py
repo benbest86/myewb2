@@ -4,6 +4,7 @@ from django.conf import settings
 
 from workspace.models import Workspace
 from workspace.views import preview_extensions, preview_aliases
+from workspace import previews
 
 import os
 
@@ -61,4 +62,47 @@ def do_can_preview(parser, token):
     return CanPreviewNode(file, context_name)
 
 register.tag('can_preview', do_can_preview)
+
+class PreviewNode(template.Node):
+    def __init__(self, workspace, file):
+        self.workspace = template.Variable(workspace)
+        self.file = template.Variable(file)
+
+    def render(self, context):
+        try:
+            workspace = self.workspace.resolve(context)
+            filepath = self.file.resolve(context)
+        except template.VariableDoesNotExist:
+            return u''
+        
+        # normalize the extension
+        filename, ext = os.path.splitext(filepath)
+        ext = ext[1:]
+        if preview_aliases.get(ext, None):
+            ext = preview_aliases[ext]
+    
+        file = workspace.get_file(filepath)
+        if file and ext in preview_extensions:
+            try:
+                # dynamically load the preview renderer
+                m = __import__('workspace.previews.%s' % ext,
+                               globals(), locals(), ['render'], -1)
+                return m.render(file)
+            except:
+                pass
+    
+        return u''
+
+def do_preview(parser, token):
+    """
+    Provides the template tag {% preview WORKSPACE FILE as VARIABLE %}
+    """
+    try:
+        _tagname, workspace, file = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError(u'%(tagname)r tag syntax is as follows: '
+            '{%% %(tagname)r WORKSPACE FILE %%}' % {'tagname': 'preview'})
+    return PreviewNode(workspace, file)
+
+register.tag('preview', do_preview)
 
