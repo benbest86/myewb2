@@ -16,7 +16,7 @@ from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 
 from base_groups.models import BaseGroup
-from base_groups.forms import WorkspaceUploadForm, WorkspaceMoveForm
+from base_groups.forms import WorkspaceUploadForm, WorkspaceMoveForm, WorkspaceNewFolderForm
 from base_groups.helpers import group_search_filter, get_counts, get_recent_counts, enforce_visibility 
 from base_groups.decorators import group_admin_required, visibility_required
 
@@ -260,3 +260,78 @@ def delete(request, group_slug):
             return HttpResponse("deleted")
 
     return HttpResponse("error")
+
+@group_admin_required()
+def mkdir(request, group_slug):
+    """
+    Create a new folder
+    """
+    group = get_object_or_404(BaseGroup, slug=group_slug)
+    
+    # build folder list
+    folders = []
+    path = []
+    dir = os.path.join(settings.MEDIA_ROOT, 'workspace', 'groups', group.slug)
+    folders, path = build_dir_tree('', dir, folders, path, 0)
+    
+    if request.method == 'POST':
+        form = WorkspaceNewFolderForm(request.POST, folders=folders)
+        if form.is_valid():
+            # find absolute directory
+            dir = os.path.join(settings.MEDIA_ROOT, 'workspace', 'groups', group.slug)
+            folder = form.cleaned_data.get('folder', '/')
+            name = form.cleaned_data.get('name', 'newfolder')
+            
+            # clean up destination folder and generate full path
+            if folder[0:1] != '/':
+                folder = '/' + folder
+                
+            if folder[0:-1] != '/':
+                folder = folder + '/'
+
+            # create the directory
+            os.mkdir(dir + folder + name)
+
+            return HttpResponse("created")
+    else:
+        form = WorkspaceNewFolderForm(folders=folders)
+        
+    return render_to_response("base_groups/workspace/mkdir.html",
+                              {'form': form,
+                               'group': group},
+                               context_instance=RequestContext(request))
+
+@group_admin_required()
+def rmdir(request, group_slug):
+    """
+    Remove a folder
+    """
+    group = get_object_or_404(BaseGroup, slug=group_slug)
+    
+    # build folder list
+    folders = []
+    path = []
+    dir = os.path.join(settings.MEDIA_ROOT, 'workspace', 'groups', group.slug)
+    folders, path = build_dir_tree('', dir, folders, path, 0)
+    
+    if request.method == 'POST':
+        form = WorkspaceMoveForm(request.POST, folders=folders)
+        if form.is_valid():
+            # find absolute directory
+            dir = os.path.join(settings.MEDIA_ROOT, 'workspace', 'groups', group.slug)
+            folder = form.cleaned_data.get('folder', '/')
+            
+            try:
+                os.rmdir(dir + '/' + folder)
+            except:
+                return HttpResponse("Cannot remove folder until it is empty")
+
+            return HttpResponse("deleted")
+    else:
+        form = WorkspaceMoveForm(folders=folders)
+        
+    return render_to_response("base_groups/workspace/rmdir.html",
+                              {'form': form,
+                               'group': group},
+                               context_instance=RequestContext(request))
+

@@ -137,16 +137,19 @@
 	
 	<div id="group-workspace">
 		<h2>{% trans "Workspace" %}</h2>
-		<iframe id="uploadframe" name="uploadframe" src="" style="height: 2px; width: 2px; border: 0px;"></iframe>
+		<div style="position: relative; top: -5px; padding-bottom: 5px;">
+			[<a href="#" id="workspace-new-file">upload file</a>] &nbsp;
+			[<a href="#" id="workspace-new-folder">create folder</a>] &nbsp;
+			[<a href="#" id="workspace-delete-folder">delete folder</a>]
+		</div>
+			
 		<div id="filedetail" style="width: 60%; float: right; padding: 5px;">
 		</div>
 		<div style="width: 35%; background: #f0f0f0; padding: 5px;" class="ui-corner-all" ">
-			[<a href="#" id="workspace-new-file">upload file</a>] &nbsp;
-			[<a href="#" id="workspace-new-folder">create folder</a>]
-			<br/><br/>
 			<div id="explorer">
 			</div>
 		</div>
+		<iframe id="uploadframe" name="uploadframe" src="" style="height: 0px; width: 0px; border: 0px;"></iframe>
 	</div>
 	
 </div>
@@ -343,9 +346,44 @@
 			});
 			
 			$('#workspace-new-folder').click(function() {
+				// unselect any selected file in the tree
 				$('.tree-selected').removeClass('tree-selected');
-				$('#filedetail').html("");
-				window.alert("not implemented");
+
+				// load new folder form by ajax 
+				loading();
+				$('#filedetail').load('{% url group_workspace_mkdir group.slug %}',
+									 function() {
+											$('#workspace-mkdir-form').submit(function() {
+												$.post('{% url group_workspace_mkdir group.slug %}',
+														$(this).serialize(),
+														function(data) {
+															refresh_filetree();
+															$('#filedetail').html(data);
+														});	
+												return false;
+											});
+									});
+				return false;
+			});
+			
+			$('#workspace-delete-folder').click(function() {
+				// unselect any selected file in the tree
+				$('.tree-selected').removeClass('tree-selected');
+
+				// load delete folder form by ajax 
+				loading();
+				$('#filedetail').load('{% url group_workspace_rmdir group.slug %}',
+						 function() {
+								$('#workspace-rmdir-form').submit(function() {
+									$.post('{% url group_workspace_rmdir group.slug %}',
+											$(this).serialize(),
+											function(data) {
+												refresh_filetree();
+												$('#filedetail').html(data);
+											});	
+									return false;
+								});
+						});
 				return false;
 			});
 		});

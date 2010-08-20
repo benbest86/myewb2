@@ -102,7 +102,8 @@ class GroupBulkImportForm(forms.Form):
         return data
 
 class WorkspaceMoveForm(forms.Form):
-    folder = forms.CharField(widget=forms.Select)
+    folder = forms.CharField(label="Location",
+                             widget=forms.Select)
     
     def __init__(self, *args, **kwargs):
         folders = kwargs.pop('folders', None)
@@ -128,3 +129,12 @@ class WorkspaceMoveForm(forms.Form):
     
 class WorkspaceUploadForm(WorkspaceMoveForm):
     file = forms.FileField()
+
+class WorkspaceNewFolderForm(WorkspaceMoveForm):
+    name = forms.SlugField()
+    
+    def clean_name(self):
+        name = self.cleaned_data['name']
+        if name.find('.') > -1:
+            return ValidationError("Folder names cannot contain periods")
+        return name
