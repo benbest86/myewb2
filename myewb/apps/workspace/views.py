@@ -18,7 +18,8 @@ import settings, os
 
 preview_extensions = ['jpg',
                       'txt',
-                      'pdf']
+                      'pdf',
+                      'doc']
 preview_aliases = {'jpeg': 'jpg',
                    'gif': 'jpg',
                    'png': 'jpg',

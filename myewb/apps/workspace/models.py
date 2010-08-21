@@ -74,6 +74,7 @@ class Workspace(models.Model):
             return dir
         elif cache:
             os.makedirs(dir, 0755)
+            return dir
         else:
             return False
         

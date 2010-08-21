@@ -15,3 +15,8 @@ body
  	overflow: hidden;
  	font-size: 8px;
 }
+img
+{
+	width: 30%;
+	height: auto;
+}
