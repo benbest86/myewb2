@@ -7,9 +7,7 @@ body
 #docbody
 {
 	background: #ffffff;
-    //-webkit-border-radius: 10px;
-    //-moz-border-radius: 10px;
-    padding: 20px;
+	padding: 20px;
  	border: 1px solid;
  	border-right: 3px solid;   
  	border-bottom: 3px solid;
