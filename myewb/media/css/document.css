@@ -2,6 +2,7 @@ body
 {
 	background: #d0d0d0;
 	padding: 5px;
+ 	font-size: 8px;
 }
 #docbody
 {
@@ -19,4 +20,8 @@ img
 {
 	width: 30%;
 	height: auto;
+}
+table, tr, td
+{
+ 	font-size: 8px;
 }
