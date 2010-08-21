@@ -13,7 +13,6 @@ def render(workspace, filepath):
         # attempt to create cache
         # (TODO: we shuold really do this after uploading, or on a nightly cron)
         if not os.path.isfile(cache_file):
-            print "trying to generate cache"
             cache(workspace, filepath)
 
         if os.path.isfile(cache_file):
@@ -22,7 +21,6 @@ def render(workspace, filepath):
     return ""
 
 def cache(workspace, filepath):
-    print "woot?"
     preview = workspace.get_cache(filepath)
     if preview:
         fpath, fname = os.path.split(filepath)
@@ -37,8 +35,34 @@ def cache(workspace, filepath):
             if os.path.isfile(cache_file):
                 cachestat = os.stat(cache_file)
             
-            # check modified time to see if cached copy is stale
-            if not cachestat or filestat.st_mtime > cache_file.st_mtime:
-                print "trying to convert", file, "to", cache_file
-                ret = subprocess.call(['pdftohtml', '-noframes', file, cache_file])
-                print "ret", ret
+            # if cache already exists, no need to do anything
+            if cachestat and filestat.st_mtime <= cachestat.st_mtime:
+                return True
+            
+            # attempt to generate cache file
+            ret = subprocess.call(['pdftohtml', '-noframes', file, cache_file])
+            
+            # ret == 0 for success
+            if ret == 0:
+                # add some CSS and stuff to the file
+                htmlfile = open(cache_file, 'r')
+                new_contents = []
+                for line in htmlfile:
+                    if line[0:7] == '</HEAD>':
+                        new_contents.append('<link rel="stylesheet" href="/site_media/static/css/document.css" />\n')
+                    elif line[0:7] == '</BODY>':
+                        new_contents.append('</div>\n')
+                        
+                    new_contents.append(line)
+                    
+                    if line[0:5] == '<BODY':
+                        new_contents.append('<div id="docbody">\n')
+                htmlfile.close()
+                
+                htmlfile = open(cache_file, 'w')
+                htmlfile.write(''.join(new_contents))
+                htmlfile.close()
+                
+                return True
+                
+    return False
