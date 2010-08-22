@@ -46,3 +46,13 @@ class WorkspaceNewFolderForm(WorkspaceMoveForm):
         if name.find('.') > -1:
             return ValidationError("Folder names cannot contain periods")
         return name
+        
+class WorkspaceRenameForm(forms.Form):
+    newname = forms.SlugField()
+    
+    def clean_newname(self):
+        newname = self.cleaned_data['newname']
+        if newname.find('.') > -1:
+            return ValidationError("Folder names cannot contain periods")
+        return newname
+    

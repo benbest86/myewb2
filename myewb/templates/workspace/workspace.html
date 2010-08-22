@@ -171,6 +171,24 @@
 		 });
 		 return false;
 	}
+	function rename_file(file)
+	{
+		$('#move-file-div').load('{% url workspace_rename workspace.id %}',
+								 function() {
+			 						$('#rename-file-original').val(file);
+			 						$('#move-file-div').slideDown();
+									$('#workspace-rename-form').submit(function() {
+										$.post('{% url workspace_rename workspace.id %}',
+												$(this).serialize(),
+												function(data) {
+													$('#filedetail').html(data);
+													refresh_filetree(force_selection);
+												});	
+										return false;
+									});
+		 });
+		 return false;
+	}
 	function replace_file(file)
 	{
 		window.alert("replace file: not implemented - " + file);

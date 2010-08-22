@@ -24,7 +24,7 @@ div.jqueryFileTree li {
 
     {% if can_edit %}
         <p>
-	        [<a href="#" onclick="window.alert('not implemented'); return false;">rename folder</a>]&nbsp;&nbsp;
+        	[<a href="#" onclick="rename_file('{{relpath}}'); return false;">rename folder</a>]&nbsp;&nbsp;
         	[<a href="#" onclick="move_file('{{relpath}}'); return false;">move folder</a>]&nbsp;&nbsp;
             [<a href="#" onclick="window.alert('not implemented'); return false;">delete folder</a>]&nbsp;&nbsp;
         </p>
