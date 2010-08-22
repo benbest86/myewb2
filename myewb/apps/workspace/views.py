@@ -228,6 +228,29 @@ def upload(request, workspace_id):
                                context_instance=RequestContext(request))
 
 @can_edit()
+def bulk_move(request, workspace_id):
+    workspace = get_object_or_404(Workspace, id=workspace_id)
+
+    # build folder list
+    folders = workspace.get_dir_tree()
+    
+    if request.method == 'POST':
+        form = WorkspaceMoveForm(request.POST, folders=folders)
+        if form.is_valid():
+            relpath = form.cleaned_data.get('folder', '/')
+            filelist = request.POST.get('file', '')
+            files = filelist.split(',')
+            for f in files:
+                if f:
+                    src, dst = move_op(workspace,
+                                       f,
+                                       relpath)
+
+            relpath = relpath + '/'
+            return folder_detail(request, workspace_id=workspace_id, folder=relpath, force_selection=True)
+    return HttpResponse("error")    
+
+@can_edit()
 def move(request, workspace_id):
     """
     Move a file
@@ -240,25 +263,16 @@ def move(request, workspace_id):
     if request.method == 'POST':
         form = WorkspaceMoveForm(request.POST, folders=folders)
         if form.is_valid():
-            # find absolute directory
-            src = workspace.get_file(request.POST.get('file', None))        # src file, full path
-            if not src:
-                src = workspace.get_dir(request.POST.get('file', None))
-                src = src[0:-1]                                             # strip trailing slash
-            if src:
-                leading, file = os.path.split(src)                          # src filename
+            src, dst = move_op(workspace,
+                               request.POST.get('file', None),
+                               form.cleaned_data.get('folder', '/'))
 
-                folder = workspace.get_dir(form.cleaned_data.get('folder', '/')) # dst folder
-                dst = os.path.join(folder, file)                            # dst file, full path
-            
-            # do the rename!
-            if src and folder:
-                os.rename(src, dst)
-    
+            if src and dst:
                 # redirect to detailed display
                 folder = form.cleaned_data.get('folder', '/')
                 if folder == '/':
                     folder = '';
+                leading, file = os.path.split(src)
                 relpath = folder + '/' + file
                 
                 # file?
@@ -286,10 +300,29 @@ def move(request, workspace_id):
                                'workspace': workspace},
                                context_instance=RequestContext(request))
 
+def move_op(workspace, src, dst):
+    # find absolute directory
+    src = workspace.get_file(src)        # src file, full path
+    if not src:
+        src = workspace.get_dir(src)
+        src = src[0:-1]                                             # strip trailing slash
+    if src:
+        leading, file = os.path.split(src)                          # src filename
+
+        folder = workspace.get_dir(dst) # dst folder
+        dst = os.path.join(folder, file)                            # dst file, full path
+    
+    # do the rename!
+    if src and folder:
+        os.rename(src, dst)
+        return src,dst
+        
+    return None,None
+
 @can_edit()
 def rename(request, workspace_id):
     """
-    Move a file
+    Rename a file
     """
     workspace = get_object_or_404(Workspace, id=workspace_id)
     

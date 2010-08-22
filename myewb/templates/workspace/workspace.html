@@ -150,6 +150,33 @@
 		 });
 		 return false;
 	}
+	function bulk_move_file(file)
+	{
+		$('#bulk-file-div').load('{% url workspace_move workspace.id %}',
+								 function() {
+			 						$('#bulk-file-div').slideDown();
+			 						
+									$('#workspace-move-form').submit(function() {
+									    // build list of selected files and put in hidden input
+	                                    var bulk_move = "";
+	                                    $('.file-bulkop').each(function() {
+	                                        if ($(this).attr('checked') && $(this).attr('name'))
+	                                            bulk_move = bulk_move + "," + $(this).attr('name');
+	                                    });
+    			 						$('#move-file-original').val(bulk_move);
+    			 						
+    			 						// send AJAX request
+										$.post('{% url workspace_bulk_move workspace.id %}',
+												$(this).serialize(),
+												function(data) {
+													$('#filedetail').html(data);
+													refresh_filetree(force_selection);
+												});	
+										return false;
+									});
+		 });
+		 return false;
+	}
 	function rename_file(file)
 	{
 		$('#move-file-div').load('{% url workspace_rename workspace.id %}',
@@ -218,7 +245,7 @@
 				});
 		return false;
 	}
-
+	
 	function loading()
 	{
 		$('#filedetail').html("<p><img src='{{ STATIC_URL}}images/ajax-loader.gif'/>  Loading...</p>");

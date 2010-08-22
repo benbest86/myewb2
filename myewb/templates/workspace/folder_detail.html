@@ -39,7 +39,7 @@ div.jqueryFileTree li {
     <div class="jqueryFileTree">
         {% for l,m in listing %}
             {% if can_edit %}
-                <input type="checkbox" name="{{ l }}" style="float: left;">
+                <input type="checkbox" class="file-bulkop" name="{{ l }}" style="float: left;">
             {% endif %}
             {{ m|safe }}
         {% endfor %}
@@ -49,9 +49,11 @@ div.jqueryFileTree li {
         {% if can_edit %}
             <div style="margin-left: 25px; margin-top: 5px;">
                 with selected files:<br/>
-                [<a href="#" onclick="window.alert('not implemented'); return false;">move</a>]&nbsp;&nbsp;
+                [<a href="#" onclick="bulk_move_file(); return false;">move</a>]&nbsp;&nbsp;
                 [<a href="#" onclick="window.alert('not implemented'); return false;">delete</a>]&nbsp;&nbsp;
             </div>
+            <p id="bulk-file-div" style="display: none;">
+            </p>
         {% endif %}
     {% else %}
         folder is empty
