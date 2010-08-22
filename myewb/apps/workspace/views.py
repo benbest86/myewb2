@@ -134,6 +134,7 @@ def folder_detail(request, workspace_id):
     
     response = []
     if request.method == 'POST' and request.POST.get('dir', None):
+        reldir = request.POST['dir']
         folder = workspace.get_dir(request.POST['dir'])
         if folder:
             # build initial listing for current directory
@@ -149,14 +150,28 @@ def folder_detail(request, workspace_id):
             dirs.sort()
             files.sort()
             
+            if len(dirs) or len(files):
+                i = 0
+                # output directories...
+                for f in dirs:
+                    full_file = os.path.join(reldir, f)
+                    response.append((full_file, '<li class="directory collapsed" id="%s">%s</li>' % (full_file, f)))
+                    i = i + 1
+                    
+                # output files
+                for f in files:
+                    full_file = os.path.join(reldir, f)
+                    fname, ext = os.path.splitext(f)
+                    ext = ext[1:]
+                    response.append((full_file, '<li class="file ext_%s" id="%s">%s</li>' % (ext, full_file, f)))
+
             path, foldername, ignore = request.POST['dir'].rsplit('/', 2)
 
             return render_to_response("workspace/folder_detail.html",
                                       {'workspace': workspace,
                                        'foldername': foldername,
                                        'path': path,
-                                       'files': files,
-                                       'dirs': dirs,
+                                       'listing': response,
                                        'relpath': request.POST['dir']},
                                       context_instance=RequestContext(request))
     return HttpResponse("error")

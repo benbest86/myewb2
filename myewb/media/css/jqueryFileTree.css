@@ -1,4 +1,4 @@
-UL.jqueryFileTree {
+.jqueryFileTree {
 	font-family: Verdana, sans-serif;
 	font-size: 11px;
 	line-height: 18px;
@@ -6,7 +6,7 @@ UL.jqueryFileTree {
 	margin: 0px;
 }
 
-UL.jqueryFileTree LI {
+.jqueryFileTree LI {
 	list-style: none;
 	padding: 0px;
 	padding-left: 20px;

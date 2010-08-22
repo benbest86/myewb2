@@ -5,24 +5,61 @@
 
 {% workspace_perms workspace request.user as can_view can_edit %}
 
+<style>
+div.jqueryFileTree li {
+    display: block;
+    margin-left: 25px;
+    padding-left: 20px;
+    height: 18px;
+}
+</style>
+
 <div>
-<strong>{{ foldername }}</strong><br/>
-{% if path %}
-	{% ifnotequal path '/' %}
-		<em style="padding-left: 15px;">in {{ path }}</em><br/>
-	{% endifnotequal %}
-{% endif %}
+    <strong>{{ foldername }}</strong><br/>
+    {% if path %}
+	    {% ifnotequal path '/' %}
+		    <em style="padding-left: 15px;">in {{ path }}</em><br/>
+	    {% endifnotequal %}
+    {% endif %}
 
-<hr/>
-Folders:<br/>
-{% for d in dirs %}
-    {{ d }}<br/>
-{% endfor %}
-<hr/>
+    {% if can_edit %}
+        <p>
+	        [<a href="#" onclick="window.alert('not implemented'); return false;">rename folder</a>]&nbsp;&nbsp;
+	        [<a href="#" onclick="window.alert('not implemented'); return false;">move folder</a>]&nbsp;&nbsp;
+            [<a href="#" onclick="window.alert('not implemented'); return false;">delete folder</a>]&nbsp;&nbsp;
+        </p>
+    {% else %}
+        <br/>
+    {% endif %}
 
-Files:<br/>
-{% for f in files %}
-    {{ f }}<br/>
-{% endfor %}
+    <div class="jqueryFileTree">
+        {% for l,m in listing %}
+            {% if can_edit %}
+                <input type="checkbox" name="{{ l }}" style="float: left;">
+            {% endif %}
+            {{ m|safe }}
+        {% endfor %}
+    </div>
+    
+    {% if can_edit %}
+        <div style="margin-left: 25px; margin-top: 5px;">
+            with selected files:<br/>
+            [<a href="#" onclick="window.alert('not implemented'); return false;">move</a>]&nbsp;&nbsp;
+            [<a href="#" onclick="window.alert('not implemented'); return false;">delete</a>]&nbsp;&nbsp;
+        </div>
+    {% endif %}
 
 </div>
+
+{% if can_edit %}
+    <script type="text/javascript">
+    $('div.jqueryFileTree li').click(function() {
+        var id = $(this).attr('id');
+        var input = $('div.jqueryFileTree input[name=' + id + ']')
+        if (input.attr('checked'))
+            input.attr('checked', '');
+        else
+            input.attr('checked', 'checked');
+    });
+    </script>
+{% endif %}
