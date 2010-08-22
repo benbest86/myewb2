@@ -28,6 +28,9 @@
 			$('#filedetail').load('{% url workspace_upload workspace.id %}',
 								  function() {
 				  					$('#upload-progress').hide();
+				  					var last_folder = $('.tree-selected-folder').find('a').attr('rel');
+				  					last_folder = last_folder.substring(0, last_folder.length - 1);
+				  					$('#id_folder ').val(last_folder);
 									$('#workspace-upload-form').submit(function() {
 										$('#upload-progress').show();
 										return true;

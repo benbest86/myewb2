@@ -72,7 +72,8 @@ if(jQuery) (function($){
 								}
 								$(this).parent().find('UL').remove(); // cleanup
 								showTree( $(this).parent(), escape($(this).attr('rel').match( /.*\// )) );
-								$(this).parent().removeClass('collapsed').addClass('expanded');
+								$('.tree-selected-folder').removeClass('tree-selected-folder');
+								$(this).parent().removeClass('collapsed').addClass('expanded tree-selected-folder');
 							} else {
 								// Collapse
 								$(this).parent().find('UL').slideUp({ duration: o.collapseSpeed, easing: o.collapseEasing });
