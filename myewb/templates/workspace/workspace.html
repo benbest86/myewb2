@@ -2,18 +2,6 @@
 
 {% workspace_perms workspace request.user as can_view can_edit %}
 
-<style>
-#explorer li a
-{
-    margin-right: 16px;
-}
-#explorer li .ui-icon-circle-triangle-e
-{
-    float: right;
-    cursor: pointer;
-}
-</style>
-
 {% if can_edit %}
 <div style="position: relative; top: -5px; padding-bottom: 5px;">
 	[<a href="#" id="workspace-new-file">upload file</a>] &nbsp;
@@ -25,7 +13,7 @@
 <div id="filedetail" style="width: 60%; float: right; padding: 5px;">
 </div>
 <div style="width: 35%; background: #f0f0f0; padding: 5px;" class="ui-corner-all">
-	<div id="explorer">
+	<div id="explorer" style="overflow: auto;">
 	</div>
 </div>
 <iframe id="uploadframe" name="uploadframe" src="" style="height: 0px; width: 0px; border: 0px;"></iframe>
@@ -92,23 +80,22 @@
 		
 	});
 
-    function filetree_hooks() {
-	    $('.ui-icon').each(function() {
+    function filetree_hooks(c) {
+	    $('li.directory a').each(function() {
 	        if (!$(this).hasClass('listener'))
 	        {
 	            $(this).click(function() {
-	                if ($(this).parent().hasClass('collapsed'))
-	                    $(this).parent().find('a').click();
 	                    
-	                loading();
-	                var folder = $(this).parent().find('a').attr('rel');
-	                $.post('{% url workspace_folder_detail workspace.id %}',
-	                       {dir: folder},
-	                       function(data) {
-	                            $('#filedetail').html(data);
-	                       });
-	                       
-	                $('.tree-selected').removeClass('tree-selected');
+	                if ($(this).parent().hasClass('expanded'))
+	                {
+	                    loading();
+	                    var folder = $(this).attr('rel');
+	                    $.post('{% url workspace_folder_detail workspace.id %}',
+	                           {dir: folder},
+	                           function(data) {
+	                                $('#filedetail').html(data);
+	                           });
+	                }
 	            });
 	            $(this).addClass('listener');
 	       }

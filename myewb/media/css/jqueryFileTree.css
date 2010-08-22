@@ -14,10 +14,15 @@
 	white-space: nowrap;
 }
 
-UL.jqueryFileTree LI.tree-selected {
+UL.jqueryFileTree LI.tree-selected a {
 	background-color: #bbddff;
 	border: 1px solid #42a1ff;
 	margin: 0px;
+}
+
+UL.jqueryFileTree LI.tree-selected ul li a {
+	background-color: transparent;
+	border: 0px;
 }
 
 UL.jqueryFileTree A {
@@ -27,7 +32,7 @@ UL.jqueryFileTree A {
 	padding: 0px 2px;
 }
 
-UL.jqueryFileTree A:hover {
+UL.jqueryFileTree A:hover, UL.jqueryFileTree LI.tree-selected ul li a:hover {
 	background: #BDF;
 }
 

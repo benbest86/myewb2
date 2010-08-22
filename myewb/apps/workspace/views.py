@@ -78,7 +78,7 @@ def browse_build_tree(dir, reldir, response, selected):
             
             if current == f:
                 # if this is the pre-selected element, recurse and drill down
-                response.append('<li class="directory expanded"><span class="ui-icon ui-icon-circle-triangle-e"></span><a href="#" rel="%s/">%s</a>' % (full_file, f))
+                response.append('<li class="directory expanded"><a href="#" rel="%s/">%s</a>' % (full_file, f))
                 response = browse_build_tree(os.path.join(dir, f),
                                              reldir + f + '/',
                                              response,
@@ -86,7 +86,7 @@ def browse_build_tree(dir, reldir, response, selected):
                 response.append('</li>')
             else:
                 # otherwise, just a one-line entry
-                response.append('<li class="directory collapsed"><span class="ui-icon ui-icon-circle-triangle-e"></span><a href="#" rel="%s/">%s</a></li>' % (full_file, f))
+                response.append('<li class="directory collapsed"><a href="#" rel="%s/">%s</a></li>' % (full_file, f))
             
         # output files
         for f in files:
