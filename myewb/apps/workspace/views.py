@@ -112,6 +112,7 @@ def detail(request, workspace_id):
     
     response = []
     if request.method == 'POST' and request.POST.get('dir', None):
+        """
         file = workspace.get_file(request.POST['dir'])
         if file:
             path, filename = os.path.split(request.POST['dir'])
@@ -122,6 +123,13 @@ def detail(request, workspace_id):
                                        'filename': filename,
                                        'relpath': request.POST['dir'],
                                        'stat': stat},
+                                      context_instance=RequestContext(request))
+                                      """
+        file = WorkspaceFile.objects.load(workspace, request.POST['dir'])
+        if file:
+            return render_to_response("workspace/detail.html",
+                                      {'workspace': workspace,
+                                       'file': file},
                                       context_instance=RequestContext(request))
     return HttpResponse("error")
     
@@ -200,14 +208,9 @@ def upload(request, workspace_id):
                                                 request.user)
                                                 
             # redirect to file info display
-            stat = os.stat(file.get_absolute_path())
             return render_to_response("workspace/detail.html",
                                       {'workspace': workspace,
-                                       'path': file.get_folder(),
-                                       'filename': file.get_filename(),
-                                       'relpath': file.get_relative_path(),
-                                       'stat': stat,
-                                       'force_selection': True},
+                                       'file': file},
                                       context_instance=RequestContext(request))
     else:
         form = WorkspaceUploadForm(folders=folders)
@@ -259,25 +262,14 @@ def move(request, workspace_id):
 
             if src and dst:
                 # redirect to detailed display
-                folder = form.cleaned_data.get('folder', '/')
-                if folder == '/':
-                    folder = '';
-                leading, file = os.path.split(src)
-                relpath = folder + '/' + file
-                
-                # file?
                 if os.path.isfile(dst):
-                    filepath = folder + file
-                    stat = os.stat(dst)
-                    return render_to_response("workspace/detail.html",
-                                              {'workspace': workspace,
-                                               'path': folder,
-                                               'filename': file,
-                                               'relpath': relpath,
-                                               'stat': stat,
-                                               'force_selection': True},
-                                              context_instance=RequestContext(request))
-                                              
+                    relpath = form.cleaned_data.get('folder', '/') + request.POST.get('file', '')
+                    file = WorkspaceFile.objects.load(workspace, relpath)
+                    if file:
+                        return render_to_response("workspace/detail.html",
+                                                  {'workspace': workspace,
+                                                   'file': file},
+                                                  context_instance=RequestContext(request))
                 # or folder?
                 elif os.path.isdir(dst):
                     relpath = relpath + '/'
@@ -342,17 +334,12 @@ def rename(request, workspace_id):
                 
                 # file?
                 if os.path.isfile(dst):
-                    filepath = folder + file
-                    stat = os.stat(dst)
-                    return render_to_response("workspace/detail.html",
-                                              {'workspace': workspace,
-                                               'path': folder,
-                                               'filename': file,
-                                               'relpath': relpath,
-                                               'stat': stat,
-                                               'force_selection': True},
-                                              context_instance=RequestContext(request))
-                                              
+                    file = WorkspaceFile.objects.load(workspace, relpath)
+                    if file:
+                        return render_to_response("workspace/detail.html",
+                                                  {'workspace': workspace,
+                                                   'file': file},
+                                                  context_instance=RequestContext(request))
                 # or folder?
                 elif os.path.isdir(dst):
                     relpath = relpath + '/'

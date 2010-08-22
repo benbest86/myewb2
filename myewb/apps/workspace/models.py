@@ -199,6 +199,30 @@ class WorkspaceFileManager(models.Manager):
                                updator=user)
 
         return workfile
+        
+    # Load a file from disk.
+    # Workspace should be a workspace object, and filepath should be a relative 
+    # path to the file from the workspace.
+    #
+    # If the file exists on disk but not meta-information is stored in the 
+    # database, a record will be created for it.
+    # (basically, a modified objects.get_or_create() for WorkspaceFile objects)
+    #
+    # If the file doesn't exist, return None
+    
+    def load(self, workspace, filepath):
+        workfile = None
+        try:
+            workfile = self.get(workspace=workspace,
+                                name=filepath)
+        except WorkspaceFile.DoesNotExist:
+            if workspace.get_file(filepath):
+                workfile = self.create(workspace=workspace,
+                                       name=filepath)
+        except WorkspaceFile.MultipleObjectsReturned:
+            workfile = self.filter(workspace=workspace,
+                                    name=filepath)[0]
+        return workfile
 
 class WorkspaceFile(models.Model):
     workspace = models.ForeignKey(Workspace)
@@ -207,8 +231,8 @@ class WorkspaceFile(models.Model):
     created = models.DateTimeField(auto_now_add=True)
     modified = models.DateTimeField(auto_now=True)
     
-    creator = models.ForeignKey(User, related_name='workspace_files')
-    updator = models.ForeignKey(User, related_name='workspace_updates')
+    creator = models.ForeignKey(User, related_name='workspace_files', null=True)
+    updator = models.ForeignKey(User, related_name='workspace_updates', null=True)
     
     objects = WorkspaceFileManager()
     
@@ -231,6 +255,9 @@ class WorkspaceFile(models.Model):
     def get_extension(self):
         filename, ext = os.path.splitext(self.name)
         return ext[1:]
+        
+    def get_size(self):
+        return os.stat(self.get_absolute_path()).st_size
         
     
 class WorkspaceRevision(models.Model):
