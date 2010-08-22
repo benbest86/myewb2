@@ -259,6 +259,23 @@ class WorkspaceFile(models.Model):
     def get_size(self):
         return os.stat(self.get_absolute_path()).st_size
         
+    # this does NOT perform the actual on-disk move, just updates the database path
+    # (since folders can also be moved, the actual move code is in views.moveop()
+    #  so that it can be re-used)
+    def update_folder(self, new_folder):
+        # normalize folder name (i do this so often, i should centralize it...)
+        if new_folder[0:1] != '/':
+            new_folder = '/' + new_folder
+        if new_folder[-1:] != '/':
+            new_folder = new_folder + '/'
+            
+        # ensure new dir exists and is valid...
+        if self.workspace.get_dir(new_folder):
+            # and update our metadata
+            self.name = new_folder + self.get_filename()
+            self.save()
+            return True
+        return False
     
 class WorkspaceRevision(models.Model):
     workspace = models.ForeignKey(Workspace)

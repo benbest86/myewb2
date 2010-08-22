@@ -210,7 +210,8 @@ def upload(request, workspace_id):
             # redirect to file info display
             return render_to_response("workspace/detail.html",
                                       {'workspace': workspace,
-                                       'file': file},
+                                       'file': file,
+                                       'force_selection': True},
                                       context_instance=RequestContext(request))
     else:
         form = WorkspaceUploadForm(folders=folders)
@@ -268,7 +269,8 @@ def move(request, workspace_id):
                     if file:
                         return render_to_response("workspace/detail.html",
                                                   {'workspace': workspace,
-                                                   'file': file},
+                                                   'file': file,
+                                                   'force_selection': True},
                                                   context_instance=RequestContext(request))
                 # or folder?
                 elif os.path.isdir(dst):
@@ -282,22 +284,28 @@ def move(request, workspace_id):
                                'workspace': workspace},
                                context_instance=RequestContext(request))
 
-def move_op(workspace, src, dst):
+def move_op(workspace, relsrc, reldst):
     # find absolute directory
-    src = workspace.get_file(src)        # src file, full path
-    if not src:
-        src = workspace.get_dir(src)
-        src = src[0:-1]                                             # strip trailing slash
-    if src:
-        leading, file = os.path.split(src)                          # src filename
+    abssrc = workspace.get_file(relsrc)        # src file, full path
+    if not abssrc:
+        abssrc = workspace.get_dir(relsrc)
+        abssrc = abssrc[0:-1]                                             # strip trailing slash
+    if abssrc:
+        leading, file = os.path.split(abssrc)                          # src filename
 
-        folder = workspace.get_dir(dst) # dst folder
-        dst = os.path.join(folder, file)                            # dst file, full path
+        folder = workspace.get_dir(reldst) # dst folder
+        absdst = os.path.join(folder, file)                            # dst file, full path
     
     # do the rename!
-    if src and folder:
-        os.rename(src, dst)
-        return src,dst
+    if abssrc and folder:
+        os.rename(abssrc, absdst)
+        
+        # update file metadata in the database
+        wfile = WorkspaceFile.objects.load(workspace, relsrc)
+        if wfile:
+            wfile.update_folder(reldst) 
+        
+        return abssrc,absdst
         
     return None,None
 
@@ -338,7 +346,8 @@ def rename(request, workspace_id):
                     if file:
                         return render_to_response("workspace/detail.html",
                                                   {'workspace': workspace,
-                                                   'file': file},
+                                                   'file': file,
+                                                   'force_selection': True},
                                                   context_instance=RequestContext(request))
                 # or folder?
                 elif os.path.isdir(dst):
