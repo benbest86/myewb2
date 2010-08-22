@@ -40,7 +40,7 @@
 		// in the filedetail pane too (content needs to be in a <div>)
 		$('#uploadframe').load(function() {
 			$('#filedetail').html($('#uploadframe').contents().find('div').html());
-			refresh_filetree();
+			refresh_filetree(force_selection);
 		});
 
 		function new_folder_listener()
@@ -90,8 +90,9 @@
 	});
 
 	// load or refresh the filetree
-	function refresh_filetree() {
-		$('#explorer').fileTree({script: '{% url workspace_browse workspace.id %}'},
+	function refresh_filetree(selected) {
+		$('#explorer').fileTree({script: '{% url workspace_browse workspace.id %}',
+		                         selected: selected},
 								function(file) {
 									loading();
 									$.post('{% url workspace_detail workspace.id %}',
@@ -112,8 +113,8 @@
 										$.post('{% url workspace_move workspace.id %}',
 												$(this).serialize(),
 												function(data) {
-													refresh_filetree();
 													$('#filedetail').html(data);
+													refresh_filetree(force_selection);
 												});	
 										return false;
 									});

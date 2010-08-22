@@ -31,4 +31,10 @@
 	<p id="workspace-preview" style="display: none"></p>
 {% endif %}
 
+{% if force_selection %}
+<script type="text/javascript">
+    var force_selection = '{{ relpath }}';
+</script>
+{% endif %}
+
 </div>

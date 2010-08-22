@@ -37,47 +37,70 @@ def browse(request, workspace_id):
     if request.method == 'POST':
         reldir = request.POST.get('dir', '/')
         dir = workspace.get_dir(reldir)
+        selected = request.POST.get('selected', '/')[1:].split('/')
         
         # build directory listing
         if dir:
-            # take all files/subdirectories and build lists
-            files = []
-            dirs = []
-            for f in os.listdir(dir):
-                if os.path.isdir(os.path.join(dir, f)):
-                    dirs.append(f)
-                else:
-                    files.append(f)
-                    
-            # sort lists
-            dirs.sort()
-            files.sort()
-                
-            response = ['<ul class="jqueryFileTree" style="display: none;">']
-            if len(dirs) or len(files):
-                
-                # output directories...
-                for f in dirs:
-                    full_file = os.path.join(reldir, f)
-                    response.append('<li class="directory collapsed"><a href="#" rel="%s/">%s</a></li>' % (full_file, f))
-                    
-                # output files
-                for f in files:
-                    full_file = os.path.join(reldir, f)
-                    fname, ext = os.path.splitext(f)
-                    ext = ext[1:]
-                    response.append('<li class="file ext_%s"><a href="#" rel="%s">%s</a></li>' % (ext, full_file, f))
-        
-            else:
-                if reldir == '/':
-                    response.append('<li>workspace is empty</li>')
-                else:
-                    response.append('<li>folder is empty</li>')
-            response.append('</ul>')
+            response = browse_build_tree(dir, reldir, response, selected)
         
     # return listing
     return HttpResponse(''.join(response))
 
+# build dir listing, expanding to the selected element
+def browse_build_tree(dir, reldir, response, selected):
+    # build initial listing for current directory
+    files = []
+    dirs = []
+    for f in os.listdir(dir):
+        if os.path.isdir(os.path.join(dir, f)):
+            dirs.append(f)
+        else:
+            files.append(f)
+            
+    # sort lists
+    dirs.sort()
+    files.sort()
+    
+    # find current pre-select element, if any
+    if len(selected):
+        current = selected.pop(0)
+    else:
+        current = None
+        
+    response.append('<ul class="jqueryFileTree" style="display: none;">')
+    if len(dirs) or len(files):
+        
+        # output directories...
+        for f in dirs:
+            full_file = os.path.join(reldir, f)
+            
+            if current == f:
+                # if this is the pre-selected element, recurse and drill down
+                response.append('<li class="directory expanded"><a href="#" rel="%s/">%s</a>' % (full_file, f))
+                response = browse_build_tree(os.path.join(dir, f),
+                                             reldir + f + '/',
+                                             response,
+                                             selected)
+                response.append('</li>')
+            else:
+                # otherwise, just a one-line entry
+                response.append('<li class="directory collapsed"><a href="#" rel="%s/">%s</a></li>' % (full_file, f))
+            
+        # output files
+        for f in files:
+            full_file = os.path.join(reldir, f)
+            fname, ext = os.path.splitext(f)
+            ext = ext[1:]
+            response.append('<li class="file ext_%s"><a href="#" rel="%s">%s</a></li>' % (ext, full_file, f))
+
+    else:
+        if reldir == '/':
+            response.append('<li>workspace is empty</li>')
+        else:
+            response.append('<li>folder is empty</li>')
+    response.append('</ul>')
+    return response
+        
 def detail(request, workspace_id):
     """
     View the details of a file
@@ -125,14 +148,17 @@ def upload(request, workspace_id):
             
             # redirect to file info display
             folder = form.cleaned_data.get('folder', '/')
+            if folder == '/':
+                folder = ''
             file = dir + filename
             stat = os.stat(file)
             return render_to_response("workspace/detail.html",
                                       {'workspace': workspace,
                                        'path': folder,
                                        'filename': filename,
-                                       'relpath': file,
-                                       'stat': stat},
+                                       'relpath': folder + '/' + filename,
+                                       'stat': stat,
+                                       'force_selection': True},
                                       context_instance=RequestContext(request))
     else:
         form = WorkspaceUploadForm(folders=folders)
@@ -174,7 +200,7 @@ def move(request, workspace_id):
                                           {'workspace': workspace,
                                            'path': folder,
                                            'filename': file,
-                                           'relpath': filepath,
+                                           'relpath': request.POST['dir'],
                                            'stat': stat},
                                           context_instance=RequestContext(request))
     else:
