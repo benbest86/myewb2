@@ -4,6 +4,7 @@ This file is part of myEWB
 Copyright 2010 Engineers Without Borders Canada
 """
 
+from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.db import models
@@ -162,3 +163,83 @@ def build_dir_tree(fname, dir, folders, path, counter):
         path.pop()
             
     return (folders, path)
+    
+class WorkspaceFileManager(models.Manager):
+    # Take the uploaded file, and attach it to a new WorkspaceFile instance.
+    # Takes four arguments:
+    #  - the workspace that the file is being uploaded to
+    #  - the path in the workspace
+    #  - an UploadedFile object (typically, from request.FILES['file'])
+    #  - the User uploading the file
+    def upload(self, workspace, path, uploadedfile, user):
+        # find absolute directory
+        abspath = workspace.get_dir(path)
+        filename = uploadedfile.name
+        
+        # TODO: filename validation here
+        
+        # open file
+        diskfile = open(abspath + filename, 'wb+')
+        
+        # write file to disk
+        for chunk in uploadedfile.chunks():
+            diskfile.write(chunk)
+        diskfile.close() 
+        
+        # build relative name
+        if path[0:1] != '/':
+            path = '/' + path
+        if path[-1:] != '/':
+            path = path + '/'
+        relpath = path + filename
+        
+        workfile = self.create(workspace=workspace,
+                               name=relpath,
+                               creator=user,
+                               updator=user)
+
+        return workfile
+
+class WorkspaceFile(models.Model):
+    workspace = models.ForeignKey(Workspace)
+    name = models.CharField(max_length=255)
+    
+    created = models.DateTimeField(auto_now_add=True)
+    modified = models.DateTimeField(auto_now=True)
+    
+    creator = models.ForeignKey(User, related_name='workspace_files')
+    updator = models.ForeignKey(User, related_name='workspace_updates')
+    
+    objects = WorkspaceFileManager()
+    
+    def get_relative_path(self):
+        return self.name
+        
+    def get_absolute_path(self):
+        return self.workspace.get_file(self.name)
+        
+    def get_folder(self):
+        path, filename = os.path.split(self.name)
+        if path == '/':
+            path = ''
+        return path
+    
+    def get_filename(self):
+        path, filename = os.path.split(self.name)
+        return filename
+        
+    def get_extension(self):
+        filename, ext = os.path.splitext(self.name)
+        return ext[1:]
+        
+    
+class WorkspaceRevision(models.Model):
+    workspace = models.ForeignKey(Workspace)
+    parent_file = models.ForeignKey(WorkspaceFile)
+    
+    date = models.DateTimeField(auto_now_add=True)
+    user = models.ForeignKey(User)
+    reverted = models.ForeignKey('self', blank=True, null=True)
+    
+    filename = models.CharField(max_length=255)
+

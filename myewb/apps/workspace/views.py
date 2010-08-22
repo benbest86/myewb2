@@ -12,7 +12,7 @@ from django.template import RequestContext
 from django.http import HttpResponse
 
 from workspace.decorators import can_view, can_edit
-from workspace.models import Workspace
+from workspace.models import Workspace, WorkspaceFile
 from workspace.forms import WorkspaceUploadForm, WorkspaceMoveForm, WorkspaceNewFolderForm, WorkspaceRenameForm
 
 import settings, os
@@ -193,29 +193,19 @@ def upload(request, workspace_id):
     if request.method == 'POST':
         form = WorkspaceUploadForm(request.POST, request.FILES, folders=folders)
         if form.is_valid():
-            # find absolute directory
-            dir = workspace.get_dir(form.cleaned_data.get('folder', '/'))
-            filename = request.FILES['file'].name
-            
-            # open file
-            file = open(dir + filename, 'wb+')
-            
-            # write file to disk
-            for chunk in request.FILES['file'].chunks():
-                file.write(chunk)
-            file.close() 
-            
+            # save file
+            file = WorkspaceFile.objects.upload(workspace,
+                                                form.cleaned_data.get('folder', '/'),
+                                                request.FILES['file'],
+                                                request.user)
+                                                
             # redirect to file info display
-            folder = form.cleaned_data.get('folder', '/')
-            if folder == '/':
-                folder = ''
-            file = dir + filename
-            stat = os.stat(file)
+            stat = os.stat(file.get_absolute_path())
             return render_to_response("workspace/detail.html",
                                       {'workspace': workspace,
-                                       'path': folder,
-                                       'filename': filename,
-                                       'relpath': folder + '/' + filename,
+                                       'path': file.get_folder(),
+                                       'filename': file.get_filename(),
+                                       'relpath': file.get_relative_path(),
                                        'stat': stat,
                                        'force_selection': True},
                                       context_instance=RequestContext(request))
