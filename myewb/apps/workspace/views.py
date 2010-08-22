@@ -194,14 +194,17 @@ def move(request, workspace_id):
     
                 # redirect to file info display
                 folder = form.cleaned_data.get('folder', '/')
+                if folder == '/':
+                    folder = '';
                 filepath = folder + file
                 stat = os.stat(dst)
                 return render_to_response("workspace/detail.html",
                                           {'workspace': workspace,
                                            'path': folder,
                                            'filename': file,
-                                           'relpath': request.POST['dir'],
-                                           'stat': stat},
+                                           'relpath': folder + '/' + file,
+                                           'stat': stat,
+                                           'force_selection': True},
                                           context_instance=RequestContext(request))
     else:
         form = WorkspaceMoveForm(folders=folders)
