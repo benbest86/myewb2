@@ -277,6 +277,12 @@ class BaseGroup(Group):
 
     def num_pending_members(self):
         return self.pending_members.all().count()
+        
+    def workspace_view_perms(self, user):
+        return self.user_is_member(user, admin_override=True)
+        
+    def workspace_edit_perms(self, user):
+        return self.user_is_admin(user)
     
 """
 A hidden, private group that does not show up in any listing except for admins.

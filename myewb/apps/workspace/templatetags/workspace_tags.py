@@ -106,3 +106,34 @@ def do_preview(parser, token):
 
 register.tag('preview', do_preview)
 
+class PermsNode(template.Node):
+    def __init__(self, workspace, user, context_name1, context_name2):
+        self.workspace = template.Variable(workspace)
+        self.user = template.Variable(user)
+        self.context_name1 = context_name1
+        self.context_name2 = context_name2
+
+    def render(self, context):
+        try:
+            workspace = self.workspace.resolve(context)
+            user = self.user.resolve(context)
+        except template.VariableDoesNotExist:
+            return u''
+
+        context[self.context_name1] = workspace.user_can_view(user)
+        context[self.context_name2] = workspace.user_can_edit(user)
+        return u''
+
+def do_workspace_perms(parser, token):
+    """
+    Provides the template tag {% workspace_perms WORKSPACE USER as VIEW_VARIABLE EDIT_VARIABLE %}
+    """
+    try:
+        _tagname, workspace, user, _as, context_name1, context_name2 = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError(u'%(tagname)r tag syntax is as follows: '
+            '{%% %(tagname)r WORKSPACE USER as VIEW_VARIABLE EDIT_VARIABLE %%}' % {'tagname': 'workspace_perms'})
+    return PermsNode(workspace, user, context_name1, context_name2)
+
+register.tag('workspace_perms', do_workspace_perms)
+

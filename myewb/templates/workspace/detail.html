@@ -3,6 +3,8 @@
 {% load uni_form_tags %}
 {% load workspace_tags %}
 
+{% workspace_perms workspace request.user as can_view can_edit %}
+
 <div>
 <strong>{{ filename }}</strong><br/>
 {% if path %}
@@ -13,8 +15,10 @@
 
 <p>
 	[<a href="{{ STATIC_URL }}workspace/files/{{ workspace.id }}{{ relpath }}">download file</a>]&nbsp;&nbsp;
-	[<a href="#" onclick="move_file('{{relpath}}'); return false;">move file</a>]&nbsp;&nbsp;
-	[<a href="#" onclick="delete_file('{{relpath}}'); return false;">delete file</a>]&nbsp;&nbsp;
+	{% if can_edit %}
+    	[<a href="#" onclick="move_file('{{relpath}}'); return false;">move file</a>]&nbsp;&nbsp;
+	    [<a href="#" onclick="delete_file('{{relpath}}'); return false;">delete file</a>]&nbsp;&nbsp;
+    {% endif %}
 </p>
 
 <p id="move-file-div" style="display: none;">

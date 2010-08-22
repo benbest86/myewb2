@@ -11,6 +11,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponse
 
+from workspace.decorators import can_view, can_edit
 from workspace.models import Workspace
 from workspace.forms import WorkspaceUploadForm, WorkspaceMoveForm, WorkspaceNewFolderForm
 
@@ -27,6 +28,7 @@ preview_aliases = {'jpeg': 'jpg',
                    'ico': 'jpg',
                    'bmp': 'jpg'}
 
+@can_view()
 def browse(request, workspace_id):
     """
     Browse a group's workspace
@@ -100,7 +102,8 @@ def browse_build_tree(dir, reldir, response, selected):
             response.append('<li>folder is empty</li>')
     response.append('</ul>')
     return response
-        
+
+@can_view()
 def detail(request, workspace_id):
     """
     View the details of a file
@@ -122,6 +125,7 @@ def detail(request, workspace_id):
                                       context_instance=RequestContext(request))
     return HttpResponse("error")
     
+@can_edit()
 def upload(request, workspace_id):
     """
     Upload a new file
@@ -168,6 +172,7 @@ def upload(request, workspace_id):
                                'workspace': workspace},
                                context_instance=RequestContext(request))
 
+@can_edit()
 def move(request, workspace_id):
     """
     Move a file
@@ -214,6 +219,7 @@ def move(request, workspace_id):
                                'workspace': workspace},
                                context_instance=RequestContext(request))
 
+@can_edit()
 def replace(request, workspace_id):
     """
     View the details of a file
@@ -221,6 +227,7 @@ def replace(request, workspace_id):
     workspace = get_object_or_404(Workspace, id=workspace_id)
     return HttpResponse("not implemented")
 
+@can_edit()
 def delete(request, workspace_id):
     """
     Delete a file
@@ -236,6 +243,7 @@ def delete(request, workspace_id):
 
     return HttpResponse("error")
 
+@can_edit()
 def mkdir(request, workspace_id):
     """
     Create a new folder
@@ -264,6 +272,7 @@ def mkdir(request, workspace_id):
                                'workspace': workspace},
                                context_instance=RequestContext(request))
 
+@can_edit()
 def rmdir(request, workspace_id):
     """
     Remove a folder
@@ -292,6 +301,7 @@ def rmdir(request, workspace_id):
                                'workspace': workspace},
                                context_instance=RequestContext(request))
 
+@can_view()
 def preview(request, workspace_id):
     workspace = get_object_or_404(Workspace, id=workspace_id)
     if request.method == 'POST' and request.POST.get('dir', None):
@@ -312,3 +322,4 @@ def preview(request, workspace_id):
                                           context_instance=RequestContext(request))
     
     return HttpResponse("preview not available")
+

@@ -112,7 +112,31 @@ class Workspace(models.Model):
         folders, path = build_dir_tree('', self.get_root(), [], [], 0)
         return folders
     
+    # check if this user can view the workspace
+    #
+    # This requires that the object owning the workspace implement a function
+    # called workspace_view_perms(user); if this does not exist, permission
+    # is implicitly granted.
+    def user_can_view(self, user):
+        parent = self.content_object
+        if hasattr(parent, 'workspace_view_perms'):
+            if not parent.workspace_view_perms(user):
+                return False
+        return True
     
+    # check if this user can edit the workspace
+    #
+    # This requires that the object owning the workspace implement a function
+    # called workspace_edit_perms(user); if this does not exist, view 
+    # permissions are used
+    def user_can_edit(self, user):
+        parent = self.content_object
+        if hasattr(parent, 'workspace_view_perms'):
+            if not parent.workspace_edit_perms(user):
+                return False
+        else:
+            return self.user_can_view(user)
+        return True
         
 # recursive function to walk and build this workspace's file tree
 def build_dir_tree(fname, dir, folders, path, counter):

@@ -1,9 +1,16 @@
+{% load workspace_tags %}
+
+{% workspace_perms workspace request.user as can_view can_edit %}
+
+{% if can_edit %}
 <div style="position: relative; top: -5px; padding-bottom: 5px;">
 	[<a href="#" id="workspace-new-file">upload file</a>] &nbsp;
 	[<a href="#" id="workspace-new-folder">create folder</a>] &nbsp;
 	[<a href="#" id="workspace-delete-folder">delete folder</a>]
 </div>
-	
+{% endif %}
+
+{% if can_view %}
 <div id="filedetail" style="width: 60%; float: right; padding: 5px;">
 </div>
 <div style="width: 35%; background: #f0f0f0; padding: 5px;" class="ui-corner-all">
@@ -11,7 +18,6 @@
 	</div>
 </div>
 <iframe id="uploadframe" name="uploadframe" src="" style="height: 0px; width: 0px; border: 0px;"></iframe>
-
 
 
 <script type="text/javascript">
@@ -29,8 +35,11 @@
 								  function() {
 				  					$('#upload-progress').hide();
 				  					var last_folder = $('.tree-selected-folder').find('a').attr('rel');
-				  					last_folder = last_folder.substring(0, last_folder.length - 1);
-				  					$('#id_folder ').val(last_folder);
+				  					if (last_folder)
+				  					{
+    				  					last_folder = last_folder.substring(0, last_folder.length - 1);
+    				  					$('#id_folder ').val(last_folder);
+    				  				}
 									$('#workspace-upload-form').submit(function() {
 										$('#upload-progress').show();
 										return true;
@@ -163,3 +172,4 @@
 		$('#filedetail').html("<p><img src='{{ STATIC_URL}}images/ajax-loader.gif'/>  Loading...</p>");
 	}
 </script>
+{% endif %}
