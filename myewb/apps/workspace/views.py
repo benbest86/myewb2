@@ -384,6 +384,20 @@ def replace(request, workspace_id):
     return HttpResponse("not implemented")
 
 @can_edit()
+def bulk_delete(request, workspace_id):
+    workspace = get_object_or_404(Workspace, id=workspace_id)
+
+    if request.method == 'POST' and request.POST.get('files', None):
+        filelist = request.POST.get('files', '')
+        files = filelist.split(',')
+        for f in files:
+            file = workspace.get_file(f)
+            if file:
+                os.remove(file)
+
+    return HttpResponse("done")
+
+@can_edit()
 def delete(request, workspace_id):
     """
     Delete a file

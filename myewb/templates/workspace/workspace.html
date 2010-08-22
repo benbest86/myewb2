@@ -214,6 +214,28 @@
            }
 		return false;
 	}
+	function bulk_delete_file(file)
+	{
+           var confirmed = confirm("Are you sure you want to delete these files?");
+           if (confirmed)
+           {
+		       // build list of selected files and put in hidden input
+               var filelist = "";
+               $('.file-bulkop').each(function() {
+                   if ($(this).attr('checked') && $(this).attr('name'))
+                       filelist = filelist + "," + $(this).attr('name');
+               });
+
+               loading();
+               $.post('{% url workspace_bulk_delete workspace.id %}',
+               		{files: filelist},
+               		function(data) {
+                   		refresh_filetree();
+                   		$('#filedetail').html(data);
+               		});
+           }
+		return false;
+	}
     function delete_folder(folder)
     {
        var confirmed = confirm("Are you sure you want to delete this folder?");
