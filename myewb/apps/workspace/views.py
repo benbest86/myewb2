@@ -126,16 +126,19 @@ def detail(request, workspace_id):
     return HttpResponse("error")
     
 @can_view()
-def folder_detail(request, workspace_id):
+def folder_detail(request, workspace_id, folder=None, force_selection=False):
     """
     View the details of a folder
     """
     workspace = get_object_or_404(Workspace, id=workspace_id)
     
     response = []
-    if request.method == 'POST' and request.POST.get('dir', None):
-        reldir = request.POST['dir']
-        folder = workspace.get_dir(request.POST['dir'])
+    if request.method == 'POST':
+        if folder:
+            reldir = folder
+        else:
+            reldir = request.POST['dir']
+        folder = workspace.get_dir(reldir)
         if folder:
             # build initial listing for current directory
             files = []
@@ -165,14 +168,15 @@ def folder_detail(request, workspace_id):
                     ext = ext[1:]
                     response.append((full_file, '<li class="file ext_%s" id="%s">%s</li>' % (ext, full_file, f)))
 
-            path, foldername, ignore = request.POST['dir'].rsplit('/', 2)
+            path, foldername, ignore = reldir.rsplit('/', 2)
 
             return render_to_response("workspace/folder_detail.html",
                                       {'workspace': workspace,
                                        'foldername': foldername,
                                        'path': path,
                                        'listing': response,
-                                       'relpath': request.POST['dir']},
+                                       'relpath': reldir,
+                                       'force_selection': force_selection},
                                       context_instance=RequestContext(request))
     return HttpResponse("error")
     
@@ -238,6 +242,9 @@ def move(request, workspace_id):
         if form.is_valid():
             # find absolute directory
             src = workspace.get_file(request.POST.get('file', None))        # src file, full path
+            if not src:
+                src = workspace.get_dir(request.POST.get('file', None))
+                src = src[0:-1]                                             # strip trailing slash
             if src:
                 leading, file = os.path.split(src)                          # src filename
 
@@ -248,20 +255,29 @@ def move(request, workspace_id):
             if src and folder:
                 os.rename(src, dst)
     
-                # redirect to file info display
+                # redirect to detailed display
                 folder = form.cleaned_data.get('folder', '/')
                 if folder == '/':
                     folder = '';
-                filepath = folder + file
-                stat = os.stat(dst)
-                return render_to_response("workspace/detail.html",
-                                          {'workspace': workspace,
-                                           'path': folder,
-                                           'filename': file,
-                                           'relpath': folder + '/' + file,
-                                           'stat': stat,
-                                           'force_selection': True},
-                                          context_instance=RequestContext(request))
+                relpath = folder + '/' + file
+                
+                # file?
+                if os.path.isfile(dst):
+                    filepath = folder + file
+                    stat = os.stat(dst)
+                    return render_to_response("workspace/detail.html",
+                                              {'workspace': workspace,
+                                               'path': folder,
+                                               'filename': file,
+                                               'relpath': relpath,
+                                               'stat': stat,
+                                               'force_selection': True},
+                                              context_instance=RequestContext(request))
+                                              
+                # or folder?
+                elif os.path.isdir(dst):
+                    relpath = relpath + '/'
+                    return folder_detail(request, workspace_id=workspace_id, folder=relpath, force_selection=True)
     else:
         form = WorkspaceMoveForm(folders=folders)
         

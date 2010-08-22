@@ -59,17 +59,17 @@ class Workspace(models.Model):
     def get_dir(self, dir, cache=False):
         if dir.find('.') > -1 and not cache:       # do not allow any periods
             return False
-        
+
         if dir[0:1] != '/':
             dir = '/' + dir
-        if dir[0:-1] != '/':
+        if dir[-1:] != '/':
             dir = dir + '/'
         
         if cache:
             dir = self.get_cache_root() + dir
         else:
             dir = self.get_root() + dir
-            
+
         if os.path.isdir(dir):
             return dir
         elif cache:
