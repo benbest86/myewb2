@@ -1,0 +1,28 @@
+{% load filesize_tags %}
+{% load time_filters %}
+{% load uni_form_tags %}
+{% load workspace_tags %}
+
+{% workspace_perms workspace request.user as can_view can_edit %}
+
+<div>
+<strong>{{ foldername }}</strong><br/>
+{% if path %}
+	{% ifnotequal path '/' %}
+		<em style="padding-left: 15px;">in {{ path }}</em><br/>
+	{% endifnotequal %}
+{% endif %}
+
+<hr/>
+Folders:<br/>
+{% for d in dirs %}
+    {{ d }}<br/>
+{% endfor %}
+<hr/>
+
+Files:<br/>
+{% for f in files %}
+    {{ f }}<br/>
+{% endfor %}
+
+</div>

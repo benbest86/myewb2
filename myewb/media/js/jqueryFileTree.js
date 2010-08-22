@@ -19,6 +19,8 @@
 //           collapseEasing - easing function to use on collapse (optional)
 //           multiFolder    - whether or not to limit the browser to one subfolder at a time
 //           loadMessage    - Message to display while initial tree loads (can be HTML)
+//           selected       - Path to a file/folder to pre-select (requires custom backend support)
+//           onload         - Callback function to execute when tree is done loading
 //
 // History:
 //
@@ -46,6 +48,7 @@ if(jQuery) (function($){
 			if( o.multiFolder == undefined ) o.multiFolder = true;
 			if( o.loadMessage == undefined ) o.loadMessage = 'Loading...';
 			if( o.selected == undefined ) o.selected = '';
+			if( o.onload == undefined ) o.onload = function() {};
 			
 			$(this).each( function() {
 				
@@ -58,6 +61,7 @@ if(jQuery) (function($){
 						if( o.root == t ) $(c).find('UL:hidden').show(); else $(c).find('UL:hidden').slideDown({ duration: o.expandSpeed, easing: o.expandEasing });
 						bindTree(c);
 						$(c).find('a[rel=' + s + ']').click();
+						o.onload();
 					});
 				}
 				

@@ -78,7 +78,7 @@ def browse_build_tree(dir, reldir, response, selected):
             
             if current == f:
                 # if this is the pre-selected element, recurse and drill down
-                response.append('<li class="directory expanded"><a href="#" rel="%s/">%s</a>' % (full_file, f))
+                response.append('<li class="directory expanded"><span class="ui-icon ui-icon-circle-triangle-e"></span><a href="#" rel="%s/">%s</a>' % (full_file, f))
                 response = browse_build_tree(os.path.join(dir, f),
                                              reldir + f + '/',
                                              response,
@@ -86,7 +86,7 @@ def browse_build_tree(dir, reldir, response, selected):
                 response.append('</li>')
             else:
                 # otherwise, just a one-line entry
-                response.append('<li class="directory collapsed"><a href="#" rel="%s/">%s</a></li>' % (full_file, f))
+                response.append('<li class="directory collapsed"><span class="ui-icon ui-icon-circle-triangle-e"></span><a href="#" rel="%s/">%s</a></li>' % (full_file, f))
             
         # output files
         for f in files:
@@ -122,6 +122,42 @@ def detail(request, workspace_id):
                                        'filename': filename,
                                        'relpath': request.POST['dir'],
                                        'stat': stat},
+                                      context_instance=RequestContext(request))
+    return HttpResponse("error")
+    
+@can_view()
+def folder_detail(request, workspace_id):
+    """
+    View the details of a folder
+    """
+    workspace = get_object_or_404(Workspace, id=workspace_id)
+    
+    response = []
+    if request.method == 'POST' and request.POST.get('dir', None):
+        folder = workspace.get_dir(request.POST['dir'])
+        if folder:
+            # build initial listing for current directory
+            files = []
+            dirs = []
+            for f in os.listdir(folder):
+                if os.path.isdir(os.path.join(folder, f)):
+                    dirs.append(f)
+                else:
+                    files.append(f)
+                    
+            # sort lists
+            dirs.sort()
+            files.sort()
+            
+            path, foldername, ignore = request.POST['dir'].rsplit('/', 2)
+
+            return render_to_response("workspace/folder_detail.html",
+                                      {'workspace': workspace,
+                                       'foldername': foldername,
+                                       'path': path,
+                                       'files': files,
+                                       'dirs': dirs,
+                                       'relpath': request.POST['dir']},
                                       context_instance=RequestContext(request))
     return HttpResponse("error")
     

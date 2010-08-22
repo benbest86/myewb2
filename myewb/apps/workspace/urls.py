@@ -12,6 +12,7 @@ from django.conf.urls.defaults import *
 urlpatterns = patterns('workspace.views',
     url(r'(?P<workspace_id>[\d]+)/browse/$', 'browse', name='workspace_browse'),
     url(r'(?P<workspace_id>[\d]+)/detail/$', 'detail', name='workspace_detail'),
+    url(r'(?P<workspace_id>[\d]+)/folderdetail/$', 'folder_detail', name='workspace_folder_detail'),
     url(r'(?P<workspace_id>[\d]+)/upload/$', 'upload', name='workspace_upload'),
     url(r'(?P<workspace_id>[\d]+)/move/$', 'move', name='workspace_move'),
     url(r'(?P<workspace_id>[\d]+)/replace/$', 'replace', name='workspace_replace'),

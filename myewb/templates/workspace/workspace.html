@@ -2,6 +2,18 @@
 
 {% workspace_perms workspace request.user as can_view can_edit %}
 
+<style>
+#explorer li a
+{
+    margin-right: 16px;
+}
+#explorer li .ui-icon-circle-triangle-e
+{
+    float: right;
+    cursor: pointer;
+}
+</style>
+
 {% if can_edit %}
 <div style="position: relative; top: -5px; padding-bottom: 5px;">
 	[<a href="#" id="workspace-new-file">upload file</a>] &nbsp;
@@ -101,10 +113,32 @@
 		});
 	});
 
+    function filetree_hooks() {
+	    $('.ui-icon').each(function() {
+	        if (!$(this).hasClass('listener'))
+	        {
+	            $(this).click(function() {
+	                if ($(this).parent().hasClass('collapsed'))
+	                    $(this).parent().find('a').click();
+	                    
+	                loading();
+	                var folder = $(this).parent().find('a').attr('rel');
+	                $.post('{% url workspace_folder_detail workspace.id %}',
+	                       {dir: folder},
+	                       function(data) {
+	                            $('#filedetail').html(data);
+	                       });
+	            });
+	            $(this).addClass('listener');
+	       }
+	   });
+	}
+
 	// load or refresh the filetree
 	function refresh_filetree(selected) {
 		$('#explorer').fileTree({script: '{% url workspace_browse workspace.id %}',
-		                         selected: selected},
+		                         selected: selected,
+		                         onload: filetree_hooks},
 								function(file) {
 									loading();
 									$.post('{% url workspace_detail workspace.id %}',
