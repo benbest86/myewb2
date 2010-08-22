@@ -18,7 +18,6 @@
 <div style="position: relative; top: -5px; padding-bottom: 5px;">
 	[<a href="#" id="workspace-new-file">upload file</a>] &nbsp;
 	[<a href="#" id="workspace-new-folder">create folder</a>] &nbsp;
-	[<a href="#" id="workspace-delete-folder">delete folder</a>]
 </div>
 {% endif %}
 
@@ -91,26 +90,6 @@
 			return false;
 		});
 		
-		$('#workspace-delete-folder').click(function() {
-			// unselect any selected file in the tree
-			$('.tree-selected').removeClass('tree-selected');
-
-			// load delete folder form by ajax 
-			loading();
-			$('#filedetail').load('{% url workspace_rmdir workspace.id %}',
-					 function() {
-							$('#workspace-rmdir-form').submit(function() {
-								$.post('{% url workspace_rmdir workspace.id %}',
-										$(this).serialize(),
-										function(data) {
-											refresh_filetree();
-											$('#filedetail').html(data);
-										});	
-								return false;
-							});
-					});
-			return false;
-		});
 	});
 
     function filetree_hooks() {
@@ -207,6 +186,25 @@
                		});
            }
 		return false;
+	}
+    function delete_folder(folder)
+    {
+       var confirmed = confirm("Are you sure you want to delete this folder?");
+       if (confirmed)
+       {
+		    // unselect any selected file in the tree
+		    $('.tree-selected').removeClass('tree-selected');
+
+		    // load delete folder form by ajax 
+		    loading();
+		    $.post('{% url workspace_rmdir workspace.id %}',
+				    {folder: folder},
+				    function(data) {
+					    refresh_filetree(folder);
+					    $('#filedetail').html(data);
+				    });	
+	    }
+	    return false;
 	}
 	function preview_file(file)
 	{

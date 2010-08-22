@@ -26,7 +26,7 @@ div.jqueryFileTree li {
         <p>
         	[<a href="#" onclick="rename_file('{{relpath}}'); return false;">rename folder</a>]&nbsp;&nbsp;
         	[<a href="#" onclick="move_file('{{relpath}}'); return false;">move folder</a>]&nbsp;&nbsp;
-            [<a href="#" onclick="window.alert('not implemented'); return false;">delete folder</a>]&nbsp;&nbsp;
+            [<a href="#" onclick="delete_folder('{{relpath}}'); return false;">delete folder</a>]&nbsp;&nbsp;
         </p>
         
         <p id="move-file-div" style="display: none;">
