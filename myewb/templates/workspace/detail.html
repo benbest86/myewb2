@@ -25,16 +25,21 @@
 	last modified: {% mktime stat.st_mtime %}<br/>
 </p>
 
+<p id="workspace-preview" style="display: none"></p>
+<script type="text/javascript">
 {% can_preview relpath as preview %}
 {% if preview %}
-	<a href="#" id="show-preview" onclick="preview_file('{{relpath}}'); return false;">preview this file</a>
-	<p id="workspace-preview" style="display: none"></p>
+	{#<a href="#" id="show-preview" onclick="preview_file('{{relpath}}'); return false;">preview this file</a>#}
+    var can_preview = '{{ relpath }}';
+{% else %}
+    var can_preview = false;
 {% endif %}
 
 {% if force_selection %}
-<script type="text/javascript">
     var force_selection = '{{ relpath }}';
-</script>
+{% else %}
+    var force_selection = false;
 {% endif %}
+</script>
 
 </div>

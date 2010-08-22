@@ -102,6 +102,8 @@
 											{dir: file}, 	
 										    function(data) {
 											    $('#filedetail').html(data);
+											    if (can_preview)
+											        preview_file(can_preview);
 										    });	
 								});
 	}
