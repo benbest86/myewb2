@@ -12,8 +12,8 @@ from django.db import models
 import settings, os, shutil, datetime, re
 
 # TODO: regex to use for validating filenames.  For now, anything not alpha-numeric-
-# dash-underscore-period gets stripped, but would be good to allow accents eventually.
-re_filename = re.compile(r'[^A-Za-z0-9\-_.]')
+# dash-underscore-period-space gets stripped, but would be good to allow accents eventually.
+re_filename = re.compile(r'[^A-Za-z0-9\-_. ]')
 
 class WorkspaceManager(models.Manager):
     def get_for_object(self, object):
@@ -306,7 +306,7 @@ class WorkspaceFileManager(models.Manager):
                 relpath = path + escaped_filename
             
             # open file
-            diskfile = open(abspath + filename, 'wb+')
+            diskfile = open(abspath + escaped_filename, 'wb+')
             
             # write file to disk
             for chunk in uploadedfile.chunks():
@@ -497,7 +497,7 @@ class WorkspaceRevision(models.Model):
     parent_file = models.ForeignKey(WorkspaceFile)
     
     date = models.DateTimeField()
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(User, null=True)
     reverted = models.ForeignKey('self', blank=True, null=True)
     
     filename = models.CharField(max_length=255, blank=True, null=True)
