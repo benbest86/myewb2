@@ -22,10 +22,6 @@ class WorkspaceManager(models.Manager):
         
         return w
 
-        #if not helpers.is_visible(request.user, obj):
-        #    return render_to_response('denied.html', context_instance=RequestContext(request))
-            
-
 class Workspace(models.Model):
     content_type = models.ForeignKey(ContentType)
     object_id = models.PositiveIntegerField()
@@ -138,6 +134,45 @@ class Workspace(models.Model):
         else:
             return self.user_can_view(user)
         return True
+    
+    # Move a file in the workspace.
+    # - src should be a WorkspaceFile object
+    # - dst should be a relative path
+    # returns a WorkspaceFile object referring to the new file, or False on failure
+    def move_file(self, src, dst):
+        # build paths
+        absolute_dst = self.get_dir(dst)
+        if absolute_dst:
+            absolute_dst = absolute_dst + src.get_filename() 
+
+            # move...
+            os.rename(src.get_absolute_path(), absolute_dst)
+            
+            # update file metadata in the database
+            src.update_folder(dst) 
+
+            return src
+        return False
+    
+    # Move a directory in the workspace.
+    # - src and dst should be relative paths
+    # returns a relative path to the dst folder, or False on failure
+    def move_dir(self, src, dst):
+        absolute_src = self.get_dir(src)
+        absolute_dst = self.get_dir(dst)
+        
+        if absolute_src and absolute_dst:
+            absolute_src = absolute_src[0:-1]               # strip trailing slash
+            _discard, name = os.path.split(absolute_src)    # find folder name
+            absolute_dst = absolute_dst + name
+        
+            os.rename(absolute_src, absolute_dst)
+            
+            if dst[-1:] != '/':
+                dst = dst + '/'
+            return dst + name 
+            
+        return False
         
 # recursive function to walk and build this workspace's file tree
 def build_dir_tree(fname, dir, folders, path, counter):
@@ -223,6 +258,20 @@ class WorkspaceFileManager(models.Manager):
             workfile = self.filter(workspace=workspace,
                                     name=filepath)[0]
         return workfile
+
+    def is_file(self, workspace, path):
+        abs_path = workspace.get_file(path)
+        if abs_path:
+            return True
+        else:
+            return False
+        
+    def is_dir(self, workspace, path):
+        abs_path = workspace.get_dir(path)
+        if abs_path:
+            return True
+        else:
+            return False
 
 class WorkspaceFile(models.Model):
     workspace = models.ForeignKey(Workspace)

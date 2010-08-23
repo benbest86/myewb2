@@ -218,17 +218,19 @@ def bulk_move(request, workspace_id):
     if request.method == 'POST':
         form = WorkspaceMoveForm(request.POST, folders=folders)
         if form.is_valid():
-            relpath = form.cleaned_data.get('folder', '/')
+            dst = form.cleaned_data.get('folder', '/')
             filelist = request.POST.get('file', '')
             files = filelist.split(',')
             for f in files:
-                if f:
-                    src, dst = move_op(workspace,
-                                       f,
-                                       relpath)
+                if f and  WorkspaceFile.objects.is_file(workspace, f):
+                    src = WorkspaceFile.objects.load(workspace, f)
+                    dstfile = workspace.move_file(src, dst)
+    
+                elif f and WorkspaceFile.objects.is_dir(workspace, f):
+                    dstdir = workspace.move_dir(f, dst)
 
-            relpath = relpath + '/'
-            return folder_detail(request, workspace_id=workspace_id, folder=relpath, force_selection=True)
+            dst = dst + '/'
+            return folder_detail(request, workspace_id=workspace_id, folder=dst, force_selection=True)
     return HttpResponse("error")    
 
 @can_edit()
@@ -244,25 +246,24 @@ def move(request, workspace_id):
     if request.method == 'POST':
         form = WorkspaceMoveForm(request.POST, folders=folders)
         if form.is_valid():
-            src, dst = move_op(workspace,
-                               request.POST.get('file', None),
-                               form.cleaned_data.get('folder', '/'))
+            src = request.POST['file']
+            dst = form.cleaned_data.get('folder', '/')
+            
+            if WorkspaceFile.objects.is_file(workspace, src):
+                src = WorkspaceFile.objects.load(workspace, request.POST['file'])
+                dstfile = workspace.move_file(src, dst)
 
-            if src and dst:
                 # redirect to detailed display
-                if os.path.isfile(dst):
-                    relpath = form.cleaned_data.get('folder', '/') + request.POST.get('file', '')
-                    file = WorkspaceFile.objects.load(workspace, relpath)
-                    if file:
-                        return render_to_response("workspace/detail.html",
-                                                  {'workspace': workspace,
-                                                   'file': file,
-                                                   'force_selection': True},
-                                                  context_instance=RequestContext(request))
-                # or folder?
-                elif os.path.isdir(dst):
-                    relpath = relpath + '/'
-                    return folder_detail(request, workspace_id=workspace_id, folder=relpath, force_selection=True)
+                if dstfile:
+                    return render_to_response("workspace/detail.html",
+                                              {'workspace': workspace,
+                                               'file': dstfile,
+                                               'force_selection': True},
+                                              context_instance=RequestContext(request))
+            elif WorkspaceFile.objects.is_dir(workspace, src):
+                dstdir = workspace.move_dir(src, dst)
+                dstdir = dstdir + '/'
+                return folder_detail(request, workspace_id=workspace_id, folder=dstdir, force_selection=True)
     else:
         form = WorkspaceMoveForm(folders=folders)
         
@@ -270,31 +271,6 @@ def move(request, workspace_id):
                               {'form': form,
                                'workspace': workspace},
                                context_instance=RequestContext(request))
-
-def move_op(workspace, relsrc, reldst):
-    # find absolute directory
-    abssrc = workspace.get_file(relsrc)        # src file, full path
-    if not abssrc:
-        abssrc = workspace.get_dir(relsrc)
-        abssrc = abssrc[0:-1]                                             # strip trailing slash
-    if abssrc:
-        leading, file = os.path.split(abssrc)                          # src filename
-
-        folder = workspace.get_dir(reldst) # dst folder
-        absdst = os.path.join(folder, file)                            # dst file, full path
-    
-    # do the rename!
-    if abssrc and folder:
-        os.rename(abssrc, absdst)
-        
-        # update file metadata in the database
-        wfile = WorkspaceFile.objects.load(workspace, relsrc)
-        if wfile:
-            wfile.update_folder(reldst) 
-        
-        return abssrc,absdst
-        
-    return None,None
 
 @can_edit()
 def rename(request, workspace_id):
