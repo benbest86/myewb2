@@ -64,9 +64,11 @@
 		<li><a href="#group-posts">Posts</a></li>
 		<li><a href="#group-events">Events</a></li>
 		<li><a href="#group-whiteboard">Whiteboard</a></li>
-		<li><a href="#group-workspace">Workspace</a></li>
-
+        {% if member and member.is_accepted %}
+			<li><a href="#group-workspace">Workspace</a></li>
+		{% endif %}
 	</ul>
+	
 	<div id="group-info">
 		{% block groupbody %}
             {# OVERRIDE ME! #}
@@ -136,10 +138,12 @@
         {% show_whiteboard_force group.whiteboard group member %}
 	</div>
 	
-	<div id="group-workspace">
-		<h2>{% trans "Workspace" %}</h2>
-		{% show_workspace group request.user %}
-	</div>
+    {% if member and member.is_accepted %}
+		<div id="group-workspace">
+			<h2>{% trans "Workspace" %}</h2>
+			{% show_workspace group request.user %}
+		</div>
+	{% endif %}
 	
 </div>
 
