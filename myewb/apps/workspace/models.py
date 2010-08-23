@@ -185,6 +185,57 @@ class Workspace(models.Model):
             
         return False
         
+    # Rename a file in the workspace.
+    # - src should be a WorkspaceFile object
+    # - dstname should be a filename
+    # returns a WorkspaceFile object referring to the new file, or False on failure
+    def rename_file(self, src, dstname):
+        # build paths
+        absolute_dst = self.get_dir(src.get_folder())
+        if absolute_dst:
+            # TODO: security checks on filename? or do that in the form?
+            absolute_dst = absolute_dst + dstname
+
+            # move...
+            os.rename(src.get_absolute_path(), absolute_dst)
+            
+            # update file metadata in the database
+            src.update_name(dstname) 
+
+            return src
+        return False
+    
+    # Rename a directory in the workspace.
+    # - src should be a relative path
+    # - dstname should be a new name
+    # returns a relative path to the dst folder, or False on failure
+    def rename_dir(self, src, dstname):
+        # get paths
+        absolute_src = self.get_dir(src)
+        
+        if absolute_src:
+            absolute_src = absolute_src[0:-1]               # strip trailing slash
+            folder, name = os.path.split(absolute_src)      # find folder name
+            absolute_dst = folder + '/' + dstname
+        
+            # move
+            os.rename(absolute_src, absolute_dst)
+            
+            # move cache
+            old_cache = self.get_dir(src, cache=True)
+            old_cache = old_cache[0:-1]
+            folder, name = os.path.split(old_cache)
+            new_cache = folder + '/' + dstname
+            os.renames(old_cache, new_cache)
+            
+            # normalize dst folder
+            if src[-1:] == '/':
+                src = src[0:-1]
+            relpath, name = os.path.split(src)
+            return relpath + '/' + dstname 
+            
+        return False
+        
 # recursive function to walk and build this workspace's file tree
 def build_dir_tree(fname, dir, folders, path, counter):
     # currently in a directory?

@@ -282,43 +282,30 @@ def rename(request, workspace_id):
     """
     workspace = get_object_or_404(Workspace, id=workspace_id)
     
-    if request.method == 'POST':
+    if request.method == 'POST' and request.POST.get('file', None):
         form = WorkspaceRenameForm(request.POST)
         if form.is_valid():
-            # find absolute directory
-            src = workspace.get_file(request.POST.get('file', None))        # src file, full path
-            if not src:
-                src = workspace.get_dir(request.POST.get('file', None))
-                src = src[0:-1]                                             # strip trailing slash
-            if src:
-                leading, file = os.path.split(src)                          # src filename
-
-                name = form.cleaned_data.get('newname', file)               # dst name
-                dst = os.path.join(leading, name)                           # dst name, full path
+            src = request.POST['file']
+            dstname = form.cleaned_data.get('newname', file)
             
-            # do the rename!
-            if src and dst and src != dst:
-                os.rename(src, dst)
-    
+            if WorkspaceFile.objects.is_file(workspace, src):
+                src = WorkspaceFile.objects.load(workspace, request.POST['file'])
+                dstfile = workspace.rename_file(src, dstname)
+
                 # redirect to detailed display
-                relpath, oldname = os.path.split(request.POST.get('file', '/'))
-                if oldname == '':
-                    relpath, oldname = os.path.split(relpath)
-                relpath = relpath + '/' + name
-                
-                # file?
-                if os.path.isfile(dst):
-                    file = WorkspaceFile.objects.load(workspace, relpath)
-                    if file:
-                        return render_to_response("workspace/detail.html",
-                                                  {'workspace': workspace,
-                                                   'file': file,
-                                                   'force_selection': True},
-                                                  context_instance=RequestContext(request))
-                # or folder?
-                elif os.path.isdir(dst):
-                    relpath = relpath + '/'
-                    return folder_detail(request, workspace_id=workspace_id, folder=relpath, force_selection=True)
+                if dstfile:
+                    return render_to_response("workspace/detail.html",
+                                              {'workspace': workspace,
+                                               'file': dstfile,
+                                               'force_selection': True},
+                                              context_instance=RequestContext(request))
+            elif WorkspaceFile.objects.is_dir(workspace, src):
+                dstdir = workspace.rename_dir(src, dstname)
+                if dstdir:
+                    dstdir = dstdir + '/'
+                    return folder_detail(request, workspace_id=workspace_id, folder=dstdir, force_selection=True)
+                else:
+                    return HttpResponse('error')
     else:
         form = WorkspaceRenameForm()
         
