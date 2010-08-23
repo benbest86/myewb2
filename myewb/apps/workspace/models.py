@@ -9,7 +9,11 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.db import models
 
-import settings, os, shutil, datetime
+import settings, os, shutil, datetime, re
+
+# TODO: regex to use for validating filenames.  For now, anything not alpha-numeric-
+# dash-underscore-period gets stripped, but would be good to allow accents eventually.
+re_filename = re.compile(r'[^A-Za-z0-9\-_.]')
 
 class WorkspaceManager(models.Manager):
     def get_for_object(self, object):
@@ -193,7 +197,10 @@ class Workspace(models.Model):
         # build paths
         absolute_dst = self.get_dir(src.get_folder())
         if absolute_dst:
-            # TODO: security checks on filename? or do that in the form?
+            # TODO: security checks on filename
+            # (can also be done in form validation instead of here... but for 
+            #  now, this function isn't ever used so it doesn't matter much)
+            
             absolute_dst = absolute_dst + dstname
 
             # move...
@@ -292,7 +299,11 @@ class WorkspaceFileManager(models.Manager):
             # find absolute directory
             abspath = workspace.get_dir(path)
             
-            # TODO: filename validation here
+            # filename validation: strip out illegal characters
+            escaped_filename = re_filename.sub(r'',
+                                               filename)
+            if escaped_filename != filename:
+                relpath = path + escaped_filename
             
             # open file
             diskfile = open(abspath + filename, 'wb+')
