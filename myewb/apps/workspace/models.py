@@ -471,7 +471,7 @@ class WorkspaceFile(models.Model):
         
         # move cached files to history as well
         old_cache = old_cache[0:-1]             # strip trailing slash
-        new_cache = os.path.join(settings.MEDIA_ROOT, 'workspace/revisions', rev_folder, 'cache')
+        new_cache = rev.get_file().get_cache_dir()[0:-1]    # strip trailing slash
         if os.path.isdir(old_cache):
             os.rename(old_cache, new_cache)
         
