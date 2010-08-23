@@ -439,7 +439,9 @@ class WorkspaceFile(models.Model):
         # delete file
         os.remove(self.get_absolute_path())
         
-        # TODO: delete revision history here
+        # delete revision history
+        for r in self.workspacerevision_set.all():
+            print r.delete()
         
         # calling super will delete this record
         return super(WorkspaceFile, self).delete(*args, **kwargs)
@@ -505,6 +507,19 @@ class WorkspaceRevision(models.Model):
     def get_file(self):
         return WorkspaceRevisionFile(self)
 
+    # delete this revision - deletes the file itself, the metadata record, and 
+    # cached files.  poof.  everything.  gone.
+    def delete(self, *args, **kwargs):
+        # clear cache
+        cache = self.get_file().get_cache_dir()
+        shutil.rmtree(cache, ignore_errors=True)
+        
+        # delete file
+        os.remove(self.get_file().get_absolute_path())
+        
+        # calling super will delete this record
+        return super(WorkspaceRevision, self).delete(*args, **kwargs)
+    
     class Meta:
         ordering = ('-date', '-id')
 
@@ -524,7 +539,7 @@ class WorkspaceRevisionFile:
                             
     def get_cache_url(self):
         path, name = os.path.split(self.revision.filename)
-        return os.path.join(settings.STATIC_URL, 'workspace/revisions_cache', path)
+        return os.path.join(settings.STATIC_URL, 'workspace/revisions_cache', path) + '/'
     
     def get_cache_dir(self):
         path, name = os.path.split(self.revision.filename)
