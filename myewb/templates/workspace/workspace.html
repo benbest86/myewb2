@@ -54,6 +54,8 @@
 		$('#uploadframe').load(function() {
 			$('#filedetail').html($('#uploadframe').contents().find('div').html());
 			refresh_filetree(force_selection);
+		    if (can_preview)
+		        preview_file(can_preview);
 		});
 
 		function new_folder_listener()

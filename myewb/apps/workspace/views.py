@@ -17,7 +17,7 @@ from workspace.decorators import can_view, can_edit
 from workspace.models import Workspace, WorkspaceFile, WorkspaceRevision
 from workspace.forms import * 
 
-import settings, os
+import settings, os, urllib
 
 preview_extensions = ['jpg',
                       'txt',
@@ -67,7 +67,7 @@ def browse_build_tree(dir, reldir, response, selected):
     
     # find current pre-select element, if any
     if len(selected):
-        current = selected.pop(0)
+        current = urllib.unquote(selected.pop(0))
     else:
         current = None
         
@@ -95,7 +95,11 @@ def browse_build_tree(dir, reldir, response, selected):
             full_file = os.path.join(reldir, f)
             fname, ext = os.path.splitext(f)
             ext = ext[1:]
-            response.append('<li class="file ext_%s"><a href="#" rel="%s">%s</a></li>' % (ext, full_file, f))
+            
+            if current == f and not len(selected):
+                response.append('<li class="file ext_%s tree-selected"><a href="#" rel="%s">%s</a></li>' % (ext, full_file, f))
+            else:
+                response.append('<li class="file ext_%s"><a href="#" rel="%s">%s</a></li>' % (ext, full_file, f))
 
     else:
         if reldir == '/':
