@@ -340,9 +340,9 @@ def bulk_delete(request, workspace_id):
         filelist = request.POST.get('files', '')
         files = filelist.split(',')
         for f in files:
-            file = workspace.get_file(f)
-            if file:
-                os.remove(file)
+            if f:
+                file = WorkspaceFile.objects.load(workspace, f)
+                file.delete()
 
     return HttpResponse("done")
 
@@ -354,10 +354,10 @@ def delete(request, workspace_id):
     workspace = get_object_or_404(Workspace, id=workspace_id)
     
     if request.method == 'POST' and request.POST.get('dir', None):
-        file = workspace.get_file(request.POST.get('dir', None))
+        file = WorkspaceFile.objects.load(workspace, request.POST['dir'])
         
         if file:
-            os.remove(file)
+            file.delete()
             return HttpResponse("deleted")
 
     return HttpResponse("error")
@@ -405,11 +405,17 @@ def rmdir(request, workspace_id):
         form = WorkspaceMoveForm(request.POST, folders=folders)
         if form.is_valid():
             folder = workspace.get_dir(form.cleaned_data.get('folder', '/'))
+            cache = workspace.get_dir(form.cleaned_data.get('folder', '/'), cache=True)
             
             try:
                 os.rmdir(folder)
             except:
                 return HttpResponse("Cannot remove folder until it is empty")
+            
+            try:
+                os.rmdir(cache)
+            except:
+                pass
 
             return HttpResponse("deleted")
     else:

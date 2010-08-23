@@ -9,7 +9,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.db import models
 
-import settings, os
+import settings, os, shutil
 
 class WorkspaceManager(models.Manager):
     def get_for_object(self, object):
@@ -343,6 +343,21 @@ class WorkspaceFile(models.Model):
             
             return True
         return False
+    
+    # delete this file - deletes the file itself, the metadata record, cached
+    # files, and revision history.  poof.  everything.  gone.
+    def delete(self, *args, **kwargs):
+        # clear cache
+        cache = self.workspace.get_cache(self.get_relative_path())
+        shutil.rmtree(cache, ignore_errors=True)
+        
+        # delete file
+        os.remove(self.get_absolute_path())
+        
+        # TODO: delete revision history here
+        
+        # calling super will delete this record
+        return super(WorkspaceFile, self).delete(*args, **kwargs)
     
 class WorkspaceRevision(models.Model):
     workspace = models.ForeignKey(Workspace)
