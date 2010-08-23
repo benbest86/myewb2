@@ -158,6 +158,7 @@ class Workspace(models.Model):
     # - src and dst should be relative paths
     # returns a relative path to the dst folder, or False on failure
     def move_dir(self, src, dst):
+        # get paths
         absolute_src = self.get_dir(src)
         absolute_dst = self.get_dir(dst)
         
@@ -166,10 +167,20 @@ class Workspace(models.Model):
             _discard, name = os.path.split(absolute_src)    # find folder name
             absolute_dst = absolute_dst + name
         
+            # move
             os.rename(absolute_src, absolute_dst)
             
+            # move cache
+            old_cache = self.get_dir(src, cache=True)
+            old_cache = old_cache[0:-1]
+            new_cache = self.get_dir(dst, cache=True)
+            new_cache = new_cache + name
+            os.renames(old_cache, new_cache)
+            
+            # normalize dst folder
             if dst[-1:] != '/':
                 dst = dst + '/'
+                
             return dst + name 
             
         return False
