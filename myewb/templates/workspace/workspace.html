@@ -289,7 +289,7 @@
 		{
 			$.post('{% url workspace_revision_download workspace.id %}',
 					{revision: rev},
-					function(data) { 
+					function(data) {
 						$('#uploadframe').attr('src', data);
 					});
 		}

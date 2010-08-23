@@ -12,7 +12,7 @@
 {% endif %}
 
 <p>
-	[<a href="{{ STATIC_URL }}workspace/files/{{ workspace.id }}{{ file.get_relative_path }}">download file</a>]&nbsp;&nbsp;
+	[<a href="{{ file.get_url }}">download file</a>]&nbsp;&nbsp;
 	{% if can_edit %}
     	[<a href="#" onclick="replace_file('{{file.get_relative_path}}'); return false;">replace/update file</a>]&nbsp;&nbsp;
     	[<a href="#" onclick="move_file('{{file.get_relative_path}}'); return false;">move file</a>]&nbsp;&nbsp;

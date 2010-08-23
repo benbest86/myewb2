@@ -363,6 +363,9 @@ class WorkspaceFile(models.Model):
     def get_relative_path(self):
         return self.name
         
+    def get_url(self):
+        return os.path.join(settings.STATIC_URL, 'workspace/files', str(self.workspace.id)) + self.name
+        
     def get_absolute_path(self):
         return self.workspace.get_file(self.name)
         
@@ -501,6 +504,9 @@ class WorkspaceRevisionFile:
         
     def get_relative_path(self):
         return self.revision.filename
+        
+    def get_url(self):
+        return os.path.join(settings.STATIC_URL, 'workspace/revisions', self.revision.filename)
         
     def get_absolute_path(self):
         return os.path.join(settings.MEDIA_ROOT, 'workspace/revisions', self.revision.filename) 
