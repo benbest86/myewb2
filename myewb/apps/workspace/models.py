@@ -320,9 +320,16 @@ class WorkspaceFile(models.Model):
             
         # ensure new dir exists and is valid...
         if self.workspace.get_dir(new_folder):
-            # and update our metadata
+            old_cache = self.workspace.get_dir(self.get_relative_path(), cache=True)
+
+            # update our metadata
             self.name = new_folder + self.get_filename()
             self.save()
+            
+            # update cached files
+            new_cache = self.workspace.get_cache(self.get_relative_path())
+            os.renames(old_cache, new_cache)
+            
             return True
         return False
     
