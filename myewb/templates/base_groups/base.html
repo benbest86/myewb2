@@ -64,8 +64,10 @@
 		<li><a href="#group-posts">Posts</a></li>
 		<li><a href="#group-events">Events</a></li>
 		<li><a href="#group-whiteboard">Whiteboard</a></li>
-        {% if member and member.is_accepted %}
-			<li><a href="#group-workspace">Workspace</a></li>
+        {% if is_admin or member %}
+        	{% if is_admin or member.is_accepted %}
+				<li><a href="#group-workspace">Workspace</a></li>
+			{% endif %}
 		{% endif %}
 	</ul>
 	
@@ -138,11 +140,13 @@
         {% show_whiteboard_force group.whiteboard group member %}
 	</div>
 	
-    {% if member and member.is_accepted %}
-		<div id="group-workspace">
-			<h2>{% trans "Workspace" %}</h2>
-			{% show_workspace group request.user %}
-		</div>
+    {% if is_admin or member %}
+    	{% if is_admin or member.is_accepted %}
+			<div id="group-workspace">
+				<h2>{% trans "Workspace" %}</h2>
+				{% show_workspace group request.user %}
+			</div>
+		{% endif %}
 	{% endif %}
 	
 </div>
