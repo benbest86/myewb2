@@ -327,6 +327,13 @@ def replace(request, workspace_id):
         form = WorkspaceReplaceForm(request.POST, request.FILES)
         if form.is_valid():
             file = WorkspaceFile.objects.load(workspace, request.POST['dir'])
+            
+            # check to ensure replacement file is of same type
+            # (well, at least with the same extension...)
+            name, ext = os.path.splitext(request.FILES['file'].name)
+            if file.get_extension() != ext:
+                return HttpResponse("<div>New file must be the same type as the old file</div>")
+            
             file.update(request.FILES['file'], request.user)
                                                 
             # redirect to file info display
