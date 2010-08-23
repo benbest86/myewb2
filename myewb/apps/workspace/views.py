@@ -487,6 +487,5 @@ def revision_download(request, workspace_id):
         revision = get_object_or_404(WorkspaceRevision, id=rev_id, workspace=workspace)
         
         return HttpResponse(revision.get_file().get_url())
-        #return HttpResponse(settings.STATIC_URL + "workspace/revisions/" + revision.filename)
     
     return HttpResponseBadRequest()
