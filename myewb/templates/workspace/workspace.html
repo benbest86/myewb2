@@ -20,6 +20,8 @@
 
 
 <script type="text/javascript">
+	var force_selection = false;
+	
 	$().ready(function() {
 		refresh_filetree();
 
@@ -184,8 +186,19 @@
 	}
 	function replace_file(file)
 	{
-		window.alert("replace file: not implemented - " + file);
+		$('#move-file-div').load('{% url workspace_replace workspace.id %}',
+								 function() {
+				 						$('#upload-progress').hide();
+										$('#replace-file-original').val(file);
+										$('#move-file-div').slideDown();
+										$('#workspace-replace-form').submit(function() {
+											$('#upload-progress').show();
+											return true;
+										});
+								 });
+		return false;
 	}
+	
 	function delete_file(file)
 	{
            var confirmed = confirm("Are you sure you want to delete this file?");

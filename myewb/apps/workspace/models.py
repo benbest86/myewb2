@@ -9,7 +9,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.contrib.contenttypes import generic
 from django.db import models
 
-import settings, os, shutil
+import settings, os, shutil, datetime
 
 class WorkspaceManager(models.Manager):
     def get_for_object(self, object):
@@ -269,31 +269,44 @@ class WorkspaceFileManager(models.Manager):
     #  - an UploadedFile object (typically, from request.FILES['file'])
     #  - the User uploading the file
     def upload(self, workspace, path, uploadedfile, user):
-        # find absolute directory
-        abspath = workspace.get_dir(path)
-        filename = uploadedfile.name
-        
-        # TODO: filename validation here
-        
-        # open file
-        diskfile = open(abspath + filename, 'wb+')
-        
-        # write file to disk
-        for chunk in uploadedfile.chunks():
-            diskfile.write(chunk)
-        diskfile.close() 
-        
         # build relative name
+        filename = uploadedfile.name
         if path[0:1] != '/':
             path = '/' + path
         if path[-1:] != '/':
             path = path + '/'
         relpath = path + filename
         
-        workfile = self.create(workspace=workspace,
-                               name=relpath,
-                               creator=user,
-                               updator=user)
+        # see if this file already exists (update, not create)
+        workfile = self.load(workspace, relpath)
+        if workfile:
+            # shouldn't happen, but just in case...
+            if not workfile.creator:
+                workfile.creator = user
+                workfile.save()
+                
+            # update metadata
+            workfile.update(uploadedfile, user)
+
+        else:
+            # find absolute directory
+            abspath = workspace.get_dir(path)
+            
+            # TODO: filename validation here
+            
+            # open file
+            diskfile = open(abspath + filename, 'wb+')
+            
+            # write file to disk
+            for chunk in uploadedfile.chunks():
+                diskfile.write(chunk)
+            diskfile.close() 
+
+            # save metadata
+            workfile = self.create(workspace=workspace,
+                                   name=relpath,
+                                   creator=user,
+                                   updator=user)
 
         return workfile
         
@@ -410,13 +423,52 @@ class WorkspaceFile(models.Model):
         # calling super will delete this record
         return super(WorkspaceFile, self).delete(*args, **kwargs)
     
+    # Replace this file with a newer version
+    def update(self, uploadedfile, user):
+        # create revision history record
+        rev = WorkspaceRevision.objects.create(workspace=self.workspace,
+                                               parent_file=self,
+                                               date=self.modified,
+                                               user=self.updator
+                                               )
+        rev_folder = datetime.date.today().strftime("%y/%m/")
+        rev_folder = rev_folder + str(rev.id) + '/'
+        rev_file = rev_folder + self.get_filename()
+        
+        rev.filename = rev_file
+        rev.save()
+        
+        # save file to revision history
+        abspath = self.get_absolute_path()
+        rev_dir = os.path.join(settings.MEDIA_ROOT, 'workspace/revisions', rev_folder)
+        if not os.path.isdir(rev_dir):
+            os.makedirs(rev_dir, 0755)
+        os.rename(abspath, rev_dir + '/' + self.get_filename())
+        
+        # open workspace file for writing - replace with uploaded file
+        diskfile = open(abspath, 'wb+')
+        for chunk in uploadedfile.chunks():
+            diskfile.write(chunk)
+        diskfile.close()
+        
+        # clear old cache
+        # (TODO: create a queue to asynchronously generate cache files, and add this file to the queue)
+        cache = self.workspace.get_cache(self.get_relative_path())
+        shutil.rmtree(cache, ignore_errors=True)
+
+        # update metadata
+        self.updator = user
+        self.save()
+        
+        return True
+    
 class WorkspaceRevision(models.Model):
     workspace = models.ForeignKey(Workspace)
     parent_file = models.ForeignKey(WorkspaceFile)
     
-    date = models.DateTimeField(auto_now_add=True)
+    date = models.DateTimeField()
     user = models.ForeignKey(User)
     reverted = models.ForeignKey('self', blank=True, null=True)
     
-    filename = models.CharField(max_length=255)
+    filename = models.CharField(max_length=255, blank=True, null=True)
 

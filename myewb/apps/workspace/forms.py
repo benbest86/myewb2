@@ -56,3 +56,5 @@ class WorkspaceRenameForm(forms.Form):
             return ValidationError("Folder names cannot contain periods")
         return newname
     
+class WorkspaceReplaceForm(forms.Form):
+    file = forms.FileField()

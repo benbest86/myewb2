@@ -1,0 +1,10 @@
+{% load uni_form_tags %}
+
+<form id="workspace-replace-form" action="{% url workspace_replace workspace.id %}" method="post" enctype="multipart/form-data" class="uniForm" target="uploadframe">
+	{{ form|as_uni_form }}
+	<input type="hidden" name="dir" value="" id="replace-file-original"/> {# value will be set via javascript later #}
+	&nbsp;&nbsp;&nbsp;
+	<input type="submit" value="Upload" class="fg-button ui-state-default ui-corner-all"/>
+	<span id="upload-progress" style="display: none;"><img src='{{ STATIC_URL}}images/ajax-loader.gif'/></span>
+		
+</form>

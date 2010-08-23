@@ -13,7 +13,7 @@ from django.http import HttpResponse
 
 from workspace.decorators import can_view, can_edit
 from workspace.models import Workspace, WorkspaceFile
-from workspace.forms import WorkspaceUploadForm, WorkspaceMoveForm, WorkspaceNewFolderForm, WorkspaceRenameForm
+from workspace.forms import * 
 
 import settings, os
 
@@ -317,10 +317,30 @@ def rename(request, workspace_id):
 @can_edit()
 def replace(request, workspace_id):
     """
-    View the details of a file
+    Replace a file
     """
     workspace = get_object_or_404(Workspace, id=workspace_id)
-    return HttpResponse("not implemented")
+    
+    if request.method == 'POST' and request.POST.get('dir', None):
+        form = WorkspaceReplaceForm(request.POST, request.FILES)
+        if form.is_valid():
+            file = WorkspaceFile.objects.load(workspace, request.POST['dir'])
+            file.update(request.FILES['file'], request.user)
+                                                
+            # redirect to file info display
+            return render_to_response("workspace/detail.html",
+                                      {'workspace': workspace,
+                                       'file': file,
+                                       'force_selection': True},
+                                      context_instance=RequestContext(request))
+    else:
+        form = WorkspaceReplaceForm()
+        
+    return render_to_response("workspace/replace.html",
+                              {'form': form,
+                               'workspace': workspace},
+                               context_instance=RequestContext(request))
+    #return HttpResponse("not implemented")
 
 @can_edit()
 def bulk_delete(request, workspace_id):
