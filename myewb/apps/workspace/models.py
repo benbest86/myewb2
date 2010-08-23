@@ -524,11 +524,11 @@ class WorkspaceRevisionFile:
                             
     def get_cache_url(self):
         path, name = os.path.split(self.revision.filename)
-        return os.path.join(settings.STATIC_URL, 'workspace/revisions', path, 'cache/')
+        return os.path.join(settings.STATIC_URL, 'workspace/revisions_cache', path)
     
     def get_cache_dir(self):
         path, name = os.path.split(self.revision.filename)
-        cache_root = os.path.join(settings.MEDIA_ROOT, 'workspace/revisions', path, 'cache')
+        cache_root = os.path.join(settings.MEDIA_ROOT, 'workspace/revisions_cache', path)
         
         if not os.path.isdir(cache_root):
             os.makedirs(cache_root, 0755)
