@@ -37,8 +37,7 @@ class CanPreviewNode(template.Node):
             return u''
         
         # normalize the extension
-        filename, ext = os.path.splitext(file)
-        ext = ext[1:]
+        ext = file.get_extension()
         if preview_aliases.get(ext, None):
             ext = preview_aliases[ext]
     
@@ -71,23 +70,21 @@ class PreviewNode(template.Node):
     def render(self, context):
         try:
             workspace = self.workspace.resolve(context)
-            filepath = self.file.resolve(context)
+            file = self.file.resolve(context)
         except template.VariableDoesNotExist:
             return u''
         
         # normalize the extension
-        filename, ext = os.path.splitext(filepath)
-        ext = ext[1:]
+        ext = file.get_extension()
         if preview_aliases.get(ext, None):
             ext = preview_aliases[ext]
     
-        file = workspace.get_file(filepath)
-        if file and ext in preview_extensions:
+        if ext in preview_extensions:
             try:
                 # dynamically load the preview renderer
                 m = __import__('workspace.previews.%s' % ext,
                                globals(), locals(), ['render'], -1)
-                return m.render(workspace, filepath)
+                return m.render(workspace, file)
             except:
                 pass
     

@@ -3,7 +3,8 @@ import settings
 import subprocess
 import time
 
-def render(workspace, filepath):
+def render(workspace, file):
+    filepath = file.get_relative_path()
     preview = workspace.get_cache(filepath)
     if preview:
         fpath, fname = os.path.split(filepath)

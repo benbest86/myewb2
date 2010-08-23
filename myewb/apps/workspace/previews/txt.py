@@ -1,7 +1,6 @@
-def render(workspace, filepath):
-    file = workspace.get_file(filepath)
+def render(workspace, file):
     
-    f =  open(file, 'r')
+    f =  open(file.get_absolute_path(), 'r')
     contents = f.read()
     f.close()
     return contents

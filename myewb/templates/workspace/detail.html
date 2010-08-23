@@ -29,9 +29,8 @@
 
 <p id="workspace-preview" style="display: none"></p>
 <script type="text/javascript">
-{% can_preview relpath as preview %}
+{% can_preview file as preview %}
 {% if preview %}
-	{#<a href="#" id="show-preview" onclick="preview_file('{{file.get_relative_path}}'); return false;">preview this file</a>#}
     var can_preview = '{{ file.get_relative_path }}';
 {% else %}
     var can_preview = false;

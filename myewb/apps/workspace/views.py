@@ -112,19 +112,6 @@ def detail(request, workspace_id):
     
     response = []
     if request.method == 'POST' and request.POST.get('dir', None):
-        """
-        file = workspace.get_file(request.POST['dir'])
-        if file:
-            path, filename = os.path.split(request.POST['dir'])
-            stat = os.stat(file)
-            return render_to_response("workspace/detail.html",
-                                      {'workspace': workspace,
-                                       'path': path,
-                                       'filename': filename,
-                                       'relpath': request.POST['dir'],
-                                       'stat': stat},
-                                      context_instance=RequestContext(request))
-                                      """
         file = WorkspaceFile.objects.load(workspace, request.POST['dir'])
         if file:
             return render_to_response("workspace/detail.html",
@@ -461,19 +448,18 @@ def rmdir(request, workspace_id):
 def preview(request, workspace_id):
     workspace = get_object_or_404(Workspace, id=workspace_id)
     if request.method == 'POST' and request.POST.get('dir', None):
-        file = workspace.get_file(request.POST.get('dir', None))
+        file = WorkspaceFile.objects.load(workspace, request.POST['dir'])
     
         if file:
             # normalize the extension
-            requestfile, ext = os.path.splitext(file)
-            ext = ext[1:]
+            ext = file.get_extension()
             if preview_aliases.get(ext, None):
                 ext = preview_aliases[ext]
         
             # load up the preview template
             if ext in preview_extensions:
                 return render_to_response("workspace/preview/%s.html" % ext,
-                                          {'file': request.POST.get('dir', None),
+                                          {'file': file,
                                            'workspace': workspace},
                                           context_instance=RequestContext(request))
     
