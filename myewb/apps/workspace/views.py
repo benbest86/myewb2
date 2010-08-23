@@ -11,6 +11,8 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.http import HttpResponse, HttpResponseBadRequest
 
+from siteutils.shortcuts import get_object_or_none
+
 from workspace.decorators import can_view, can_edit
 from workspace.models import Workspace, WorkspaceFile, WorkspaceRevision
 from workspace.forms import * 
@@ -439,10 +441,22 @@ def rmdir(request, workspace_id):
 @can_view()
 def preview(request, workspace_id):
     workspace = get_object_or_404(Workspace, id=workspace_id)
-    if request.method == 'POST' and request.POST.get('dir', None):
-        file = WorkspaceFile.objects.load(workspace, request.POST['dir'])
     
+    if request.method == 'POST' and request.POST.get('dir', None):
+        
+        # load up the requested file
+        file = WorkspaceFile.objects.load(workspace, request.POST['dir'])
         if file:
+            # check to see if we want a past revision
+            rev_id = request.POST.get('revision', None)
+            if rev_id and rev_id != 'current':
+                revision = get_object_or_none(WorkspaceRevision,
+                                              id=rev_id,
+                                              workspace=workspace,
+                                              parent_file=file)
+                if revision:
+                    file = revision.get_file()
+                    
             # normalize the extension
             ext = file.get_extension()
             if preview_aliases.get(ext, None):

@@ -255,12 +255,17 @@
 	    }
 	    return false;
 	}
-	function preview_file(file)
+	function preview_file(file, rev)
 	{
+		if (rev == undefined)
+			rev = 'current';
+		
 		$('#workspace-preview').html("<img src='{{ STATIC_URL}}images/ajax-loader.gif'/>  Loading...");
 		$('#workspace-preview').slideDown();
+
 		$.post('{% url workspace_preview workspace.id %}',
-				{dir: file},
+				{dir: file,
+				 revision: rev},
 				function(data) {
 					$('#workspace-preview').html(data);
 				});
@@ -273,8 +278,9 @@
 			$('#download-revision').show();
 		else
 			$('#download-revision').hide();
-		
-		window.alert("selected revsion " + rev);
+
+		if (can_preview)
+			preview_file(file, rev);
 	}
 	function download_revision()
 	{

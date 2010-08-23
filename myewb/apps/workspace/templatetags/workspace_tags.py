@@ -63,13 +63,11 @@ def do_can_preview(parser, token):
 register.tag('can_preview', do_can_preview)
 
 class PreviewNode(template.Node):
-    def __init__(self, workspace, file):
-        self.workspace = template.Variable(workspace)
+    def __init__(self, file):
         self.file = template.Variable(file)
 
     def render(self, context):
         try:
-            workspace = self.workspace.resolve(context)
             file = self.file.resolve(context)
         except template.VariableDoesNotExist:
             return u''
@@ -84,7 +82,7 @@ class PreviewNode(template.Node):
                 # dynamically load the preview renderer
                 m = __import__('workspace.previews.%s' % ext,
                                globals(), locals(), ['render'], -1)
-                return m.render(workspace, file)
+                return m.render(file)
             except:
                 pass
     
@@ -92,14 +90,14 @@ class PreviewNode(template.Node):
 
 def do_preview(parser, token):
     """
-    Provides the template tag {% preview WORKSPACE FILE as VARIABLE %}
+    Provides the template tag {% preview FILE %}
     """
     try:
-        _tagname, workspace, file = token.split_contents()
+        _tagname, file = token.split_contents()
     except ValueError:
         raise template.TemplateSyntaxError(u'%(tagname)r tag syntax is as follows: '
-            '{%% %(tagname)r WORKSPACE FILE %%}' % {'tagname': 'preview'})
-    return PreviewNode(workspace, file)
+            '{%% %(tagname)r FILE %%}' % {'tagname': 'preview'})
+    return PreviewNode(file)
 
 register.tag('preview', do_preview)
 

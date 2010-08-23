@@ -3,33 +3,30 @@ import settings
 import subprocess
 import time
 
-def render(workspace, file):
-    filepath = file.get_relative_path()
-    preview = workspace.get_cache(filepath)
+def render(file):
+    preview = file.get_cache_dir()
     if preview:
-        fpath, fname = os.path.split(filepath)
-        fname = fname + ".html"
+        fname = file.get_filename() + ".html"
         
         cache_file = preview + fname
         
         # attempt to create cache
         # (TODO: we shuold really do this after uploading, or on a nightly cron)
         if not os.path.isfile(cache_file):
-            cache(workspace, filepath)
+            cache(file)
 
         if os.path.isfile(cache_file):
-            return '%sworkspace/cache/%s%s/%s' % (settings.STATIC_URL, str(workspace.id), filepath, fname)
+            return file.get_cache_url() + fname
         
     return ""
 
-def cache(workspace, filepath):
-    preview = workspace.get_cache(filepath)
+def cache(file):
+    preview = file.get_cache_dir()
     if preview:
-        fpath, fname = os.path.split(filepath)
-        fname = fname + ".html"
+        fname = file.get_filename() + ".html"
         
         cache_file = preview + fname
-        file = workspace.get_file(filepath)
+        file = file.get_absolute_path()
         if os.path.isfile(file):
             filestat = os.stat(file)
 

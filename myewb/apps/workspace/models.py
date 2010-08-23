@@ -372,6 +372,13 @@ class WorkspaceFile(models.Model):
             path = ''
         return path
     
+    def get_cache_url(self):
+        path, name = os.path.split(self.name)
+        return os.path.join(settings.STATIC_URL, 'workspace/cache', str(self.workspace.id)) + self.name + '/'
+
+    def get_cache_dir(self):
+        return self.workspace.get_cache(self.name)
+    
     def get_filename(self):
         path, filename = os.path.split(self.name)
         return filename
@@ -439,11 +446,18 @@ class WorkspaceFile(models.Model):
         rev.save()
         
         # save file to revision history
+        old_cache = self.get_cache_dir()
         abspath = self.get_absolute_path()
         rev_dir = os.path.join(settings.MEDIA_ROOT, 'workspace/revisions', rev_folder)
         if not os.path.isdir(rev_dir):
             os.makedirs(rev_dir, 0755)
         os.rename(abspath, rev_dir + '/' + self.get_filename())
+        
+        # move cached files to history as well
+        old_cache = old_cache[0:-1]             # strip trailing slash
+        new_cache = os.path.join(settings.MEDIA_ROOT, 'workspace/revisions', rev_folder, 'cache')
+        if os.path.isdir(old_cache):
+            os.rename(old_cache, new_cache)
         
         # open workspace file for writing - replace with uploaded file
         diskfile = open(abspath, 'wb+')
@@ -471,6 +485,49 @@ class WorkspaceRevision(models.Model):
     reverted = models.ForeignKey('self', blank=True, null=True)
     
     filename = models.CharField(max_length=255, blank=True, null=True)
+    
+    # Returns an object that acts like a read-only WorkspaceFile, which 
+    # represents this revision
+    def get_file(self):
+        return WorkspaceRevisionFile(self)
 
     class Meta:
         ordering = ('-date', '-id')
+
+# we don't extend WorkspaceFile because this doesn't need to be in the database
+class WorkspaceRevisionFile:
+    def __init__(self, revision):
+        self.revision = revision
+        
+    def get_relative_path(self):
+        return self.revision.filename
+        
+    def get_absolute_path(self):
+        return os.path.join(settings.MEDIA_ROOT, 'workspace/revisions', self.revision.filename) 
+                            
+    def get_cache_url(self):
+        path, name = os.path.split(self.revision.filename)
+        return os.path.join(settings.STATIC_URL, 'workspace/revisions', path, 'cache/')
+    
+    def get_cache_dir(self):
+        path, name = os.path.split(self.revision.filename)
+        cache_root = os.path.join(settings.MEDIA_ROOT, 'workspace/revisions', path, 'cache')
+        
+        if not os.path.isdir(cache_root):
+            os.makedirs(cache_root, 0755)
+    
+        return cache_root + '/'
+    
+    def get_folder(self):
+        return self.revision.parent_file.get_folder()
+    
+    def get_filename(self):
+        path, filename = os.path.split(self.revision.filename)
+        return filename
+        
+    def get_extension(self):
+        filename, ext = os.path.splitext(self.revision.filename)
+        return ext[1:]
+        
+    def get_size(self):
+        return os.stat(self.get_absolute_path()).st_size
