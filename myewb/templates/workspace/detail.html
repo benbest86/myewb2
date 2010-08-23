@@ -28,6 +28,17 @@
     modified: {% mktime file.modified %} by {{ file.updator.visible_name }}<br/>
 </p>
 
+<hr/>
+{% if can_edit and file.workspacerevision_set.all %}
+revisions: 
+<select name="revisions" id="revisions" onchange="revision_history('{{file.get_relative_path}}');">
+	<option value="current">current</option>
+	{% for r in file.workspacerevision_set.all %}
+		<option value="{{ r.id }}">{{ r.date|date }} {{ r.date|time }} - {{ r.user.visible_name }}</option>
+	{% endfor %}
+</select>
+<input type="button" value="download" id="download-revision" class="fg-button ui-state-default ui-corner-all" style="display: none;" onclick="download_revision()"/>
+{% endif %}
 <p id="workspace-preview" style="display: none"></p>
 <script type="text/javascript">
 {% can_preview file as preview %}

@@ -266,6 +266,28 @@
 				});
 		return false;
 	}
+	function revision_history(file)
+	{
+		var rev = $('#revisions').val();
+		if (rev != 'current')
+			$('#download-revision').show();
+		else
+			$('#download-revision').hide();
+		
+		window.alert("selected revsion " + rev);
+	}
+	function download_revision()
+	{
+		var rev = $('#revisions').val();
+		if (rev != 'current')
+		{
+			$.post('{% url workspace_revision_download workspace.id %}',
+					{revision: rev},
+					function(data) { 
+						$('#uploadframe').attr('src', data);
+					});
+		}
+	}
 	
 	function loading()
 	{

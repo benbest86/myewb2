@@ -22,5 +22,6 @@ urlpatterns = patterns('workspace.views',
     url(r'(?P<workspace_id>[\d]+)/delete/$', 'delete', name='workspace_delete'),
     url(r'(?P<workspace_id>[\d]+)/mkdir/$', 'mkdir', name='workspace_mkdir'),
     url(r'(?P<workspace_id>[\d]+)/rmdir/$', 'rmdir', name='workspace_rmdir'),
-    url(r'(?P<workspace_id>[\d]+)/preview/$', 'preview', name='workspace_preview')
+    url(r'(?P<workspace_id>[\d]+)/preview/$', 'preview', name='workspace_preview'),
+    url(r'(?P<workspace_id>[\d]+)/revision/$', 'revision_download', name='workspace_revision_download')
 ) 

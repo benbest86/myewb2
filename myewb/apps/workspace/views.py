@@ -9,10 +9,10 @@ Last modified on 2010-08-18
 
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseBadRequest
 
 from workspace.decorators import can_view, can_edit
-from workspace.models import Workspace, WorkspaceFile
+from workspace.models import Workspace, WorkspaceFile, WorkspaceRevision
 from workspace.forms import * 
 
 import settings, os
@@ -457,3 +457,13 @@ def preview(request, workspace_id):
     
     return HttpResponse("preview not available")
 
+@can_edit()
+def revision_download(request, workspace_id):
+    workspace = get_object_or_404(Workspace, id=workspace_id)
+    if request.method == 'POST' and request.POST.get('revision', None):
+        rev_id = request.POST['revision']
+        revision = get_object_or_404(WorkspaceRevision, id=rev_id, workspace=workspace)
+        
+        return HttpResponse(settings.STATIC_URL + "workspace/revisions/" + revision.filename)
+    
+    return HttpResponseBadRequest()
