@@ -25,7 +25,11 @@
 
 <p>
     size: {{ file.get_size|filesize }}<br/>
-    modified: {% mktime file.modified %} by {{ file.updator.visible_name }}<br/>
+    created: {% mktime file.created %} 
+    	{% if file.creator %}({{ file.creator.visible_name }}){% endif %}<br/>
+    modified: {% mktime file.modified %} 
+    	{% if file.updator %}({{ file.updator.visible_name }}){% endif %}<br/>
+    
 </p>
 
 <hr/>
