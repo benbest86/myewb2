@@ -262,8 +262,11 @@ def move(request, workspace_id):
                                               context_instance=RequestContext(request))
             elif WorkspaceFile.objects.is_dir(workspace, src):
                 dstdir = workspace.move_dir(src, dst)
-                dstdir = dstdir + '/'
-                return folder_detail(request, workspace_id=workspace_id, folder=dstdir, force_selection=True)
+                if dstdir:
+                    dstdir = dstdir + '/'
+                    return folder_detail(request, workspace_id=workspace_id, folder=dstdir, force_selection=True)
+                else:
+                    return HttpResponse('error')
     else:
         form = WorkspaceMoveForm(folders=folders)
         

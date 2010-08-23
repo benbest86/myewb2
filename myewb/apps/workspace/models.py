@@ -162,7 +162,7 @@ class Workspace(models.Model):
         absolute_src = self.get_dir(src)
         absolute_dst = self.get_dir(dst)
         
-        if absolute_src and absolute_dst:
+        if absolute_src and absolute_dst and absolute_src != absolute_dst:
             absolute_src = absolute_src[0:-1]               # strip trailing slash
             _discard, name = os.path.split(absolute_src)    # find folder name
             absolute_dst = absolute_dst + name
