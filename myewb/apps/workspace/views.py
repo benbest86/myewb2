@@ -39,8 +39,9 @@ def browse(request, workspace_id):
     
     response = []
     if request.method == 'POST':
-        reldir = request.POST.get('dir', '/')
+        reldir = urllib.unquote(request.POST.get('dir', '/'))
         dir = workspace.get_dir(reldir)
+
         selected = request.POST.get('selected', '/')[1:].split('/')
         
         # build directory listing

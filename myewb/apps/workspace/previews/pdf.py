@@ -38,7 +38,9 @@ def cache(file):
                 return True
             
             # attempt to generate cache file
-            ret = subprocess.call(['pdftohtml', '-noframes', file, cache_file])
+            ret = subprocess.Popen(['pdftohtml', '-noframes', file, cache_file], cwd=preview)
+            ret.wait()
+            ret = ret.returncode
             
             # ret == 0 for success
             if ret == 0:
