@@ -16,6 +16,9 @@ function onSearchResultSelect(event) {
     id_tokens = event.currentTarget.id.split('-')
     theField = id_tokens[1]
     theUsername = id_tokens[2]
+    for (var i = 3; i < id_tokens.length; i++)
+    	theUsername = theUsername + '-' + id_tokens[i]
+    	                                            
     data = ({field: theField, username: theUsername});
     
     if($( '#usi_' + data.field ).children( '#su_' + data.field + '_' + data.username ).length == 0) {
