@@ -84,8 +84,7 @@ def create_address(request, username, object=None):
             errorlist = []
             for field in form:
                 if field.errors:
-                    errorlist.append(field.errors)
-            
+                    errorlist.append(field.errors.as_text())
             error_data = {
                 'valid': False,
                 'label': label,
