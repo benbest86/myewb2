@@ -45,7 +45,7 @@ def address_index(request, username, object=None):
     if request.method == 'GET':
         other_user = get_object_or_404(User, username=username)
         profile = other_user.get_profile()
-        content_type = ContentType.objects.get_for_model(user)
+        content_type = ContentType.objects.get_for_model(other_user)
         addresses = Address.objects.filter(content_type=content_type, object_id=profile.id)
         return render_to_response(
                 'profiles/address_index.html',
