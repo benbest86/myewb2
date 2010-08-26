@@ -13,6 +13,7 @@ Last modified: 2009-07-31
 from django.db import models
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.mail import mail_admins
 from django.db.models.signals import post_save, pre_save
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.localflavor.ca.forms import CASocialInsuranceNumberField
@@ -272,8 +273,14 @@ post_save.connect(create_member_profile, sender=User)
 
 def update_ldap_email(sender, instance=None, **kwargs):
     if instance is not None and instance.verified and instance.primary:
-        instance.user.get_profile().ldap_sync = True
-        instance.user.get_profile().save()
+        try:
+            profile = instance.user.get_profile() 
+            profile.ldap_sync = True
+            profile.save()
+        except:
+            mail_admins("LDAP sync fail",
+                        "Can't update ldap sync setting for %s" % instance.user.username,
+                        fail_silently=True)
 post_save.connect(update_ldap_email, sender=EmailAddress)
     
 class StudentRecordManager(models.Manager):
