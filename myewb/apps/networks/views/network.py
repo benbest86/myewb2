@@ -224,9 +224,17 @@ def update_magic_lists(request, group_slug, username, form_class):
                         otherexec = otherexec.exclude(parent=group)
                         
                         if otherexec.count() > 0:
-                            # if they are on a different chapter's list,
-                            # don't let them be added here!!!
-                            return False
+                            # due to some weird migration artifact, some people 
+                            # are in fact on multiple exec lists.  so allow this
+                            # to proceed if they are already a member of this list
+                            # (ie it's not a new membership)...
+                            myexec = ExecList.objects.filter(parent=group,
+                                                             is_active=True,
+                                                             member_users=other_user)
+                            if myexec.count() == 0:
+                                # if they are on a different chapter's list,
+                                # don't let them be added here!!!
+                                return False
                         
                         
                         # TODO: don't hard-code slug?
