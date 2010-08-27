@@ -162,14 +162,14 @@ INSTALLED_APPS = (
     'emailconfirmation',
     'django_extensions',
     'robots',
-    'dbtemplates',
+    #'dbtemplates',
     'friends',
     'mailer',
     'messages',
     'messages_ext',
     'group_announcements',
-    'oembed',
-    'djangodblog',
+    #'oembed',
+    #'djangodblog',
     'pagination',
 #    'gravatar',
     'threadedcomments',
@@ -178,18 +178,18 @@ INSTALLED_APPS = (
     'wiki',
 #    'swaps',
     'timezones',
-    'voting',
-    'voting_extras',
+    #'voting',
+    #'voting_extras',
     'tagging',
     'tagging_utils',
-    'bookmarks',
-    'blog',
+    #'bookmarks',
+    #'blog',
     'ajax_validation',
-    'photologue',
+    #'photologue',
     'avatar',
-    'flag',
-    'microblogging',
-    'locations',
+    #'flag',
+    #'microblogging',
+    #'locations',
     'uni_form',
     'django_sorting',
     'django_markup',
@@ -203,8 +203,8 @@ INSTALLED_APPS = (
     'account_extra',
 #    'misc',
     'signup_codes',
-    'tribes',
-    'photos',
+    #'tribes',
+    #'photos',
     'tag_app',    
     'attachments',
     'topics',
@@ -230,6 +230,7 @@ INSTALLED_APPS = (
     'profile_query',
     'champ',
     'workspace',
+    'mailchimp',
 
     # our own third-party libs
     'contrib.django_evolution',
@@ -329,6 +330,9 @@ GOOGLE_APPS = False
 GOOGLE_ADMIN = ""
 GOOGLE_DOMAIN = ""
 GOOGLE_PASSWORD = ""
+
+# Mailchimp integration.  Leave set to None to disable (or replace in local_settings)
+MAILCHIMP_KEY = None
 
 # debug login
 LOGGING_OUTPUT_ENABLED = True
