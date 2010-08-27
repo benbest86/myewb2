@@ -18,6 +18,7 @@ BaseGroup.add_to_class('mailchimp', models.BooleanField(default=False))
 class MailchimpEvent(models.Model):
     date = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(User)
+    email = models.EmailField(blank=True, null=True)
 
     class Meta:
         abstract = True
@@ -34,6 +35,7 @@ class ListEventManager(models.Manager):
             return True
         
         return self.create(user=user,
+                           email=user.email,
                            subscribe=True)
     
     def unsubscribe(self, user):
@@ -46,6 +48,7 @@ class ListEventManager(models.Manager):
             return True
         
         return self.create(user=user,
+                           email=user.email,
                            subscribe=False)
         
 class ListEvent(MailchimpEvent):
@@ -109,6 +112,10 @@ class ProfileEventManager(models.Manager):
         sub = ListEvent.objects.filter(user=user)
         if sub.count():
             return True
+        
+        # and if they are already in the queue, we don't need to update them either
+        if self.filter(user=user).count():
+            return False
         
         return self.create(user=user)
         
