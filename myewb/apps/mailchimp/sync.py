@@ -103,6 +103,23 @@ if settings.MAILCHIMP_KEY:
                               'groups': groupname})
             
         return grouplist
+    
+    # remove the given group from the list of mailchimp groups
+    def remove_group(group, grouplist):
+        category = group.mailchimp.replace(',', '\,')
+        groupname = group.name.replace(',', '\,')
+        
+        # category is already in this list? just add the group...
+        for g in grouplist:
+            if g['name'] == category:
+                groups = g['groups'].split(',')
+                groups = [x.strip() for x in groups]
+                try:
+                    groups.remove(groupname)
+                except:
+                    pass
+                g['groups'] = ','.join(groups)
+        return grouplist
 
     def run():
         mc = MailChimp(key)
@@ -160,7 +177,8 @@ if settings.MAILCHIMP_KEY:
             result = mc.listBatchSubscribe(id=list,
                                            batch=emails,
                                            double_optin=False,
-                                           update_existing=True)
+                                           update_existing=True,
+                                           replace_interests=False)
             print_result(result)
         
         # ----------------------------------------------------------------------
@@ -185,23 +203,27 @@ if settings.MAILCHIMP_KEY:
             result = mc.listBatchSubscribe(id=list,
                                            batch=emails.values(),
                                            double_optin=False,
-                                           update_existing=True)
+                                           update_existing=True,
+                                           replace_interests=False)
             print_result(result)
 
         # ----------------------------------------------------------------------
         # group leaves
+        emails = {}
         leave = GroupEvent.objects.filter(join=False)
         for l in leave:
-            print j.user.visible_name(), j.user.email, "leaving", j.group.name
+            print l.user.visible_name(), l.user.email, "leaving", l.group.name
 
             # if they're not already on the list, build a profile for them
-            if not emails.has_key(j.user.id):
-                emails[j.user.id] = build_profile(j.user)
+            if l.user.id not in emails:
+                emails[l.user.id] = build_profile(l.user)
                 
-                emails[j.user.id]['GROUPINGS'] = []
-            
-            # add this group to the user's list of groups
-            emails[j.user.id]['GROUPINGS'] = add_group(j.group, emails[j.user.id]['GROUPINGS'])
+                info = mc.listMemberInfo(id=list,
+                                         email_address=l.user.email)
+                emails[l.user.id]['GROUPINGS'] = info['merges']['GROUPINGS']
+                
+            # remove group from list
+            emails[l.user.id]['GROUPINGS'] = remove_group(l.group, emails[l.user.id]['GROUPINGS'])
 
             # ok, done.
             l.delete()
@@ -210,6 +232,7 @@ if settings.MAILCHIMP_KEY:
             result = mc.listBatchSubscribe(id=list,
                                            batch=emails.values(),
                                            double_optin=False,
-                                           update_existing=True)
+                                           update_existing=True,
+                                           replace_interests=True)
             print_result(result)
 
