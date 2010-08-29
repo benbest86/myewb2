@@ -81,12 +81,8 @@ if settings.MAILCHIMP_KEY:
             add_group(j.group, groups)
         
             # taken care of.
-            #j.delete()
+            j.delete()
                 
-        # the mailchimp docs say that an empty array is bad, we need to put a blank string in it...
-        #if not len(groups):
-        #    groups.append('')
-        
         return groups
 
     # add the given group the list of mailchimp groups
@@ -120,7 +116,7 @@ if settings.MAILCHIMP_KEY:
         for u in unsub:
             print "unsubscribing", u.user.visible_name(), u.email
             emails.append(u.email)
-            #u.delete()
+            u.delete()
 
         if len(emails):
             result = mc.listBatchUnsubscribe(id=list,
@@ -140,11 +136,7 @@ if settings.MAILCHIMP_KEY:
             entry = build_profile(s.user)
             entry['GROUPINGS'] = build_new_groups(s.user)
             emails.append(entry)
-            #emails.append({'EMAIL': s.user.email,
-            #               'FNAME': s.user.first_name,
-            #               'LNAME': s.user.last_name,
-            #               'EMAIL_TYPE': 'html'})
-            #s.delete()
+            s.delete()
             
         if len(emails):
             result = mc.listBatchSubscribe(id=list,
@@ -162,7 +154,7 @@ if settings.MAILCHIMP_KEY:
             entry = build_profile(p.user)
             entry['GROUPINGS'] = build_new_groups(p.user)
             emails.append(entry)
-            #p.delete()
+            p.delete()
             
         if len(emails):
             result = mc.listBatchSubscribe(id=list,
@@ -187,7 +179,7 @@ if settings.MAILCHIMP_KEY:
             emails[j.user.id]['GROUPINGS'] = add_group(j.group, emails[j.user.id]['GROUPINGS'])
 
             # ok, done.
-            #j.delete()
+            j.delete()
             
         if len(emails):
             result = mc.listBatchSubscribe(id=list,
@@ -212,7 +204,7 @@ if settings.MAILCHIMP_KEY:
             emails[j.user.id]['GROUPINGS'] = add_group(j.group, emails[j.user.id]['GROUPINGS'])
 
             # ok, done.
-            #l.delete()
+            l.delete()
             
         if len(emails):
             result = mc.listBatchSubscribe(id=list,
