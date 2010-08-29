@@ -12,7 +12,7 @@ from django.db import models
 from base_groups.models import BaseGroup
 
 # add the mailchimp dynamically here, so we don't clutter the BaseGroup code...
-BaseGroup.add_to_class('mailchimp', models.BooleanField(default=False))
+BaseGroup.add_to_class('mailchimp', models.CharField(max_length=255, blank=True, null=True, default=None))
 
 # base model.  Only to reduce typing..,.
 class MailchimpEvent(models.Model):
@@ -58,7 +58,7 @@ class ListEvent(MailchimpEvent):
 
 # Group events: joining or leaving specific groups.
 class GroupEventManager(models.Manager):
-    def join(self, user, groupname):
+    def join(self, user, group):
         # if they have a pending unsubscribe, then this is pointless
         unsub = ListEvent.objects.filter(user=user,
                                          subscribe=False)
@@ -67,7 +67,7 @@ class GroupEventManager(models.Manager):
         
         # if they have a pending leave, this event will cancel it out
         unsub = self.filter(user=user,
-                            groupname=groupname,
+                            group=group,
                             join=False)
         if unsub.count():
             for u in unsub:
@@ -75,10 +75,10 @@ class GroupEventManager(models.Manager):
             return True
         
         return self.create(user=user,
-                           groupname=groupname,
+                           group=group,
                            join=True)
     
-    def leave(self, user, groupname):
+    def leave(self, user, group):
         # if they have a pending unsubscribe, then this is pointless
         unsub = ListEvent.objects.filter(user=user,
                                          subscribe=False)
@@ -87,7 +87,7 @@ class GroupEventManager(models.Manager):
         
         # if they have a pending join, this event will cancel it out
         unsub = self.filter(user=user,
-                            groupname=groupname,
+                            group=group,
                             join=True)
         if unsub.count():
             for u in unsub:
@@ -95,14 +95,14 @@ class GroupEventManager(models.Manager):
             return True
         
         return self.create(user=user,
-                           groupname=groupname,
+                           group=group,
                            join=False)
         
     
 class GroupEvent(MailchimpEvent):
     # true if this is a join event; false if it is a leave event
     join = models.BooleanField()
-    groupname = models.CharField(max_length=255, blank=True, null=True)
+    group = models.ForeignKey(BaseGroup)
     objects = GroupEventManager()
 
 # Profile events: updating your profile info.

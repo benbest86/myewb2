@@ -33,18 +33,16 @@ def group_join(sender, instance, created, **kwargs):
     if created:
         user = instance.user
         group = instance.group
-        groupname = instance.group.slug
         
         if group.mailchimp:
-            GroupEvent.objects.join(user, groupname)
+            GroupEvent.objects.join(user, group)
 
 def group_leave(sender, instance, **kwargs):
     user = instance.user
     group = instance.group
-    groupname = instance.group.slug
     
     if group.mailchimp:
-        GroupEvent.objects.leave(user, groupname)
+        GroupEvent.objects.leave(user, group)
 
 def user_update(sender, instance, created, **kwargs):
     user = instance
