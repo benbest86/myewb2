@@ -12,7 +12,7 @@ from profiles.models import StudentRecord
 from datetime import datetime
 import settings, dprint
 
-if settings.MAILCHIMP_KEY:
+if settings.MAILCHIMP_KEY and settings.MAILCHIMP_LISTID:
     from greatape import MailChimp
     key = settings.MAILCHIMP_KEY
 
@@ -123,8 +123,7 @@ if settings.MAILCHIMP_KEY:
 
     def run():
         mc = MailChimp(key)
-        list = mc.lists()
-        list = list[0]['id']
+        list = settings.MAILCHIMP_LISTID
         
         # ----------------------------------------------------------------------
         # handle unsubscribes first

@@ -333,6 +333,7 @@ GOOGLE_PASSWORD = ""
 
 # Mailchimp integration.  Leave set to None to disable (or replace in local_settings)
 MAILCHIMP_KEY = None            # your API key with them
+MAILCHIMP_LISTID = None         # the ID of the list you use
 MAILCHIMP_CALLBACK_KEY = None   # a key to use for securing callbacks
 
 
