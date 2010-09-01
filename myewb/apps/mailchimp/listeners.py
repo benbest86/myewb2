@@ -7,7 +7,7 @@ Copyright 2010 Engineers Without Borders Canada
 """
 
 from django.contrib.auth.models import User
-from django.db.models.signals import post_save, pre_delete
+from django.db.models.signals import pre_save, post_save, pre_delete
 from emailconfirmation.signals import email_confirmed
 
 from account_extra.signals import listsignup, deletion
@@ -16,14 +16,6 @@ from mailchimp.models import ListEvent, GroupEvent, ProfileEvent
 from profiles.models import MemberProfile
 
 import settings
-
-# from a bulk-subscribe (is passed a user)
-def list_subscribe(sender, user, **kwargs):
-    ListEvent.objects.subscribe(user)
-    
-# from a web sign-up, sent on email confirmation (is passed a EmailAddress)
-def list_subscribe2(sender, email_address, **kwargs):
-    ListEvent.objects.subscribe(email_address.user)
 
 # expecting a user instance
 def list_unsubscribe(sender, user, **kwargs):
@@ -44,24 +36,39 @@ def group_leave(sender, instance, **kwargs):
     if group.mailchimp:
         GroupEvent.objects.leave(user, group)
 
-def user_update(sender, instance, created, **kwargs):
+def user_update(sender, instance, created=None, **kwargs):
     user = instance
     
-    if not created:
-        ProfileEvent.objects.update(user)
-
-def profile_update(sender, instance, created, **kwargs):
-    profile = instance
+    if not user.email:
+        return
     
-    if not created:
-        ProfileEvent.objects.update(profile.user2)
+    # pre-save only (created is None);
+    if created is None:
+        # instance already exists - we're updating an existing user...
+        if user.pk:
+            original_user = User.objects.get(id=instance.pk)
+            original_email = None
+            if original_user.email != user.email:
+                original_email = original_user.email
+                
+            # TODO: do some checking so we only update on sync'ed fields 
+    
+            ProfileEvent.objects.update(user, email=original_email)
+
+    # otherwise, this is actually a post-save
+    # (and the only post-save we handle is new user creation.  updates to
+    #  existing users are handled above)
+    elif created == True:
+        ProfileEvent.objects.update(user)
+    
+def profile_update(sender, instance, **kwargs):
+    return user_update(sender, instance.user2, kwargs)
 
 # only connect listeners if mailchimp is enabled
 if settings.MAILCHIMP_KEY:
-    listsignup.connect(list_subscribe)
-    email_confirmed.connect(list_subscribe2)
     deletion.connect(list_unsubscribe)
     post_save.connect(group_join, sender=GroupMember, dispatch_uid='mailchimp-group-join')
     pre_delete.connect(group_leave, sender=GroupMember, dispatch_uid='mailchimp-group-leave')
-    post_save.connect(user_update, sender=User, dispatch_uid='mailchimp-user-update')
-    post_save.connect(profile_update, sender=MemberProfile, dispatch_uid='mailchimp-profile-update')
+    pre_save.connect(user_update, sender=User, dispatch_uid='mailchimp-user-preupdate')
+    post_save.connect(user_update, sender=User, dispatch_uid='mailchimp-user-postupdate')
+    pre_save.connect(profile_update, sender=MemberProfile, dispatch_uid='mailchimp-profile-update')

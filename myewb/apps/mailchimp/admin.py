@@ -1,6 +1,6 @@
 from django.contrib import admin
 from emailconfirmation.models import EmailAddress
-from mailchimp.models import ListEvent, GroupEvent, ProfileEvent
+from mailchimp.models import MailchimpEvent, ListEvent, GroupEvent, ProfileEvent
 
 # can be further customized later if necessary
 

@@ -145,6 +145,8 @@ if settings.MAILCHIMP_KEY:
         
         # ----------------------------------------------------------------------
         # subscribe new people
+        # (actually, this should never be used... since new subscriptions have 
+        #  been rolled into ProfileEvents)
         emails = []
         sub = ListEvent.objects.filter(subscribe=True)
         for s in sub:
@@ -164,6 +166,27 @@ if settings.MAILCHIMP_KEY:
         
         # ----------------------------------------------------------------------
         # profile info updates
+        
+        # handle email address changes separately, since we can't batch those
+        profile = ProfileEvent.objects.filter(email__isnull=False)
+        for p in profile:
+            if p.email:
+                print "updating with new email", p.user.visible_name(), p.email, p.user.email
+                
+                entry = build_profile(p.user)
+                entry['GROUPINGS'] = build_new_groups(p.user)
+                p.delete()
+                
+                result = mc.listSubscribe(id=list,
+                                          email_address=p.email,
+                                          merge_vars=entry,
+                                          double_optin=False,
+                                          send_welcome=False,
+                                          update_existing=True,
+                                          replace_interests=False)
+                print result
+        
+        # and everything else
         profile = ProfileEvent.objects.all()
         for p in profile:
             print "updating", p.user.visible_name(), p.user.email

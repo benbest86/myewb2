@@ -18,7 +18,7 @@ BaseGroup.add_to_class('mailchimp', models.CharField(max_length=255, blank=True,
 class MailchimpEvent(models.Model):
     date = models.DateTimeField(auto_now=True)
     user = models.ForeignKey(User)
-    email = models.EmailField(blank=True, null=True)
+    email = models.EmailField(blank=True, null=True, default=None)
 
     class Meta:
         abstract = True
@@ -107,17 +107,23 @@ class GroupEvent(MailchimpEvent):
 
 # Profile events: updating your profile info.
 class ProfileEventManager(models.Manager):
-    def update(self, user):
+    def update(self, user, email=None):
         # if they are in the (un)subscribe queue, they don't need to be updated...
-        sub = ListEvent.objects.filter(user=user)
+        sub = ListEvent.objects.filter(user=user, email=None)
         if sub.count():
             return True
         
-        # and if they are already in the queue, we don't need to update them either
-        if self.filter(user=user).count():
+        # and if they are already in the queue, we don't need to add a mew record
+        events = self.filter(user=user) 
+        if events.count():
+            # but if the email address has changed, we need to mark that...
+            if email:
+                for e in events:
+                    e.email = email
+                    e.save() 
             return False
         
-        return self.create(user=user)
+        return self.create(user=user, email=email)
         
 class ProfileEvent(MailchimpEvent):
     objects = ProfileEventManager()
