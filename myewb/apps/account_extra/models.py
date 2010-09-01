@@ -37,6 +37,9 @@ post_save.connect(clean_up_email_addresses, sender=EmailAddress)
 # add an is_bulk boolean directly to the User model
 User.add_to_class('is_bulk', models.BooleanField(default=False))
 
+# add a no-mail setting directly to the User model too
+User.add_to_class('nomail', models.BooleanField(default=False))
+
 def create_bulk_user_method(self, email):
     # ensure email is not already in use
     emailaddress = EmailAddress.objects.filter(email=email, verified=True)  # shoudl I remove the verified=True ?

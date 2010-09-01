@@ -49,18 +49,18 @@ def send_to_watchlist(sender, instance, created, **kwargs):
     for list in topic.watchlists.all():
         user = list.owner
         # TODO: for user in list.subscribers blah blah
-        if user.get_profile().watchlist_as_emails:
+        if user.get_profile().watchlist_as_emails and not user.nomail:
             recipients.add(user.email)
             
     # send email to original post creator
-    if topic.creator.get_profile().replies_as_emails:
+    if topic.creator.get_profile().replies_as_emails and not topic.creator.nomail:
         recipients.add(topic.creator.email)
         
     # send email to participants
     participants = []
     allcomments = ThreadedComment.objects.all_for_object(topic)
     for c in allcomments:
-        if c.user.get_profile().replies_as_emails2:
+        if c.user.get_profile().replies_as_emails2 and not c.user.nomail:
             recipients.add(c.user.email)
             
     # but remove original poster

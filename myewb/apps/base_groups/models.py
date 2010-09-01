@@ -138,7 +138,7 @@ class BaseGroup(Group):
 
     def get_member_emails(self):
         members_with_emails = self.members.all().select_related(depth=1)
-        return [member.user.email for member in members_with_emails if member.user.email]
+        return [member.user.email for member in members_with_emails if member.user.email and not member.user.nomail]
 
     def add_member(self, user):
         """

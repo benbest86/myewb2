@@ -206,15 +206,17 @@ class GroupTopic(Topic):
         
         for list in self.watchlists.all():
             user = list.owner
-            # TODO: for user in list.subscribers blah blah
-            sender = 'myEWB <notices@my.ewb.ca>'
-    
-            send_mail(subject=self.title,
-                      txtMessage=None,
-                      htmlMessage=self.body,
-                      fromemail=sender,
-                      recipients=[user.email],
-                      context=c)
+            
+            if not user.nomail:
+                # TODO: for user in list.subscribers blah blah
+                sender = 'myEWB <notices@my.ewb.ca>'
+        
+                send_mail(subject=self.title,
+                          txtMessage=None,
+                          htmlMessage=self.body,
+                          fromemail=sender,
+                          recipients=[user.email],
+                          context=c)
         
     def num_whiteboard_edits(self):
         if self.whiteboard:

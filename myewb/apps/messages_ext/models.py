@@ -36,7 +36,7 @@ def send_message_email(sender, instance, created, **kwargs):
     sender = 'myEWB <notices@my.ewb.ca>'
     
     user = instance.recipient
-    if user.get_profile().messages_as_emails:
+    if user.get_profile().messages_as_emails and not user.nomail:
         send_mail(subject="myEWB private message",
                   txtMessage=None,
                   htmlMessage=message,

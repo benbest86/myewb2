@@ -46,7 +46,18 @@ def user_update(sender, instance, created=None, **kwargs):
     if created is None:
         # instance already exists - we're updating an existing user...
         if user.pk:
+            
+            # nomail flag is set?  just unsub them...
+            if user.nomail:
+                return list_unsubscribe(sender, user, kwargs)
+
             original_user = User.objects.get(id=instance.pk)
+
+            # nomail flag just unset?  just subscribe them...
+            if original_user.nomail and not user.nomail:
+                return ProfileEvent.objects.update(user)
+
+            # check for an email address change
             original_email = None
             if original_user.email != user.email:
                 original_email = original_user.email
