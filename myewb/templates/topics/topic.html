@@ -26,7 +26,7 @@
 {% block body %}
 
 <div class="post">
-	{% cache CACHE_TIMEOUT "postbody" topic.id current_timezone LANGUAGE_CODE %}
+	{% cache CACHE_TIMEOUT "postbody" topic.id current_timezone LANGUAGE_CODE request.page %}
 	<div class="postheader bkgd" style="position: relative;"> <!-- header row -->
 		
         {% get_attachments_for topic as "attachments" %}
@@ -88,7 +88,7 @@
                         <ul>
                             {% for att in attachments %}
                                 <li class="attachmentItem">
-                                    {% icon_for_filename att.filename %} <a href="{{ STATIC_URL }}{{ att.attachment_file.name }}" target="_blank">{{ att.filename }}</a>
+                                    {% icon_for_filename att.filename %} <a href="{{ STATIC_URL }}{% filter urlencode %}{{ att.attachment_file.name }}{% endfilter %}" target="_blank">{{ att.filename }}</a>
                                     {% image_preview att.attachment_file.name att.filename topic.pk %} 
                                     {% filesize_for_filename att.attachment_file.name %}
                                 </li>
