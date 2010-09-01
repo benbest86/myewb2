@@ -47,11 +47,19 @@ def user_update(sender, instance, created=None, **kwargs):
         # instance already exists - we're updating an existing user...
         if user.pk:
             
-            # nomail flag is set?  just unsub them...
-            if user.nomail:
-                return list_unsubscribe(sender, user, kwargs)
-
             original_user = User.objects.get(id=instance.pk)
+
+            # nomail flag is set?  just unsub them and bail.
+            #if user.nomail:
+            #    if not original_user.nomail:
+            #        return list_unsubscribe(sender, user, kwargs)
+            #    else:
+            #        return
+            # the above is commented out since mailchimp callbacks were triggering
+            # this... but since we never set nomail ourselves, it should be fine
+            # to not handle this case...
+            if user.nomail:
+                return
 
             # nomail flag just unset?  just subscribe them...
             if original_user.nomail and not user.nomail:

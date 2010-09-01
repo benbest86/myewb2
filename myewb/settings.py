@@ -332,7 +332,9 @@ GOOGLE_DOMAIN = ""
 GOOGLE_PASSWORD = ""
 
 # Mailchimp integration.  Leave set to None to disable (or replace in local_settings)
-MAILCHIMP_KEY = None
+MAILCHIMP_KEY = None            # your API key with them
+MAILCHIMP_CALLBACK_KEY = None   # a key to use for securing callbacks
+
 
 # debug login
 LOGGING_OUTPUT_ENABLED = True
