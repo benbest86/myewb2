@@ -26,7 +26,7 @@
 {% block body %}
 
 <div class="post">
-	{% cache CACHE_TIMEOUT "postbody" topic.id current_timezone LANGUAGE_CODE %}
+	{% cache CACHE_TIMEOUT "postbody" topic.id current_timezone LANGUAGE_CODE request.page %}
 	<div class="postheader bkgd" style="position: relative;"> <!-- header row -->
 		
         {% get_attachments_for topic as "attachments" %}
