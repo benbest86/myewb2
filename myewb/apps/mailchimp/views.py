@@ -37,6 +37,8 @@ def callback(request):
             
         # set the nomail flag for this user
         user.nomail = True
+        if type == 'cleaned':
+            user.bouncing = True
         user.save()
     
     return HttpResponse('success')

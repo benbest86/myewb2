@@ -39,6 +39,7 @@ User.add_to_class('is_bulk', models.BooleanField(default=False))
 
 # add a no-mail setting directly to the User model too
 User.add_to_class('nomail', models.BooleanField(default=False))
+User.add_to_class('bouncing', models.BooleanField(default=False))
 
 def create_bulk_user_method(self, email):
     # ensure email is not already in use
