@@ -8,6 +8,7 @@ Copyright 2010 Engineers Without Borders Canada
 
 from mailchimp.models import ListEvent, GroupEvent, ProfileEvent
 from profiles.models import StudentRecord
+from siteutils.helpers import fix_encoding
 
 from datetime import datetime
 import settings, dprint
@@ -31,7 +32,7 @@ if settings.MAILCHIMP_KEY and settings.MAILCHIMP_LISTID:
         fname = user.first_name
         lname = user.last_name
         email = user.email
-        myewbid = user.id
+        myewbid = str(user.id)
         gender = user.get_profile().gender or ''
         
         student = ''
@@ -60,8 +61,8 @@ if settings.MAILCHIMP_KEY and settings.MAILCHIMP_LISTID:
             language = 'fr'
 
         # build array to send to mailchimp
-        result = {'FNAME': fname,
-                  'LNAME': lname,
+        result = {'FNAME': fix_encoding(fname),
+                  'LNAME': fix_encoding(lname),
                   'EMAIL': email,
                   'MYEWBID': myewbid,
                   'GENDER': gender,
@@ -130,7 +131,7 @@ if settings.MAILCHIMP_KEY and settings.MAILCHIMP_LISTID:
         emails = []
         unsub = ListEvent.objects.filter(subscribe=False)
         for u in unsub:
-            print "unsubscribing", u.user.visible_name(), u.email
+            print "unsubscribing", fix_encoding(u.user.visible_name()), u.email
             emails.append(u.email)
             u.delete()
 
@@ -149,7 +150,7 @@ if settings.MAILCHIMP_KEY and settings.MAILCHIMP_LISTID:
         emails = []
         sub = ListEvent.objects.filter(subscribe=True)
         for s in sub:
-            print "subscribing", s.user.visible_name(), s.user.email
+            print "subscribing", fix_encoding(s.user.visible_name()), s.user.email
             
             entry = build_profile(s.user)
             entry['GROUPINGS'] = build_new_groups(s.user)
@@ -170,7 +171,7 @@ if settings.MAILCHIMP_KEY and settings.MAILCHIMP_LISTID:
         profile = ProfileEvent.objects.filter(email__isnull=False)
         for p in profile:
             if p.email:
-                print "updating with new email", p.user.visible_name(), p.email, p.user.email
+                print "updating with new email", fix_encoding(p.user.visible_name()), p.email, p.user.email
                 
                 entry = build_profile(p.user)
                 entry['GROUPINGS'] = build_new_groups(p.user)
@@ -188,7 +189,7 @@ if settings.MAILCHIMP_KEY and settings.MAILCHIMP_LISTID:
         # and everything else
         profile = ProfileEvent.objects.all()
         for p in profile:
-            print "updating", p.user.visible_name(), p.user.email
+            print "updating", fix_encoding(p.user.visible_name()), p.user.email
             
             entry = build_profile(p.user)
             entry['GROUPINGS'] = build_new_groups(p.user)
@@ -208,7 +209,7 @@ if settings.MAILCHIMP_KEY and settings.MAILCHIMP_LISTID:
         emails = {}
         join = GroupEvent.objects.filter(join=True)
         for j in join:
-            print j.user.visible_name(), j.user.email, "joining", j.group.name
+            print fix_encoding(j.user.visible_name()), j.user.email, "joining", fix_encoding(j.group.name)
 
             # if they're not already on the list, build a profile for them
             if not emails.has_key(j.user.id):
@@ -234,7 +235,7 @@ if settings.MAILCHIMP_KEY and settings.MAILCHIMP_LISTID:
         emails = {}
         leave = GroupEvent.objects.filter(join=False)
         for l in leave:
-            print l.user.visible_name(), l.user.email, "leaving", l.group.name
+            print fix_encoding(l.user.visible_name()), l.user.email, "leaving", fix_encoding(l.group.name)
 
             # if they're not already on the list, build a profile for them
             if l.user.id not in emails:
