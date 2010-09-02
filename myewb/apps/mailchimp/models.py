@@ -12,7 +12,10 @@ from django.db import models
 from base_groups.models import BaseGroup
 
 # add the mailchimp dynamically here, so we don't clutter the BaseGroup code...
-BaseGroup.add_to_class('mailchimp', models.CharField(max_length=255, blank=True, null=True, default=None))
+BaseGroup.add_to_class('mailchimp_category', models.CharField(max_length=255, blank=True, null=True, default=None))
+BaseGroup.add_to_class('mailchimp_name', models.CharField(max_length=255, blank=True, null=True, default=None))
+BaseGroup.add_to_class('mailchimp_past_category', models.CharField(max_length=255, blank=True, null=True, default=None))
+BaseGroup.add_to_class('mailchimp_past_name', models.CharField(max_length=255, blank=True, null=True, default=None))
 
 # base model.  Only to reduce typing..,.
 class MailchimpEvent(models.Model):

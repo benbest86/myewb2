@@ -26,14 +26,14 @@ def group_join(sender, instance, created, **kwargs):
         user = instance.user
         group = instance.group
         
-        if group.mailchimp:
+        if group.mailchimp_name:
             GroupEvent.objects.join(user, group)
 
 def group_leave(sender, instance, **kwargs):
     user = instance.user
     group = instance.group
     
-    if group.mailchimp:
+    if group.mailchimp_name or group.mailchimp_past_name:
         GroupEvent.objects.leave(user, group)
 
 def user_update(sender, instance, created=None, **kwargs):

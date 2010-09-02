@@ -88,8 +88,8 @@ if settings.MAILCHIMP_KEY and settings.MAILCHIMP_LISTID:
 
     # add the given group the list of mailchimp groups
     def add_group(group, grouplist):
-        category = group.mailchimp.replace(',', '\,')
-        groupname = group.name.replace(',', '\,')
+        category = group.mailchimp_category.replace(',', '\,')
+        groupname = group.mailchimp_name.replace(',', '\,')
         found = False
 
         # category is already in this list? just add the group...
@@ -107,11 +107,15 @@ if settings.MAILCHIMP_KEY and settings.MAILCHIMP_LISTID:
     
     # remove the given group from the list of mailchimp groups
     def remove_group(group, grouplist):
-        category = group.mailchimp.replace(',', '\,')
-        groupname = group.name.replace(',', '\,')
+        category = group.mailchimp_category.replace(',', '\,')
+        groupname = group.mailchimp_name.replace(',', '\,')
         
-        # category is already in this list? just add the group...
+        past_category = group.mailchimp_past_category.replace(',', '\,')
+        past_groupname = group.mailchimp_past_name.replace(',', '\,')
+        found = False
+        
         for g in grouplist:
+            # remove group
             if g['name'] == category:
                 groups = g['groups'].split(',')
                 groups = [x.strip() for x in groups]
@@ -120,6 +124,15 @@ if settings.MAILCHIMP_KEY and settings.MAILCHIMP_LISTID:
                 except:
                     pass
                 g['groups'] = ','.join(groups)
+                
+            # if there's a "past X" group, add it
+            if past_category and g['name'] == past_category:
+                g['groups'] = g['groups'] + ',' + past_groupname
+                found = True
+                
+        if past_category and not found:
+            grouplist.append({'name': past_category,
+                              'groups': past_groupname})
         return grouplist
 
     def run():
