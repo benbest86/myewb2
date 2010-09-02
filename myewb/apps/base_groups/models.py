@@ -65,6 +65,8 @@ class BaseGroup(Group):
     welcome_email = models.TextField(_('Welcome email'), blank=True, null=True,
                                      help_text='Welcome email to send when someone joins or is added to this group (leave blank for none)')
     
+    secret_key = models.CharField(max_length=255, blank=True, null=True, default=None, editable=False)
+    
     is_project = models.BooleanField(blank=True, null=True, editable=False) # to save info during migration. not really used.
     is_active = models.BooleanField(_("Is active? (false means deleted group"),
                                     default=True,

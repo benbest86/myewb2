@@ -15,6 +15,8 @@ from base_groups.models import BaseGroup
 from group_topics.feeds import TopicFeedAll, TopicFeedGroup, TopicFeedFeatured, TopicFeedTag
 
 def group(request, group_slug):
+    key = request.GET.get('key', None)
+    
     if group_slug == "waterloo":        # legacy name...
         return HttpResponsePermanentRedirect(reverse('topic_feed_group', kwargs={'group_slug': 'grandriver'}))
         
@@ -27,9 +29,14 @@ def group(request, group_slug):
             except:
                 raise feeds.FeedDoesNotExist
             group_slug = group.slug
+
+        # allow access by restricted key, so that you can put the RSS feed
+        # of a private group onto a website somewhere...
+        if key and key == group.secret_key:
+            feedgen = TopicFeedGroup(group_slug, request).get_feed(group_slug)
         
         # concept of a RSS feed for a logged-in user is weird, but OK...
-        if group.is_visible(request.user):
+        elif group.is_visible(request.user):
             feedgen = TopicFeedGroup(group_slug, request).get_feed(group_slug)
         else:
             return HttpResponseForbidden()
