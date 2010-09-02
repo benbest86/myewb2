@@ -11,9 +11,11 @@ Volunteering » Applications
 select {
     display: inline;
 }
+#submit_prompt {
+    margin-left: 25px;
+}
 #submit_link {
     color: red;
-    margin-left: 25px;
 }
 </style>
 <h2>Application: {{ application.session.name }}</h2>
@@ -27,7 +29,9 @@ select {
 	</ul>
 
     {% if not application.complete %}
-        <p>	
+        <p id="submit_prompt">
+<!--            You can start your application and continue it later; your answers will be saved.<br/>	
+-->
     	    <a href="#" id="submit_link">Your application is not complete until you submit it.</a>
         </p>
     {% endif %}

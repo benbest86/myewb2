@@ -15,11 +15,11 @@ $result = mysql_query($qry);
 
 while (list($userid, $fname, $lname, $email) = mysql_fetch_array($result))
 {
-	$qry = "SELECT address FROM networks_emailforward WHERE user_id=$userid";
-	$result = mysql_query($qry);
+	$qry2 = "SELECT address FROM networks_emailforward WHERE user_id=$userid";
+	$result2 = mysql_query($qry2);
 	$forwards = array();
-	$num_fwds = mysql_num_rows($result);
-	while (list($fwd) = mysql_fetch_array($result))
+	$num_fwds = mysql_num_rows($result2);
+	while (list($fwd) = mysql_fetch_array($result2))
 		$forwards[] = $fwd;
 
 	$values["ewbMyewbID"] = $userid;
