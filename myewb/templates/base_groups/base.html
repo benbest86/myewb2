@@ -203,6 +203,17 @@
                     {% else %}
                         <p>You're currently a member of this group.</p>
                         
+                        {# is there a better place for this? i'd really not like to have network-specific #}
+                        {# code in the base_groups app, but UI-wise, this is really the best place... #}
+                        {% if group.is_chapter %}
+                        	{% ifnotequal user.get_profile.get_chapter group %}
+                        		<a href="{% url set_primary_chapter group.slug %}">Make this my primary chapter</a>
+                        	{% else %}
+                        		This is your primary chapter.
+                        	{% endifnotequal %}
+                       		<br/><br/>
+                        {% endif %}
+                        
                         <a href="{% groupurl delete_member group username=user.username %}">Leave group</a>
                         
 						{% comment %}

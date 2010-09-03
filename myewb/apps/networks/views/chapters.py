@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import permission_required
 
 from account_extra.models import set_google_password
 from base_groups.models import GroupMember
-from base_groups.decorators import group_admin_required
+from base_groups.decorators import group_admin_required, group_membership_required
 from communities.models import ExecList
 from networks.models import Network, ChapterInfo, EmailForward
 from networks.forms import ChapterInfoForm, EmailForwardForm
@@ -153,3 +153,14 @@ def email_account_reset(request, group_slug):
     else:
         return HttpResponse("invalid")
         
+@group_membership_required()
+def set_primary_chapter(request, group_slug):
+    network = get_object_or_404(Network, slug=group_slug)
+    profile = request.user.get_profile()
+    profile.chapter = network
+    profile.save()
+
+    if request.is_ajax():
+        return "Set as primary chapter"
+    else:
+        return HttpResponseRedirect(reverse('chapter_detail', kwargs={'group_slug': group_slug}))

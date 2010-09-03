@@ -19,6 +19,8 @@ urlpatterns = patterns('networks.views.chapters',
     # POST - delete chapter
     url(r'^(?P<group_slug>[-\w]+)/delete/$', 'delete_chapter', name='delete_chapter',),
     
+    url(r'^(?P<group_slug>[-\w]+)/primary/$', 'set_primary_chapter', name='set_primary_chapter',),
+
     url(r'^(?P<group_slug>[-\w]+)/emails/$', 'email_forwards_index', name='email_forwards_index',),
     url(r'^(?P<group_slug>[-\w]+)/emails/(?P<fwd_id>\d+)/delete$', 'email_forwards_delete', name='email_forwards_delete',),
 
