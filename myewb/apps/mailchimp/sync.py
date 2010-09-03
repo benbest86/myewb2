@@ -80,7 +80,7 @@ if settings.MAILCHIMP_KEY and settings.MAILCHIMP_LISTID:
                   'STUDENT': student,
                   'GRAD_DATE': graddate,
                   'REGMEMBER': regmember,
-                  'CHAPTER': chapter,
+                  'CHAPTER': fix_encoding(chapter),
                   'SIGNINS': signins,
                   'LASTSIGNIN': lastsignin
                  }
