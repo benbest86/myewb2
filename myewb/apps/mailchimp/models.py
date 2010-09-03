@@ -41,7 +41,7 @@ class ListEventManager(models.Manager):
                            email=user.email,
                            subscribe=True)
     
-    def unsubscribe(self, user):
+    def unsubscribe(self, user, email):
         # if they have a pending subscribe, this event will cancel it out
         unsub = self.filter(user=user,
                             subscribe=True)
@@ -51,7 +51,7 @@ class ListEventManager(models.Manager):
             return True
         
         return self.create(user=user,
-                           email=user.email,
+                           email=email,
                            subscribe=False)
         
 class ListEvent(MailchimpEvent):

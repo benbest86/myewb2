@@ -58,7 +58,7 @@ regularmember.connect(record_regupgrade)
 #    record("regdowngrades")
 #downgrade.connect(record_regdowngrade)
 
-def record_deletion(sender, user, **kwargs):
+def record_deletion(sender, user, email, **kwargs):
     record("deletions")
 deletion.connect(record_deletion)
 

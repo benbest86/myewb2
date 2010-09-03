@@ -87,6 +87,7 @@ def softdelete(self, *args, **kwargs):
         avatar.delete()
     
     self.get_profile().delete()
+    old_email = self.email
     self.email = ""
     for email in self.emailaddress_set.all():
         email.delete()
@@ -95,7 +96,7 @@ def softdelete(self, *args, **kwargs):
     #self.last_name = "user"
     self.is_active = False
     self.save()
-    signals.deletion.send(sender=self, user=self)
+    signals.deletion.send(sender=self, user=self, email=old_email)
     
 User.softdelete = softdelete
 

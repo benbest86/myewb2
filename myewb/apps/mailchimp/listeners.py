@@ -18,8 +18,8 @@ from profiles.models import MemberProfile
 import settings
 
 # expecting a user instance
-def list_unsubscribe(sender, user, **kwargs):
-    ListEvent.objects.unsubscribe(user)
+def list_unsubscribe(sender, user, email, **kwargs):
+    ListEvent.objects.unsubscribe(user, email)
 
 def group_join(sender, instance, created, **kwargs):
     if created:
