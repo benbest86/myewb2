@@ -46,11 +46,11 @@
             	
             	Feeds:
             	<a href="{% url topic_feed_group group.slug %}">
-            		<img src="{{STATIC_URL}}images/feeds/rss.gif"/>RSS
+            		<img src="{{STATIC_URL}}images/feeds/rss.gif" style="border: 0"/>RSS
             	</a>&nbsp;&nbsp;
             	{# kinda hack-ish, but we can assume this since we have "if group.is_chapter" earlier... #}
             	<a href="{% url events_feed_for_instance "networks" "network" group.pk %}">
-            		<img src="{{STATIC_URL}}images/feeds/ical.gif"/>
+            		<img src="{{STATIC_URL}}images/feeds/ical.gif" style="border: 0"/>
 				</a>
             </p>
             
