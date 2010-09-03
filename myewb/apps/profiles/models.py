@@ -250,7 +250,7 @@ class MemberProfile(Profile):
         user = self.user2
 
         # quick check to see if chapter flag makes sense...
-        if self.chapter and self.chapter.user_is_member(user) and False:
+        if self.chapter and self.chapter.user_is_member(user):
             return self.chapter
         
         # if it's not set, or if the user isn't a member of that group (any more),
@@ -278,12 +278,12 @@ class MemberProfile(Profile):
             # last resort... take the first chapter they joined as the primary
             if self.chapter is None:
                 gm = GroupMember.objects.filter(group__in=networks, user=user).order_by('joined')
-                for g in gm:
-                    print g.group, g.group.network, g.joined
                 self.chapter = gm[0].group.network
 
         if self.chapter is not None:
             self.save()
+            
+        return self.chapter
 
 def create_member_profile(sender, instance=None, **kwargs):
     """Automatically creates a MemberProfile for a new User."""

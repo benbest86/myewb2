@@ -142,7 +142,11 @@ $(document).ready(function(){
         {% else %}
             <li><a id="tab_profile" class="green" href="{% url acct_signup %}">{% trans "Sign Up" %}</a></li>
         {% endif %}
-        <li><a id="tab_networks" class="yellow" href="{% url networks_index %}">{% trans "Chapters" %}</a></li>
+        {% if user.get_profile.get_chapter %}
+    	    <li><a id="tab_networks" class="yellow" href="{% url network_detail user.get_profile.get_chapter.slug %}">{% trans "Chapters" %}</a></li>
+        {% else %}
+	        <li><a id="tab_networks" class="yellow" href="{% url networks_index %}">{% trans "Chapters" %}</a></li>
+        {% endif %}
         <li><a id="tab_communities" class="orange" href="{% url communities_index %}">{% trans "Communities" %}</a></li>
         <li><a id="tab_events" class="red" href="{% url events_all %}">{% trans "Events" %}</a></li>
         <li><a id="tab_volunteering" class="purple" href="{% url applications %}">{% trans "Volunteering" %}</a></li>

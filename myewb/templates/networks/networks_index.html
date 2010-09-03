@@ -348,7 +348,13 @@ var cityArray = new Array();
 	    {% for group in user.get_networks %}
 
 			<div style="padding-bottom: 4px;">
-				<a href="{% url group_detail group.slug %}">{{ group.name }}</a>
+				<a href="{% url group_detail group.slug %}">
+					{% ifequal user.get_profile.get_chapter group %}
+						<strong>{{ group.name }}</strong>
+					{% else %}
+						{{ group.name }}
+					{% endifequal %}
+				</a>
 			</div>
 
     	{% endfor %}
