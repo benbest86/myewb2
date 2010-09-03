@@ -39,9 +39,11 @@ if settings.MAILCHIMP_KEY and settings.MAILCHIMP_LISTID:
         if user.get_profile().membership_expiry and user.get_profile().membership_expiry > date.today():
             regmember = 'y'
             
-        chapter = user.get_profile().get_chapter()
-        signins = user.get_profile().login_count
-        lastsignin = user.get_profile().current_login
+        chapter = None
+        if user.get_profile().get_chapter():
+            chapter = user.get_profile().get_chapter().name
+        signins = str(user.get_profile().login_count)
+        lastsignin = str(user.get_profile().current_login)
 
         student = ''
         studentrecords = StudentRecord.objects.filter(user=user, start_date__isnull=False, graduation_date__isnull=True)
