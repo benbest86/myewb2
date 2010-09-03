@@ -61,7 +61,7 @@ if settings.MAILCHIMP_KEY and settings.MAILCHIMP_LISTID:
         studentrecords = StudentRecord.objects.filter(user=user)
         if studentrecords.count():
             for s in studentrecords:
-                if not graddate or graddate < s.graduation_date:
+                if s.graduation_date and (not graddate or graddate < s.graduation_date):
                     graddate = s.graduation_date 
             
         language = 'en'
