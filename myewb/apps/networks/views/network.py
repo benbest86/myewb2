@@ -84,8 +84,9 @@ def members_index(request, group_slug, form_class=GroupMemberForm, template_name
 def new_member(request, group_slug, form_class=NetworkMemberForm, template_name=MEM_NEW_TEMPLATE,
         index_template_name=MEM_INDEX_TEMPLATE, force_join=False):
 
+    # update national rep lists and exec lists
     validated = update_magic_lists(request, group_slug, None, form_class)
-        
+    
     if validated:
         return members.new_member(request, group_slug, Network, form_class, template_name, index_template_name, force_join)
     else:
@@ -105,6 +106,7 @@ def member_detail(request, group_slug, username, form_class=EditGroupMemberForm,
 def edit_member(request, group_slug, username, form_class=EditNetworkMemberForm, template_name=MEM_EDIT_TEMPLATE,
         detail_template_name=MEM_DETAIL_TEMPLATE):
     
+    # update national rep lists and exec lists
     validated = update_magic_lists(request, group_slug, username, form_class)
         
     if validated:
@@ -188,8 +190,10 @@ def update_magic_lists(request, group_slug, username, form_class):
     if request.method == 'POST':
         # grab basic objects
         group = get_object_or_404(Network, slug=group_slug)
-        user = request.user
+        user = request.user         # this is the user performing the action, not necessarily
+                                    # the user being acted upon
 
+        # figure out which user(s) we're working on 
         if username:
             other_user = get_object_or_404(User, username=username)
             member = get_object_or_404(GroupMember, group=group, user=other_user)

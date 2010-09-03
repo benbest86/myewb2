@@ -24,6 +24,9 @@ from emailconfirmation.models import EmailAddress
 
 from pinax.apps.profiles.models import Profile, create_profile
 
+from base_groups.models import GroupMember
+from communities.models import ExecList
+from networks.models import Network  
 from profiles import signals
 #from networks import emailforwards
 from datetime import date, datetime
@@ -128,6 +131,8 @@ class MemberProfile(Profile):
     replies_as_emails2 = models.BooleanField(_('replies as emails two'), null=False, blank=True, default=True)
     watchlist_as_emails = models.BooleanField(_('watchlist replies as emails'), null=False, blank=True, default=True)
     messages_as_emails = models.BooleanField(_('private messages as emails'), null=False, blank=True, default=True)
+    
+    chapter = models.ForeignKey(Network, null=True, blank=True, default=None)
 
     #addresses = generic.GenericRelation(Address)
     addresses = models.ManyToManyField(Address)
@@ -238,12 +243,47 @@ class MemberProfile(Profile):
         self.save()
         
     def chapters(self):
-        net_members = self.user.member_groups.filter(group__network__chapter_info__isnull=False)
-        chapters = []
-        for nm in net_members:
-            chapters.append(nm.group)
-        return chapters
+        return self.user2.get_networks()
             
+    # get primary chapter
+    def get_chapter(self):
+        user = self.user2
+
+        # quick check to see if chapter flag makes sense...
+        if self.chapter and self.chapter.user_is_member(user) and False:
+            return self.chapter
+        
+        # if it's not set, or if the user isn't a member of that group (any more),
+        # take an educated guess at primary chapter
+        self.chapter = None
+        
+        networks = user.get_networks()
+        if networks.count() == 1:
+            # if you're only a member of one chapter, it's gotta be your primary
+            self.chapter = networks[0]
+            
+        elif networks.count():
+            for n in networks:
+                # if you're a chapter exec, that should be your primary chapter
+                # (and you *should* only ever be exec of one chapter)
+                if n.user_is_admin(user, admin_override=False):
+                    self.chapter = n
+
+            # if, somehow, you're on an exec list but not marked as a leader
+            if self.chapter is None:
+                execs = ExecList.objects.filter(member_users=user, is_active=True)
+                if execs.count():
+                    self.chapter = execs[0].parent.network
+
+            # last resort... take the first chapter they joined as the primary
+            if self.chapter is None:
+                gm = GroupMember.objects.filter(group__in=networks, user=user).order_by('joined')
+                for g in gm:
+                    print g.group, g.group.network, g.joined
+                self.chapter = gm[0].group.network
+
+        if self.chapter is not None:
+            self.save()
 
 def create_member_profile(sender, instance=None, **kwargs):
     """Automatically creates a MemberProfile for a new User."""

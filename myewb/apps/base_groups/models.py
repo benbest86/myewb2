@@ -115,14 +115,16 @@ class BaseGroup(Group):
     def user_is_pending_member(self, user):
         return user.is_authenticated() and self.pending_members.filter(user=user).count() > 0
     
-    def user_is_admin(self, user):
+    # setting admin_override = False means that site admins and parent group admins 
+    # are not automatically admins of the group (need explicit permission)
+    def user_is_admin(self, user, admin_override = True):
         if user.is_authenticated():
             # site-wide group admins are admins here...
-            if user.has_module_perms("base_groups"):
+            if user.has_module_perms("base_groups") and admin_override:
                 return True
                 
             # admins of the parent group are admins here...
-            if self.parent and self.parent.user_is_admin(user):
+            if self.parent and self.parent.user_is_admin(user) and admin_override:
                 return True
             
             # and check for regular admins
