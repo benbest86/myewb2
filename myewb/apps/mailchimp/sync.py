@@ -10,7 +10,7 @@ from mailchimp.models import ListEvent, GroupEvent, ProfileEvent
 from profiles.models import StudentRecord
 from siteutils.helpers import fix_encoding
 
-from datetime import datetime
+from datetime import date, datetime
 import settings, dprint
 
 if settings.MAILCHIMP_KEY and settings.MAILCHIMP_LISTID:
@@ -34,7 +34,15 @@ if settings.MAILCHIMP_KEY and settings.MAILCHIMP_LISTID:
         email = user.email
         myewbid = str(user.id)
         gender = user.get_profile().gender or ''
-        
+
+        regmember = None
+        if user.get_profile().membership_expiry and user.get_profile().membership_expiry > date.today():
+            regmember = 'y'
+            
+        chapter = user.get_profile().get_chapter()
+        signins = user.get_profile().login_count
+        lastsignin = user.get_profile().current_login
+
         student = ''
         studentrecords = StudentRecord.objects.filter(user=user, start_date__isnull=False, graduation_date__isnull=True)
         if studentrecords.count():
@@ -69,6 +77,10 @@ if settings.MAILCHIMP_KEY and settings.MAILCHIMP_LISTID:
                   'LANGUAGE': language,
                   'STUDENT': student,
                   'GRAD_DATE': graddate,
+                  'REGMEMBER': regmember,
+                  'CHAPTER': chapter,
+                  'SIGNINS': signins,
+                  'LASTSIGNIN': lastsignin
                  }
         
         return result
