@@ -26,6 +26,7 @@ from finance.models import UploadCommitmentForm, CreateNOReports, BudgetItemForm
 from siteutils import schoolyear
 from siteutils.helpers import fix_encoding
 
+@login_required()
 def index(request, group_slug=None):
 #================================================================================
 # index
@@ -46,6 +47,7 @@ def index(request, group_slug=None):
     
     return render_to_response('finance/index.htm',context, context_instance=RequestContext(request))
 
+@group_admin_required()
 def create_income(request, group_slug):
 #======================================================
 #CREATE Income
@@ -92,6 +94,7 @@ def create_income(request, group_slug):
     
     return render_to_response('finance/create_income.htm', template_data, context_instance=RequestContext(request))
 
+@group_admin_required()
 def create_expenditure(request, group_slug):
 #======================================================
 #CREATE Expenditure
@@ -137,6 +140,7 @@ def create_expenditure(request, group_slug):
     
     return render_to_response('finance/create_expenditure.htm', template_data, context_instance=RequestContext(request))
 
+@group_admin_required()
 def create_donation(request, group_slug):
 #======================================================
 #CREATE donation
@@ -242,7 +246,8 @@ def create_category_charts(expenditure_category, income_category):
     
     return incomeChart, expenditureChart
 
-def summary(request, group_slug=None, year=None, month=None):
+@group_admin_required()
+def summary(request, group_slug, year=None, month=None):
 #================================================================================
 # summary of transactions
 #================================================================================
@@ -406,6 +411,7 @@ def summary(request, group_slug=None, year=None, month=None):
     
     return render_to_response('finance/summary.htm', template_data, context_instance=RequestContext(request))
 
+@staff_member_required
 def summary_no(request, year=None, month=None):
     trans_chap = Transaction.objects.filter(bank_date__isnull = False, bank_date__lte = datetime.date.today())
     income_chap = Income.objects.filter(bank_date__isnull = False, bank_date__lte = datetime.date.today())
@@ -515,6 +521,7 @@ def summary_no(request, year=None, month=None):
 
     return render_to_response('finance/summary_no.htm', template_data, context_instance=RequestContext(request))
 
+@group_admin_required()
 def view(request, group_slug, year=None, month=None):
 #======================================================
 #view all transactions
@@ -573,6 +580,7 @@ def view(request, group_slug, year=None, month=None):
     
     return render_to_response('finance/view.htm', template_data, context_instance=RequestContext(request))
 
+@group_admin_required()
 def view_donations(request, group_slug, year=None, month=None):
 #======================================================
 #view all transactions
@@ -603,6 +611,7 @@ def view_donations(request, group_slug, year=None, month=None):
     
     return render_to_response('finance/view_donation.htm', template_data, context_instance=RequestContext(request))
 
+@group_admin_required()
 def view_commitments(request, group_slug):
 #======================================================
 #view all transactions
@@ -625,6 +634,7 @@ def view_commitments(request, group_slug):
     
     return render_to_response('finance/view_commitment.htm', template_data, context_instance=RequestContext(request))
 
+@group_admin_required()
 def view_id(request, group_slug, id):
 #======================================================
 #view specific transaction
@@ -651,6 +661,7 @@ def view_id(request, group_slug, id):
     
     return render_to_response('finance/view_detail.htm', template_data, context_instance=RequestContext(request))
 
+@group_admin_required()
 def filter(request, group_slug):
 #======================================================
 #filter home page
@@ -670,6 +681,7 @@ def filter(request, group_slug):
     
     return render_to_response('finance/filter.htm', template_data, context_instance=RequestContext(request))
 
+@group_admin_required()
 def filterfield(request, field, group_slug):
 #======================================================
 #filter by field
@@ -691,6 +703,7 @@ def filterfield(request, field, group_slug):
     
     return render_to_response('finance/filterfield.htm', template_data, context_instance=RequestContext(request))
 
+@group_admin_required()
 def filterfieldval(request, field, value, group_slug):
 #================================================================================
 # filter with field and value
@@ -716,6 +729,7 @@ def filterfieldval(request, field, value, group_slug):
     
     return render_to_response('finance/filterfieldval.htm', template_data, context_instance=RequestContext(request))
 
+@group_admin_required()
 def edit(request, group_slug):
 #===============================================================================
 # Edit transactions - General
@@ -740,6 +754,7 @@ def edit(request, group_slug):
     
     return render_to_response('finance/edit.htm', template_data, context_instance=RequestContext(request))
 
+@group_admin_required()
 def edit_id(request, id, group_slug):
 #======================================================
 #edit a specific Transaction
@@ -851,6 +866,7 @@ def edit_id(request, id, group_slug):
     
     return render_to_response('finance/edit_id.htm', template_data, context_instance=RequestContext(request))
 
+@group_admin_required()
 def edit_all(request, group_slug):
 #===============================================================================
 # Edit transactions - General
@@ -875,6 +891,7 @@ def edit_all(request, group_slug):
     
     return render_to_response('finance/edit_all.htm', template_data, context_instance=RequestContext(request))
 
+@group_admin_required()
 def delete_id(request, id, group_slug):
 #===============================================================================
 # DELETE transactions
@@ -907,6 +924,7 @@ def delete_id(request, id, group_slug):
     
     return render_to_response('finance/delete_id.htm', template_data, context_instance=RequestContext(request))
 
+@group_admin_required()
 def confirm_delete_id(request, id, group_slug):
 #===============================================================================
 # DELETE transactions
@@ -943,6 +961,7 @@ def page_not_found(request):
     
     return render_to_response('finance/page_not_found.htm', template_data, context_instance=RequestContext(request))
 
+@group_admin_required()
 def monthlyreports(request, group_slug):
 #======================================================
 #Monthly report viewer
@@ -964,12 +983,13 @@ def monthlyreports(request, group_slug):
     
     return render_to_response('finance/monthlyReports.htm', template_data, context_instance=RequestContext(request))
 
+@staff_member_required
 def monthlyreports_dashboard(request, year=None, month=None):
 #===========================================================================
 # For NO. View all monthly reports and know which ones have/have not been submitted yet. 
 #===========================================================================
 
-#    TODO: NO only to see this page
+#    
 #    group = get_object_or_404(Network, slug=group_slug)
     template_data = dict()
     
@@ -1035,6 +1055,7 @@ def monthlyreports_dashboard(request, year=None, month=None):
     
     return render_to_response('finance/monthlyreports_dashboard.htm', template_data, context_instance=RequestContext(request))
 
+@group_admin_required()
 def monthlyreports_id(request, id, group_slug):
 #======================================================
 #Monthly chapter report viewer
@@ -1112,6 +1133,7 @@ def monthlyreports_id(request, id, group_slug):
     
     return render_to_response('finance/monthlyreports_detail.htm', template_data, context_instance=RequestContext(request))
 
+@group_admin_required()
 def monthlyreports_current(request, group_slug):
 #======================================================
 #view current (unsubmitted) monthly report
@@ -1216,6 +1238,7 @@ def monthlyreports_current(request, group_slug):
     
     return render_to_response('finance/monthlyreports_detail.htm', template_data, context_instance=RequestContext(request))
 
+@group_admin_required()
 def monthlyreports_submit(request, group_slug, year=None, month=None):
 #======================================================
 #submit the most recent report
@@ -1280,6 +1303,7 @@ def monthlyreports_submit(request, group_slug, year=None, month=None):
     
     return render_to_response('finance/monthlyreports_submit.htm', template_data, context_instance=RequestContext(request))
 
+@staff_member_required
 def account_balances (request):
     
     template_data = dict()
@@ -1338,6 +1362,20 @@ def account_balances (request):
     return render_to_response('finance/accounts.htm', template_data, context_instance=RequestContext(request))
 
 def csv_trans(request, group_slug=None, month=None, year=None):
+    if group_slug:
+        return csv_trans_group(request, group_slug, month, year)
+    else:
+        return csv_trans_staff(request, group_slug, month, year)
+
+@group_admin_required()
+def csv_trans_group(request, group_slug=None, month=None, year=None):
+    return csv_trans_helper(request, group_slug, month, year)
+
+@staff_member_required
+def csv_trans_staff(request, group_slug=None, month=None, year=None):
+    return csv_trans_helper(request, group_slug, month, year)
+
+def csv_trans_helper(request, group_slug=None, month=None, year=None):
 #======================================================
 # csv output of all transactions
 #======================================================
@@ -1356,33 +1394,34 @@ def csv_trans(request, group_slug=None, month=None, year=None):
         trans_chap = Transaction.objects.all()
         row = ["All Chapters"]
      
-    writer.writerow(row)   
+    writer.writerow([fix_encoding(s) for s in row])   
     
     if year:
         trans_chap = trans_chap.filter(bank_date__year=year)
         if month:
             trans_chap = trans.filter(bank_date__month=month)
             row = ["Year", year, "Month", month]
-            writer.writerow(row)
+            writer.writerow([fix_encoding(s) for s in row])
         else:
             row = ["Year", year]
-            writer.writerow(row)
+            writer.writerow([fix_encoding(s) for s in row])
     else:
         row = ["All transactions"]
-        writer.writerow(row)
+        writer.writerow([fix_encoding(s) for s in row])
     
     row = ["Downloaded:", datetime.date.today()]
-    writer.writerow(row)
+    writer.writerow([fix_encoding(s) for s in row])
     row = ["Transactions"]
-    writer.writerow(row)
+    writer.writerow([fix_encoding(s) for s in row])
     row = ["Account", "Type", "Bank Date", "Category", "Description", "Amount"]
-    writer.writerow(row)
+    writer.writerow([fix_encoding(s) for s in row])
     for t in trans_chap:
         row = [t.account, t.type, t.bank_date, t.category.name, t.description, t.amount]
-        writer.writerow(row)
+        writer.writerow([fix_encoding(s) for s in row])
     
     return response
 
+@group_admin_required()
 def csv_monthlyreport(request, id, group_slug):
 #======================================================
 # csv output of monthly reports
@@ -1400,15 +1439,15 @@ def csv_monthlyreport(request, id, group_slug):
 
     writer = csv.writer(response)
     row = ["Monthly Report", mr.date.year, mr.date.month]
-    writer.writerow(row)
+    writer.writerow([fix_encoding(s) for s in row])
     row = ["Account", mr.type]
-    writer.writerow(row)
+    writer.writerow([fix_encoding(s) for s in row])
     row = ["Income/Expenditure", "Bank Date", "Category", "Description", "Amount"]
-    writer.writerow(row)
+    writer.writerow([fix_encoding(s) for s in row])
     
     for t in trans:
         row = [t.type, t.bank_date, t.category, t.description, t.amount]
-        writer.writerow(row)
+        writer.writerow([fix_encoding(s) for s in row])
         
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
@@ -1416,6 +1455,7 @@ def csv_monthlyreport(request, id, group_slug):
     
     return response
 
+@staff_member_required
 def csv_donationreport(request, group_slug=None):
 #======================================================
 # donation report
@@ -1433,18 +1473,18 @@ def csv_donationreport(request, group_slug=None):
     writer = csv.writer(response)
     
     row = ["Donation Report"]
-    writer.writerow(row)
+    writer.writerow([fix_encoding(s) for s in row])
 #    TODO: make this actually look like the report
     row = ["Account", "Type", "Bank Date", "Cheque Date", "Cheque Number", "Tax Receipt Required?", "Category", "Donor", "Address", "City", "Country", "Postal Code" "Description", "Amount"]
-    writer.writerow(row)
+    writer.writerow([fix_encoding(s) for s in row])
     
     for t in donations:
         row = [t.account, t.type, t.bank_date, t.cheque_date, t.cheque_num, t.taxreceipt, t.donation_category, t.donor, t.address, t.description, t.amount]
-        writer.writerow(row)
+        writer.writerow([fix_encoding(s) for s in row])
     
     return response
 
-# staff required
+@staff_member_required
 def csv_accountingreport(request):
 #======================================================
 # accounting report
@@ -1459,24 +1499,24 @@ def csv_accountingreport(request):
     writer = csv.writer(response)
     
     row = ["Accounting Report"]
-    writer.writerow(row)
+    writer.writerow([fix_encoding(s) for s in row])
 #    TODO: make this actually look like the report
     row = ["Chapter","Account", "Type", "Bank Date", "Category", "Description", "Amount", "Payee", "Cheque Number", "HST", "Donation Category", "Donor"]
-    writer.writerow(row)
+    writer.writerow([fix_encoding(s) for s in row])
     
     for t in donation:
         row = [t.group.slug, t.account, t.type, t.bank_date, t.category, t.description, t.amount, "","" ,"" ,t.donation_category, t.donor]
-        writer.writerow(row)
+        writer.writerow([fix_encoding(s) for s in row])
     for t in income:
         row = [t.group.slug, t.account, t.type, t.bank_date, t.category, t.description, t.amount, "","" ,"" ,"", "", ""]
-        writer.writerow(row)
+        writer.writerow([fix_encoding(s) for s in row])
     for t in expenditure:
         row = [t.group.slug, t.account, t.type, t.bank_date, t.category, t.description, t.amount, t.payee, t.cheque_num, t.hst, "", ""]
-        writer.writerow(row)
+        writer.writerow([fix_encoding(s) for s in row])
     
     return response
 
-
+@staff_member_required
 def upload_commitments(request, group_slug):
 #======================================================
 # upload commitments file
@@ -1519,6 +1559,7 @@ def upload_commitments(request, group_slug):
     
     return render_to_response('finance/import.htm', template_data)
 
+@staff_member_required
 def upload_testdata(request, group_slug):
 #======================================================
 # upload commitments file
@@ -1595,6 +1636,7 @@ def submit_notransaction(transaction):
     
     return True
 
+@staff_member_required
 def create_noreports(request):
 #===============================================================================
 # helper function to create all the NO monthly reports
@@ -1621,6 +1663,7 @@ def create_noreports(request):
             m.save()
     return
 
+@staff_member_required
 def upload_noreport(request):
 #======================================================
 # upload NO report from quickbooks output
@@ -1753,7 +1796,7 @@ def upload_noreport(request):
 #    
 #    return render_to_response('finance/create_noreports.htm', template_data, context_instance=RequestContext(request))
 #===============================================================================
-
+@staff_member_required
 def view_allnoreports(request):
     template_data = dict()
     mr = MonthlyReport.objects.filter(type="NO").order_by('group')
@@ -1762,6 +1805,7 @@ def view_allnoreports(request):
     
     return render_to_response('finance/view_allnoreports.htm', template_data, context_instance=RequestContext(request))
 
+@staff_member_required
 def upload_file(request, group_slug):
     template_data = dict()
     #    get chapter
@@ -1783,6 +1827,7 @@ def upload_file(request, group_slug):
     
     return render_to_response('finance/import.htm', {'form': form})
 
+@group_admin_required()
 def budgets(request, group_slug):
     template_data = dict()
     group = get_object_or_404(Network, slug=group_slug)
@@ -1795,6 +1840,7 @@ def budgets(request, group_slug):
     
     return render_to_response('finance/budgets.htm', template_data, context_instance=RequestContext(request))
 
+@group_admin_required()
 def input_budgetitems(request, group_slug, budget):
     group = get_object_or_404(Network, slug=group_slug)
     budget = get_object_or_404(Budget, pk=budget)
@@ -1872,6 +1918,7 @@ def input_budgetitems(request, group_slug, budget):
     
     return render_to_response('finance/input_budget.htm', template_data, context_instance=RequestContext(request))
 
+@group_admin_required()
 def view_budget(request, group_slug, budget):
     group = get_object_or_404(Network, slug=group_slug)
     budget_object = get_object_or_404(Budget, pk=budget)
@@ -1953,6 +2000,7 @@ def view_budget(request, group_slug, budget):
     
     return render_to_response('finance/view_budget.htm', template_data, context_instance=RequestContext(request))
 
+@group_admin_required()
 def create_budget (request, group_slug):
     group = get_object_or_404(Network, slug=group_slug)
     
@@ -1982,6 +2030,7 @@ def create_budget (request, group_slug):
     
     return render_to_response('finance/create_budget.htm', template_data, context_instance=RequestContext(request))
 
+@staff_member_required
 def no_budgets(request):
     template_data = dict()
     budgets = Budget.objects.all().order_by('group')
