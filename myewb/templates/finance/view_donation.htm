@@ -1,0 +1,57 @@
+{% extends "finance/base.htm" %}
+
+
+
+{% block finance_body %}
+	
+	{% comment %}
+	{% block subtitle %}
+	<a href="{% url csv_donationreport group_slug=group.slug %}">Donation Report</a></br>
+	{% endblock subtitle %}
+	{% endcomment %}
+	
+	<h2>Donations</h2>
+	<h3 align="center">Summary by Category</h3>
+	<table class="cellpadding8 standard" width="300" style="margin: 0 auto;">
+		<tr>
+		<th>Cateogry</th>
+		<th>Amount</th>
+		</tr>
+		{% for d in donations_category %}
+		<tr>
+		<td>{{d.donation_category}}</td>
+		<td>{{d.totalcategory|floatformat:2}}</td>
+		</tr>
+		{% endfor %}
+		<tr>
+		<td>Total</td>
+		<td>{{total|floatformat:2}}</td>
+		</tr>
+	</table>
+	
+	<h3 align="center">Donations</h3>
+	<table class="cellpadding8 standard" width="900" style="margin: 0 auto;">
+		<tr>
+		<th>Account</th>
+		<th>Bank Date</th>
+		<th>Category</th>
+		<th>Description</th>
+		<th>Amount</th>
+		<th>Cheque</th>
+		<th>Detail</th>
+		</tr>
+	{% for t in donations %}
+		<tr>
+		<td>{% ifequal t.account "CH" %}Chapter {% else %} National Office{% endifequal %}</td>
+		<td>{{t.bank_date}}</td>
+		<td>{{t.category}}</td>
+		<td>{{t.description}}</td>
+		<td>{{ t.amount|floatformat:2 }}</td>
+		<td>{% if t.cheque_img %}<a href="{{t.cheque_img.url}}">Image</a href>{% else %} None {% endif %}</td>
+		<td><a href="{% url view_id id=t.id group_slug=group.slug %}">View</a></td>
+		</tr>
+	{% endfor %}
+
+	</table>
+	
+{% endblock finance_body %}

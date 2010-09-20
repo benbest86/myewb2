@@ -1,0 +1,34 @@
+{% extends "finance/base.htm" %}
+
+
+{% block finance_body %}
+	
+	<h2>All {{value}} Transactions</h2>
+	<table class="cellpadding8 standard" width="500" style="margin: 0 auto;">
+		<tr>
+		<th>Category</th>
+		<th>Bank Date</th>
+		<th>Description</th>
+		<th>Amount</th>
+		<th>Details</th>
+		</tr>
+	{% for t in trans %}
+		<tr>
+		<td>{{t.category}}</td>
+		<td>{{t.bank_date}}</td>
+		<td>{{t.description}}</td>
+		<td>{{ t.amount|floatformat:2 }}</td>
+		<td><a href="{% url view_id id=t.id, group_slug=group.slug  %}">View Detail</a></td>
+		</tr>
+	{% endfor %}
+		<tr>
+		<td><b>Total</b></td>
+		<td></td>
+		<td></td>
+		<td><b>{{total.total|floatformat:2}}</b></td>
+		<td></td>
+		</tr>
+	</table>
+{% endblock finance_body %}
+
+

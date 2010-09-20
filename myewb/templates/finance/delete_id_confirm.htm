@@ -1,0 +1,13 @@
+{% extends "finance/base.htm" %}
+
+{% block finance_body %}
+<h2>Confirm Delete Transaction</h2>
+	{% if message %}
+	Transaction was successfully deleted.
+	{% else %}
+	You do not have permission to delete this transaction.
+	{% endif %}
+	<br/><br/>
+	[<a href="{% url view group_slug=group.slug %}">View Transactions</a>]
+	
+{% endblock finance_body %}

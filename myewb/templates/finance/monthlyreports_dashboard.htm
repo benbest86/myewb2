@@ -1,0 +1,35 @@
+{% extends "finance/base.htm" %}
+
+{% block finance_body %}
+	<h2>Chapter Monthly Reports </h2>
+	<h3 align = "center">{{date|date:"F Y"}}</h3>
+	<table align = "center">
+		<tr>
+		<td>[<a href="{% url monthlyreports_dashboard year=prev_year month=prev_month %}" >Prev Month</a>]</td>
+		<td></td>
+		<td>[<a href="{% url monthlyreports_dashboard year=next_year month=next_month %}" >Next Month</a>]</td>
+		</tr>
+	</table>
+	<br />
+	<table class="cellpadding8 standard" width="900" style="margin: 0 auto;">
+		<tr>
+		<th>NO Report</th>
+		<th>Chapter Report</th>
+		<th>Chapter</th>
+		<th>Submitted By</th>
+		<th>Date</th>
+		</tr>
+		{% for m in monthly_reports %}
+		<tr>
+		{% if m.2 %}<td><a href="{% url monthlyreports_id group_slug=m.2.group.slug id=m.2.id %}" >Submitted </a>{% else %}<td style="color: red;">Not Submitted {% endif %}</td>
+		{% if m.1 %}<td><a href="{% url monthlyreports_id group_slug=m.1.group.slug id=m.1.id %}" >Submitted </a>{% else %}<td style="color: red;">Not Submitted {% endif %}</td>
+		<td>{{m.0}}</td>
+		<td>{{m.1.creator}}</td>
+		<td>{{m.1.enter_date}}</td>
+
+		</tr>
+	{% endfor %}
+	</table>
+
+
+{% endblock finance_body %}

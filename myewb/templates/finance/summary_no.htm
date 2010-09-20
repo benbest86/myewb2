@@ -1,0 +1,20 @@
+{% extends "finance/summary.htm" %}
+
+{% block summary_nav %}
+	{% if year %}
+		{% if month %}
+			<h3 align="center">{{month|date:"F Y"}}</h3>
+			<p align="center">[<a href="{% url summary_no year=prev_month.year month=prev_month.month %}">Prev Month</a>]     [<a href="{% url summary_no year=next_month.year month=next_month.month %}">Next Month</a>]</p>
+		{% else %}
+			<h3 align="center">{{year}}</h3>
+			<p align="center">[<a href="{% url summary_no %}">All</a>]		[<a href="{% url summary_no year=today.year month=today.month %}">This Month</a>]</p>
+		{% endif %}
+	{% else %}
+		<h3 align="center">All</h3>
+		<p align="center">[<a href="{% url summary_no year=today.year %}">This Year</a>]	[<a href="{% url summary_no year=today.year month=today.month %}">This Month</a>]</p>
+	{% endif %}
+	
+{% endblock summary_nav %}
+
+{% block monthly_summary %}
+{% endblock monthly_summary %}

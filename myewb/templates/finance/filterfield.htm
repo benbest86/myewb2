@@ -1,0 +1,14 @@
+{% extends "finance/base.htm" %}
+
+{% block title %}Filter Transactions{% endblock title %}
+
+{% block finance_body %}
+	Select Field
+	<ul>
+	{% for t in trans %}
+		<li><a href="{% url filterfieldval field=field, value=t.0,  group_slug=group.slug %}">{{t.0}}</a></li>
+	{% endfor %}
+	</ul>
+	
+{% endblock finance_body %}
+

@@ -1,0 +1,16 @@
+{% extends "finance/base.htm" %}
+
+
+
+{% block finance_body %}
+	<h2>National Office Monthly Reports</h2>
+	<ul>
+	{% if national_monthlyreports %}
+		{% for m in national_monthlyreports %}
+				<li><a href="{% url monthlyreports_id id=m.id group_slug=m.group.slug %}">{{m.group.name}}	{{m.date|date:"F Y"}}</a></li>
+		{% endfor %}
+	{% else %}
+		No National Office monthly reports yet.
+	{% endif %}
+	</ul>
+{% endblock finance_body %}

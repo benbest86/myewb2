@@ -1,0 +1,21 @@
+{% extends "finance/base.htm" %}
+
+{% block finance_body %}
+<h2> Upload </h2>
+
+    {% if form.errors %}
+        <p style="color: red;">
+            Please correct the error{{ form.errors|pluralize }} below.
+        </p>
+    {% endif %}
+	<form action="{% url upload_testdata group_slug=group.slug %}"  method="post" > 
+		<table>
+			{{ form.as_table }}
+		</table>
+		<input type="submit" value="Upload" />
+		<br /> <br />
+
+		<a href="{% url index group_slug=group.slug %}">Cancel Upload</a>
+	</form>
+
+{% endblock finance_body %}

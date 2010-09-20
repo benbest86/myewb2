@@ -1,0 +1,22 @@
+{% extends "finance/base.htm" %}
+
+{% block finance_body %}
+<h2> Testing </h2>
+{% comment %}
+    {% if form.errors %}
+        <p style="color: red;">
+            Please correct the error{{ form.errors|pluralize }} below.
+        </p>
+    {% endif %}
+	{% block formtitle %} {% endblock formtitle %} 
+		<table>
+			{{ form.as_table }}
+		</table>
+		<input type="submit" value="Upload Commitments" />
+		<br /> <br />
+
+		<a href="{% url index group_slug=group.slug %}">Cancel Upload</a>
+	</form>
+	
+{% endcomment %}
+{% endblock finance_body %}

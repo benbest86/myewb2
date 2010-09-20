@@ -1,0 +1,137 @@
+{% extends "finance/base.htm" %}
+
+{% block finance_body %}
+<h2>Summary - Accounts</h2>
+
+
+	<h3 align="center">Account Balance</h3>
+	<table class="cellpadding8 standard" width="500" style="margin: 0 auto;">
+		<tr>
+		<th></th>
+		<th>Balance</th>
+		<th>Lastest Entry</th>
+		</tr>
+		<tr>
+		<td>Chapter Account Balance</td>
+		<td>{{chapter_balance}}</td>
+		<td>{{ch_lastupdate}}</td>
+		</tr>
+		<tr>
+		<tr>
+		<td>National Account Balance</td>
+		<td>{{national_balance}}</td>
+		<td>{{no_lastupdate}}</td>
+		<tr>
+		<td><b>Sub Total (Account Balance)</b></td>
+		<td><b>{{total_bank_balance|floatformat:2}}</b></td>
+		<td></td>
+		</tr>
+		<tr>
+		<td>Accounts Receivable</td>
+		<td>{{outstanding_in.total|floatformat:2}}</td>
+		<td>{{outstanding_in_lastupdate}}</td>
+		</tr>
+		<tr>
+		<td>Oustanding Cheques</td>
+		<td>{{outstanding_ex.total|floatformat:2}}</td>
+		<td>{{outstanding_ex_lastupdate}}</td>
+		</tr>
+		<tr>
+		<td><b>Total Balance</b></td>
+		<td><b>{{total_balance|floatformat:2}}</b></td>
+		<td></td>
+		</tr>
+		<tr>
+	</table>
+	
+	<br /><br />
+<h2>Summary - by Category</h2>	
+{% block summary_nav %}
+	{% if year %}
+		{% if month %}
+			<h3 align="center">{{month|date:"F Y"}}</h3>
+			<p align="center">[<a href="{% url summary group_slug=group.slug year=prev_month.year month=prev_month.month %}">Prev Month</a>]    [<a href="{% url summary group_slug=group.slug  year=next_month.year month=next_month.month %}">Next Month</a>]<br />
+			[<a href="{% url summary group_slug=group.slug %}">All</a>]
+			</p>
+		{% else %}
+			<h3 align="center">{{year}}</h3>
+			<p align="center">[<a href="{% url summary group_slug=group.slug %}">All</a>]		[<a href="{% url summary group_slug=group.slug year=today.year month=today.month %}">This Month</a>]</p>
+		{% endif %}
+	{% else %}
+		<h3 align="center">All</h3>
+		<p align="center">[<a href="{% url summary group_slug=group.slug year=today.year %}">This Year</a>]	[<a href="{% url summary group_slug=group.slug year=today.year month=today.month %}">This Month</a>]</p>
+	{% endif %}
+
+{% endblock summary_nav %}
+	<table align = "center">
+	<tr>
+	<td align="center"><i>Income Breakdown</i></td>
+	<td align="center"><i>Expenditure Breakdown</i></td>
+	</tr>
+	<tr>
+	<td><img src="{{income_chart}}" alt="Income Breakdown" /></td>
+	<td><img src="{{expenditure_chart}}" alt="Expenditure Breakdown" /></td>
+	<tr>
+	</table>
+	<br /> <br />
+	<table class="cellpadding8 standard" width="500" style="margin: 0 auto;">
+		<tr>
+		<th>Category</th>
+		<th>Amount</th>
+		</tr>
+		<tr>
+		<td><b>Income</b></td>
+		<td><b>{{income_total.total|floatformat:2}}</b></td>
+		</tr>
+	{% for t in income_category %}
+		<tr>
+		<td>{{t.category__name}}</td>
+		<td>{{ t.totalcategory|floatformat:2 }}</td>
+		</tr>
+	{% endfor %}
+		</tr>
+		<tr>
+		<td><b>Expenditure</b></td>
+		<td><b>{{expenditure_total.total|floatformat:2}}</b></td>
+		</tr>
+	{% for t in expenditure_category %}
+		<tr>
+		<td>{{t.category__name}}</td>
+		<td>{{ t.totalcategory|floatformat:2 }}</td>
+		</tr>
+	{% endfor %}
+		</tr>
+		<tr>
+		<td><b>Net</b></td>
+		<td><b>{{net|floatformat:2}}</b></td>
+		</tr>
+
+	</table>
+<h2>Summary - by Month</h2>
+	{% block monthly_summary %}
+	<table class="cellpadding8 standard" width="500" style="margin: 0 auto;">
+		<tr>
+		<th>Bank Date</th>
+		<th>Income</th>
+		<th>Expenditures</th>
+		<th>Net</th>
+		</tr>
+	{% for t in date_summary %}
+		<tr>
+		<td><a href="{% url monthlyreports_id id=t.0 group_slug=group.slug %}">{{t.1|date:"F Y"}}</td>
+		<td>{{t.2.total|floatformat:2}}</td>
+		<td>{{t.3.total|floatformat:2}}</td>
+		<td>{{t.4|floatformat:2}}</td>
+		</tr>
+	{% endfor %}
+		<tr>
+		<td><a href="{% url monthlyreports_current group_slug=group.slug %}">{{unsubmitted.0|date:"F Y"}}</td>
+		<td>{{unsubmitted.1.total|floatformat:2}}</td>
+		<td>{{unsubmitted.2.total|floatformat:2}}</td>
+		<td>{{unsubmitted.3|floatformat:2}}</td>
+		</tr>
+	</table>
+	{% endblock monthly_summary %}
+
+	{% endblock finance_body %}
+

@@ -1,0 +1,50 @@
+{% extends "finance/base.htm" %}
+
+{% block finance_body %}
+<h2>Delete Transaction</h2>
+	{% if permission %}
+		{% if confirm %}
+			Are you sure you want to permanently delete this transaction?
+			
+			<table class="cellpadding8 standard" width="300" style="margin: 0 auto;">
+				<tr>
+				<td>Bank Date</td>
+				<td>{{trans.bank_date}}</td>
+				</tr>
+				<tr>
+				<td>Amount</td>
+				<td>{{trans.amount|floatformat:2}}</td>
+				</tr>
+				<tr>
+				<td>Category</td>
+				<td>{{trans.category}}</td>
+				</tr>		
+				<tr>
+				<td>Description</td>
+				<td>{{trans.description}}</td>
+				</tr>
+				<tr>
+				<td>Type</td>
+				<td>{% ifequal trans.type "IN" %}Income {% else %} Expenditure {% endifequal %}</td>
+				</tr>
+				<tr>
+				<td>Account</td>
+				<td>{% ifequal trans.account "CH" %}Chapter {% else %} National Office {% endifequal %}</td>
+				</tr>
+			</table>
+			</br></br>
+			<a href = "{% url delete_id id=trans.id group_slug=group.slug %}"><button>Delete Transaction</button></a>
+			{% endif %}
+			{% if delete %}
+				Transaction successfully deleted.
+			{% endif %}
+	{% else %}
+	You do not have permission to delete this transaction.
+	{% endif %}
+
+	
+
+	<br/><br/>
+	[<a href="{% url view group_slug=group.slug %}">View Transactions</a>]
+	
+{% endblock finance_body %}

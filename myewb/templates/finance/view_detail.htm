@@ -1,0 +1,72 @@
+{% extends "finance/base.htm" %}
+
+{% block finance_body %}
+		<h2>View Details</h2>
+	
+	<table class="cellpadding8 standard" width="300" style="margin: 0 auto;">
+		<tr>
+		<td>Bank Date</td>
+		<td>{{trans.bank_date}}</td>
+		</tr>
+		<tr>
+		<td>Type</td>
+		<td>{% ifequal trans.type "IN" %}Income {% else %} Expenditure {% endifequal %}</td>
+		</tr>
+		<tr>
+		<td>Amount</td>
+		<td>{{trans.amount|floatformat:2}}</td>
+		</tr>
+		<tr>
+		<td>Category</td>
+		<td>{{trans.category}}</td>
+		</tr>		
+		<tr>
+		<td>Description</td>
+		<td>{{trans.description}}</td>
+		</tr>
+		<tr>
+		<td>Account</td>
+		<td>{% ifequal trans.account "CH" %}Chapter {% else %} National Office {% endifequal %}</td>
+		</tr>
+		{% ifequal trans.category.name "donation" %}
+		<tr>
+		<td>Donor</td>
+		<td>{{trans.donor}}</td>
+		</tr>
+		<tr>
+		<td>Donation Category</td>
+		<td>{{trans.donation_category}}</td>
+		</tr>
+		<tr>
+		<td>Address</td>
+		<td>{{trans.address}}</td>
+		</tr>
+		<tr>
+		<td>Cheque Date</td>
+		<td>{{trans.cheque_date}}</td>
+		</tr>
+		<tr>
+		<td>Cheque Number</td>
+		<td>{{trans.cheque_num}}</td>
+		</tr>
+		<tr>
+		<td>Tax Receipt Requested?</td>
+		<td>{{trans.taxreceipt}}</td>
+		</tr>
+		<tr>
+		<td>Cheque Image</td>
+		<td>{% if t.cheque_img %}<a href="{{t.cheque_img.url}}">Image</a href>{% else %} None {% endif %}</td>
+		</tr>
+		{% endifequal %}
+		{% ifequal trans.submitted "Y" %}
+		<tr>
+		<td>Monthly Report</td>
+		<td>{% ifequal trans.submitted "Y" %}<a href = "{% url monthlyreports_id id=trans.monthlyreport.id  group_slug=group.slug %}">{{trans.monthlyreport.date|date:"M Y"}}</a>{% else %} {% endifequal %}</td>
+		</tr>
+		{% endifequal %}
+		
+	</table>
+	</br></br>
+	<a href = "{% url edit_id id=trans.id group_slug=group.slug %}"><button>Edit Transaction</button></a>
+
+{% endblock finance_body %}

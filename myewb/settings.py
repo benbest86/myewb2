@@ -231,6 +231,7 @@ INSTALLED_APPS = (
     'champ',
     'workspace',
     'mailchimp',
+    'finance',
 
     # our own third-party libs
     'contrib.django_evolution',

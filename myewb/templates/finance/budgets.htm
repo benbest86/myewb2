@@ -1,0 +1,17 @@
+{% extends "finance/base.htm" %}
+
+{% block finance_body %}
+	<h2> Chapter Budgets </h2>
+	<p>Click to view chapter budgets.</p>
+	<ul>
+
+	{% for b in budgets %}
+		<li><a href="{% url view_budget group_slug=group.slug budget=b.id %}" >{{b.name}}</a> <br />
+		Start Date: {{b.start_date}}  <br />
+		End Date: {{b.end_date}}</li><br />
+	
+	{% endfor %}
+	</ul>
+	<br /><br />
+	<a href = "{% url create_budget group_slug=group.slug %}"><button>Create Budget</button></a>
+{% endblock finance_body %}

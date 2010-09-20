@@ -1,0 +1,25 @@
+{% extends "finance/base.htm" %}
+
+{% block finance_body %}
+<h2>Chapter Budgets</h2>
+	<br />
+	<table class="cellpadding8 standard" width="700" style="margin: 0 auto;">
+		<tr>
+		<th>Chapter</th>
+		<th>Budget Name</th>
+		<th>Budget Start Date</th>
+		<th>Budget End Date</th>
+		</tr>
+		{% for b in budgets %}
+		<tr>
+		<td>{{b.group.name}}</td>
+		<td><a href="{% url view_budget group_slug=b.group.slug budget=b.id %}" >{{b.name}}</td>
+		<td>{{b.start_date}}</td>
+		<td>{{b.end_date}}</td>
+		</tr>
+		{% endfor %}
+
+	</table>
+
+
+{% endblock finance_body %}

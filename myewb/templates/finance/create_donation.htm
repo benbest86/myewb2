@@ -1,0 +1,7 @@
+
+{% extends "finance/create.htm" %}
+{% load uni_form_tags %}
+
+{% block finance_subtitle %}Enter Donation Transaction{% endblock finance_subtitle %}
+
+{% block formtitle %}<form  enctype="multipart/form-data" action="{% url create_donation group_slug=group.slug %}" method="post">{% endblock formtitle %}
