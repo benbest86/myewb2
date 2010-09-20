@@ -33,7 +33,7 @@ TRANSACTION_CHOICES = (
 
 ENTEREDBY_CHOICES = (
     ('NO','National Office'),
-    ('CH', 'chapter'),
+    ('CH', 'Chapter'),
 )
 
 TYPE_CHOICES = (
@@ -46,13 +46,13 @@ SUBMITTED_CHOICES = (
     ('N', 'No'),
 )
 DONATION_CHOICES = (
-    ('corporate','Corporate Donation'),
-    ('individual', 'Individual Donation'),
-    ('faculty', 'Faculty Donation'),
-    ('uniclub', 'University Club Donation'),
-    ('community','Community Donation'),
-    ('professional','Professional Association Donation'),
-    ('alumni','Alumni Donation'),
+    ('Corporate','Corporate Donation'),
+    ('Individual', 'Individual Donation'),
+    ('Faculty', 'Faculty Donation'),
+    ('University Club', 'University Club Donation'),
+    ('Community','Community Donation'),
+    ('Professional','Professional Association Donation'),
+    ('Alumni','Alumni Donation'),
 )
 
 class MonthlyReport(models.Model):
@@ -68,19 +68,11 @@ class MonthlyReport(models.Model):
 class Category(models.Model):
     name = models.CharField(max_length = 200)
     type = models.CharField(max_length = 2, choices=TYPE_CHOICES)
-#    slug = models.CharField(max_length = 200)
+    slug = models.CharField(max_length = 200)
+    noaccount = models.CharField(max_length = 200)
     
     def __unicode__(self):
         return self.name
-
-#===============================================================================
-# class Event(models.Model):
-#    name = models.CharField("Name of event", max_length = 100)
-#    date = models.DateField("Date of event")
-#    
-#    def __unicode__(self):
-#        return u'%s - %s' %(self.name, self.date)
-#===============================================================================
 
 class Transaction(models.Model):  
     bank_date = models.DateField('Bank Date', null=True, blank=True) 
@@ -90,8 +82,7 @@ class Transaction(models.Model):
 
 #    automatic fields
     enter_date = models.DateField('Enter Date', auto_now_add=True)
-#    account = models.CharField(max_length = 2, choices=ENTEREDBY_CHOICES, default = 'CH')
-    entered_by = models.CharField(max_length = 2, choices=ENTEREDBY_CHOICES, default = 'CH')
+    account = models.CharField(max_length = 2, choices=ENTEREDBY_CHOICES, default = 'CH')
     submitted = models.CharField(max_length = 1, choices=SUBMITTED_CHOICES, default = 'N')
     type = models.CharField(max_length = 2, choices=TYPE_CHOICES)
  
@@ -118,10 +109,7 @@ class Expenditure(Transaction):
     payee = models.CharField(max_length = 200)
     cheque_num = models.IntegerField('Cheque Number', null=True, blank=True)
     cheque_date = models.DateField('Cheque Date', null=True, blank=True)
-#    hst = models.DecimalField('HST', null=True, blank=True)
-    hst = models.IntegerField('HST', null=True, blank=True)
-#    take out
-    hst_reason = models.CharField('HST Reason', max_length = 300, null=True, blank=True)
+    hst = models.DecimalField('HST', max_digits=10, decimal_places=2, null=True, blank=True)
 #    reciept_img = models.FileField('Receipt Image', upload_to = 'receipt_images', null=True, blank=True)
     
     def __unicode__(self):
@@ -131,6 +119,10 @@ class Donation(Income):
     donation_category = models.CharField(max_length = 40, choices=DONATION_CHOICES)
     donor = models.CharField(max_length = 200)
     address = models.CharField(max_length = 200)
+    city = models.CharField(max_length = 50)
+    province = models.CharField('Province/State', max_length = 50) 
+    country = models.CharField(max_length = 200)
+    postal = models.CharField('Postal Code', max_length = 200)
     cheque_date = models.DateField('Cheque Date', null=True, blank=True)
     cheque_num = models.CharField('Cheque Number', max_length=3, null=True, blank=True)
     taxreceipt = models.CharField('Tax Reciept? (Y/N)', max_length = 1)

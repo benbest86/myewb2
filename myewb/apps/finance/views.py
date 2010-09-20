@@ -257,9 +257,9 @@ def summary(request, group_slug=None, year=None, month=None):
    #============================================================================
 
 #    determine account balances
-    ch_in = income_chap.filter(entered_by="CH", bank_date__isnull=False).exclude(type = 'CM').aggregate(total=Sum('amount'))
-    ch_ex = expenditure_chap.filter(entered_by="CH", bank_date__isnull=False).exclude(type = 'CM').aggregate(total=Sum('amount'))
-    chapter = trans_chap.filter(entered_by="CH", bank_date__isnull=False).exclude(type = 'CM').aggregate(last_update=Max('bank_date'))
+    ch_in = income_chap.filter(account="CH", bank_date__isnull=False).exclude(type = 'CM').aggregate(total=Sum('amount'))
+    ch_ex = expenditure_chap.filter(account="CH", bank_date__isnull=False).exclude(type = 'CM').aggregate(total=Sum('amount'))
+    chapter = trans_chap.filter(account="CH", bank_date__isnull=False).exclude(type = 'CM').aggregate(last_update=Max('bank_date'))
  
  #    if either of the totals is None, switch to 0    
     if not ch_in["total"]: 
@@ -269,9 +269,9 @@ def summary(request, group_slug=None, year=None, month=None):
         
     chapter_balance = ch_in["total"] - ch_ex["total"] 
     
-    no_in = income_chap.filter(entered_by="NO", bank_date__isnull=False).exclude(type = 'CM').aggregate(total=Sum('amount'))
-    no_ex = expenditure_chap.filter(entered_by="NO", bank_date__isnull=False).exclude(type = 'CM').aggregate(total=Sum('amount'))
-    national = trans_chap.filter(entered_by="NO", bank_date__isnull=False).exclude(type = 'CM').aggregate(last_update=Max('bank_date'))
+    no_in = income_chap.filter(account="NO", bank_date__isnull=False).exclude(type = 'CM').aggregate(total=Sum('amount'))
+    no_ex = expenditure_chap.filter(account="NO", bank_date__isnull=False).exclude(type = 'CM').aggregate(total=Sum('amount'))
+    national = trans_chap.filter(account="NO", bank_date__isnull=False).exclude(type = 'CM').aggregate(last_update=Max('bank_date'))
     
 #    if either of the totals is None, switch to 0    
     if not no_in["total"]: 
@@ -281,8 +281,8 @@ def summary(request, group_slug=None, year=None, month=None):
     
     national_balance = no_in["total"] - no_ex["total"]
     
-    outstanding_in = income_chap.filter(entered_by="CH", bank_date__isnull=True).exclude(type = 'CM').aggregate(total=Sum('amount'), last_update=Max('enter_date'))
-    outstanding_ex = expenditure_chap.filter(entered_by="CH", bank_date__isnull=True).exclude(type = 'CM').aggregate(total=Sum('amount'), last_update=Max('enter_date'))
+    outstanding_in = income_chap.filter(account="CH", bank_date__isnull=True).exclude(type = 'CM').aggregate(total=Sum('amount'), last_update=Max('enter_date'))
+    outstanding_ex = expenditure_chap.filter(account="CH", bank_date__isnull=True).exclude(type = 'CM').aggregate(total=Sum('amount'), last_update=Max('enter_date'))
     
     #    if either of the totals is None, switch to 0    
     if not outstanding_in["total"]: 
@@ -416,9 +416,9 @@ def summary_no(request, year=None, month=None):
     template_data = dict()
 
 #    determine account balances
-    ch_in = income_chap.filter(entered_by="CH").aggregate(total=Sum('amount'))
-    ch_ex = expenditure_chap.filter(entered_by="CH").aggregate(total=Sum('amount'))
-    chapter = trans_chap.filter(entered_by="CH").aggregate(last_update=Max('bank_date'))
+    ch_in = income_chap.filter(account="CH").aggregate(total=Sum('amount'))
+    ch_ex = expenditure_chap.filter(account="CH").aggregate(total=Sum('amount'))
+    chapter = trans_chap.filter(account="CH").aggregate(last_update=Max('bank_date'))
  
  #    if either of the totals is None, switch to 0    
     if not ch_in["total"]: 
@@ -428,9 +428,9 @@ def summary_no(request, year=None, month=None):
         
     chapter_balance = ch_in["total"] - ch_ex["total"] 
     
-    no_in = income_chap.filter(entered_by="NO", bank_date__isnull=False).exclude(type = 'CM').aggregate(total=Sum('amount'))
-    no_ex = expenditure_chap.filter(entered_by="NO", bank_date__isnull=False).exclude(type = 'CM').aggregate(total=Sum('amount'))
-    national = trans_chap.filter(entered_by="NO", bank_date__isnull=False).exclude(type = 'CM').aggregate(last_update=Max('bank_date'))
+    no_in = income_chap.filter(account="NO", bank_date__isnull=False).exclude(type = 'CM').aggregate(total=Sum('amount'))
+    no_ex = expenditure_chap.filter(account="NO", bank_date__isnull=False).exclude(type = 'CM').aggregate(total=Sum('amount'))
+    national = trans_chap.filter(account="NO", bank_date__isnull=False).exclude(type = 'CM').aggregate(last_update=Max('bank_date'))
     
 #    if either of the totals is None, switch to 0    
     if not no_in["total"]: 
@@ -440,8 +440,8 @@ def summary_no(request, year=None, month=None):
     
     national_balance = no_in["total"] - no_ex["total"]
     
-    outstanding_in = income_chap.filter(entered_by="CH", bank_date__isnull=True).exclude(type = 'CM').aggregate(total=Sum('amount'), last_update=Max('enter_date'))
-    outstanding_ex = expenditure_chap.filter(entered_by="CH", bank_date__isnull=True).exclude(type = 'CM').aggregate(total=Sum('amount'), last_update=Max('enter_date'))
+    outstanding_in = income_chap.filter(account="CH", bank_date__isnull=True).exclude(type = 'CM').aggregate(total=Sum('amount'), last_update=Max('enter_date'))
+    outstanding_ex = expenditure_chap.filter(account="CH", bank_date__isnull=True).exclude(type = 'CM').aggregate(total=Sum('amount'), last_update=Max('enter_date'))
     
     #    if either of the totals is None, switch to 0    
     if not outstanding_in["total"]: 
@@ -888,7 +888,7 @@ def delete_id(request, id, group_slug):
     permission = False
     delete = False
 #    make sure they have permission to delete (submitted, chapter)
-    if t.entered_by == "CH":
+    if t.account == "CH":
         if t.submitted == "N":
             if t.group.slug == group.slug:
                 t.delete()
@@ -920,7 +920,7 @@ def confirm_delete_id(request, id, group_slug):
     permission = False
 
 #    make sure they have permission to delete (submitted, chapter)
-    if t.entered_by == "CH":
+    if t.account == "CH":
         if t.submitted == "N":
             if t.group.slug == group.slug:
                 permission = True
@@ -1135,7 +1135,7 @@ def monthlyreports_current(request, group_slug):
     incoming_balance = income_old["total"] - expenditure_old["total"]
     
 #    determine earliest transaction and do report for that month
-    trans = trans_chap.filter(submitted = "N", entered_by = "CH", bank_date__isnull=False).order_by('-bank_date')
+    trans = trans_chap.filter(submitted = "N", account = "CH", bank_date__isnull=False).order_by('-bank_date')
     min_transaction = trans.aggregate(min_bankdate = Min('bank_date'))
     min_date = min_transaction["min_bankdate"]
    
@@ -1244,7 +1244,7 @@ def monthlyreports_submit(request, group_slug, year=None, month=None):
             return HttpResponseForbidden()
             
     else:
-        trans = trans_chap.filter(submitted = "N", entered_by = "CH", bank_date__isnull=False).order_by('bank_date')
+        trans = trans_chap.filter(submitted = "N", account = "CH", bank_date__isnull=False).order_by('bank_date')
         min_transaction = trans.aggregate(min_bankdate = Min('bank_date'))
         min_date = min_transaction["min_bankdate"]
     #    TODO: message box, saying they want to submit for sure!
@@ -1290,10 +1290,10 @@ def account_balances (request):
     count = 0
     today = datetime.date.today()
     for n in networks:
-        ch_in = Income.objects.filter(group = n.id, entered_by = "CH", bank_date__lte=today, bank_date__isnull=False).aggregate(sum = Sum('amount'))
-        ch_out = Expenditure.objects.filter(group = n.id, entered_by = "CH", bank_date__lte=today, bank_date__isnull=False).aggregate(sum = Sum('amount'))
-        no_in = Income.objects.filter(group = n.id, entered_by = "NO", bank_date__lte=today, bank_date__isnull=False).aggregate(sum = Sum('amount'))
-        no_out = Expenditure.objects.filter(group = n.id, entered_by = "NO", bank_date__lte=today, bank_date__isnull=False).aggregate(sum = Sum('amount'))
+        ch_in = Income.objects.filter(group = n.id, account = "CH", bank_date__lte=today, bank_date__isnull=False).aggregate(sum = Sum('amount'))
+        ch_out = Expenditure.objects.filter(group = n.id, account = "CH", bank_date__lte=today, bank_date__isnull=False).aggregate(sum = Sum('amount'))
+        no_in = Income.objects.filter(group = n.id, account = "NO", bank_date__lte=today, bank_date__isnull=False).aggregate(sum = Sum('amount'))
+        no_out = Expenditure.objects.filter(group = n.id, account = "NO", bank_date__lte=today, bank_date__isnull=False).aggregate(sum = Sum('amount'))
         
         if not ch_in['sum']:
             ch_in['sum'] = 0
@@ -1378,7 +1378,7 @@ def csv_trans(request, group_slug=None, month=None, year=None):
     row = ["Account", "Type", "Bank Date", "Category", "Description", "Amount"]
     writer.writerow(row)
     for t in trans_chap:
-        row = [t.entered_by, t.type, t.bank_date, t.category.name, t.description, t.amount]
+        row = [t.account, t.type, t.bank_date, t.category.name, t.description, t.amount]
         writer.writerow(row)
     
     return response
@@ -1435,11 +1435,11 @@ def csv_donationreport(request, group_slug=None):
     row = ["Donation Report"]
     writer.writerow(row)
 #    TODO: make this actually look like the report
-    row = ["Account", "Type", "Bank Date", "Cheque Date", "Cheque Number", "Tax Receipt Required?", "Category", "Donor", "Address", "Description", "Amount"]
+    row = ["Account", "Type", "Bank Date", "Cheque Date", "Cheque Number", "Tax Receipt Required?", "Category", "Donor", "Address", "City", "Country", "Postal Code" "Description", "Amount"]
     writer.writerow(row)
     
     for t in donations:
-        row = [t.entered_by, t.type, t.bank_date, t.cheque_date, t.cheque_num, t.taxreceipt, t.donation_category, t.donor, t.address, t.description, t.amount]
+        row = [t.account, t.type, t.bank_date, t.cheque_date, t.cheque_num, t.taxreceipt, t.donation_category, t.donor, t.address, t.description, t.amount]
         writer.writerow(row)
     
     return response
@@ -1450,9 +1450,9 @@ def csv_accountingreport(request):
 # accounting report
 #======================================================
 
-    income = Income.objects.filter(entered_by="CH").exclude(category="donation").order_by('group')
-    donation = Donation.objects.filter(entered_by="CH").order_by('group')
-    expenditure = Expenditure.objects.filter(entered_by="CH").order_by('group')
+    income = Income.objects.filter(account="CH").exclude(category="donation").order_by('group')
+    donation = Donation.objects.filter(account="CH").order_by('group')
+    expenditure = Expenditure.objects.filter(account="CH").order_by('group')
     
     response = HttpResponse(mimetype='text/csv')
     response['Content-Disposition'] = 'attachment; filename=accounting_report.csv'
@@ -1465,13 +1465,13 @@ def csv_accountingreport(request):
     writer.writerow(row)
     
     for t in donation:
-        row = [t.group.slug, t.entered_by, t.type, t.bank_date, t.category, t.description, t.amount, "","" ,"" ,t.donation_category, t.donor]
+        row = [t.group.slug, t.account, t.type, t.bank_date, t.category, t.description, t.amount, "","" ,"" ,t.donation_category, t.donor]
         writer.writerow(row)
     for t in income:
-        row = [t.group.slug, t.entered_by, t.type, t.bank_date, t.category, t.description, t.amount, "","" ,"" ,"", "", ""]
+        row = [t.group.slug, t.account, t.type, t.bank_date, t.category, t.description, t.amount, "","" ,"" ,"", "", ""]
         writer.writerow(row)
     for t in expenditure:
-        row = [t.group.slug, t.entered_by, t.type, t.bank_date, t.category, t.description, t.amount, t.payee, t.cheque_num, t.hst, "", ""]
+        row = [t.group.slug, t.account, t.type, t.bank_date, t.category, t.description, t.amount, t.payee, t.cheque_num, t.hst, "", ""]
         writer.writerow(row)
     
     return response
@@ -1501,10 +1501,10 @@ def upload_commitments(request, group_slug):
                     commitment.category = r[3]
                     commitment.description = r[4]
                     commitment.amount = r[5]
-                    commitment.entered_by = "NO"
+                    commitment.account = "NO"
                     commitment.payee = "National Office"
                     commitment.submitted = "N"
-                    commitment.entered_by = "NO"
+                    commitment.account = "NO"
                     commitment.save()
                     print "saved"
 #            return HttpResponseRedirect('upload_file')
@@ -1545,7 +1545,7 @@ def upload_testdata(request, group_slug):
                     exp.cheque_date = r[7]
                     exp.hst = r[8]
                     exp.group_id = r[9]
-                    exp.entered_by = "CH"
+                    exp.account = "CH"
                     exp.submitted = "N"
                     exp.creator = request.user
                     exp.editor = request.user
@@ -1558,7 +1558,7 @@ def upload_testdata(request, group_slug):
                     income.category_id = r[3]
                     income.description = r[4]
                     income.group_id = r[9]
-                    income.entered_by = "CH"
+                    income.account = "CH"
                     income.submitted = "N"
                     income.creator = request.user
                     income.editor = request.user
@@ -1653,7 +1653,7 @@ def upload_noreport(request):
                     if r[9]:
                         exp.cheque_date = r[9]
                     exp.group_id = r[10]
-                    exp.entered_by = "NO"
+                    exp.account = "NO"
                     exp.submitted = "N"
                     exp.creator = request.user
                     exp.editor = request.user
@@ -1668,7 +1668,7 @@ def upload_noreport(request):
                     income.category_id = r[3]
                     income.description = r[4]
                     income.group_id = r[10]
-                    income.entered_by = "NO"
+                    income.account = "NO"
                     income.submitted = "N"
                     income.creator = request.user
                     income.editor = request.user
@@ -1691,7 +1691,7 @@ def upload_noreport(request):
                     if r[9]:
                         exp.cheque_date = r[9]
                     donation.group_id = r[10]
-                    donation.entered_by = "NO"
+                    donation.account = "NO"
                     donation.submitted = "N"
                     donation.creator = request.user
                     donation.editor = request.user
