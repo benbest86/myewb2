@@ -19,7 +19,7 @@
 	{% for t in trans %}
 		<tr>
 		<td>{{t.bank_date}}</td>
-		<td>{{t.category}}</td>
+		<td>{{t.category.name}}</td>
 		<td>{{t.description}}</td>
 		<td>{% ifequal t.type "IN" %}{{ t.amount|floatformat:2 }}{% endifequal %}</td>
 		<td>{% ifequal t.type "EX" %}{{ t.amount|floatformat:2 }}{% endifequal %}</td>

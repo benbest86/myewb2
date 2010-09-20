@@ -27,7 +27,7 @@
 		</tr>
 	{% for t in trans %}
 		<tr>
-		<td>{% ifequal t.entered_by "CH" %}Chapter{% else %}National{% endifequal %}</td>
+		<td>{% ifequal t.account "CH" %}Chapter{% else %}National{% endifequal %}</td>
 		<td>{{t.bank_date}}</td>
 		<td>{{t.category.name}}</td>
 		<td>{{t.description}}</td>

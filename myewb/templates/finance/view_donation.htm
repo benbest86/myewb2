@@ -42,7 +42,7 @@
 		</tr>
 	{% for t in donations %}
 		<tr>
-		<td>{% ifequal t.entered_by "CH" %}Chapter {% else %} National Office{% endifequal %}</td>
+		<td>{% ifequal t.account "CH" %}Chapter {% else %} National Office{% endifequal %}</td>
 		<td>{{t.bank_date}}</td>
 		<td>{{t.category}}</td>
 		<td>{{t.description}}</td>
