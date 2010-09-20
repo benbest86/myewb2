@@ -1,0 +1,49 @@
+{% extends "finance/base.htm" %}
+
+{% block finance_body %}
+<h2> Input Budget </h2>
+	<h3 align = "center">Budget: {{budget.name}} </h3>
+	<p align = "center">Start Date: {{budget.start_date}} <br />
+						End Date: {{budget.end_date}}
+	</p>
+<form method="post" action="">
+	{{ formset.management_form }}
+	
+	<table class="cellpadding8 standard" width="500" style="margin: 0 auto;">
+	<tr>
+		<th>Category</th>
+		<th>Budgeted Amount</th>
+		<th>Last Years' Amount</th>
+	</tr>
+	<tr>
+		<td><b>Income</b></td>
+		<td></td>
+		<td></td>
+	</tr>
+	{% for z in income %}		
+	<tr>
+		<td>{{z.0}}</td>
+		<td>{{ z.1.amount|floatformat:2 }}</td>
+		<td align = "centre">{{z.2}}</td>
+	</tr>
+	{% endfor %}
+	<tr>
+		<td><b>Expendtiures</b></td>
+		<td></td>
+		<td></td>
+	</tr>
+	{% for z in expenditure %}		
+	<tr>
+		<td>{{z.0}}</td>
+		<td>{{ z.1.amount|floatformat:2 }}</td>
+		<td align = "centre">{{z.2}}</td>
+	</tr>
+	{% endfor %}
+	</table>
+	
+	
+	<br /> <br />
+		<input type="submit" value="Input Budget" />
+</form>
+
+{% endblock finance_body %}

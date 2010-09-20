@@ -1,0 +1,80 @@
+{% extends "finance/base.htm" %}
+
+{% block title %}View (Edit) Transactions{% endblock title %}
+
+{% block finance_body %}
+	<h3>Unbanked Transactions</h3>
+	{% if trans_outstanding %}
+		<table class="cellpadding8 standard" width="500" style="margin: 0 auto;">
+			<tr>
+			<th>ID</th>
+			<th>Type</th>
+			<th>Category</th>
+			<th>Bank Date</th>
+			<th>Description</th>
+			<th>Amount</th>
+			<th>View</th>
+			<th>Edit?</th>
+			<th>Delete?</th>
+			</tr>
+		{% for t in trans_outstanding %}
+			<tr>
+			<td>{{t.id}}</td>
+			<td>{{t.type}}</td>
+			<td>{{t.category}}</td>
+			<td>{{t.bank_date}}</td>
+			<td>{{t.description}}</td>
+			<td>{{ t.amount|floatformat:2 }}</td>
+			<td><a href="{% url view_id id=t.id group_slug=group.slug  %}">View</a></td>
+			<td><a href="{% url edit_id id=t.id group_slug=group.slug  %}">Edit</a></td>
+			<td><a href="{% url delete_id id=t.id group_slug=group.slug  %}">Delete</a></td>
+			</tr>
+		{% endfor %}
+		</table>
+	{% else %}
+	<p>No outstanding transactions.</p>
+	{% endif %}
+	<h3>Banked Transactions</h3>
+	{% block navigation %}<a href="{% url edit_all group_slug=group.slug  %}">View All</a>{% endblock navigation %}
+	<table class="cellpadding8 standard" width="500" style="margin: 0 auto;">
+		<tr>
+		<th>ID</th>
+		<th>Type</th>
+		<th>Category</th>
+		<th>Bank Date</th>
+		<th>Description</th>
+		<th>Amount</th>
+		<th>View</th>
+		<th>Edit?</th>
+		<th>Delete?</th>
+		</tr>
+	{% for t in trans %}
+		<tr>
+		<td>{{t.id}}</td>
+		<td>{{t.type}}</td>
+		<td>{{t.category}}</td>
+		<td>{{t.bank_date}}</td>
+		<td>{{t.description}}</td>
+		<td>{{ t.amount|floatformat:2 }}</td>
+		<td><a href="{% url view_id id=t.id group_slug=group.slug %}">View</a></td>
+		<td><a href="{% url edit_id id=t.id group_slug=group.slug  %}">Edit</a></td>
+		<td><a href="{% url delete_id id=t.id group_slug=group.slug  %}">Delete</a></td>
+		</tr>
+	{% endfor %}
+		{% for t in trans_old %}
+		<tr>
+		<td>{{t.id}}</td>
+		<td>{{t.type}}</td>
+		<td>{{t.category}}</td>
+		<td>{{t.bank_date}}</td>
+		<td>{{t.description}}</td>
+		<td>{{ t.amount }}</td>
+		<td><a href="{% url view_id id=t.id group_slug=group.slug  %}">View</a></td>
+		<td><a href="{% url edit_id id=t.id group_slug=group.slug  %}">Edit</a></td>
+		<td></td>
+		</tr>
+	{% endfor %}
+	</table>
+	
+	
+{% endblock finance_body %}

@@ -1,0 +1,79 @@
+{% extends "networks/base.html" %}
+{% load i18n %}
+{% block head_title %}Finance Tool{% endblock %}
+		
+{% block body %}
+	<h1>Finance</h1>
+	
+	{% block finance_body %}
+	{% endblock finance_body %}
+
+{% endblock body %}	
+
+
+{% block toolbar_left %}
+	 <div class="toolbarheader bkgd" id="box-champ-title">{% trans "Finance" %}</div>
+     <div class="toolbarcontent">
+		<p>
+			{% if group and is_group_admin %}
+			<p>
+				View: <br />
+				<a href="{% url summary group_slug=group.slug %}">dashboard</a> <br />
+				<a href="{% url view group_slug=group.slug %}">transactions</a><br/>
+				<a href="{% url view_donations group_slug=group.slug %}">donations</a><br />
+				<a href="{% url view_commitments group_slug=group.slug %}">commitments</a><br />
+				<a href="{% url monthlyreports group_slug=group.slug %}">monthly reports</a><br />
+				<a href="{% url budgets group_slug=group.slug %}">budgets</a><br />
+				
+			</p>
+			<p>
+				Enter:<br />
+				<a href="{% url create_income group_slug=group.slug %}">income</a><br />
+				<a href="{% url create_donation group_slug=group.slug %}">donation</a><br />
+				<a href="{% url create_expenditure group_slug=group.slug %}">expenditure</a><br />
+							
+			</p>
+			<p>
+				Download:<br />
+				<a href="{% url csv_trans group_slug=group.slug %}">all transactions</a>
+			</p>
+			
+			{% else %}
+				{% if perms.finance %}
+				<p>
+					<a href="{% url summary_no %}">national summary</a><br />
+					<a href="{% url monthlyreports_dashboard %}">monthly reports</a><br />
+					<a href="{% url account_balances %}">account balances</a><br />
+					<a href="{% url no_budgets %}">chapter budgets</a>
+				</p>
+				<p>
+					Download:<br />
+					<a href="{% url csv_trans %}">chapter transactions</a><br />
+					<a href="{% url csv_donationreport %}">donation report</a><br />
+					<a href="{% url csv_accountingreport %}">accounting report</a><br />
+				</p>
+				<p>
+					Upload:<br />
+					<a href="{% url upload_noreport %}">upload no report</a><br />
+				</p>
+				{% else %}
+					Choose a chapter
+				{% endif %}
+
+			{% endif %}
+		</p>
+        
+	 
+	 
+	 
+	 </div>
+
+
+{% endblock toolbar_left %}
+
+{% block toolbar_right %}
+    {# override default networks toolbars, force to be empty #}
+{% endblock %}		
+
+
+

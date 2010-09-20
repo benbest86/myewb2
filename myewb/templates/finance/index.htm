@@ -1,0 +1,37 @@
+{% extends "finance/base.htm" %}
+
+{% block finance_body %}
+		
+	<div style="text-align: center;">
+	Chapter: 
+	<form>
+	<select id="finance_groups">
+		<option value="">all (national)</option>
+		{% for grp in allgroups %}
+			<option value="{{grp.slug}}" {% ifequal group grp %}selected="selected"{% endifequal %}>{{grp.name}}</option>
+		{% endfor %}
+	</select>
+	</form>
+	</div>
+	
+	{% comment %}
+	{% if group %}
+		{% include "finance/summary.htm" %}
+	{% endif %}
+	{% endcomment %}
+
+{% endblock finance_body %}
+
+{% block extra_body %}
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('#finance_groups').change(function() {
+                var theDate=new Date();
+                if ($(this).val())
+	                window.location.href="{% url index %}" + $(this).val() + "/summary/" ;
+	            else
+	                window.location.href="{% url index %}";
+            });
+        });
+    </script>
+{% endblock %}

@@ -1,0 +1,21 @@
+{% extends "finance/base.htm" %}
+{% load uni_form_tags %}
+{% block finance_body %}
+<h2>Edit Transaction </h2>
+    {% if form.errors %}
+        <p style="color: red;">
+            Please correct the error{{ form.errors|pluralize }} below.
+        </p>
+    {% endif %}
+	<form action="{% url edit_id id=t.id  group_slug=group.slug %}" method="post">
+		<table class="standard nogradients">
+			{{ form.as_table }}
+		</table>
+		<br /> <br />
+		<input type="submit" value="Save Transaction" />  <a href="{% url index group_slug=group.slug %}"><button>Cancel Edit Transaction</button></a>
+	</form>
+	
+	
+
+{% endblock finance_body %}
+

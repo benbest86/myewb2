@@ -1,0 +1,7 @@
+
+{% extends "finance/create.htm" %}
+
+
+{% block title %}Enter Image Transaction{% endblock title %}
+
+{% block formtitle %}<form enctype="multipart/form-data" action="{% url create_image group_slug=group.slug %}"  method="post">{% endblock formtitle %}

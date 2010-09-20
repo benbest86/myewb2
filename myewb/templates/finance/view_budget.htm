@@ -1,0 +1,53 @@
+{% extends "finance/base.htm" %}
+
+{% block finance_body %}
+<h2> Budget </h2>
+	<h3 align = "center">Budget: {{budget.name}} </h3>
+	<p align = "center">Start Date: {{budget.start_date}} <br />
+	End Date: {{budget.end_date}}
+	</p>
+	{% if empty %}
+	<p>
+		There are no items in this budget so far. 
+	</p>
+		<a href="{% url input_budgetitems group_slug=group.slug budget=budget.id %}"><button type="button">Input Items</button></a>
+	{% else %}
+		<table class="cellpadding8 standard" width="500" style="margin: 0 auto;">
+			<tr>
+				<th>Category</th>
+				<th>Budgeted Amount</th>
+				<th>Actual Amount</th>
+			</tr>
+		{% for t in income %}
+			<tr>
+				<td> {{t.0.category.name}} </td> 
+				<td align = "center"> {{t.0.amount|floatformat:2}} </td>
+				{% if t.2 %} <td style="color: red;" align="center"> {% else %} <td align="center"> {% endif %} {{t.1}}  </td>
+			</tr>
+		{% endfor %}
+		<tr>
+			<td><b>Total Income</b></td>
+			<td  align = "center">{{total_budgetincome|floatformat:2}}</td>
+			<td  align = "center">{{total_income|floatformat:2}}</td>
+		</tr>
+		{% for t in expenditure %}
+			<tr>
+				<td> {{t.0.category.name}} </td> 
+				<td align = "center"> {{t.0.amount|floatformat:2}} </td>
+				{% if t.2 %} <td style="color: red;" align="center"> {% else %} <td align="center"> {% endif %} {{t.1}}  </td>
+			</tr>
+		{% endfor %}
+		<tr>
+			<td><b>Total Expenditure</b> </td>
+			<td  align = "center">{{total_budgetexpenditure|floatformat:2}}</td>
+			<td  align = "center">{{total_expenditure|floatformat:2}}</td>
+		</tr>
+			<tr>
+			<td><b>Net</b> </td>
+			<td  align = "center">{{net_budget|floatformat:2}}</td>
+			<td  align = "center">{{net|floatformat:2}}</td>
+		</tr>
+		</table>
+	{% endif %}
+
+{% endblock finance_body %}

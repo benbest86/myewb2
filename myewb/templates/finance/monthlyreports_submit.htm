@@ -1,0 +1,13 @@
+{% extends "finance/base.htm" %}
+
+{% block finance_body %}
+	{% if submitted %}
+	<h2>Report Submitted</h2>
+	Report submitted correctly.
+	{% else %}
+	<h2>Error: Report Not Submitted</h2>
+	You cannot submit the report until the month is over.
+	{% endif %}<br/><br/>
+	[<a href="{% url monthlyreports group_slug=group.slug %}" >monthly reports</a>]
+	
+{% endblock finance_body %}

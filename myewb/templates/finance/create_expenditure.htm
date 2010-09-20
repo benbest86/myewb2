@@ -1,0 +1,7 @@
+
+{% extends "finance/create.htm" %}
+
+
+{% block finance_subtitle %}Enter Expenditure Transaction{% endblock finance_subtitle %}
+
+{% block formtitle %}<form action="{% url create_expenditure group_slug=group.slug %}" method="post">{% endblock formtitle %}

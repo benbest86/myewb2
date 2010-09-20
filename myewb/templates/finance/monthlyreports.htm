@@ -1,0 +1,25 @@
+{% extends "finance/base.htm" %}
+
+
+
+{% block finance_body %}
+	<h2>Monthly Reports</h2>
+	Please select monthly report you wish to view or submit:
+	<h3>Chapter Reports</h3>
+	<ul>
+	<li><a href="{% url monthlyreports_current group_slug=group.slug %}">Current Report</a></li>
+	{% for m in chapter_monthlyreports %}
+			<li><a href="{% url monthlyreports_id id=m.id group_slug=group.slug %}">{{m.date|date:"F Y"}}</a></li>
+	{% endfor %}
+	</ul>
+	<h3>National Office Reports</h3>
+	<ul>
+	{% if national_monthlyreports %}
+		{% for m in national_monthlyreports %}
+				<li><a href="{% url monthlyreports_id id=m.id group_slug=group.slug %}">{{m.date|date:"F Y"}}</a></li>
+		{% endfor %}
+	{% else %}
+		No National Office monthly reports yet.
+	{% endif %}
+	</ul>
+{% endblock finance_body %}

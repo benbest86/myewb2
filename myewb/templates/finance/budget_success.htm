@@ -1,0 +1,25 @@
+{% extends "finance/base.htm" %}
+
+{% block finance_body %}
+<h2> Budget </h2>
+	Start Date: {{budget.start_date}} <br />
+	End Date: {{budget.end_date}} <br /><br />
+	<table class="cellpadding8 standard" width="500" style="margin: 0 auto;">
+		<tr>
+			<th>Type</th>
+			<th>Category</th>
+			<th>Budgeted Amount</th>
+			<th>Actual Amount</th>
+		</tr>
+	{% for b in budget_items %}
+		<tr>
+			<td> {{b.type}} </td> 
+			<td> {{b.category}} </td> 
+			<td> {{b.amount|floatformat:2}} </td>
+		</tr>
+		
+		
+	{% endfor %}
+	</table>
+
+{% endblock finance_body %}

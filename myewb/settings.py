@@ -229,6 +229,7 @@ INSTALLED_APPS = (
     'stats',
     'profile_query',
     'champ',
+    'finance',
 
     # our own third-party libs
     'contrib.django_evolution',

@@ -1,0 +1,44 @@
+{% extends "finance/base.htm" %}
+
+{% block finance_body %}
+
+	Starting Balance: {{incoming_balance}} </br>
+	End Balance:   {{outgoing_balance}}</br></br>
+	
+	<table class="cellpadding8 standard" width="500" style="margin: 0 auto;">
+		<tr>
+		<th>Bank Date</th>
+		<th>Category</th>
+		<th>Description</th>
+		<th>Credit</th>
+		<th>Debit</th>
+		<th>Details</th>
+		<th>Edit</th>
+		<th>Delete</th>
+		</tr>
+	{% for t in trans %}
+		<tr>
+		<td>{{t.bank_date}}</td>
+		<td>{{t.category}}</td>
+		<td>{{t.description}}</td>
+		<td>{% ifequal t.type "IN" %}{{ t.amount|floatformat:2 }}{% endifequal %}</td>
+		<td>{% ifequal t.type "EX" %}{{ t.amount|floatformat:2 }}{% endifequal %}</td>
+		<td><a href="{% url view_id id=t.id group_slug=group.slug %}">View Detail</a></td>
+		<td><a href="{% url edit_id id=t.id group_slug=group.slug %}">Edit</a></td>
+		<td><a href="{% url delete_id id=t.id group_slug=group.slug %}">Delete</a></td>
+		</tr>
+	{% endfor %}
+		<tr>
+		<td>Total</td>
+		<td></td>
+		<td></td>
+		<td>{{income_total.total|floatformat:2}}</td>
+		<td>{{expenditure_total.total|floatformat:2}}</td>
+		<td>{{net|floatformat:2}}</td>
+		</tr>
+	</table>
+	
+
+
+
+{% endblock finance_body %}

@@ -1,0 +1,51 @@
+{% extends "finance/base.htm" %}
+
+{% block finance_body %}
+<h2>{% block finance_subtitle %}Enter Transaction{% endblock finance_subtitle %}</h2>
+    {% if form.errors %}
+        <p style="color: red;">
+            Please correct the error{{ form.errors|pluralize }} below.
+        </p>
+    {% endif %}
+	{% block formtitle %}{% endblock formtitle %}
+		<table class="standard nogradients">
+			{{ form.as_table }}
+		</table><br /> <br />
+		<input type="submit" value="Add Transaction" /> <a href="{% url summary group_slug=group.slug %}"><button type="button">Cancel</button></a>
+		<br /> <br />
+		
+	</form>
+	
+<h2>Outstanding Transactions</h2>
+	{% if trans_outstanding %}
+		<table class="cellpadding8 standard" width="700" style="margin: 0 auto;">
+			<tr>
+			<th>ID</th>
+			<th>Type</th>
+			<th>Category</th>
+			<th>Bank Date</th>
+			<th>Description</th>
+			<th>Amount</th>
+			<th>View</th>
+			<th>Edit</th>
+			</tr>
+		{% for t in trans_outstanding %}
+			<tr>
+			<td>{{t.id}}</td>
+			<td>{{t.type}}</td>
+			<td>{{t.category}}</td>
+			<td>{{t.bank_date}}</td>
+			<td>{{t.description}}</td>
+			<td>{{ t.amount|floatformat:2 }}</td>
+			<td><a href="{% url view_id id=t.id group_slug=group.slug  %}">View</a></td>
+			<td><a href="{% url edit_id id=t.id group_slug=group.slug  %}">Edit</a></td>
+			</tr>
+		{% endfor %}
+		</table>
+	{% else %}
+	<p>No outstanding transactions.</p>
+	{% endif %}
+	
+	
+{% endblock finance_body %}
+
