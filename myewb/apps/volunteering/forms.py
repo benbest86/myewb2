@@ -55,12 +55,12 @@ class SessionForm(forms.ModelForm):
 class ApplicationQuestionForm(forms.ModelForm):
   class Meta:
     model = ApplicationQuestion
-    fields = ('question')
+    fields = ('question',)
     
 class InterviewQuestionForm(forms.ModelForm):
   class Meta:
     model = InterviewQuestion
-    fields = ('question')
+    fields = ('question',)
     
 class EvaluationCriterionForm(forms.ModelForm):
   class Meta:
