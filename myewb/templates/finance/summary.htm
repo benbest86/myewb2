@@ -69,8 +69,8 @@
 	<td align="center"><i>Expenditure Breakdown</i></td>
 	</tr>
 	<tr>
-	<td><img src="{{income_chart}}" alt="Income Breakdown" /></td>
-	<td><img src="{{expenditure_chart}}" alt="Expenditure Breakdown" /></td>
+	<td>{% if income_chart %}<img src="{{income_chart}}" alt="Income Breakdown" />{% endif %}</td>
+	<td>{% if expenditure_chart %}<img src="{{expenditure_chart}}" alt="Expenditure Breakdown" />{% endif %}</td>
 	<tr>
 	</table>
 	<br /> <br />

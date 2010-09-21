@@ -171,15 +171,13 @@ class ImpactMetrics(Metrics):
                              null=True, blank=True)
     changes = models.TextField(verbose_name="What changes would you make next time?",
                                null=True, blank=True)
-    repeat = models.BooleanField(verbose_name="Would you repeat this event",
-                                 null=True, blank=True)
+    repeat = models.NullBooleanField(verbose_name="Would you repeat this event", blank=True)
     
 class MemberLearningMetrics(Metrics):
     metricname = "ml"
     type = models.CharField(verbose_name="Activity Type",
                             max_length=255, null=True, blank=True)
-    learning_partner = models.BooleanField(verbose_name="LP related?",
-                                           null=True, blank=True)
+    learning_partner = models.NullBooleanField(verbose_name="LP related?", blank=True)
     curriculum = models.CharField(verbose_name="Curriculum",
                                   max_length=255, null=True, blank=True)
     resources_by = models.CharField(verbose_name="Resources developed by",

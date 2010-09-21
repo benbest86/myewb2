@@ -10,6 +10,7 @@ import datetime
 import csv
 import os
 import shlex
+import tempfile
 
 from datetime import timedelta
 from pygooglechart import SimpleLineChart, Axis, PieChart3D, PieChart2D, StackedHorizontalBarChart
@@ -323,11 +324,18 @@ def summary(request, group_slug, year=None, month=None):
         template_data["expenditure_category"] = expenditure_category
         expenditure_total = expenditure_chap.aggregate(total = Sum('amount'))
         template_data["expenditure_total"] = expenditure_total
+        try:
+            incomeChart, expenditureChart = create_category_charts(expenditure_category, income_category)
+        except:
+            incomeChart = None
+            expenditureChart = None
     else:
         template_data['empty'] = True
+        incomeChart = None
+        expenditureChart = None
         
 #    charts
-    incomeChart, expenditureChart = create_category_charts(expenditure_category, income_category)
+#    incomeChart, expenditureChart = create_category_charts(expenditure_category, income_category)
     
     template_data["income_chart"] = incomeChart
     template_data["expenditure_chart"] = expenditureChart
@@ -494,9 +502,13 @@ def summary_no(request, year=None, month=None):
         template_data['net'] = income_total['total'] - expenditure_total['total']
     else:
         template_data['empty'] = True 
-    
-    incomeChart, expenditureChart = create_category_charts(expenditure_category, income_category)
-    
+
+    try: 
+        incomeChart, expenditureChart = create_category_charts(expenditure_category, income_category)
+    except:
+        incomeChart = None
+        expenditureChart = None
+
     template_data["income_chart"] = incomeChart
     template_data["expenditure_chart"] = expenditureChart
     
@@ -981,7 +993,7 @@ def monthlyreports(request, group_slug):
     template_data['is_group_admin'] = group.user_is_admin(request.user)
     template_data['is_president'] = group.user_is_president(request.user)
     
-    return render_to_response('finance/monthlyReports.htm', template_data, context_instance=RequestContext(request))
+    return render_to_response('finance/monthlyreports.htm', template_data, context_instance=RequestContext(request))
 
 @staff_member_required
 def monthlyreports_dashboard(request, year=None, month=None):
@@ -1087,7 +1099,11 @@ def monthlyreports_id(request, id, group_slug):
         template_data["expenditure_category"] = expenditure_category
         expenditure_total = expenditure.aggregate(total = Sum('amount'))
         
-        incomeChart, expenditureChart = create_category_charts(expenditure_category, income_category)
+        try:
+            incomeChart, expenditureChart = create_category_charts(expenditure_category, income_category)
+        except:
+            incomeChart = None
+            expenditureChart = None
     
         template_data["income_chart"] = incomeChart
         template_data["expenditure_chart"] = expenditureChart
@@ -1191,7 +1207,11 @@ def monthlyreports_current(request, group_slug):
             expenditure_total = expenditure.aggregate(total = Sum('amount'))
             
 #            create category charts
-            incomeChart, expenditureChart = create_category_charts(expenditure_category, income_category)
+            try:
+                incomeChart, expenditureChart = create_category_charts(expenditure_category, income_category)
+            except:
+                incomeChart = None
+                expenditureChart = None
         
             template_data["income_chart"] = incomeChart
             template_data["expenditure_chart"] = expenditureChart
@@ -1672,15 +1692,24 @@ def upload_noreport(request):
     template_data = dict()
 
     if request.method == 'POST':
-        form = UploadCommitmentForm(request.POST)
+        form = UploadCommitmentForm(request.POST, request.FILES)
         if form.is_valid(): 
             create_noreports(request)
 #            directory for file
-            directory = request.POST["dir"]
+#            directory = request.POST["dir"]
+
+            # open file
+            diskfile = tempfile.TemporaryFile()
+            uploadedfile = request.FILES['dir']
+            # write file to disk
+            for chunk in uploadedfile.chunks():
+                diskfile.write(chunk)
+
 #            list of all the inputted transactions
             transactions = []    
 #            open reader to read csv file
-            reader = csv.reader(open(directory,"rb"))
+#            reader = csv.reader(open(directory,"rb"))
+            reader = csv.reader(diskfile)
             for r in reader:
 #                determine what type of transaction
                 if r[0] == "EX":

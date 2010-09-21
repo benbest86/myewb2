@@ -168,7 +168,8 @@ class BudgetForm(ModelForm):
 
 class UploadCommitmentForm(forms.Form):
     month = forms.DateField()
-    dir = forms.CharField(max_length=200)
+#    dir = forms.CharField(max_length=200)
+    dir = forms.FileField(required=False)
 
 class CreateNOReports(forms.Form):
     month = forms.DateField()
