@@ -1709,7 +1709,9 @@ def upload_noreport(request):
             transactions = []    
 #            open reader to read csv file
 #            reader = csv.reader(open(directory,"rb"))
+            diskfile.seek(0)
             reader = csv.reader(diskfile)
+
             for r in reader:
 #                determine what type of transaction
                 if r[0] == "EX":
