@@ -51,7 +51,7 @@ class Network(BaseGroup):
         if self.is_chapter():
             if self.user_is_admin(user):
                 stupresidents = BaseGroup.objects.get(slug='presidents')
-                propresidents = BaseGroup.objects.get(slug='prochapterpres')
+                propresidents = BaseGroup.objects.get(slug='citynetworkpres')
                 
                 if stupresidents.user_is_member(user) or propresidents.user_is_member(user):
                     return True
