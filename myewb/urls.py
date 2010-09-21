@@ -91,16 +91,16 @@ urlpatterns = patterns('',
     url(r'^keepalive/$', direct_to_template, {"template": "whosonline.html"}, name="whosonline_refresh"),
     
     # legacy URLs from myEWB 1
-    url(r'^home/', include('legacy_urls.home')),
-    url(r'^profile/', include('legacy_urls.profile')),
-    url(r'^chapter/', include('legacy_urls.chapter')),
-    url(r'^mailing/', include('legacy_urls.mailing')),
-    url(r'^events/', include('legacy_urls.eventsurls')),
-    url(r'^volunteering/', include('legacy_urls.volunteering')),
-    url(r'^api/', include('legacy_urls.api')),
-    url(r'^cal/', include('legacy_urls.cal')),
-    url(r'^actions/', include('legacy_urls.actions')),
-    url(r'^postfile/', include('legacy_urls.postfile')),
+#    url(r'^home/', include('legacy_urls.home')),
+#    url(r'^profile/', include('legacy_urls.profile')),
+#    url(r'^chapter/', include('legacy_urls.chapter')),
+#    url(r'^mailing/', include('legacy_urls.mailing')),
+#    url(r'^events/', include('legacy_urls.eventsurls')),
+#    url(r'^volunteering/', include('legacy_urls.volunteering')),
+#    url(r'^api/', include('legacy_urls.api')),
+#    url(r'^cal/', include('legacy_urls.cal')),
+#    url(r'^actions/', include('legacy_urls.actions')),
+#    url(r'^postfile/', include('legacy_urls.postfile')),
 )
 
 ## @@@ for now, we'll use friends_app to glue this stuff together
