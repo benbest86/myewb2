@@ -99,7 +99,7 @@ def members_csv(request, group_slug):
             chapters = chapters + c.name + "\n"
             
         titles_list = GroupMember.objects.filter(user=u,
-                                                 group__in=chapters_list,
+                                                 group__in=list(chapters_list),
                                                  is_admin=True)
         titles = ""
         for t in titles_list: 

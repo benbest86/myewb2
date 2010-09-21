@@ -33,8 +33,9 @@ def is_exec_over(subject, user):
         return False
     
     # see if the subject is a member of any of my exec chapters
+    groups = groups.values_list('pk', flat=True)
     membership = GroupMember.objects.filter(user=subject,
-                                            group__in=groups)
+                                            group__in=list(groups))
     
     if membership.count() > 0:
         return True

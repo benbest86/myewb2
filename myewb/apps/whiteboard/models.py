@@ -38,7 +38,8 @@ class WhiteboardManager(QuerySetManager):
             # everyone else only sees stuff from their own groups
             #filter_q |= Q(parent_group__member_users=user)
             groups = user.basegroup_set.all()
-            filter_q |= Q(parent_group__in=groups)
+            groups = groups.values_list('pk', flat=True)
+            filter_q |= Q(parent_group__in=list(groups))
 
         # would it be more efficient to remove the OR query above and just write
         # two different queries, instead of using distinct() here?

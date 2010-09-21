@@ -54,7 +54,7 @@ class GroupTopicManager(models.Manager):
                                                          is_admin=True,
                                                          group__model='Network')
                 admingroups = admingroups.values_list('group', flat=True)
-                filter_q |= Q(parent_group__parent__in=admingroups)
+                filter_q |= Q(parent_group__parent__in=list(admingroups))
                 
                 #filter_q |= Q(parent_group__parent__members__user=user,
                 #              parent_group__parent__members__is_admin=True)

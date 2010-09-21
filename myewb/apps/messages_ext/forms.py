@@ -57,10 +57,9 @@ class ComposeForm(OriginalComposeForm):
             for r in recipients:
                 if not Friendship.objects.are_friends(self.sender, r):
                     # should be in BaseGroup manager, not here and also account_extra.models (ie, User.get_groups())
-                    grps = BaseGroup.objects.filter(member_users=self.sender, is_active=True).exclude(model="LogisticalGroup")
-                    
+                    grps = BaseGroup.objects.filter(member_users=self.sender, is_active=True).exclude(model="LogisticalGroup").values_list('pk', flat=True)
                     # should probably also be in a BaseGroup manager somewhere...!
-                    gm = GroupMember.objects.filter(user=r, group__in=grps).count()
+                    gm = GroupMember.objects.filter(user=r, group__in=list(grps)).count()
                     if gm == 0:
                         raise forms.ValidationError('You can only send messages to friends or people in the same chapter')
             

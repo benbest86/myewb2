@@ -277,7 +277,7 @@ class MemberProfile(Profile):
 
             # last resort... take the first chapter they joined as the primary
             if self.chapter is None:
-                gm = GroupMember.objects.filter(group__in=networks, user=user).order_by('joined')
+                gm = GroupMember.objects.filter(group__in=list(networks), user=user).order_by('joined')
                 self.chapter = gm[0].group.network
 
         if self.chapter is not None:
