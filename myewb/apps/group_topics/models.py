@@ -61,7 +61,8 @@ class GroupTopicManager(models.Manager):
             
             # everyone else only sees stuff from their own groups
             groups = user.basegroup_set.all()
-            filter_q |= Q(parent_group__in=groups)
+            groups = groups.values_list('pk', flat=True)
+            filter_q |= Q(parent_group__in=list(groups))
                 # doing this is MUCH MUCH quicker than trying to do a dynamic
                 # join based on member records, ie, Q(parent_group__member_users=user),
                 # and then needing to call distinct() later. 
