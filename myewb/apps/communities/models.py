@@ -24,6 +24,9 @@ class Community(BaseGroup):
         return reverse('community_detail', kwargs={'group_slug': self.slug})
     
     def can_bulk_add(self, user):
+        if user.has_module_perms("base_groups"):
+            return True
+        
         if self.parent:
             try:
                 return self.parent.network.can_bulk_add(user)   # bit of a hack... but self.parent
