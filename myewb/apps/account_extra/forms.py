@@ -12,9 +12,10 @@ from django.contrib.auth.models import User
 from django.db.models.signals import post_save
 
 from account_extra import signals
-from emailconfirmation.models import EmailAddress
+from emailconfirmation.models import EmailAddress, EmailConfirmation
 from networks.models import Network
 from siteutils import online_middleware
+from siteutils.shortcuts import get_object_or_none
 
 class EmailLoginForm(forms.Form):
     # login_name may be either the username or an associated email address
@@ -142,8 +143,10 @@ class EmailSignupForm(forms.Form):
         verified_emails = other_emails.filter(verified=True)
         if verified_emails.count() > 0:
             raise forms.ValidationError(_("This email address has already been used. Please use another."))
-        if other_emails.count() > 0:
-            raise forms.ValidationError(_("This email is already awaiting confirmation. Click here TODO to send another confirmation email."))
+        #if other_emails.count() > 0:
+        #    other_email = other_emails[0]
+        #    if not other_email.user.is_bulk:
+        #        raise forms.ValidationError(_("This email is already awaiting confirmation. Click here TODO to send another confirmation email."))
         
         return self.cleaned_data['email']
 
@@ -223,7 +226,14 @@ class EmailSignupForm(forms.Form):
         # needs to be moved down after user is saved, so that the email 
         # confirmation message has the peron's actual name in it 
         if add_email:
-            EmailAddress.objects.add_email(new_user, add_email)
+            # email already exists in system? re-send verification...
+            email_address = get_object_or_none(EmailAddress, user=new_user, email=add_email)
+            if email_address:
+                EmailConfirmation.objects.send_confirmation(email_address)
+                
+            # otherwise, create a new email (verification will be sent automatically)
+            else:
+                EmailAddress.objects.add_email(new_user, add_email)
         
         if self.cleaned_data['chapter'] != "none" and self.cleaned_data['chapter'] != "":
             chapter = get_object_or_404(Network, slug=self.cleaned_data['chapter'])
