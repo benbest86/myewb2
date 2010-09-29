@@ -168,7 +168,7 @@ INSTALLED_APPS = (
     'messages',
     'messages_ext',
     'group_announcements',
-    #'oembed',
+    'oembed',
     #'djangodblog',
     'pagination',
 #    'gravatar',
