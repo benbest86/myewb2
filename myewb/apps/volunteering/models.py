@@ -136,7 +136,7 @@ class Application(models.Model):
   resume_text = models.TextField(blank=True, null=True)
   resume_attachment = models.FileField(upload_to="XXXX") #fixme
   references = models.TextField(blank=True, null=True)
-  gpa = models.PositiveIntegerField(null=True, blank=True)
+  gpa = models.FloatField(null=True, blank=True)
   
   profile = models.ForeignKey(MemberProfile)
   session = models.ForeignKey(Session)
