@@ -19,5 +19,10 @@ def show_network(context, network):
     return {'network': network, 'request': context['request']}
 
 @register.simple_tag
-def link_to_current_champ():
-    return reverse('champ_dashboard', kwargs={'year': date.today().year})
+def link_to_current_champ(user):
+    chapter = user.get_profile().get_chapter()
+    if chapter and chapter.is_chapter():
+        return reverse('champ_dashboard', kwargs={'group_slug': chapter.slug,
+                                                  'year': date.today().year})
+    else:
+        return reverse('champ_dashboard', kwargs={'year': date.today().year})
