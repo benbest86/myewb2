@@ -20,6 +20,7 @@
         <li><a href="{% url national_office %}">{% trans "National Office" %}</a></li>
         {% if is_exec %}
        		<li><a href="{% link_to_current_champ request.user %}">CHAMP</a></li>
+       		<li><a href="{% link_to_current_finance request.user %}">Finance</a></li>
         {% endif %}
     </ul>
 {% endblock %}

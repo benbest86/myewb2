@@ -26,3 +26,14 @@ def link_to_current_champ(user):
                                                   'year': date.today().year})
     else:
         return reverse('champ_dashboard', kwargs={'year': date.today().year})
+    
+    
+@register.simple_tag
+def link_to_current_finance(user):
+    chapter = user.get_profile().get_chapter()
+    if chapter and chapter.is_chapter():
+        return reverse('summary', kwargs={'group_slug': chapter.slug})
+    elif user.has_module_perms('finance'):
+        return reverse('index')
+    else:
+        return None

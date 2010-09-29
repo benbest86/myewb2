@@ -3,7 +3,11 @@
 {% block head_title %}Finance Tool{% endblock %}
 		
 {% block body %}
-	<h1>Finance</h1>
+	{% if group %}
+		<h1>Finance: {{ group.name }}</h1>
+	{% else %}
+		<h1>Finance</h1>
+	{% endif %}
 	
 	{% block finance_body %}
 	{% endblock finance_body %}
