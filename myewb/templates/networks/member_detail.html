@@ -21,7 +21,7 @@
 		</h1>
 		
 		
-		{% ifequal member.user, request.user %}
+		{% ifequal member.user request.user %}
 		    <p>
     		{% if member.is_invited %}
                 {% trans "You have been invited to join this network. Do you wish to join?" %}
