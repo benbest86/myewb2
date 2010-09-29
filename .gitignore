@@ -48,6 +48,7 @@ myewb/cron/Mail/error.txt
 
 # this is updated on the live site, keep it out of the repo...
 myewb/templates/myewbstatus.html
+myewb/templates/about/status.html
 
 # and some random server stuff
 .bash_history
