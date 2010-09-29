@@ -242,6 +242,11 @@ class MemberProfile(Profile):
                                       self.membership_expiry.day)
         self.save()
         
+    def is_paid_member(self):
+        if self.membership_expiry and date.today() < self.membership_expiry:
+            return True
+        return False
+        
     def chapters(self):
         return self.user2.get_networks()
             

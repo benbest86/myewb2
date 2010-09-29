@@ -55,7 +55,13 @@
     {% if is_admin %}
     
     	{% if not search_terms %}
-    		<p><a href="{% url group_member_export group.slug %}">Download as spreadsheet</a></p>
+    		<p>
+    			<a href="{% url group_member_export group.slug %}">Download as spreadsheet</a>
+    			{% if group.is_chapter %}
+    				<br/>
+    				<a href="{% url group_member_export_regular group.slug %}">Download regular member spreadsheet</a>
+    			{% endif %}
+    		</p>
     	{% endif %}
     	
         <table id="membersList"  class="standard" width="100%">

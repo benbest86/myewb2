@@ -51,6 +51,7 @@ urlpatterns += patterns('base_groups.views.members',
 
     url(r'^(?P<group_slug>[-\w]+)/members/new/email$', 'new_email_member', name='new_email_member',),
     url(r'^(?P<group_slug>[-\w]+)/members/export/$', 'members_csv', name='group_member_export',),
+    url(r'^(?P<group_slug>[-\w]+)/members/export/regular/$', 'members_csv', kwargs={'regular': True}, name='group_member_export_regular',),
 
     # GET - retrieve member detail
     # POST - update member

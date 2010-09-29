@@ -74,13 +74,13 @@ def members_index(request, group_slug, group_model=None, form_class=None,
     )
 
 @group_admin_required()
-def members_csv(request, group_slug):
+def members_csv(request, group_slug, regular=False):
     # get basic objects
     user = request.user    
     group = get_object_or_404(BaseGroup, slug=group_slug)
     #members = group.get_accepted_members()
     members = group.members.all()       # this includes bulk users...
-
+    
     # set up csv
     response = HttpResponse(mimetype='text/csv')
     response['Content-Disposition'] = 'attachment; filename=myewb-export.csv'
@@ -88,25 +88,35 @@ def members_csv(request, group_slug):
 
     # headings
     row = ['First Name', 'Last Name', 'Email', 'Exec title', 'Chapter', 'Date joined this list']
+    if regular:
+        row.append('Membership expiry')
     writer.writerow(row)
 
     # populate csv
     for m in members:
         u = m.user
-        chapters_list = u.get_profile().chapters()
-        chapters  = ""
-        for c in chapters_list:
-            chapters = chapters + c.name + "\n"
+        if not regular or u.get_profile().is_paid_member():
+            chapter = u.get_profile().chapter
+            if chapter:
+                chaptername = chapter.name
+                title = GroupMember.objects.filter(user=u,
+                                                   group=chapter,
+                                                   is_admin=True)
+                if title.count():
+                    title = title[0].admin_title
+                else:
+                    title = ""
+                
+            else:
+                chaptername = ""
+                title = ""
             
-        titles_list = GroupMember.objects.filter(user=u,
-                                                 group__in=list(chapters_list),
-                                                 is_admin=True)
-        titles = ""
-        for t in titles_list: 
-            titles = titles + t.admin_title + "\n"
-        
-        row = [u.first_name, u.last_name, u.email, titles, chapters, m.joined]
-        writer.writerow([fix_encoding(s) for s in row])
+            row = [u.first_name, u.last_name, u.email, title, chaptername, m.joined]
+            
+            if regular:
+                row.append(u.get_profile().membership_expiry)
+                
+            writer.writerow([fix_encoding(s) for s in row])
         
     return response
 
