@@ -70,11 +70,19 @@ def chapter_detail(request, group_slug, template_name="networks/chapter_detail.h
 
 @group_admin_required()
 def edit_chapter(request, group_slug):
-    if request.method == 'POST':
-        return chapter_detail(request, group_slug)
     network = get_object_or_404(Network, slug=group_slug)
     chapter = get_object_or_404(ChapterInfo, network=network)
-    form = ChapterInfoForm(instance=chapter)
+
+    if request.method == 'POST':
+        form = ChapterInfoForm(request.POST,
+                               instance=chapter)
+        if form.is_valid():
+            form.save()
+            return chapter_detail(request, group_slug)
+    
+    else:
+        form = ChapterInfoForm(instance=chapter)
+        
     return render_to_response(
             'networks/edit_chapter.html',
             {
