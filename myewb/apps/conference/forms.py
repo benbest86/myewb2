@@ -116,6 +116,7 @@ class ConferenceRegistrationForm(forms.ModelForm):
         
     challenge = forms.CharField(label='Your answer',
 							    widget=forms.Textarea)
+    """
     malawiwatsan = forms.ChoiceField(label='Water and Sanitation in Malawi',
 									 choices=OVRANK)
     malawiagric =  forms.ChoiceField(label='Agriculture in Zambia/Malawi',
@@ -126,6 +127,7 @@ class ConferenceRegistrationForm(forms.ModelForm):
 									 choices=OVRANK)
     ghanagari = forms.ChoiceField(label='Good Governance in Ghana',
 								  choices=OVRANK)
+    """
 
     # this gets set if the card is declined at the bank
     trnError = None
