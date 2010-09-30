@@ -1,0 +1,110 @@
+{% extends 'events/base.html' %}
+
+{% load i18n %}
+{% load uni_form %}
+{% load conference_tags %}
+
+{% block head_title %}National Conference 2010{% endblock %}
+
+{% block body %}
+<br/><br/>
+
+<h1>National Conference 2010</h1>
+
+{% if codes %}
+	<br/><p>
+	{% for code in codes %}
+		{{ code }} <br/>
+	{% endfor %}
+	</p>
+	<br/>
+{% endif %}
+
+<p>
+All conference codes are eight characters long:<br/>
+<strong><em>&lt;type (one letter)&gt; &lt;number (3 digits)&gt; &lt;secret code (4 characters)&gt;</em></strong><br/>
+Enter the type ("type of code") and number ("starting at") below; the secret code will be generated automatically.
+</p>
+
+<div style="width: 30%; float: left;">	
+<h2>Code generation</h2>
+<form class="uniForm" id="generate-codes" method="POST" action="">
+	<fieldset class="inlineLabels"> 
+		{{ form|as_uni_form }}
+		<div class="form_block">
+			<input type="hidden" name="action" value="generate"/>
+			<input type="submit" value="{% trans "generate codes" %}"/>
+		</div>
+	</fieldset> 
+</form>
+</div>
+
+<div style="width: 30%; float: right;">
+<h2>Code lookup</h2>
+<form class="uniForm" id="lookup-code" method="POST" action="{% url conference_code_lookup %}">
+	<fieldset class="inlineLabels">
+		<div class="ctrlHolder">
+		<label for="id_code">Code:</label>
+		<input type="text" value="" id="id_code" name="code" class="textinput textInput"/>
+		</div>
+		<div class="form_block">
+			<input type="submit" value="{% trans "void codes" %}"/>
+		</div>
+	</fieldset>
+</form>
+<div id="lookup-code-result"></div>
+</div>
+	
+
+<div style="width: 30%; margin: 0 auto;">
+<h2>Code cancellation</h2>
+<form class="uniForm" id="void-codes" method="POST" action="">
+	<fieldset class="inlineLabels"> 
+		{{ form|as_uni_form }}
+		<div class="form_block">
+			<input type="hidden" name="action" value="void"/>
+			<input type="submit" value="{% trans "void codes" %}"/>
+		</div>
+	</fieldset> 
+</form>
+</div>
+
+<br style="clear: both;"/><br/>
+<style>
+	.confcodes, .confcodes th, .confcodes td {
+		border: 1px solid;
+		text-align: center;
+	}
+</style>
+<table style="width: 100%;" class="confcodes">
+	<tr>
+		<th>Code Type</th>
+		{% for name, desc in room_choices %}
+			<th>{{ desc }}</th>
+		{% endfor %}
+	</tr>
+	
+	{% for codetype, codename in conf_codes %}
+		<tr>
+			<td><strong>{{ codetype }}</strong></td>
+			{% for roomname, roomdesc in room_choices %}
+				<td>{% lookup_cost codename roomname %}</td>
+			{% endfor %}
+		</tr>
+	{% endfor %}
+</table>
+
+<script type="text/javascript">
+	$().ready(function() {
+		$('#lookup-code').submit(function() {
+			$.post($(this).attr('action'),
+					$(this).serialize(),
+					function(data) {
+						$('#lookup-code-result').html(data);
+	   		        });
+			return false;
+		});
+	});
+</script>
+
+{% endblock %}

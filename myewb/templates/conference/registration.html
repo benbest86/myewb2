@@ -1,0 +1,183 @@
+{% extends 'events/base.html' %}
+
+{% load i18n %}
+{% load uni_form %}
+{% load avatar_tags %}
+{% load threadedcommentstags %}
+{% load pagination_tags %}
+{% load extra_tagging_tags %}
+{% load group_tags %}
+{% load topics_tags %}
+
+{% block head_title %}National Conference 2010{% endblock %}
+
+{% block body %}
+<br/><br/>
+
+	<style type="text/css">
+		.tableform tr
+		{
+		  border-bottom: 1px solid #d0d0d0;
+		}
+		
+		.tableform th, .tableform td
+		{
+		  vertical-align: top;
+		  padding: 10px 0;
+		}
+		
+		.tableform ul
+		{
+		  margin: 0;
+		  padding: 0;
+		}
+		
+		.tableform li
+		{
+		  list-style: none;
+		}
+		
+		.descform th, .descform td
+		{
+			align: center;
+			padding: 10px;
+		}
+	</style> 
+
+
+	<h1>National Conference 2010</h1>
+
+	{% if not registration %}    
+		<br/>
+		
+		{% comment %}
+		<!--  uni_form layout is horribly broken!! =(  -->
+		<form class="uniForm" id="edit-member" method="POST" action="">
+			<fieldset class="inlineLabels"> 
+				{{ form|as_uni_form }}
+				<div class="form_block">
+					<input type="hidden" name="action" value="update" />
+					<input type="submit" value="{% trans "updated" %}"/>
+				</div>
+            </fieldset> 
+        </form>
+        {% endcomment %}
+
+		<form id="conf-registration" method="POST" action="{% url conference_preview %}">
+			<table class="tableform">
+				<tr>
+					<th>
+						Name
+					</th>
+					<td>
+						{{ user.first_name}} {{user.last_name }}
+					</td>
+				</tr>
+				
+				<tr>
+					<th>
+						Email
+					</th>
+					<td>
+						{{ user.email }}
+					</td>
+				</tr>
+				
+				<tr>
+					<th>
+						Phone number
+					</th>
+					<td>
+						{{ user.get_profile.home_phone_number }}
+					</td>
+				</tr>
+				
+				<tr>
+					<th>
+						Address
+					</th>
+					<td>
+						{{ user.get_profile.street_address }}<br/>
+						{{ user.get_profile.street_address_two }} <br/>
+						{{ user.get_profile.city }}, {{ user.get_profile.province }}<br/>
+						{{ user.get_profile.postal_code }}<br/>
+						{{ user.get_profile.country }}
+					</td>
+				</tr>
+				
+				<tr>
+					<th>
+						Gender
+					</th>
+					<td>
+						{{ user.get_profile.gender }}
+					</td>
+				</tr>
+				
+				<tr>
+					<th>
+						Student status
+					</th>
+					<td>
+						{{ user.get_profile.student }}
+					</td>
+				</tr>
+				
+				<tr>
+					<th>
+						Preferred language
+					</th>
+					<td>
+						{{ user.get_profile.language }}
+					</td>
+				</tr>
+				
+				<tr>
+					<td colspan="2">
+						<em>To change your personal details, please update your profile information.</em>
+					</td>
+				</tr>
+				
+				<tr>
+					<td colspan="2">
+						&nbsp;
+					</td>
+				</tr>
+				
+				
+				{{ form.as_table }} 
+			
+				<tr style="border: none;">
+					<th>&nbsp;</th>
+					<td>
+						<input type="hidden" name="action" value="preview" />
+						<input type="submit" value="{% trans "preview" %}"/>
+					</td>
+				</tr>
+			</table>
+        </form>
+
+	{% else %}
+		<br />
+		<p align="center" style="font-weight: bold;">
+			You are currently registered to attend the conference!
+			From this page you may:
+		</p>
+
+		<p align="center">
+			<a href="{% url conference_receipt %}" style="font-weight: bold;">click here for a printable receipt &raquo;</a>
+		</p>
+
+		<p align="center">or</p>
+
+		<p align="center">
+			<a href="{% url conference_cancel %}">click here to cancel your registration</a>
+		</p>
+
+		<br />
+		<br />
+		<p>Keep checking the conference website at <a href="http://conference2010.ewb.ca/">http://conference2010.ewb.ca</a> for up-to-date information regarding the conference!</p>
+
+	{% endif %}
+
+{% endblock %}

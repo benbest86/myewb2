@@ -1,0 +1,28 @@
+<h3 align="center">2010 National Conference Receipt</h3>
+<h3 align="center">Not a Tax Receipt</h3>
+<h3 align="center">{{reg.user.first_name}} {{reg.user.last_name}}</h3>
+<h3 align="center">Receipt ID: {{reg.receiptNum}}</h3>
+<h3 align="center">{{reg.date|date:"D d M Y"}}</h3>
+
+<br />
+
+<table width="70%" class="cellpadding5" style="border-collapse: collapse; margin: 0 auto;">
+<tr>
+<th align="center" style="border: 1px solid black;">Item</th>
+<th align="center" style="border: 1px solid black;">Cost</td>
+</tr>
+
+<tr>
+<td align="center" style="border: 1px solid black;">{{reg.type}}</td>
+<td align="center" style="border: 1px solid black;">${{reg.amountPaid}}</td>
+</tr>
+
+{% if reg.africafund %}
+<tr>
+<td align="center" style="border: 1px solid black;">Support for an African Delegate</td>
+<td align="center" style="border: 1px solid black;">$20.00</td>
+</tr>
+{% endif %}
+
+</table>
+

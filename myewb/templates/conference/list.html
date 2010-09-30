@@ -1,0 +1,19 @@
+{% extends 'events/base.html' %}
+
+{% load i18n %}
+
+{% block head_title %}National Conference 2010{% endblock %}
+
+{% block body %}
+<br/><br/>
+
+<h1>National Conference 2010</h1>
+	
+<h2>Registration List for {{ group.name }}</h2>
+	
+{% for reg in registrations %}
+	{{ reg.user.first_name }} {{ reg.user.last_name }}<br/>
+{% endfor %}
+	
+
+{% endblock %}
