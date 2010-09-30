@@ -265,15 +265,18 @@ if settings.MAILCHIMP_KEY and settings.MAILCHIMP_LISTID:
             print fix_encoding(l.user.visible_name()), l.user.email, "leaving", fix_encoding(l.group.name)
 
             # if they're not already on the list, build a profile for them
-            if l.user.id not in emails:
-                emails[l.user.id] = build_profile(l.user)
+            try:
+                if l.user.id not in emails:
+                    emails[l.user.id] = build_profile(l.user)
                 
-                info = mc.listMemberInfo(id=list,
-                                         email_address=l.user.email)
-                emails[l.user.id]['GROUPINGS'] = info['merges']['GROUPINGS']
+                    info = mc.listMemberInfo(id=list,
+                                             email_address=l.user.email)
+                    emails[l.user.id]['GROUPINGS'] = info['merges']['GROUPINGS']
                 
-            # remove group from list
-            emails[l.user.id]['GROUPINGS'] = remove_group(l.group, emails[l.user.id]['GROUPINGS'])
+                # remove group from list
+                emails[l.user.id]['GROUPINGS'] = remove_group(l.group, emails[l.user.id]['GROUPINGS'])
+            except:
+                print "--ERROR"
 
             # ok, done.
             l.delete()
