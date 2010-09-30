@@ -175,7 +175,8 @@ def password_reset_from_key(request, key, form_class=ResetPasswordKeyForm,
 
             # get the password_reset object
             temp_key = password_reset_key_form.cleaned_data.get("temp_key")
-            password_reset = PasswordReset.objects.get(temp_key__exact=temp_key, reset=False)
+            password_reset = PasswordReset.objects.filter(temp_key__exact=temp_key, reset=False)
+            password_reset = password_reset[0]  # should always be safe, as form_clean checks this
     
             # now set the new user password
             user = User.objects.get(passwordreset__exact=password_reset)
