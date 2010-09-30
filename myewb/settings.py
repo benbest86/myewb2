@@ -214,6 +214,7 @@ INSTALLED_APPS = (
     'networks',
     'communities',
     'creditcard',
+    'conference',
     
     'django.contrib.admin',
     'events',
@@ -364,7 +365,7 @@ COVERAGE_REPORT_HTML_OUTPUT_DIR = os.path.join(PROJECT_ROOT, 'coverage_report')
 AVATAR_DEFAULT_URL =  MEDIA_URL + 'images/nophoto.gif'
 AVATAR_GRAVATAR_BACKUP = False
 
-
+CONF_HASH = ""
 
 
 # local_settings.py can be used to override environment-specific settings

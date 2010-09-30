@@ -12,6 +12,7 @@ Last modified: 2009-08-12
 """
 
 import re, datetime, time, urllib, pycountry
+from decimal import Decimal
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.formtools.preview import FormPreview
@@ -19,6 +20,8 @@ from django.shortcuts import render_to_response
 from django.http import HttpResponseRedirect
 from django.template import Context, loader, RequestContext
 from django.utils.safestring import mark_safe
+from types import ListType
+
 from mailer import send_mail
 from apps.creditcard.utils import *
 from apps.creditcard.models import Payment, Product
@@ -238,9 +241,10 @@ class PaymentFormPreview(FormPreview):
     """
 
     """
-        This returns the transaction status in a roundabout way: returning
-        None indicates success, and a string indicates error.  Weird, but that 
-        lets us pass an error message if there was one...
+        This returns the transaction status in a list.
+        response[0] is True or False depending on success or failure
+        if response[0] == True, response[1] is the transaction ID and responsse[2] the receipt ID
+        if response[0] == False, respponse[1] is the decline message
     """
     def done(self, request, cleaned_data):
         
@@ -263,15 +267,32 @@ class PaymentFormPreview(FormPreview):
                  'ordProvince': address.province,
                  'ordPostalCode': address.postal_code,
                  'ordCountry': address.country,
-                 'prod_id_1': product.sku,
-                 'prod_quantity_1': '1',
-                 'prod_name_1': product.name,
-                 'prod_cost_1': product.amount,
-                 'trnAmount': product.amount,
                  'requestType': 'BACKEND',
-                 'trnOrderNumber': 'dues-%s' % int(time.time()),
+                 'trnOrderNumber': '%s' % int(time.time()),
                  'merchant_id': settings.TD_MERCHANT_ID,
                 }
+        
+        product_count = 1
+        total_cost = 0
+        if isinstance(cleaned_data['products'],ListType):
+            for sku in cleaned_data['products']:
+                product = Product.objects.get(sku=sku)
+                param['prod_id_%s' % product_count] = product.sku
+                param['prod_quantity_%s' % product_count] = '1'
+                param['prod_name_%s' % product_count] = product.name
+                param['prod_cost_%s' % product_count] = product.amount
+                total_cost += Decimal(product.amount)
+                product_count = product_count + 1
+        else:
+            product = Product.objects.get(sku=cleaned_data['products'])
+            param['prod_id_1'] = product.sku
+            param['prod_quantity_1'] = '1'
+            param['prod_name_1'] = product.name
+            param['prod_cost_1'] = product.amount
+            total_cost += Decimal(product.amount)
+        
+        param['trnAmount'] = total_cost
+                
         encoded = urllib.urlencode(param)
         
         # push the transaction to the bank
@@ -320,6 +341,6 @@ class PaymentFormPreview(FormPreview):
                       use_template=False)
         
             # return success
-            return None
+            return (True, results['trnId'], results['trnOrderNumber'])
         else:
-            return results['messageText']
+            return (False, results['messageText'])

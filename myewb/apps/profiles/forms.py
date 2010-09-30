@@ -88,7 +88,7 @@ class MembershipFormPreview(PaymentFormPreview):
     def done(self, request, cleaned_data):
     	response = super(MembershipFormPreview, self).done(request, cleaned_data)
     	
-    	if response == None:
+    	if response[0] == True:
     		request.user.get_profile().pay_membership()
         	
         	message = loader.get_template("profiles/member_upgraded.html")
@@ -98,7 +98,7 @@ class MembershipFormPreview(PaymentFormPreview):
         	return HttpResponseRedirect(reverse('profile_detail', kwargs={'username': self.username }))
         else:
         	f = self.form(request.POST)
-        	f.trnError = response
+        	f.trnError = response[1]
         	f.clean
         	context = {'form': f, 'stage_field': self.unused_name('stage'), 'state': self.state}
         	return render_to_response(self.form_template, context, context_instance=RequestContext(request))

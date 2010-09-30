@@ -189,22 +189,44 @@ class MemberProfile(Profile):
         return models.Model.save(self, force_insert, force_update)
 
     def location(self):
-      addresses = self.addresses.all()
-      if (len(addresses) > 0):
-        home_addresses = addresses.filter(label='home')
-        if (len(home_addresses) > 0):
-          addresses = home_addresses
-          
-        current_address = addresses[0]
-        
+      current_address = default_address()
+      
+      if current_address:
         location = current_address.city
         if current_address.province:
-            location += ", %s" % (current_address.province)
+          location += ", %s" % (current_address.province)
       
       else:
         location = ""
       
       return location
+  
+    def default_address(self):
+        current_address = None
+        
+        addresses = self.addresses.all()
+        if (len(addresses) > 0):
+            home_addresses = addresses.filter(label='home')
+            if (len(home_addresses) > 0):
+                addresses = home_addresses
+            
+            current_address = addresses[0]
+        
+        return current_address
+    
+    def default_phone(self):
+        current_phone = None
+        
+        phones = self.phone_numbers.all()
+        if (len(phones) > 0):
+            home_phone = phones.filter(label='home')
+            if (len(home_phone) > 0):
+                phones = home_phone
+            
+            current_phone = phones[0]
+        
+        return current_phone
+    
             
     def student(self):
         """Determine whether the instant user is a student based on the user's student records"""
