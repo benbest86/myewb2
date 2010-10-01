@@ -19,6 +19,10 @@ class DateAuthorSearchForm(ModelSearchForm):
     author = forms.CharField(required=False, max_length=255)
 
     def search(self):
+        self.clean()
+        if not self.cleaned_data.get('q', None):
+            return None
+        
         # First, store the SearchQuerySet received from other processing.
         sqs = super(DateAuthorSearchForm, self).search()
 
