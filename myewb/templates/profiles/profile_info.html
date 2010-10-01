@@ -62,6 +62,16 @@
             </td>
         </tr>
 	   {% endif %}
+	   
+	   {% if other_user.get_profile.date_of_birth %}
+        <tr>
+            <th>{% trans "Date of Birth" %}</th>
+            <td>
+                {{ other_user.get_profile.date_of_birth }}
+            </td>
+        </tr>
+	   
+	   {% endif %}
 		
 		
 		{% comment %}
