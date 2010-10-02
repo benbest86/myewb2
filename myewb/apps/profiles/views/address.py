@@ -11,6 +11,7 @@ Last modified: 2010-01-04
 from django.contrib.contenttypes.models import ContentType
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext, Context, loader
+from django.template.loader import render_to_string
 from django.http import HttpResponse, HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
@@ -22,7 +23,7 @@ from profiles.forms import AddressForm
 from profiles.models import MemberProfile
 from siteutils.http import JsonResponse
 from siteutils.decorators import owner_required
-
+from siteutils.shortcuts import get_object_or_none
 
 def is_label_unique_for_user(user, label, instance=None):
     profile = user.get_profile()
@@ -36,7 +37,13 @@ def is_label_unique_for_user(user, label, instance=None):
 def get_address_or_404(user, label):
     profile = user.get_profile()
     content_type = ContentType.objects.get_for_model(profile)
-    return get_object_or_404(Address, content_type__pk=content_type.id, object_id=profile.id, label=label)
+    
+    address = get_object_or_none(Address, content_type__pk=content_type.id, object_id=profile.id, label=label)
+    if not address:
+        address = get_object_or_none(Address, content_type__pk=content_type.id, object_id=profile.id, id=label)
+    
+    # TODO: if address is None: return 404
+    return address
 
 # Not really used at the moment
 @owner_required(MemberProfile)
@@ -81,15 +88,16 @@ def create_address(request, username, object=None):
             label_error = not is_label_unique_for_user(other_user, form.cleaned_data['label'], None)
             
         if request.is_ajax():
-            errorlist = []
-            for field in form:
-                if field.errors:
-                    errorlist.append(field.errors.as_text())
+            error_html =  render_to_string('profiles/new_address.html',
+                                           {'form': form,
+                                            'other_user': other_user
+                                           })
             error_data = {
                 'valid': False,
-                'label': label,
-                'errors': errorlist,
-                'label_error': label_error
+                'html': error_html
+                #'label': label,
+                #'errors': errorlist,
+                #'label_error': label_error
             }
             return JsonResponse(error_data)
             # return HttpResponse(simplejson.dumps(error_data), mimetype='application/javascript')            
@@ -121,6 +129,7 @@ def address_detail(request, username, label):
     # if request.is_ajax():
     other_user = get_object_or_404(User, username=username)
     address = get_address_or_404(other_user, label)
+    
     is_friend = Friendship.objects.are_friends(request.user, other_user)
     is_me = (other_user == request.user)
     # retrieve details
@@ -138,7 +147,7 @@ def address_detail(request, username, label):
         form = AddressForm(request.POST, instance=address)
         
         # if form saves, return detail for saved resource
-        if form.is_valid() and is_label_unique_for_user(other_user, form.cleaned_data['label'], address):            
+        if form.is_valid() and is_label_unique_for_user(other_user, form.cleaned_data['label'], address):
             address = form.save()
             if request.is_ajax():
                 return JsonResponse({'valid': True, 'label': address.label})
@@ -154,11 +163,17 @@ def address_detail(request, username, label):
             # if save fails, go back to edit_resource page
         else:
             if request.is_ajax():
+                error_html =  render_to_string('profiles/edit_address.html',
+                                               {'form': form,
+                                                'other_user': other_user,
+                                                'address': address,
+                                               })
                 error_data = {
                     'valid': False,
-                    'label': address.label,
-                    'errors': form.errors,
-                    'label_error': not is_label_unique_for_user(other_user, form.cleaned_data['label'], address)
+                    'html': error_html,
+                    #'label': address.label,
+                    #'errors': form.errors,
+                    #'label_error': not is_label_unique_for_user(other_user, form.POST.get('label', ''), address)
                 }
                 return JsonResponse(error_data)
                 #return HttpResponse(simplejson.dumps(error_data), mimetype='application/javascript')

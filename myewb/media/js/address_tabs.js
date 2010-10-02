@@ -12,14 +12,8 @@ function onAddressUpdateSuccess(data, ui, prevLabel) {
         
         atabs.tabs('remove', index)
     } else {
-        errorList = $('#edit-address-errors-' + prevLabel);
-        errorList.empty();
-        if(data.label_error) {
-            errorList.append('<li>Error: Label is already used</li>')
-        }
-        $.each(data.errors, function(i, error) {
-            errorList.append('<li>' + error + '</li>')
-        })
+    	$(ui.panel).html(data.html);
+    	onAddressTabEditPageLoad(ui);
     }
 }
 
@@ -91,14 +85,8 @@ function onNewAddressSuccess(data, ui) {
         
         atabs.tabs('add', viewUrl, data.label, length - 1);
     } else {
-        errorList = $('#newAddressErrors');
-        errorList.empty();
-        if(data.label_error) {
-            errorList.append('<li>' + getLabelDuplicationError() + '</li>')
-        }
-        $.each(data.errors, function(i, error) {
-            errorList.append('<li>' + error + '</li>')
-        })
+    	$(ui.panel).html(data.html);
+        onNewAddressSubmit(ui);
     }
 }
 

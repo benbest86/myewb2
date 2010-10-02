@@ -25,7 +25,7 @@ from types import ListType
 from mailer import send_mail
 from apps.creditcard.utils import *
 from apps.creditcard.models import Payment, Product
-from siteutils.forms import AddressField
+from siteutils.forms import AddressField, CompactAddressField
 from siteutils.models import Address
 
 from contrib.uni_form.helpers import FormHelper, Submit, Reset
@@ -105,7 +105,8 @@ class PaymentForm(forms.ModelForm):
                                label='products',
                                widget=ProductWidget)
     
-    address = AddressField(label='Billing Address')
+    #address = AddressField(label='Billing Address')
+    address = CompactAddressField(label='Billing Address')
         
 	# this gets set if the card is declined at the bank
     trnError = None
@@ -123,7 +124,8 @@ class PaymentForm(forms.ModelForm):
                              'cc_expiry',
                              css_class='inlineLabels'),
                     Fieldset('Your information',
-                             'address'),
+                             'address',
+                             css_class='inlineLabels'),
                     Fieldset('',
                              'phone',
                              'email',

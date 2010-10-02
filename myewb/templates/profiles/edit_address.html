@@ -7,7 +7,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 
 <div class="editAddressErrors" id="edit-address-errors-{{ address.label }}"></div>
 
-<form class="uniForm editAddress" id="edit-address-{{ address.label }}" method="POST" action="" onsubmit="return false;">
+<form class="uniForm editAddress" id="edit-address-{{ address.label }}" method="POST" action="{% url profile_edit_address other_user.username address.label %}" onsubmit="return false;">
     <fieldset class="inlineLabels" style="margin-right: 1px;">  
         {{ form|as_uni_form }}
         <div class="form_block">
