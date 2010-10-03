@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, HttpResponseForbidden
 
 from siteutils.http import JsonResponse
+import settings
 
 urlpatterns = patterns('siteutils.shortcuts',
     url(r'^posts/Any$', 'redirect_to_reverse', {'url': 'topic_feed_all',
@@ -29,6 +30,7 @@ urlpatterns = patterns('siteutils.shortcuts',
 urlpatterns += patterns('legacy_urls.api',
     url(r'^login/null$', 'login'),
     url(r'^login2/null$', 'login', kwargs={'details': True}),
+    url(r'^userdetails/(?P<userid>\d+)/(?P<api_key>\w+)$', 'userdetails'),
     )
 
 def login(request, details=False):
@@ -71,3 +73,27 @@ def login(request, details=False):
             return HttpResponse("false")
         
     return HttpResponseForbidden()
+
+def userdetails(request, userid, api_key):
+    if api_key != settings.API_KEY:
+        return HttpResponseForbidden()
+    
+    user = get_object_or_404(User, id=userid)
+    
+    response = {}
+    response['userid'] = str(user.id)
+    response['email'] = user.email
+    response['firstname'] = user.first_name
+    response['lastname'] = user.last_name
+    response['myewbprofilelink'] = user.get_profile().get_absolute_url()
+    #response['myewbprofilephoto']
+    response['phonenumber'] = user.get_profile().default_phone().number
+    response['addresslineone'] = user.get_profile().default_address().street 
+    response['city'] = user.get_profile().default_address().city
+    response['postalcode'] = user.get_profile().default_address().postal_code 
+    response['province'] = user.get_profile().default_address().province 
+    response['country'] = user.get_profile().default_address().country
+    response['preferredlanguage'] = user.get_profile().language 
+    
+    return JsonResponse(response)
+    

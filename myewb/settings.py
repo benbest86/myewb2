@@ -366,7 +366,7 @@ AVATAR_DEFAULT_URL =  MEDIA_URL + 'images/nophoto.gif'
 AVATAR_GRAVATAR_BACKUP = False
 
 CONF_HASH = ""
-
+API_KEY = ""
 
 # local_settings.py can be used to override environment-specific settings
 # like database and email that differ between development and production.
