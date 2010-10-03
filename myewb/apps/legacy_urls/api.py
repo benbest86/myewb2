@@ -87,12 +87,14 @@ def userdetails(request, userid, api_key):
     response['lastname'] = user.last_name
     response['myewbprofilelink'] = user.get_profile().get_absolute_url()
     #response['myewbprofilephoto']
-    response['phonenumber'] = user.get_profile().default_phone().number
-    response['addresslineone'] = user.get_profile().default_address().street 
-    response['city'] = user.get_profile().default_address().city
-    response['postalcode'] = user.get_profile().default_address().postal_code 
-    response['province'] = user.get_profile().default_address().province 
-    response['country'] = user.get_profile().default_address().country
+    if user.get_profile().default_phone():
+        response['phonenumber'] = user.get_profile().default_phone().number
+    if user.get_profile().default_address():
+        response['addresslineone'] = user.get_profile().default_address().street 
+        response['city'] = user.get_profile().default_address().city
+        response['postalcode'] = user.get_profile().default_address().postal_code 
+        response['province'] = user.get_profile().default_address().province 
+        response['country'] = user.get_profile().default_address().country
     response['preferredlanguage'] = user.get_profile().language 
     
     return JsonResponse(response)
