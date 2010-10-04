@@ -23,8 +23,8 @@
 	{% for z in income %}		
 	<tr>
 		<td>{{z.0}}</td>
-		<td>{{ z.1.amount|floatformat:2 }}</td>
-		<td align = "centre">{{z.2}}</td>
+		<td>{{ z.1.amount }}</td>
+		<td align = "right">{{z.2|floatformat:2}}</td>
 	</tr>
 	{% endfor %}
 	<tr>
@@ -35,8 +35,8 @@
 	{% for z in expenditure %}		
 	<tr>
 		<td>{{z.0}}</td>
-		<td>{{ z.1.amount|floatformat:2 }}</td>
-		<td align = "centre">{{z.2}}</td>
+		<td>{{ z.1.amount}}</td>
+		<td align = "right">{{z.2|floatformat:2}}</td>
 	</tr>
 	{% endfor %}
 	</table>

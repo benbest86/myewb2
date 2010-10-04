@@ -22,25 +22,25 @@
 			<tr>
 				<td> {{t.0.category.name}} </td> 
 				<td align = "center"> {{t.0.amount|floatformat:2}} </td>
-				{% if t.2 %} <td style="color: red;" align="center"> {% else %} <td align="center"> {% endif %} {{t.1}}  </td>
+				{% if t.2 %} <td style="color: red;" align="center"> {% else %} <td align="center"> {% endif %} {{t.1|floatformat:2}}  </td>
 			</tr>
 		{% endfor %}
 		<tr>
 			<td><b>Total Income</b></td>
-			<td  align = "center">{{total_budgetincome|floatformat:2}}</td>
-			<td  align = "center">{{total_income|floatformat:2}}</td>
+			<td  align = "center"><b>{{total_budgetincome|floatformat:2}}</b></td>
+			<td  align = "center"><b>{{total_income|floatformat:2}}</b></td>
 		</tr>
 		{% for t in expenditure %}
 			<tr>
 				<td> {{t.0.category.name}} </td> 
 				<td align = "center"> {{t.0.amount|floatformat:2}} </td>
-				{% if t.2 %} <td style="color: red;" align="center"> {% else %} <td align="center"> {% endif %} {{t.1}}  </td>
+				{% if t.2 %} <td style="color: red;" align="center"> {% else %} <td align="center"> {% endif %} {{t.1|floatformat:2}}  </td>
 			</tr>
 		{% endfor %}
 		<tr>
 			<td><b>Total Expenditure</b> </td>
-			<td  align = "center">{{total_budgetexpenditure|floatformat:2}}</td>
-			<td  align = "center">{{total_expenditure|floatformat:2}}</td>
+			<td  align = "center"><b>{{total_budgetexpenditure|floatformat:2}}</b></td>
+			<td  align = "center"><b>{{total_expenditure|floatformat:2}}</b></td>
 		</tr>
 			<tr>
 			<td><b>Net</b> </td>

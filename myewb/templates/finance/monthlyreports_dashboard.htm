@@ -23,7 +23,7 @@
 		<tr>
 		{% if m.2 %}<td><a href="{% url monthlyreports_id group_slug=m.2.group.slug id=m.2.id %}" >Submitted </a>{% else %}<td style="color: red;">Not Submitted {% endif %}</td>
 		{% if m.1 %}<td><a href="{% url monthlyreports_id group_slug=m.1.group.slug id=m.1.id %}" >Submitted </a>{% else %}<td style="color: red;">Not Submitted {% endif %}</td>
-		<td>{{m.0}}</td>
+		<td><a href="{% url summary group_slug=m.0.slug %}">{{m.0.name}}</a></td>
 		<td>{{m.1.creator}}</td>
 		<td>{{m.1.enter_date}}</td>
 

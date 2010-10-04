@@ -61,7 +61,7 @@
 		{% ifequal trans.submitted "Y" %}
 		<tr>
 		<td>Monthly Report</td>
-		<td>{% ifequal trans.submitted "Y" %}<a href = "{% url monthlyreports_id id=trans.monthlyreport.id  group_slug=group.slug %}">{{trans.monthlyreport.date|date:"M Y"}}</a>{% else %} {% endifequal %}</td>
+		<td>{% if trans.monthlyreport %}<a href = "{% url monthlyreports_id id=trans.monthlyreport.id  group_slug=group.slug %}">{{trans.monthlyreport.date|date:"M Y"}}</a> {% else %}None{% endif %}</td>
 		</tr>
 		{% endifequal %}
 		
