@@ -21,10 +21,11 @@ from conference.models import ConferenceRegistration, ConferenceCode, InvalidCod
 from conference.utils import needsToRenew
 from creditcard.models import CC_TYPES, Product
 from creditcard.forms import CreditCardNumberField, CreditCardExpiryField, PaymentFormPreview
+from siteutils.forms import CompactAddressField
 
 class ConferenceRegistrationForm(forms.ModelForm):
     theuser = None
-	
+
     # TODO: find list of chapters a user is in, and present a drop-down if 
     # they are apart of multiple ones?  maybe?
 	#chapters = [('none', _('(none)'))]
@@ -59,50 +60,38 @@ class ConferenceRegistrationForm(forms.ModelForm):
 							 help_text="""<table border='1' class='descform'>
   <tr>
     <th>&nbsp;</th>
-    <th>Quad room</th>
-    <th>Double room</th>
-    <th>Single room</th>
+    <th>Shared bed</th>
+    <th>Single bed</th>
     <th>No room</th>
   </tr>
   <tr>
-    <th>University chapters: Manitoba - BC</th>
-    <td>$175</td>    
-    <td>$305</td>    
-    <td>$565</td>    
-    <td>$140</td>    
+    <th>University chapters: BC/AB/NF</th>
+    <td>$100</td>    
+    <td>$220</td>    
+    <td>$80</td>    
   </tr>
   <tr>
-    <th>University chapters: Nova Scotia - Ontario</th>
-    <td>$250</td>    
-    <td>$380</td>    
-    <td>$645</td>    
-    <td>$215</td>    
+    <th>University chapters: SK/MB/NB/NS</th>
+    <td>$200</td>    
+    <td>$320</td>    
+    <td>$160</td>    
   </tr>
   <tr>
-    <th>University chapters: Newfoundland</th>
+    <th>University chapters: ON/QB</th>
+    <td>$350</td>    
+    <td>$470</td>    
+    <td>$280</td>    
+  </tr>
+  <tr>
+    <th>Unsubsidized (no registration code)</th>
+    <td>$620</td>
+    <td>$740</td>    
     <td>$500</td>    
-    <td>$630</td>    
-    <td>$890</td>    
-    <td>$460</td>    
-  </tr>
-  <tr>
-    <th>City chapters: Manitoba - BC</th>
-    <td>$400</td>    
-    <td>$530</td>    
-    <td>$660</td>    
-    <td>$300</td>    
-  </tr>
-  <tr>
-    <th>City chapters: Nova Scotia - Ontario</th>
-    <td>$475</td>    
-    <td>$605</td>    
-    <td>$735</td>    
-    <td>$380</td>    
   </tr>
 </table>""")
     
     code = forms.CharField(label='Registraton code',
-						   help_text='please enter the registration code sent to you by your chapter president. Note that registration codes are required this year.')
+						   help_text='if you have a registration code, enter it here for a discounted rate.')
     africaFund = forms.BooleanField(label='Support an African delegate?',
 								    required=False,
 								    help_text='check to contribute an additional $20 (non-refundable) towards a fund to bring young African leaders to the conference as delegates.')
@@ -110,13 +99,14 @@ class ConferenceRegistrationForm(forms.ModelForm):
     ccardtype = forms.ChoiceField(label='Credit card type',
 								  choices=CC_TYPES)
     billing_name = forms.CharField(label='Name on credit card', max_length=255)
+    #address = CompactAddressField(label='Billing Address')
     cc_number = CreditCardNumberField(label='Credit card number')
     cc_expiry = CreditCardExpiryField(label='Credit card expiry',
                                       help_text='MM/YY')
         
+    """
     challenge = forms.CharField(label='Your answer',
 							    widget=forms.Textarea)
-    """
     malawiwatsan = forms.ChoiceField(label='Water and Sanitation in Malawi',
 									 choices=OVRANK)
     malawiagric =  forms.ChoiceField(label='Agriculture in Zambia/Malawi',
@@ -133,9 +123,11 @@ class ConferenceRegistrationForm(forms.ModelForm):
     trnError = None
 
     class Meta:
-		model = ConferenceRegistration
-		exclude = ('user', 'amountPaid', 'roomSize', 'type', 'date', 
-				   'cancelled', 'receiptNum', 'chapter', 'txid')
+        model = ConferenceRegistration
+        #fields = ['headset', 'foodprefs', 'specialNeeds', 'emergName', 'emergPhone',
+        #          'prevConfs', 'prevRetreats', 'code', 'type', 'africaFund']
+        exclude = ('user', 'amountPaid', 'roomSize', 'type', 'date',
+                       'cancelled', 'receiptNum', 'chapter', 'txid', 'challenge')
 
     def clean_code(self):
         codestring = self.cleaned_data['code'].strip().lower()
@@ -156,6 +148,15 @@ class ConferenceRegistrationForm(forms.ModelForm):
         if self.trnError:
             raise forms.ValidationError(self.trnError)
         return self.cleaned_data
+
+    """
+    _user = None
+    def _get_user(self):
+        return self._user
+    def _set_user(self, value):
+        self.fields['address'].user = value
+    user = property(_get_user, _set_user)
+    """
 
 class ConferenceRegistrationFormPreview(PaymentFormPreview):
     preview_template = 'conference/preview.html'

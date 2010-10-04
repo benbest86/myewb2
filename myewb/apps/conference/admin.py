@@ -14,7 +14,7 @@ class RegistrationAdmin(admin.ModelAdmin):
     list_display = ('user', 'amountPaid', 'roomSize', 'type',
                     'date', 'headset', 'foodPrefs', 'cancelled', 
                     'specialNeeds', 'emergName', 'emergPhone', 'code',
-                    'prevConfs', 'prevRetreats', 'challenge')
+                    'prevConfs', 'prevRetreats')
 
 admin.site.register(ConferenceRegistration, RegistrationAdmin)
 

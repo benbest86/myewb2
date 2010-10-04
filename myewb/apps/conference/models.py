@@ -16,7 +16,6 @@ class ConferenceRegistration(models.Model):
     
     amountPaid = models.DecimalField(max_digits=6, decimal_places=2)
     roomSize = models.IntegerField()
-    type = models.CharField(max_length=50)
     date = models.DateTimeField(default=datetime.now)
     headset = models.BooleanField(default=False)
     foodPrefs = models.CharField(max_length=10, choices=FOOD_CHOICES, default='none')
@@ -24,19 +23,22 @@ class ConferenceRegistration(models.Model):
     specialNeeds = models.TextField()
     emergName = models.CharField(max_length=255)
     emergPhone = models.CharField(max_length=50)
-    code = models.ForeignKey('ConferenceCode', related_name="registration")
     prevConfs = models.SmallIntegerField()
     prevRetreats = models.SmallIntegerField()
     
+    """
     challenge = models.TextField()
     malawiwatsan = models.SmallIntegerField()
     malawiagric =  models.SmallIntegerField()
     ghanaagric = models.SmallIntegerField()
     burkinaagric = models.SmallIntegerField()
     ghanagari = models.SmallIntegerField()
+    """
     
     txid = models.CharField(max_length=255)
     receiptNum = models.CharField(max_length=255)
+    code = models.ForeignKey('ConferenceCode', related_name="registration", blank=True, null=True)
+    type = models.CharField(max_length=50)
     africaFund = models.BooleanField()
 
     def cancel(self):

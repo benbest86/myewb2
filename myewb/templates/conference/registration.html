@@ -1,7 +1,7 @@
 {% extends 'events/base.html' %}
 
 {% load i18n %}
-{% load uni_form %}
+{% load uni_form_tags %}
 {% load avatar_tags %}
 {% load threadedcommentstags %}
 {% load pagination_tags %}
@@ -92,6 +92,7 @@
 					</td>
 				</tr>
 				
+				{% comment %}
 				<tr>
 					<th>
 						Address
@@ -104,6 +105,7 @@
 						{{ user.get_profile.country }}
 					</td>
 				</tr>
+				{% endcomment %}
 				
 				<tr>
 					<th>
@@ -119,7 +121,11 @@
 						Student status
 					</th>
 					<td>
-						{{ user.get_profile.student }}
+						{% if user.get_profile.student %}
+							Yes
+						{% else %}
+							No
+						{% endif %}
 					</td>
 				</tr>
 				
@@ -134,7 +140,8 @@
 				
 				<tr>
 					<td colspan="2">
-						<em>To change your personal details, please update your profile information.</em>
+						<em>To change your personal details, please
+						<a href="{% url profile_edit %}">update your profile information</a>.</em>
 					</td>
 				</tr>
 				
@@ -145,7 +152,9 @@
 				</tr>
 				
 				
-				{{ form.as_table }} 
+				{# {{ form.as_table }} #}
+				
+				<hr/> 
 			
 				<tr style="border: none;">
 					<th>&nbsp;</th>
@@ -156,6 +165,11 @@
 				</tr>
 			</table>
         </form>
+				<form class="uniForm">
+					<fieldset class="inlineLabels">
+						{{ form|as_uni_form }}
+					</fieldset>
+				</form>
 
 	{% else %}
 		<br />

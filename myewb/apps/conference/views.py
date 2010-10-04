@@ -41,11 +41,13 @@ def view_registration(request):
         if request.method == 'POST':
             # or, in this case, process the registration form...
             form = ConferenceRegistrationForm(request.POST)
+            form.user = user
             if form.is_valid():
                 registration = form.save()
                 
         else:
             form = ConferenceRegistrationForm()
+            form.user = user
                 
     return render_to_response('conference/registration.html',
                               {'registration': registration,
