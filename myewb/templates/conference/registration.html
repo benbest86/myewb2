@@ -9,167 +9,110 @@
 {% load group_tags %}
 {% load topics_tags %}
 
-{% block head_title %}National Conference 2010{% endblock %}
+{% block head_title %}National Conference 2011{% endblock %}
 
 {% block body %}
 <br/><br/>
 
 	<style type="text/css">
-		.tableform tr
+		.descform
 		{
-		  border-bottom: 1px solid #d0d0d0;
+			margin-left: 34%;
+			width: auto;
+			position: static;
 		}
-		
-		.tableform th, .tableform td
-		{
-		  vertical-align: top;
-		  padding: 10px 0;
-		}
-		
-		.tableform ul
-		{
-		  margin: 0;
-		  padding: 0;
-		}
-		
-		.tableform li
-		{
-		  list-style: none;
-		}
-		
 		.descform th, .descform td
 		{
 			align: center;
 			padding: 10px;
 		}
+		label
+		{
+			text-align: right;
+			font-weight: bold;
+		}
+		li label
+		{
+			text-align: left;
+			font-weight: normal;
+		} 
+		div.heading
+		{
+			font-weight: bold;
+			font-size: 1.5em;
+			text-align: center;
+		}
+		.uniForm .inlineLabels select, .uniForm select
+		{
+			width: auto;
+		}
 	</style> 
 
 
-	<h1>National Conference 2010</h1>
+	<h1>National Conference 2011</h1>
 
-	{% if not registration %}    
+	{% if not registration %}
+		<br/>
+		<p>Register for the conference!</p>
+		<p>Some other text about registration details will go here...</p>
+		<p>Form user: {{ form.user }} - {{ form.user.visible_name }}</p>
 		<br/>
 		
-		{% comment %}
-		<!--  uni_form layout is horribly broken!! =(  -->
-		<form class="uniForm" id="edit-member" method="POST" action="">
-			<fieldset class="inlineLabels"> 
-				{{ form|as_uni_form }}
-				<div class="form_block">
-					<input type="hidden" name="action" value="update" />
-					<input type="submit" value="{% trans "updated" %}"/>
-				</div>
-            </fieldset> 
-        </form>
-        {% endcomment %}
-
-		<form id="conf-registration" method="POST" action="{% url conference_preview %}">
-			<table class="tableform">
-				<tr>
-					<th>
-						Name
-					</th>
-					<td>
-						{{ user.first_name}} {{user.last_name }}
-					</td>
-				</tr>
-				
-				<tr>
-					<th>
-						Email
-					</th>
-					<td>
-						{{ user.email }}
-					</td>
-				</tr>
-				
-				<tr>
-					<th>
-						Phone number
-					</th>
-					<td>
-						{{ user.get_profile.home_phone_number }}
-					</td>
-				</tr>
-				
-				{% comment %}
-				<tr>
-					<th>
-						Address
-					</th>
-					<td>
-						{{ user.get_profile.street_address }}<br/>
-						{{ user.get_profile.street_address_two }} <br/>
-						{{ user.get_profile.city }}, {{ user.get_profile.province }}<br/>
-						{{ user.get_profile.postal_code }}<br/>
-						{{ user.get_profile.country }}
-					</td>
-				</tr>
-				{% endcomment %}
-				
-				<tr>
-					<th>
-						Gender
-					</th>
-					<td>
-						{{ user.get_profile.gender }}
-					</td>
-				</tr>
-				
-				<tr>
-					<th>
-						Student status
-					</th>
-					<td>
-						{% if user.get_profile.student %}
-							Yes
-						{% else %}
-							No
-						{% endif %}
-					</td>
-				</tr>
-				
-				<tr>
-					<th>
-						Preferred language
-					</th>
-					<td>
-						{{ user.get_profile.language }}
-					</td>
-				</tr>
-				
-				<tr>
-					<td colspan="2">
-						<em>To change your personal details, please
-						<a href="{% url profile_edit %}">update your profile information</a>.</em>
-					</td>
-				</tr>
-				
-				<tr>
-					<td colspan="2">
-						&nbsp;
-					</td>
-				</tr>
-				
-				
-				{# {{ form.as_table }} #}
-				
-				<hr/> 
+		<form id="conf-registration" method="POST" action="{% url conference_preview %}" class="uniForm" enctype="multipart/form-data">
+			<fieldset class="inlineLabels">
+				<div class="heading">Personal Details</div>
 			
-				<tr style="border: none;">
-					<th>&nbsp;</th>
-					<td>
-						<input type="hidden" name="action" value="preview" />
-						<input type="submit" value="{% trans "preview" %}"/>
-					</td>
-				</tr>
-			</table>
-        </form>
-				<form class="uniForm">
-					<fieldset class="inlineLabels">
-						{{ form|as_uni_form }}
-					</fieldset>
-				</form>
+				<div class="ctrlHolder">
+					{{ user.first_name}} {{user.last_name }}
+					<label>Name</label>
+				</div>
+			
+				<div class="ctrlHolder">
+					{{ user.email }}
+					<label>Email</label>
+				</div>
+				
+				<div class="ctrlHolder">
+					{{ user.get_profile.default_phone }}
+					<label>Phone Number</label>
+				</div>
+				
+				<div class="ctrlHolder">
+					{{ user.get_profile.gender }}
+					<label>Gender</label>
+				</div>
+				
+				<div class="ctrlHolder">
+					{% if user.get_profile.student %}
+						Yes
+					{% else %}
+						No
+					{% endif %}
+					<label>Student status</label>
+				</div>
+				
+				<div class="ctrlHolder">
+					{{ user.get_profile.language }}
+					<label>Preferred language</label>
+				</div>
+
+				<div class="ctrlHolder" style="text-align: center;">
+					<em>To change your personal details, please
+					<a href="{% url profile_edit %}" target="_new">update your myEWB profile</a>.</em>
+				</div>
+				<hr/>
+
+				<div class="heading">Registration Details</div>
+										
+				{{ form|as_uni_form }}
+				
+	            <div class="form_block ctrlHolder">
+	                <input type="submit" value="Preview your registration" />
+	                <label>&nbsp;</label>
+	            </div>
+				
+			</fieldset>
+		</form>
 
 	{% else %}
 		<br />
@@ -190,7 +133,7 @@
 
 		<br />
 		<br />
-		<p>Keep checking the conference website at <a href="http://conference2010.ewb.ca/">http://conference2010.ewb.ca</a> for up-to-date information regarding the conference!</p>
+		<p>Keep checking the conference website at <a href="http://conference2011.ewb.ca/">http://conference2011.ewb.ca</a> for up-to-date information regarding the conference!</p>
 
 	{% endif %}
 

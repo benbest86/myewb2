@@ -7,6 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from conference.constants import *
 from networks.models import Network, ChapterInfo
+from siteutils.models import Address
 
 class ConferenceRegistration(models.Model):
     """Conference registration data"""
@@ -15,7 +16,7 @@ class ConferenceRegistration(models.Model):
     chapter = models.ForeignKey(Network, related_name="conference_delegates", null=True)
     
     amountPaid = models.DecimalField(max_digits=6, decimal_places=2)
-    roomSize = models.IntegerField()
+    roomSize = models.CharField(max_length=25)
     date = models.DateTimeField(default=datetime.now)
     headset = models.BooleanField(default=False)
     foodPrefs = models.CharField(max_length=10, choices=FOOD_CHOICES, default='none')
@@ -25,6 +26,7 @@ class ConferenceRegistration(models.Model):
     emergPhone = models.CharField(max_length=50)
     prevConfs = models.SmallIntegerField()
     prevRetreats = models.SmallIntegerField()
+    cellphone = models.CharField(max_length=50, blank=True, null=True)
     
     """
     challenge = models.TextField()

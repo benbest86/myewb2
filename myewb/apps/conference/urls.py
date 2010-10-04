@@ -11,7 +11,7 @@ from conference.forms import ConferenceRegistrationForm, ConferenceRegistrationF
 
 urlpatterns = patterns('conference.views',
     url(r'^$', 'view_registration', name='confreg'),    
-    url(r'^preview/$', ConferenceRegistrationFormPreview(ConferenceRegistrationForm), name='conference_preview'),
+    url(r'^preview/$', 'registration_preview', name='conference_preview'),
     url(r'^receipt/$', 'receipt', name='conference_receipt'),    
     url(r'^cancel/$', 'cancel', name='conference_cancel'),    
     url(r'^list/$', 'list', name='conference_list'),    

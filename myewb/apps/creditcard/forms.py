@@ -250,7 +250,7 @@ class PaymentFormPreview(FormPreview):
     """
     def done(self, request, cleaned_data):
         
-        product = Product.objects.get(sku=cleaned_data['products'])
+        #product = Product.objects.get(sku=cleaned_data['products'])
         address = Address.objects.get(pk=cleaned_data['address'])
         if not request.user.get_profile() == address.content_object:
             return HttpResponseForbidden()

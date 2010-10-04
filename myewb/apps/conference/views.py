@@ -15,15 +15,19 @@ from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
+from django.contrib.contenttypes.models import ContentType
+from attachments.models import Attachment
 
 from base_groups.models import BaseGroup
-from conference.forms import ConferenceRegistrationForm, CodeGenerationForm
+from conference.forms import ConferenceRegistrationForm, ConferenceRegistrationFormPreview, CodeGenerationForm
 from conference.models import ConferenceRegistration, ConferenceCode
 from conference.constants import *
 from networks.models import ChapterInfo
 from profiles.models import MemberProfile
 from siteutils.shortcuts import get_object_or_none
+from siteutils.decorators import owner_required, secure_required
 
+@secure_required
 @login_required
 def view_registration(request):
     user = request.user
@@ -56,6 +60,24 @@ def view_registration(request):
                               },
                               context_instance=RequestContext(request)
                              )
+    
+@secure_required
+@login_required
+def registration_preview(request):
+#def pay_membership_preview(request, username):
+    username = request.user.username
+    
+    f = ConferenceRegistrationForm(request.POST, request.FILES)
+    if f.is_valid():
+        if f.cleaned_data.get('resume', None):
+            resume = Attachment()
+            resume.creator = request.user
+            resume.content_type = ContentType.objects.get_for_model(request.user)
+            resume.object_id = request.user.id
+            resume.attachment_file = f.cleaned_data['resume']
+            resume.save()
+            
+    return ConferenceRegistrationFormPreview(ConferenceRegistrationForm)(request, username=username)
         
 @login_required
 def receipt(request):
