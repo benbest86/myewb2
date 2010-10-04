@@ -75,7 +75,7 @@ class Category(models.Model):
         return self.name
 
 class Transaction(models.Model):  
-    bank_date = models.DateField('Bank Date', null=True, blank=True) 
+    bank_date = models.DateField('Bank Date (YYYY-MM-DD)', null=True, blank=True) 
     amount = models.DecimalField(max_digits=10, decimal_places=2)
 
     description = models.CharField(max_length = 100)
@@ -108,8 +108,8 @@ class Income(Transaction):
 class Expenditure(Transaction):
     payee = models.CharField(max_length = 200)
     cheque_num = models.IntegerField('Cheque Number', null=True, blank=True)
-    cheque_date = models.DateField('Cheque Date', null=True, blank=True)
-    hst = models.DecimalField('HST', max_digits=10, decimal_places=2, null=True, blank=True)
+    cheque_date = models.DateField('Cheque Date (YYYY-MM-DD)', null=True, blank=True)
+    hst = models.DecimalField('HST (0.00)', max_digits=10, decimal_places=2, null=True, blank=True)
 #    reciept_img = models.FileField('Receipt Image', upload_to = 'receipt_images', null=True, blank=True)
     
     def __unicode__(self):
@@ -123,7 +123,7 @@ class Donation(Income):
     province = models.CharField('Province/State', max_length = 50) 
     country = models.CharField(max_length = 200)
     postal = models.CharField('Postal Code', max_length = 200)
-    cheque_date = models.DateField('Cheque Date', null=True, blank=True)
+    cheque_date = models.DateField('Cheque Date (YYYY-MM-DD)', null=True, blank=True)
     cheque_num = models.CharField('Cheque Number', max_length=3, null=True, blank=True)
     taxreceipt = models.CharField('Tax Reciept? (Y/N)', max_length = 1)
     cheque_img = models.FileField('Cheque Image', upload_to = 'donation_cheques', null=True, blank=True)
@@ -131,8 +131,8 @@ class Donation(Income):
 
 class Budget(models.Model):
     name = models.CharField('Budget Name', max_length = 30)
-    start_date = models.DateField('Start Date')
-    end_date = models.DateField('End Date')
+    start_date = models.DateField('Start Date (YYYY-MM-DD)')
+    end_date = models.DateField('End Date (YYYY-MM-DD)')
     
 #    linked objects
     group = models.ForeignKey(BaseGroup)
@@ -181,7 +181,7 @@ class TransactionForm(ModelForm):
     
     class Meta:
         model = Transaction
-        exclude = ('enter_date','entered_by')
+        exclude = ('enter_date','account')
     
     def clean_bank_date(self):
         bank_date = self.cleaned_data['bank_date']
@@ -202,7 +202,7 @@ class IncomeForm(ModelForm):
     
     class Meta:
         model = Income
-        exclude = ('enter_date', 'type', 'monthlyreport','submitted','entered_by', 'group', 'creator', 'editor')
+        exclude = ('enter_date', 'type', 'monthlyreport','submitted','account', 'group', 'creator', 'editor')
     
     def clean_bank_date(self):
         bank_date = self.cleaned_data['bank_date']
@@ -234,7 +234,7 @@ class IncomeEditForm(ModelForm):
     
     class Meta:
         model = Income
-        exclude = ('enter_date','monthlyreport', 'type', 'submitted','entered_by', 'amount', 'bank_date', 'group', 'creator', 'editor')
+        exclude = ('enter_date','monthlyreport', 'type', 'submitted','account', 'amount', 'bank_date', 'group', 'creator', 'editor')
     
     def clean_bank_date(self):
         bank_date = self.cleaned_data['bank_date']
@@ -263,7 +263,7 @@ class IncomeStaffForm(ModelForm):
     
     class Meta:
         model = Income
-        exclude = ('enter_date','type','entered_by', 'group', 'creator', 'editor')
+        exclude = ('enter_date','type', 'group', 'creator', 'editor')
     
     def clean_category(self):
         category = self.cleaned_data['category']
@@ -282,7 +282,7 @@ class ExpenditureForm(ModelForm):
     
     class Meta:
         model = Expenditure
-        exclude = ('enter_date','monthlyreport', 'type', 'submitted','entered_by', 'group', 'creator', 'editor')
+        exclude = ('enter_date','monthlyreport', 'type', 'submitted','account', 'group', 'creator', 'editor')
     
     def clean_bank_date(self):
         bank_date = self.cleaned_data['bank_date']
@@ -313,7 +313,7 @@ class ExpenditureEditForm(ModelForm):
     
     class Meta:
         model = Expenditure
-        exclude = ('enter_date','monthlyreport', 'type', 'submitted','entered_by', 'amount', 'bank_date', 'group', 'creator', 'editor')
+        exclude = ('enter_date','monthlyreport', 'type', 'submitted','account', 'amount', 'bank_date', 'group', 'creator', 'editor')
     
     def clean_bank_date(self):
         bank_date = self.cleaned_data['bank_date']
@@ -342,7 +342,7 @@ class ExpenditureStaffForm(ModelForm):
     
     class Meta:
         model = Expenditure
-        exclude = ('enter_date','type','entered_by', 'group', 'creator', 'editor')
+        exclude = ('enter_date','type', 'group', 'creator', 'editor')
     
     def clean_category(self):
         category = self.cleaned_data['category']
@@ -360,7 +360,7 @@ class DonationEditForm(ModelForm):
     
     class Meta:
         model = Expenditure
-        exclude = ('enter_date','monthlyreport', 'type', 'submitted','entered_by', 'amount', 'bank_date', 'group', 'creator', 'editor')
+        exclude = ('enter_date','monthlyreport', 'type', 'submitted','account', 'amount', 'bank_date', 'group', 'creator', 'editor')
     
     def clean_bank_date(self):
         bank_date = self.cleaned_data['bank_date']
@@ -378,7 +378,7 @@ class DonationForm(ModelForm):
     
     class Meta:
         model = Donation
-        exclude = ('enter_date','monthlyreport', 'type', 'submitted','entered_by', 'event', 'category', 'group', 'creator', 'editor')
+        exclude = ('enter_date','monthlyreport', 'type', 'submitted','account', 'event', 'category', 'group', 'creator', 'editor')
     
     
     def clean_bank_date(self):
@@ -399,4 +399,4 @@ class DonationStaffForm(ModelForm):
     
     class Meta:
         model = Donation
-        exclude = ('enter_date','type','entered_by', 'group', 'creator', 'editor')
+        exclude = ('enter_date','type', 'group', 'creator', 'editor')

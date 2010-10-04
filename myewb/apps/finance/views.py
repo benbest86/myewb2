@@ -421,18 +421,19 @@ def summary(request, group_slug, year=None, month=None):
 
 @staff_member_required
 def summary_no(request, year=None, month=None):
-    trans_chap = Transaction.objects.filter(bank_date__isnull = False, bank_date__lte = datetime.date.today())
-    income_chap = Income.objects.filter(bank_date__isnull = False, bank_date__lte = datetime.date.today())
-    expenditure_chap = Expenditure.objects.filter(bank_date__isnull = False, bank_date__lte = datetime.date.today())
-    donations_chap = Donation.objects.filter(bank_date__isnull = False, bank_date__lte = datetime.date.today())
+#    trans_chap = Transaction.objects.filter(bank_date__lte = datetime.date.today())
+    trans_chap = Transaction.objects.all()
+    income_chap = Income.objects.all()
+    expenditure_chap = Expenditure.objects.all()
+    donations_chap = Donation.objects.all()
     monthly_chap = MonthlyReport.objects.all()
         
     template_data = dict()
 
 #    determine account balances
-    ch_in = income_chap.filter(account="CH").aggregate(total=Sum('amount'))
-    ch_ex = expenditure_chap.filter(account="CH").aggregate(total=Sum('amount'))
-    chapter = trans_chap.filter(account="CH").aggregate(last_update=Max('bank_date'))
+    ch_in = income_chap.filter(bank_date__isnull = False, account="CH").aggregate(total=Sum('amount'))
+    ch_ex = expenditure_chap.filter(bank_date__isnull = False, account="CH").aggregate(total=Sum('amount'))
+    chapter = trans_chap.filter(bank_date__isnull = False, account="CH").aggregate(last_update=Max('bank_date'))
  
  #    if either of the totals is None, switch to 0    
     if not ch_in["total"]: 
@@ -466,6 +467,8 @@ def summary_no(request, year=None, month=None):
     total_bank_balance = chapter_balance + national_balance
     total_balance = total_bank_balance + outstanding_in["total"] - outstanding_ex["total"]
     
+    
+    
 #    now determine category breakdown
     if year:
         template_data['year'] = year
@@ -485,10 +488,10 @@ def summary_no(request, year=None, month=None):
     
     if trans_chap:
         template_data['empty'] = False
-        income_category = income_chap.values('category__name').annotate(totalcategory=Sum('amount'))
-        income_total = income_chap.aggregate(total = Sum('amount'))
-        expenditure_category = expenditure_chap.values('category__name').annotate(totalcategory=Sum('amount'))
-        expenditure_total = expenditure_chap.aggregate(total = Sum('amount'))
+        income_category = income_chap.filter(bank_date__isnull=False).values('category__name').annotate(totalcategory=Sum('amount'))
+        income_total = income_chap.filter(bank_date__isnull=False).aggregate(total = Sum('amount'))
+        expenditure_category = expenditure_chap.filter(bank_date__isnull=False).values('category__name').annotate(totalcategory=Sum('amount'))
+        expenditure_total = expenditure_chap.filter(bank_date__isnull=False).aggregate(total = Sum('amount'))
         
         if not income_total["total"]: 
             income_total["total"] = 0
@@ -1033,7 +1036,7 @@ def monthlyreports_dashboard(request, year=None, month=None):
         count = count + 1
         mr = mr_chap.filter(group = n.id, date__year = year, date__month = month)
         table.append([])
-        table[count].append(n.name)
+        table[count].append(n)
         if mr:
             for m in mr:
                 table[count].append(m)
@@ -1112,6 +1115,7 @@ def monthlyreports_id(request, id, group_slug):
         template_data['empty'] = True
       
 #    find previous income/expenditures in order to find beginning start balance
+#    this is a bit sketchy since it assumes reports are entered in in the right order - should be done by date 
     income_old = trans_chap.filter(monthlyreport__lt = id, monthlyreport__type = mtype, type = "IN").exclude(monthlyreport=None).aggregate(total = Sum('amount'))
     expenditure_old = trans_chap.filter(monthlyreport__lt = id, monthlyreport__type = mtype, type = "EX").exclude(monthlyreport=None).aggregate(total = Sum('amount'))
     
@@ -1366,7 +1370,7 @@ def account_balances (request):
             net_red = False
         
         table.append([])
-        table[count].append(n.name)
+        table[count].append(n)
         table[count].append(ch_balance)
         table[count].append(ch_red)
         table[count].append(no_balance)
@@ -1495,11 +1499,11 @@ def csv_donationreport(request, group_slug=None):
     row = ["Donation Report"]
     writer.writerow([fix_encoding(s) for s in row])
 #    TODO: make this actually look like the report
-    row = ["Account", "Type", "Bank Date", "Cheque Date", "Cheque Number", "Tax Receipt Required?", "Category", "Donor", "Address", "City", "Country", "Postal Code" "Description", "Amount"]
+    row = ["Account", "Type", "Bank Date", "Cheque Date", "Cheque Number", "Tax Receipt Required?", "Category", "Donor", "Address", "City", "Province", "Country", "Postal Code" "Description", "Amount"]
     writer.writerow([fix_encoding(s) for s in row])
     
     for t in donations:
-        row = [t.account, t.type, t.bank_date, t.cheque_date, t.cheque_num, t.taxreceipt, t.donation_category, t.donor, t.address, t.description, t.amount]
+        row = [t.account, t.type, t.bank_date, t.cheque_date, t.cheque_num, t.taxreceipt, t.donation_category, t.donor, t.address, t.city, t.province, t.country, t.postalcode, t.description, t.amount]
         writer.writerow([fix_encoding(s) for s in row])
     
     return response
@@ -1525,13 +1529,13 @@ def csv_accountingreport(request):
     writer.writerow([fix_encoding(s) for s in row])
     
     for t in donation:
-        row = [t.group.slug, t.account, t.type, t.bank_date, t.category, t.description, t.amount, "","" ,"" ,t.donation_category, t.donor]
+        row = [t.group.name, t.account, t.type, t.bank_date, t.category, t.description, t.amount, "","" ,"" ,t.donation_category, t.donor]
         writer.writerow([fix_encoding(s) for s in row])
     for t in income:
-        row = [t.group.slug, t.account, t.type, t.bank_date, t.category, t.description, t.amount, "","" ,"" ,"", "", ""]
+        row = [t.group.name, t.account, t.type, t.bank_date, t.category, t.description, t.amount, "","" ,"" ,"", "", ""]
         writer.writerow([fix_encoding(s) for s in row])
     for t in expenditure:
-        row = [t.group.slug, t.account, t.type, t.bank_date, t.category, t.description, t.amount, t.payee, t.cheque_num, t.hst, "", ""]
+        row = [t.group.name, t.account, t.type, t.bank_date, t.category, t.description, t.amount, t.payee, t.cheque_num, t.hst, "", ""]
         writer.writerow([fix_encoding(s) for s in row])
     
     return response
@@ -1699,7 +1703,7 @@ def upload_noreport(request):
 #            directory = request.POST["dir"]
 
             # open file
-            diskfile = tempfile.TemporaryFile()
+            diskfile = tempfile.TemporaryFile(mode='w+')
             uploadedfile = request.FILES['dir']
             # write file to disk
             for chunk in uploadedfile.chunks():
@@ -1713,12 +1717,14 @@ def upload_noreport(request):
             reader = csv.reader(diskfile)
 
             for r in reader:
+                print "row was read"
 #                determine what type of transaction
                 if r[0] == "EX":
                     exp = Expenditure()
                     exp.type = "EX"
                     exp.bank_date = datetime.date(year=int(r[11]), month=int(r[12]), day=int(r[13]))
                     exp.amount = r[2]
+#                    this is sketchy - should get the actual category
                     exp.category_id = r[3]
                     exp.description = r[4]
                     exp.payee = r[5]
@@ -1739,6 +1745,7 @@ def upload_noreport(request):
                     income.type = "IN"
                     income.bank_date = datetime.date(year=int(r[11]), month=int(r[12]), day=int(r[13]))
                     income.amount = r[2]
+#                    this is sketchy - should get the actual category
                     income.category_id = r[3]
                     income.description = r[4]
                     income.group_id = r[10]
@@ -1755,6 +1762,7 @@ def upload_noreport(request):
                     donation.type = "IN"
                     donation.bank_date = datetime.date(year=int(r[11]), month=int(r[12]), day=int(r[13]))
                     donation.amount = r[2]
+#                    this is sketchy - should get the actual category
                     donation.category_id = r[3]
                     donation.description = r[4]
                     donation.donor = r[5]
@@ -1773,11 +1781,6 @@ def upload_noreport(request):
                     transactions.append(donation)
                     current = donation
                     submit_notransaction(donation)
-                
-#            month of report
-#            month = form.month.month
-#            year = form.month.year               
-#            submit_noreport(transactions, month, year)
             
             return HttpResponseRedirect(reverse('view_allnoreports'))
     else:
@@ -1880,10 +1883,13 @@ def input_budgetitems(request, group_slug, budget):
 
 #    determine number of categories
     categories = Category.objects.all()
-    count = categories.count()
+    
+#    count_cat = Category.objects.aggregate(count = Count('id'))
+#    count = count_cat['count']
+    count_cat = categories.count()
     
 #    make number of forms for number of categories
-    budgetFormSet = formset_factory(BudgetItemForm, extra=count)
+    budgetFormSet = formset_factory(BudgetItemForm, extra=count_cat)
     
 #    this timeframe a year ago?
     start = budget.start_date - timedelta(days=365)
@@ -1981,6 +1987,7 @@ def view_budget(request, group_slug, budget):
         flag = True
         total_budgetincome = 0
         total_budgetexpenditure = 0
+        
 #        make table for budgeted versus actual
         for i in items:
             for t in trans:
@@ -2006,10 +2013,12 @@ def view_budget(request, group_slug, budget):
             if flag:
                 if i.type == "IN":
                     red = True
-                    income.append((i, 0.00, red))
+                    income.append((i, float(0), red))
+                    total_budgetincome = total_budgetincome + i.amount
                 else:
                     red = False
-                    expenditure.append((i, 0.00, red))
+                    expenditure.append((i, float(0), red))
+                    total_budgetexpenditure = total_budgetexpenditure + i.amount
             flag = True
         
         template_data['total_income'] = total_income['sum']

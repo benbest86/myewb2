@@ -14,7 +14,7 @@
 		</tr>
 		{% for t in table %}
 		<tr>
-		<td>{{t.0}}</td>
+		<td><a href="{% url summary group_slug=t.0.slug %}">{{t.0.name}}</a></td>
 		{% if t.2 %}<td style="color: red;" align = "right">{{t.1|floatformat:2}}{% else %}<td align = "right">{{t.1|floatformat:2}}{% endif %}</td>
 		{% if t.4 %}<td style="color: red;" align = "right">{{t.3|floatformat:2}}{% else %}<td align = "right">{{t.3|floatformat:2}}{% endif %}</td>
 		{% if t.6 %}<td style="color: red;" align = "right">{{t.5|floatformat:2}}{% else %}<td align = "right">{{t.5|floatformat:2}}{% endif %}</td>
