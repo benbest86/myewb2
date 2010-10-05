@@ -245,7 +245,11 @@ class ConferenceRegistrationFormPreview(PaymentFormPreview):
             registration.txid = response[1]
             
             registration.save()
-
+            
+            # and update their membership if they paid it
+            if needsToRenew(request.user.get_profile()):
+                request.user.get_profile().pay_membership()
+            
             # don't do the standard render_to_response; instead, do a redirect
             # so that someone can't double-submit by hitting refresh
             return HttpResponseRedirect(reverse('confreg'))

@@ -22,6 +22,7 @@ from base_groups.models import BaseGroup
 from conference.forms import ConferenceRegistrationForm, ConferenceRegistrationFormPreview, CodeGenerationForm
 from conference.models import ConferenceRegistration, ConferenceCode
 from conference.constants import *
+from conference.utils import needsToRenew
 from networks.models import ChapterInfo
 from profiles.models import MemberProfile
 from siteutils.shortcuts import get_object_or_none
@@ -53,10 +54,13 @@ def view_registration(request):
             form = ConferenceRegistrationForm()
             form.user = user
                 
+    needsRenewal = needsToRenew(request.user.get_profile())
+
     return render_to_response('conference/registration.html',
                               {'registration': registration,
                                'form': form,
                                'user': request.user,
+                               'needsRenewal': needsRenewal
                               },
                               context_instance=RequestContext(request)
                              )

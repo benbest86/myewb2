@@ -105,6 +105,14 @@
 					{{ user.get_profile.language }}
 					<label>Preferred language</label>
 				</div>
+				
+				{% if needsRenewal %}
+					<div class="ctrlHolder">
+						You are not a paid member of EWB - the membership fee will be automatically added to your registration<br/>
+						($20 for students, $40 for professionals)<br/>
+						<label>EWB membership</label>
+					</div>
+				{% endif %}
 
 				<div class="ctrlHolder" style="text-align: center;">
 					<em>To change your personal details, please
