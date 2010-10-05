@@ -7,11 +7,11 @@
 {% block head_title %}{% trans "Login" %}{% endblock %}
 
 {% block body %}
-    <h1>{% trans "Log In" %} to MyEWB</h1>
+    <h1>Sign in to myEWB</h1>
     
     <p>
     	Please sign-in to your myEWB account to continue your registration.
-    	If you do not have a myEWB account, <a href="{{ signup_url}}" target="_new">click here</a>
+    	If you do not have a myEWB account, <a href="{% acct_signup %}" target="_new">click here</a>
     	to create one.
     </p>
 
