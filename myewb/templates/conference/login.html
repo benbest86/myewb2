@@ -1,0 +1,45 @@
+{% extends 'conference/confsite.html' %}
+
+{% load i18n %}
+{% load uni_form_tags %}
+{% load ifsetting_tag %}
+
+{% block head_title %}{% trans "Login" %}{% endblock %}
+
+{% block body %}
+    <h1>{% trans "Log In" %} to MyEWB</h1>
+    
+    <p>
+    	Please sign-in to your myEWB account to continue your registration.
+    	If you do not have a myEWB account, <a href="{{ signup_url}}" target="_new">click here</a>
+    	to create one.
+    </p>
+
+
+    <form class="login uniForm" method="post" action="">
+        <fieldset class="inlineLabels">
+            {{ form.as_p }}
+
+			<p><label for="id_login"></label>
+				<input type="submit" name="login" id="id_login" value="{% trans "Login" %}" />
+
+
+		    </p>
+
+			<p><label for="forgotten_password"></label>
+				<a href="{% url acct_passwd_reset %}" target="_new">{% trans "Forgot password?" %}</a>
+			</p>
+
+            <div class="form_block">
+                
+            </div>            
+        </fieldset>
+    </form>
+    
+{% endblock %}
+
+{% block extra_body %}
+<script type='text/javascript' charset="utf-8">
+    $("#id_username").focus();
+</script>
+{% endblock %}
