@@ -152,7 +152,7 @@ def list(request, chapter=None):
         # any group, not just a chapter.
         chapters = ChapterInfo.objects.all()
         
-        if not user.has_module_perms('conference'):
+        if not request.user.has_module_perms('conference'):
             # non-admins: only see chapters you're an exec of
             chapters.filter(network__members__user=request.user,
                             network__members__isAdmin=True)
@@ -178,7 +178,7 @@ def list(request, chapter=None):
     group = get_object_or_404(BaseGroup, slug=chapter)
     
     # permissions chcek!
-    if not group.user_is_admin(request.user) and not user.has_module_perms('conference'):
+    if not group.user_is_admin(request.user) and not request.user.has_module_perms('conference'):
         return render_to_response('denied.html', context_instance=RequestContext(request))
         
     registrations = ConferenceRegistration.objects.filter(user__member_groups__group=group,
@@ -192,7 +192,7 @@ def list(request, chapter=None):
     
 def generate_codes(request):
     # ensure only admins...
-    if user.has_module_perms('conference'):
+    if request.user.has_module_perms('conference'):
         codes = []
     
         if request.method == 'POST':
@@ -238,7 +238,7 @@ def generate_codes(request):
         return render_to_response('denied.html', context_instance=RequestContext(request))
 
 def lookup_code(request):
-    if user.has_module_perms('conference'):
+    if request.user.has_module_perms('conference'):
         if request.method == 'POST' and request.POST.get('code', None):
             code = get_object_or_none(ConferenceCode, code=request.POST['code'])
             
