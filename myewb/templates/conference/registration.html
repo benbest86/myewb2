@@ -79,46 +79,46 @@
 				<div class="heading">Personal Details</div>
 			
 				<div class="ctrlHolder">
-					{{ user.first_name}} {{user.last_name }}
 					<label>Name</label>
+					{{ user.first_name}} {{user.last_name }}
 				</div>
 			
 				<div class="ctrlHolder">
-					{{ user.email }}
 					<label>Email</label>
+					{{ user.email }}
 				</div>
 				
 				{% comment %}
 				<div class="ctrlHolder">
-					{{ user.get_profile.default_phone }}
 					<label>Phone Number</label>
+					{{ user.get_profile.default_phone }}
 				</div>
 				{% endcomment %}
 				
 				<div class="ctrlHolder">
-					{{ user.get_profile.gender }}
 					<label>Gender</label>
+					{{ user.get_profile.gender }}
 				</div>
 				
 				<div class="ctrlHolder">
+					<label>Student status</label>
 					{% if user.get_profile.student %}
 						Yes
 					{% else %}
 						No
 					{% endif %}
-					<label>Student status</label>
 				</div>
 				
 				<div class="ctrlHolder">
-					{{ user.get_profile.language }}
 					<label>Preferred language</label>
+					{{ user.get_profile.language }}
 				</div>
 				
 				{% if needsRenewal %}
 					<div class="ctrlHolder">
+						<label>EWB membership</label>
 						You are not a paid member of EWB - the membership fee will be automatically added to your registration<br/>
 						($20 for students, $40 for professionals)<br/>
-						<label>EWB membership</label>
 					</div>
 				{% endif %}
 
