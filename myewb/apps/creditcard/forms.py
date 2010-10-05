@@ -276,6 +276,7 @@ class PaymentFormPreview(FormPreview):
         
         product_count = 1
         total_cost = 0
+        product_list = []
         if isinstance(cleaned_data['products'],ListType):
             for sku in cleaned_data['products']:
                 product = Product.objects.get(sku=sku)
@@ -285,6 +286,7 @@ class PaymentFormPreview(FormPreview):
                 param['prod_cost_%s' % product_count] = product.amount
                 total_cost += Decimal(product.amount)
                 product_count = product_count + 1
+                product_list.append(product)
         else:
             product = Product.objects.get(sku=cleaned_data['products'])
             param['prod_id_1'] = product.sku
@@ -292,6 +294,7 @@ class PaymentFormPreview(FormPreview):
             param['prod_name_1'] = product.name
             param['prod_cost_1'] = product.amount
             total_cost += Decimal(product.amount)
+            product_list.append(product)
         
         param['trnAmount'] = total_cost
                 
@@ -320,7 +323,8 @@ class PaymentFormPreview(FormPreview):
         p.response="\n".join(result)
         p.amount = product.amount
         p.save()
-        p.products.add(product)
+        for prod in product_list:
+            p.products.add(prod)
         p.save()
         
         # return based on value
@@ -331,8 +335,8 @@ class PaymentFormPreview(FormPreview):
             c = Context({'name': cleaned_data['billing_name'],
                          'date': datetime.today(),
                          'txid': results['trnOrderNumber'],
-                         'product': product.name,
-                         'amount': product.amount})
+                         'product': product_list,
+                         'amount': total_cost})
             body = message.render(c)
 
             send_mail(subject='Credit Card Receipt',

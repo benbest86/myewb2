@@ -8,7 +8,8 @@ Issued to {{ name }}
 Transaction ID: {{ txid }}
 
 Receipt for:
-{{ product }} @ ${{ amount }}
+{% for p in product %}
+	{{ p.name }} @ ${{ p.amount }}{% endfor %}
 
 Total: ${{ amount }}
 
