@@ -18,7 +18,7 @@
 	{
 		border: 0px;
 	}
-	td.left
+	td.leftcell
 	{
 		text-align: right;
 		font-weight: bold;
@@ -35,29 +35,29 @@
 
 <table>
 	<tr>
-		<td class='left'>Name</td>
+		<td class='leftcell'>Name</td>
 		<td>{{ user.first_name}} {{user.last_name }}</td>
 	</tr>
 
 	<tr>
-		<td class='left'>Email</td>
+		<td class='leftcell'>Email</td>
 		<td>{{ user.email }}</td>
 	</tr>
 
 	{% comment %}
 	<tr>
-		<td class='left'>Phone number</td>
+		<td class='leftcell'>Phone number</td>
 		<td>{{ user.get_profile.default_phone }}</td>
 	</tr>
 	{% endcomment %}
 
 	<tr>
-		<td class='left'>Gender</td>
+		<td class='leftcell'>Gender</td>
 		<td>{{ user.get_profile.gender }}</td>
 	</tr>
 	
 	<tr>
-		<td class='left'>Student status</td>
+		<td class='leftcell'>Student status</td>
 		<td>
 			{% if user.get_profile.student %}
 				Yes
@@ -68,7 +68,7 @@
 	</tr>
 
 	<tr>
-		<td class='left'>Preferred language</td>
+		<td class='leftcell'>Preferred language</td>
 		<td>{{ user.get_profile.language }}</td>
 	</tr>
 
@@ -79,7 +79,7 @@
 	</tr>
 	
 	<tr>
-		<td class='left'>Headset requested</td>
+		<td class='leftcell'>Headset requested</td>
 		<td>
 			{% if form.headset.data %}
 				Yes
@@ -89,39 +89,39 @@
 		</td>
 	</tr>
 	<tr>
-		<td class='left'>Food preferences</td>
+		<td class='leftcell'>Food preferences</td>
 		<td>{{ form.foodPrefs.data }}</td>
 	</tr>
 	<tr>
-		<td class='left'>Special needs</td>
+		<td class='leftcell'>Special needs</td>
 		<td>{{ form.specialNeeds.data }}</td>
 	</tr>
 	<tr>
-		<td class='left'>Emergency Contact</td>
+		<td class='leftcell'>Emergency Contact</td>
 		<td>{{ form.emergName.data }}<br/>{{ form.emergPhone.data }}</td>
 	</tr>
 	<tr>
-		<td class='left'>Past national conferences</td>
+		<td class='leftcell'>Past national conferences</td>
 		<td>{{ form.prevConfs.data }}</td>
 	</tr>
 	<tr>
-		<td class='left'>Past regional retreats</td>
+		<td class='leftcell'>Past regional retreats</td>
 		<td>{{ form.prevRetreats.data }}</td>
 	</tr>
 	<tr>
-		<td class='left'>Cell phone</td>
+		<td class='leftcell'>Cell phone</td>
 		<td>{{ form.cellphone.data }}</td>
 	</tr>
 	<tr>
-		<td class='left'>Registration code</td>
+		<td class='leftcell'>Registration code</td>
 		<td>{{ form.code.data }}</td>
 	</tr>
 	<tr>
-		<td class='left'>Registration type</td>
+		<td class='leftcell'>Registration type</td>
 		<td>{{ form.type.data }}</td>
 	</tr>
 	<tr>
-		<td class='left'>Support an African delegate?</td>
+		<td class='leftcell'>Support an African delegate?</td>
 		<td>
 			{% if form.africaFund.data %}
 				Yes
@@ -138,23 +138,23 @@
 	</tr>
 	
 	<tr>
-		<td class='left'>Credit card type</td>
+		<td class='leftcell'>Credit card type</td>
 		<td>{{ form.ccardtype.data }}</td>
 	</tr>
 	<tr>
-		<td class='left'>Credit card number</td>
+		<td class='leftcell'>Credit card number</td>
 		<td>**** **** **** {{ form.cc_number.data|slice:"12:" }}</td>
 	</tr>
 	<tr>
-		<td class='left'>Credit card expiry</td>
+		<td class='leftcell'>Credit card expiry</td>
 		<td>{{ form.cc_expiry.data }}</td>
 	</tr>
 	<tr>
-		<td class='left'>Name on credit card</td>
+		<td class='leftcell'>Name on credit card</td>
 		<td>{{ form.billing_name.data }}</td>
 	</tr>
 	<tr>
-		<td class='left'>Amount</td>
+		<td class='leftcell'>Amount</td>
 		<td>
 			{% for p in form.cleaned_data.products %}
 				{% get_product_info p %} <br/>
