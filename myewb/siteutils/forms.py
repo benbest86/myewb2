@@ -55,7 +55,7 @@ class CompactAddressWidget(forms.Select):
                                  'user': self.user,
                                  'STATIC_URL': settings.STATIC_URL})
 
-class CompactAddressField(forms.ChoiceField):
+class CompactAddressField(forms.IntegerField):
     _user = None
     widget = CompactAddressWidget
     
@@ -69,15 +69,3 @@ class CompactAddressField(forms.ChoiceField):
         self._user = self.widget.user = value
     user = property(_get_user, _set_user)
 
-    def __init__(self, *args, **kwargs):
-        if not kwargs.get('choices', None):
-            kwargs['choices'] = []
-            
-        super(CompactAddressField, self).__init__(*args, **kwargs)
-        
-    def validate(self, value):
-        if not self.choices:
-            for a in self.user.get_profile().addresses.all():
-                self.choices.append((a.id, a.label))
-
-        return super(CompactAddressField, self).validate(value)
