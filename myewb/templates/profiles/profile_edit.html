@@ -50,7 +50,7 @@
 	    <ul>
 		    {% for address in profile.addresses.all %}
 		        <li>
-		            <a href="{% url profile_address_detail other_user.username address.label %}">
+		            <a href="{% url profile_address_detail other_user.username address.pk %}">
 		                <span>{{ address.label }}</span>
 		            </a>
 		        </li>

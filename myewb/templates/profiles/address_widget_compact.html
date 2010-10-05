@@ -1,8 +1,6 @@
 {% load i18n %}
 
 
-{# <script type="text/javascript" src="{{STATIC_URL}}js/address_tabs.js"></script> #}
-
 {{ field }}
 <br/>
 <div id="address_detail" style="border: 1px solid; margin: 15px 35px; padding: 10px; margin-left: 36%; display: none;">
@@ -19,8 +17,6 @@
 			return false;
 		});
 
-		//$('form.editAddress').unbind('submit');
-	    //$('form.editAddress').submit(function() {
 		$('#address_detail form').unbind('submit');
 	    $('#address_detail form').submit(function() {
 		    $.post($(this).attr('action'),
@@ -28,9 +24,17 @@
 				   function(data) {
 				   		if (data.valid == true)
 				   		{
-					   		$('select.compactaddresswidget option:selected').val(data.label);
-					   		$('select.compactaddresswidget option:selected').text(data.label);
-							$('select.compactaddresswidget').change();
+					   		if (data.deleted == true)
+					   		{
+						   		$('select.compactaddresswidget option:selected').remove();
+								$('select.compactaddresswidget').change();
+					   		}
+					   		else
+					   		{
+						   		$('select.compactaddresswidget option:selected').val(data.id);
+						   		$('select.compactaddresswidget option:selected').text(data.label);
+								$('select.compactaddresswidget').change();
+					   		}
 				   		}
 				   		else
 				   		{

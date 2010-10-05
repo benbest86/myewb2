@@ -75,7 +75,7 @@ def create_address(request, username, object=None):
         address.save()
         profile.addresses.add(address)
         if request.is_ajax():
-            return JsonResponse({'valid': True, 'label': address.label})
+            return JsonResponse({'valid': True, 'label': address.label, 'id': address.pk})
             # return HttpResponse(simplejson.dumps({'valid': True, 'label': address.label}), mimetype='application/javascript')
         else:
             #return HttpResponseRedirect(reverse('profile_address_detail', kwargs={'username': username, 'label': address.label}))
@@ -125,10 +125,10 @@ def new_address(request, username, object=None):
                 },
             )
 
-def address_detail(request, username, label):
+def address_detail(request, username, id):
     # if request.is_ajax():
     other_user = get_object_or_404(User, username=username)
-    address = get_address_or_404(other_user, label)
+    address = get_address_or_404(other_user, id)
     
     is_friend = Friendship.objects.are_friends(request.user, other_user)
     is_me = (other_user == request.user)
@@ -150,7 +150,7 @@ def address_detail(request, username, label):
         if form.is_valid() and is_label_unique_for_user(other_user, form.cleaned_data['label'], address):
             address = form.save()
             if request.is_ajax():
-                return JsonResponse({'valid': True, 'label': address.label})
+                return JsonResponse({'valid': True, 'label': address.label, 'id': address.pk})
                 # return HttpResponse(simplejson.dumps(), mimetype='application/javascript')
             else:
                 return render_to_response(
@@ -188,12 +188,12 @@ def address_detail(request, username, label):
                         )
 
 @owner_required(MemberProfile)
-def edit_address(request, username, label, object=None):
+def edit_address(request, username, id, object=None):
     # if request.is_ajax():
     if request.method == 'POST':
-        return address_detail(request, username, label)
+        return address_detail(request, username, id)
     other_user = get_object_or_404(User, username=username)
-    address = get_address_or_404(other_user, label)
+    address = get_address_or_404(other_user, id)
     form = AddressForm(instance=address)
     return render_to_response(
             'profiles/edit_address.html',
@@ -205,13 +205,12 @@ def edit_address(request, username, label, object=None):
             )
 
 @owner_required(MemberProfile)
-def delete_address(request, username, label, object=None):
+def delete_address(request, username, id, object=None):
     other_user = get_object_or_404(User, username=username)
-    address = get_address_or_404(other_user, label)
+    address = get_address_or_404(other_user, id)
     if request.method == 'POST':
         address.delete()
         if request.is_ajax():
-            return JsonResponse({'valid': True})
+            return JsonResponse({'valid': True, 'deleted': True})
         else:
             return HttpResponseRedirect(reverse('profiles_address_index'))      # possibly not what we want to do here...
-    
