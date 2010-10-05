@@ -17,7 +17,6 @@
 	<style type="text/css">
 		.descform
 		{
-			margin-left: 34%;
 			width: auto;
 			position: static;
 		}
@@ -48,14 +47,23 @@
 		}
 	</style> 
 
-
-	<h1>National Conference 2011</h1>
-
 	{% if not registration %}
-		<br/>
-		<p>Register for the conference!</p>
-		<p>Some other text about registration details will go here...</p>
-		<p>Form user: {{ form.user }} - {{ form.user.visible_name }}</p>
+		<p>We are very happy to invite our student chapter members to join us for 3 exciting days of work and learning at our10th Anniversary National Conference from January 13-15, 2011!</p>
+		
+		<p>You will require a registration code from your chapter president to register below at the subsidized rate. These codes are valid through the first phase of registration from October 5-13.</p>
+		
+		<p>
+			What does this registration include?
+			<ul>
+				<li>Attendance and accommodations from Wednesday night through Saturday night.</li>
+    			<li>One ticket to the closing Gala Saturday evening</li>
+    			<li>Presidents, JFs and certain executive members will also be invited for a special leadership day on Wednesday the 12th at no extra cost.</li>
+    			<li>The most stimulating and challenging single experience you'll ever have.</li>
+			</ul>
+		</p>
+		
+		<p>This is your first step on the exciting road to Conference 2011! After registering you will begin to get regular updates and be given opportunities to participate in a series of lead up activities to help you get the most out of the event.</p>
+		
 		<br/>
 		
 		<form id="conf-registration" method="POST" action="{% url conference_preview %}" class="uniForm" enctype="multipart/form-data">
