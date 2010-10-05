@@ -28,15 +28,6 @@ class ConferenceRegistration(models.Model):
     prevRetreats = models.SmallIntegerField()
     cellphone = models.CharField(max_length=50, blank=True, null=True)
     
-    """
-    challenge = models.TextField()
-    malawiwatsan = models.SmallIntegerField()
-    malawiagric =  models.SmallIntegerField()
-    ghanaagric = models.SmallIntegerField()
-    burkinaagric = models.SmallIntegerField()
-    ghanagari = models.SmallIntegerField()
-    """
-    
     txid = models.CharField(max_length=255)
     receiptNum = models.CharField(max_length=255)
     code = models.ForeignKey('ConferenceCode', related_name="registration", blank=True, null=True)
