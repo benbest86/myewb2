@@ -40,7 +40,7 @@
 			
             {# <li><a href="{% url confreg %}">Conference Registration</a></li> #}
         	{% if is_exec %}
-            	{# <li><a href="{% url conference_list %}">Conference Delegate List</a></li> #}
+            	<li><a href="{% url conference_list %}">Conference Delegate List</a></li>
             {% endif %}
             
             {% if perms.conference %}

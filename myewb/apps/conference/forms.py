@@ -166,7 +166,7 @@ class ConferenceRegistrationForm(forms.ModelForm):
 
             chapter = self.user.get_profile().get_chapter()
             if chapter:
-                type += "-" + chapter.group.slug
+                type += "-" + chapter.slug
                 chaptername = " (%s)" % chapter.name
             else:
                 chaptername = ""
