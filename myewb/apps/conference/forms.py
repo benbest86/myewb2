@@ -8,6 +8,7 @@ Created on 2009-10-18
 """
 
 from datetime import date
+from decimal import Decimal
 from django import forms
 from django.contrib.formtools.preview import FormPreview
 from django.core.exceptions import ObjectDoesNotExist
@@ -26,11 +27,6 @@ from siteutils.models import Address
 
 class ConferenceRegistrationForm(forms.ModelForm):
     theuser = None
-
-    # TODO: find list of chapters a user is in, and present a drop-down if 
-    # they are apart of multiple ones?  maybe?
-	#chapters = [('none', _('(none)'))]
-    #chapter = forms.ChoiceField(choices=chapters)
 
     # bleh.  i don't like putting so much UI text here, instead of in a template!!
     headset = forms.BooleanField(label='Headset requested?',
@@ -113,21 +109,6 @@ class ConferenceRegistrationForm(forms.ModelForm):
     billing_name = forms.CharField(label='Name on credit card', max_length=255)
     address = CompactAddressField(label='Billing Address')
         
-    """
-    challenge = forms.CharField(label='Your answer',
-							    widget=forms.Textarea)
-    malawiwatsan = forms.ChoiceField(label='Water and Sanitation in Malawi',
-									 choices=OVRANK)
-    malawiagric =  forms.ChoiceField(label='Agriculture in Zambia/Malawi',
-									 choices=OVRANK)
-    ghanaagric = forms.ChoiceField(label='Agriculture in Ghana',
-								   choices=OVRANK)
-    burkinaagric = forms.ChoiceField(label='Agriculture in Ghana',
-									 choices=OVRANK)
-    ghanagari = forms.ChoiceField(label='Good Governance in Ghana',
-								  choices=OVRANK)
-    """
-
     # this gets set if the card is declined at the bank
     trnError = None
 
@@ -136,8 +117,6 @@ class ConferenceRegistrationForm(forms.ModelForm):
         fields = ['headset', 'foodPrefs', 'specialNeeds', 'emergName', 'emergPhone',
                   'prevConfs', 'prevRetreats', 'resume', 'cellphone', 
                   'code', 'type', 'africaFund']
-        #exclude = ('user', 'amountPaid', 'roomSize', 'type', 'date',
-        #               'cancelled', 'receiptNum', 'chapter', 'txid', 'challenge')
 
     def clean_code(self):
         codestring = self.cleaned_data['code'].strip().lower()
@@ -157,6 +136,71 @@ class ConferenceRegistrationForm(forms.ModelForm):
         # If the card is declined at the bank, trnError will get set...
         if self.trnError:
             raise forms.ValidationError(self.trnError)
+        
+        if self.errors:
+            return None
+
+        # and do some auto-processing as needed
+        cleaned_data = self.cleaned_data
+        cleaned_data['products'] = []
+        total_cost = 0
+        
+        sku = "confreg-2011-" + cleaned_data['type'] + "-" + cleaned_data['code'].getShortname()
+        cost = CONF_OPTIONS[sku]['cost']
+        name = CONF_OPTIONS[sku]['name']
+        product, created = Product.objects.get_or_create(sku=sku)
+        if created:
+            product.name = name
+            product.amount = cost
+            product.save()
+            
+        cleaned_data['products'].append(product.sku)
+        total_cost = total_cost + Decimal(product.amount)
+
+        if needsToRenew(self.user.get_profile()):
+            # FIXME: some duplicated code from profiles.forms (where saving membership fees)
+            if self.user.get_profile().student():
+                type = "studues"
+            else:
+                type = "produes"
+
+            chapter = self.user.get_profile().get_chapter()
+            if chapter:
+                type += "-" + chapter.group.slug
+                chaptername = " (%s)" % chapter.name
+            else:
+                chaptername = ""
+            
+            product, created = Product.objects.get_or_create(sku=type)
+            if created:
+                if self.user.get_profile().student():
+                    product.amount = "20.00"
+                    product.name = "Student membership" + chaptername
+                    product.save()
+                else:
+                    product.amount = "40.00"
+                    product.name = "Professional membership" + chaptername
+                    product.save()
+            
+            cleaned_data['products'].append(product.sku)
+            total_cost = total_cost + Decimal(product.amount)
+
+        if cleaned_data['africaFund'] == True:
+            sku = "11-africafund"
+            cost = "20"
+            name = "Support an African delegate"
+            product, created = Product.objects.get_or_create(sku=sku)
+            if created:
+                product.name = name
+                product.amount = cost
+                product.save()
+            
+            cleaned_data['products'].append(product.sku)
+            total_cost = total_cost + Decimal(product.amount)
+
+        cleaned_data['total_cost'] = total_cost
+        self.cleaned_data = cleaned_data
+
         return self.cleaned_data
     
 
@@ -175,62 +219,6 @@ class ConferenceRegistrationFormPreview(PaymentFormPreview):
     username = None
     
     def done(self, request, cleaned_data):
-        
-        cleaned_data['products'] = []
-        
-        sku = "confreg-2011-" + cleaned_data['type'] + "-" + cleaned_data['code'].getShortname()
-        cost = CONF_OPTIONS[sku]['cost']
-        name = CONF_OPTIONS[sku]['name']
-        product, created = Product.objects.get_or_create(sku=sku)
-        if created:
-            product.name = name
-            product.amount = cost
-            product.save()
-            
-        cleaned_data['products'].append(product.sku)
-
-        if needsToRenew(request.user.get_profile()):
-            # FIXME: some duplicated code from profiles.forms (where saving membership fees)
-            if request.user.get_profile().student():
-                type = "studues"
-            else:
-                type = "produes"
-
-            # TODO: a better way of determining someone's (home) chapter!
-            # (right now we just pick the first one... not that great...
-            chapters = ChapterInfo.objects.all()
-            chapters.filter(network__members__user=request.user)
-            if chapters.count > 0:
-                type += "-" + chapters[0].group.slug
-                chaptername = " (%s)" % chapter.chapter_name
-            else:
-                chaptername = ""
-            
-            product, created = Product.objects.get_or_create(sku=type)
-            if created:
-                if request.user.get_profile().student():
-                    product.amount = "20.00"
-                    product.name = "Student membership" + chaptername
-                    product.save()
-                else:
-                    product.amount = "40.00"
-                    product.name = "Professional membership" +  + chaptername
-                    product.save()
-            
-            cleaned_data['products'].append(product.sku)
-
-        if cleaned_data['africaFund'] == True:
-            sku = "11-africafund"
-            cost = "20"
-            name = "$20 to support an African delegate"
-            product, created = Product.objects.get_or_create(sku=sku)
-            if created:
-                product.name = name
-                product.amount = cost
-                product.save()
-            
-            cleaned_data['products'].append(product.sku)
-            
         # add profile info, as it's needed for CC processing
         form = self.form(request.POST)
         if not request.user.email or \
@@ -243,19 +231,6 @@ class ConferenceRegistrationFormPreview(PaymentFormPreview):
             cleaned_data['email'] = request.user.email
             cleaned_data['phone'] = request.user.get_profile().default_phone().number
             
-            """
-            address = Address.objects.get(pk=cleaned_data['address'])
-            if not request.user.get_profile() == address.content_object:
-                return HttpResponseForbidden()
-            
-            cleaned_data['billing_address1'] = request.user.get_profile().default_address().street
-            cleaned_data['billing_address2'] = ''
-            cleaned_data['billing_city'] = request.user.get_profile().default_address().city
-            cleaned_data['billing_province'] = request.user.get_profile().default_address().province
-            cleaned_data['billing_postalcode'] = request.user.get_profile().default_address().postal_code
-            cleaned_data['billing_country'] = request.user.get_profile().default_address().country
-            """
-        
             # this call sends it to the bank!!
             response = super(ConferenceRegistrationFormPreview, self).done(request, cleaned_data)
         
@@ -263,17 +238,11 @@ class ConferenceRegistrationFormPreview(PaymentFormPreview):
             registration = form.save(commit=False)
             registration.user = request.user
             registration.type = "confreg-2011-" + cleaned_data['type'] + "-" + cleaned_data['code'].getShortname()
-            print "type is", registration.type
             registration.amountPaid = CONF_OPTIONS[registration.type]['cost']
-            print "paid is", registration.amountPaid
             registration.roomSize = cleaned_data['type']
-            print "size is", registration.roomSize
             registration.code = cleaned_data['code']
-            print "code is", registration.code
             registration.receiptNum = response[2]
-            print "receiptnum is", registration.receiptNum
             registration.txid = response[1]
-            print "txid is", registration.txid
             
             registration.save()
 

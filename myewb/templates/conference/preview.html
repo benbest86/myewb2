@@ -1,6 +1,7 @@
 {% extends 'events/base.html' %}
 
 {% load i18n %}
+{% load creditcard_tags %}
 
 {% block head_title %}National Conference 2011{% endblock %}
 
@@ -8,19 +9,159 @@
 
 <br/><br/>
 
-<h1>National Conference 2011</h1>
+<h1>National Conference 2011: Registration Preview</h1>
 	
-<h2>Preview</h2>
-	
+<h2>Personal Details</h2>
+
+<style>
+	table
+	{
+		border: 0px;
+	}
+	td.left
+	{
+		text-align: right;
+		font-weight: bold;
+		border-right: 1px solid #d0d0d0;
+	}
+	td
+	{
+		border: 1px solid #d0d0d0;
+		border-left: 0px;
+		border-right: 0px;
+		padding: 5px 15px;
+	}
+</style>
+
 <table>
-	{% for field in form %}
-		{% if not field.is_hidden %}
-			<tr>
-				<th>{{ field.label }}:</th>
-				<td>{{ field.data }}</td>
-			</tr>
- 		{% endif %}
-	{% endfor %}
+	<tr>
+		<td class='left'>Name</td>
+		<td>{{ user.first_name}} {{user.last_name }}</td>
+	</tr>
+
+	<tr>
+		<td class='left'>Email</td>
+		<td>{{ user.email }}</td>
+	</tr>
+
+	{% comment %}
+	<tr>
+		<td class='left'>Phone number</td>
+		<td>{{ user.get_profile.default_phone }}</td>
+	</tr>
+	{% endcomment %}
+
+	<tr>
+		<td class='left'>Gender</td>
+		<td>{{ user.get_profile.gender }}</td>
+	</tr>
+	
+	<tr>
+		<td class='left'>Student status</td>
+		<td>
+			{% if user.get_profile.student %}
+				Yes
+			{% else %}
+				No
+			{% endif %}
+		</td>
+	</tr>
+
+	<tr>
+		<td class='left'>Preferred language</td>
+		<td>{{ user.get_profile.language }}</td>
+	</tr>
+
+	<tr>
+		<td colspan='2'>
+			<h2>Registration Details</h3>
+		</td>
+	</tr>
+	
+	<tr>
+		<td class='left'>Headset requested</td>
+		<td>
+			{% if form.headset.data %}
+				Yes
+			{% else %}
+				No
+			{% endif %}
+		</td>
+	</tr>
+	<tr>
+		<td class='left'>Food preferences</td>
+		<td>{{ form.foodPrefs.data }}</td>
+	</tr>
+	<tr>
+		<td class='left'>Special needs</td>
+		<td>{{ form.specialNeeds.data }}</td>
+	</tr>
+	<tr>
+		<td class='left'>Emergency Contact</td>
+		<td>{{ form.emergName.data }}<br/>{{ form.emergPhone.data }}</td>
+	</tr>
+	<tr>
+		<td class='left'>Past national conferences</td>
+		<td>{{ form.prevConfs.data }}</td>
+	</tr>
+	<tr>
+		<td class='left'>Past regional retreats</td>
+		<td>{{ form.prevRetreats.data }}</td>
+	</tr>
+	<tr>
+		<td class='left'>Cell phone</td>
+		<td>{{ form.cellphone.data }}</td>
+	</tr>
+	<tr>
+		<td class='left'>Registration code</td>
+		<td>{{ form.code.data }}</td>
+	</tr>
+	<tr>
+		<td class='left'>Registration type</td>
+		<td>{{ form.type.data }}</td>
+	</tr>
+	<tr>
+		<td class='left'>Support an African delegate?</td>
+		<td>
+			{% if form.africaFund.data %}
+				Yes
+			{% else %}
+				No
+			{% endif %}
+		</td>
+	</tr>
+	
+	<tr>
+		<td colspan='2'>
+			<h2>Payment Details</h3>
+		</td>
+	</tr>
+	
+	<tr>
+		<td class='left'>Credit card type</td>
+		<td>{{ form.ccardtype.data }}</td>
+	</tr>
+	<tr>
+		<td class='left'>Credit card number</td>
+		<td>**** **** **** {{ form.cc_number.data|slice:"12:" }}</td>
+	</tr>
+	<tr>
+		<td class='left'>Credit card expiry</td>
+		<td>{{ form.cc_expiry.data }}</td>
+	</tr>
+	<tr>
+		<td class='left'>Name on credit card</td>
+		<td>{{ form.billing_name.data }}</td>
+	</tr>
+	<tr>
+		<td class='left'>Amount</td>
+		<td>
+			{% for p in form.cleaned_data.products %}
+				{% get_product_info p %} <br/>
+			{% endfor %}
+			<strong>Total: ${{ form.cleaned_data.total_cost|floatformat:2 }}</strong>
+		</td>
+	</tr>
 </table>
 
 <form action="" method="post">
@@ -28,11 +169,15 @@
 {% endfor %}
 <input type="hidden" name="{{ stage_field }}" value="2" />
 <input type="hidden" name="{{ hash_field }}" value="{{ hash_value }}" />
-<p><input type="submit" value="Submit" /></p>
+<p>
+	<input type="button" value="Go back" onClick="history.go(-1);" />
+	&nbsp;&nbsp;
+	<input type="submit" value="Submit" />
+</p>
 </form>
 <br/>
 
-	
+
 
 
 {% endblock %}

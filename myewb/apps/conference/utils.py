@@ -10,7 +10,7 @@ def needsToRenew(profile):
     if profile.membership_expiry == None:
         return True
     
-    conf_end = date(2010, 01, 10)
+    conf_end = date(2011, 01, 15)
     if profile.membership_expiry < conf_end:
         return True
     else:

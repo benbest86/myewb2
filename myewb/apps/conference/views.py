@@ -68,6 +68,7 @@ def registration_preview(request):
     username = request.user.username
     
     f = ConferenceRegistrationForm(request.POST, request.FILES)
+    f.user = request.user
     if f.is_valid():
         if f.cleaned_data.get('resume', None):
             resume = Attachment()
