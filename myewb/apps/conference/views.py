@@ -155,7 +155,7 @@ def list(request, chapter=None):
         if not request.user.has_module_perms('conference'):
             # non-admins: only see chapters you're an exec of
             chapters.filter(network__members__user=request.user,
-                            network__members__isAdmin=True)
+                            network__members__is_admin=True)
 
         # if only one chapter, display it right away
         if chapters.count() == 1:
@@ -164,7 +164,7 @@ def list(request, chapter=None):
         else:
             # otherwise, show a summary page
             for chapter in chapters:
-                registrations = ConferenceRegistration.objects.filter(user__member_groups__group=chapter,
+                registrations = ConferenceRegistration.objects.filter(user__member_groups__group=chapter.network,
                                                                       cancelled=False)
                 chapter.numRegistrations = registrations.count()
             

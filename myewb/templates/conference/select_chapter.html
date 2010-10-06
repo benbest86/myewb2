@@ -12,8 +12,19 @@
 <p>You're an admin, or are an exec of multiple chapters.</p>
 
 <p>Which chapter do you want to a view a list for?</p>
-	
-<table border="1">
+
+<style>
+#confreg-list th
+{
+  padding: 10px;
+  text-align: left;
+}
+#confreg-list td
+{
+  padding: 10px 20px;
+}
+</style>
+<table border="1" id="confreg-list">
 
 {% for chapter in chapters %}
 	<tr>
