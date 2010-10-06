@@ -12,7 +12,7 @@
 <h2>Registration List for {{ group.name }}</h2>
 	
 {% for reg in registrations %}
-	<p><a href="{% url profile_detail reg.user.username %}">{{ reg.user.visible_name() }}</a></p>
+	<p><a href="{% url profile_detail reg.user.username %}">{{ reg.user.visible_name }}</a></p>
 {% endfor %}
 	
 

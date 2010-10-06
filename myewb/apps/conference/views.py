@@ -154,8 +154,8 @@ def list(request, chapter=None):
         
         if not request.user.has_module_perms('conference'):
             # non-admins: only see chapters you're an exec of
-            chapters.filter(network__members__user=request.user,
-                            network__members__is_admin=True)
+            chapters = chapters.filter(network__members__user=request.user,
+                                       network__members__is_admin=True)
 
         # if only one chapter, display it right away
         if chapters.count() == 1:
