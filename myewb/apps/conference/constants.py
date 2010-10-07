@@ -65,7 +65,8 @@ ROOM_CHOICES = (('nohotel', _('Conference only (no hotel)')),
                ) 
                 
 
-PASTEVENTS = (('1', '1'),
+PASTEVENTS = (('0', '0'),
+              ('1', '1'),
               ('2', '2'),
               ('3', '3'),
               ('4', '4'),

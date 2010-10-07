@@ -27,6 +27,8 @@ from apps.creditcard.utils import *
 from apps.creditcard.models import Payment, Product
 from siteutils.forms import AddressField, CompactAddressField
 from siteutils.models import Address
+from siteutils.helpers import fix_encoding
+from siteutils.shortcuts import get_object_or_none
 
 from contrib.uni_form.helpers import FormHelper, Submit, Reset
 from contrib.uni_form.helpers import Layout, Fieldset, Row, HTML
@@ -251,9 +253,14 @@ class PaymentFormPreview(FormPreview):
     def done(self, request, cleaned_data):
         
         #product = Product.objects.get(sku=cleaned_data['products'])
-        address = Address.objects.get(pk=cleaned_data['address'])
-        if not request.user.get_profile() == address.content_object:
-            return HttpResponseForbidden()
+        address = get_object_or_none(Address, pk=cleaned_data['address'])
+        if not address or  not request.user.get_profile() == address.content_object:
+            address = Address()
+            address.street = '366 Adelaide'
+            address.city = 'Toronto'
+            address.province = 'ON'
+            address.postal_code = 'M5V1R9'
+            address.country = 'CA'
         
         # stuff necessary values into dictionary... to be encoded.
         param = {'trnCardOwner': cleaned_data['billing_name'],
@@ -297,8 +304,12 @@ class PaymentFormPreview(FormPreview):
             product_list.append(product)
         
         param['trnAmount'] = total_cost
-                
-        encoded = urllib.urlencode(param)
+            
+        #param = [fix_encoding(p) for p in param]
+        fixed_param = {}
+        for x, y in param.items():
+            fixed_param[x] = fix_encoding(y)
+        encoded = urllib.urlencode(fixed_param)
         
         # push the transaction to the bank
         handle = urllib.urlopen(settings.TD_MERCHANT_URL,

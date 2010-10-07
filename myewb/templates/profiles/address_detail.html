@@ -6,9 +6,11 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 {% load i18n %}
 
 {% if is_me %}
-<div style="float: right;">
-    <a href="{% url profile_edit_address other_user.username address.pk %}">{% trans "Edit" %}</a>
-</div>
+	{% if address.pk %}
+		<div style="float: right;">
+    		<a href="{% url profile_edit_address other_user.username address.pk %}">{% trans "Edit" %}</a>
+		</div>
+	{% endif %}
 {% endif %}
 
 <div class="address-line">{{ address.street }}</div>
