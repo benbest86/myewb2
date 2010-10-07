@@ -332,7 +332,7 @@ class PaymentFormPreview(FormPreview):
         p.email=cleaned_data['email']
         p.approved=results['trnApproved']
         p.response="\n".join(result)
-        p.amount = product.amount
+        p.amount = total_cost
         p.save()
         for prod in product_list:
             p.products.add(prod)

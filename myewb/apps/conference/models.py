@@ -32,7 +32,7 @@ class ConferenceRegistration(models.Model):
     receiptNum = models.CharField(max_length=255)
     code = models.ForeignKey('ConferenceCode', related_name="registration", blank=True, null=True)
     type = models.CharField(max_length=50)
-    africaFund = models.BooleanField()
+    africaFund = models.SmallIntegerField(blank=True, null=True)
 
     def cancel(self):
         self.cancelled = True

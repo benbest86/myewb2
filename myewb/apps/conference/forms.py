@@ -97,9 +97,10 @@ class ConferenceRegistrationForm(forms.ModelForm):
   </tr>
 </table>""")
     
-    africaFund = forms.BooleanField(label='Support an African delegate?',
-								    required=False,
-								    help_text='check to contribute an additional $20 (non-refundable) towards a fund to bring young African leaders to the conference as delegates.')
+    africaFund = forms.ChoiceField(label='Support an African delegate?',
+                                   choices=AFRICA_FUND,
+								   required=False,
+								   help_text='contribute toward bringing young African leaders to the conference as delegates. This amount is eligible for a charitable tax receipt, and is non-refundable.')
 
     ccardtype = forms.ChoiceField(label='Credit card type',
 								  choices=CC_TYPES)
@@ -185,10 +186,10 @@ class ConferenceRegistrationForm(forms.ModelForm):
             cleaned_data['products'].append(product.sku)
             total_cost = total_cost + Decimal(product.amount)
 
-        if cleaned_data['africaFund'] == True:
-            sku = "11-africafund"
-            cost = "20"
-            name = "Support an African delegate"
+        if cleaned_data['africaFund']:
+            cost = cleaned_data['africaFund']
+            sku = "11-africafund-" + cost
+            name = "Support an African delegate ($" + cost + ")"
             product, created = Product.objects.get_or_create(sku=sku)
             if created:
                 product.name = name
