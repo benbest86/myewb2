@@ -132,6 +132,15 @@ class ConferenceRegistrationForm(forms.ModelForm):
                 raise forms.ValidationError("Registration code has already been used or has expired")
         except ObjectDoesNotExist:
             raise forms.ValidationError("Invalid registration code")
+        
+    def clean_africaFund(self):
+        if self.cleaned_data['africaFund']:
+            if self.cleaned_data['africaFund'].strip() == '':
+                self.cleaned_data['africaFund'] = None
+        else:
+            self.cleaned_data['africaFund'] = None
+                
+        return self.cleaned_data['africaFund']
 
     def clean(self):
         # If the card is declined at the bank, trnError will get set...
