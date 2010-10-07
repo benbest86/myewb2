@@ -23,6 +23,8 @@ urlpatterns = patterns('siteutils.shortcuts',
                                     'permanent': True}),
     url(r'^list/(?P<group_slug>[-\w]+)$', 'redirect_to', {'url': '/feeds/posts/group/%(group_slug)s/',
                                     'permanent': True}),
+    url(r'^list/(?P<group_slug>[-\w]+)/full$', 'redirect_to', {'url': '/feeds/posts/group/%(group_slug)s/',
+                                    'permanent': True}),
     url(r'^calendar/(?P<group_slug>[-\w]+).ics$', 'redirect_to', {'url': '/events/ical/for/networks/network/slug/%(group_slug)s/',
                                     'permanent': True}),
     )
