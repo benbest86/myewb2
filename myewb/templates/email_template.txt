@@ -13,3 +13,4 @@ This message was sent to you through myEWB (http://my.ewb.ca), EWB-ISF Canada's 
 
 Manage your email preferences at http://my.ewb.ca{% url profile_settings %} or
 unsubscribe from this list at http://www.ewb.ca/unsubscribe
+

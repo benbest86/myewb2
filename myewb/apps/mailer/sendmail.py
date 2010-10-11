@@ -28,16 +28,19 @@ def send_mail(subject=None, txtMessage=None, htmlMessage=None,
     txtMessage = force_unicode(txtMessage)
     htmlMessage = force_unicode(htmlMessage)
 
+    if not context.get('do_text_conversion', None):
+        context['do_text_conversion'] = False
     if use_template:
-        if not context.get('do_text_conversion', None):
-            context['do_text_conversion'] = False
-            
         context['body'] = htmlMessage
         htmlMessage = loader.get_template("email_template.html").render(Context(context))
         
         context['body'] = txtMessage
         txtMessage = loader.get_template("email_template.txt").render(Context(context))
-
+    
+    else:
+        context['body'] = txtMessage
+        txtMessage = loader.get_template("email_template_clean.txt").render(Context(context))
+    
     recips = ",".join(recipients)
             
     if shortname:
