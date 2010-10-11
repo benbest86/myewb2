@@ -261,9 +261,12 @@ def evaluation_emailsend(request, session_id):
             emails = []
             for app in applications:
                 emails.append(app.profile.user2.email)
-                eval = app.evaluation
-                eval.last_email = datetime.now()
-                eval.save()
+                try:
+                    eval = app.evaluation
+                    eval.last_email = datetime.now()
+                    eval.save()
+                except:
+                    pass
     
             send_mail(subject=form.cleaned_data['subject'],
                       txtMessage=None,

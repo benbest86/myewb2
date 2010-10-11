@@ -108,6 +108,11 @@ th, td {
 	
 	<div id="draft">
 	    <h2>Draft applications</h2>
+
+        <a href="#" id="select-all2">select all</a> |
+        <a href="#" id="select-none2">select none</a> | 
+        <a href="#" id="select-invert2">invert selection</a><br/>
+        <form action="{% url evaluation_bulkedit session.id %}" method="post" id="evaluation-bulkedit2">
 		<table class="tablesorter">
 			<tr>
        			<th>&nbsp;</th>
@@ -118,13 +123,20 @@ th, td {
 			
 			{% for app in draft %}
 				<tr style="{% cycle 'background: #ffffff;' 'background: #eee;' %}">
-					<td><input type="checkbox"/></td>
+					<td><input type="checkbox" name="app-{{app.id}}"/></td>
 					<td><a href="{% url evaluation_detail app.id %}">{{ app.profile.last_name}}, {{ app.profile.first_name }}</a></td>
 					<td>{{ app.profile.gender }}</td>
 					<td>{{ app.profile.lang }}</td>
 				</tr>
 			{% endfor %}
-		</table>
+		</table><br/>
+		With selected applications: 
+		<select name="action" id="evaluation-action">
+			<option value="email">send an email</option>
+		</select>
+		&nbsp;&nbsp;
+		<input type="submit" value="submit" class="ui-widget ui-button ui-state-default ui-corner-all"/>
+		</form>
 	</div>
 </div>
 		
@@ -186,6 +198,24 @@ th, td {
 		});
 		$('#select-invert').click(function() {
 			$('#evaluation-bulkedit input[type=checkbox]').each(function() {
+				if ($(this).attr('checked'))
+					$(this).attr('checked', false);
+				else
+					$(this).attr('checked', 'checked');
+			}); 
+			return false;
+		});
+
+		$('#select-all2').click(function() {
+			$('#evaluation-bulkedit2 input[type=checkbox]:visible').attr('checked', 'checked'); 
+			return false;
+		});
+		$('#select-none2').click(function() {
+			$('#evaluation-bulkedit2 input[type=checkbox]').attr('checked', false); 
+			return false;
+		});
+		$('#select-invert2').click(function() {
+			$('#evaluation-bulkedit2 input[type=checkbox]').each(function() {
 				if ($(this).attr('checked'))
 					$(this).attr('checked', false);
 				else
