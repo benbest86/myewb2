@@ -24,6 +24,10 @@ th, td {
   padding: 5px;
   border: 1px solid;
 }
+.percent-overlay {
+  float: left;
+  background-color: #00ff00;
+}
 </style>
 
 <h2>{{ session.name }}</h2>
@@ -114,21 +118,27 @@ th, td {
         <a href="#" id="select-invert2">invert selection</a><br/>
         <form action="{% url evaluation_bulkedit session.id %}" method="post" id="evaluation-bulkedit2">
 		<table class="tablesorter">
+		    <thead>
 			<tr>
        			<th>&nbsp;</th>
 			    <th>Name</th>
        			<th>Gender</th>
        			<th>Lang</th>
+       			<th>Progress</th>
 			</tr>
+			</thead>
 			
+			<tbody>
 			{% for app in draft %}
-				<tr style="{% cycle 'background: #ffffff;' 'background: #eee;' %}">
+				<tr style="{% cycle 'background: #ffffff;' 'background: #eee;' %}" class="draftapp">
 					<td><input type="checkbox" name="app-{{app.id}}"/></td>
 					<td><a href="{% url evaluation_detail app.id %}">{{ app.profile.last_name}}, {{ app.profile.first_name }}</a></td>
 					<td>{{ app.profile.gender }}</td>
 					<td>{{ app.profile.lang }}</td>
+					<td class="percent">{{ app.completion|floatformat:0 }}%</td>
 				</tr>
 			{% endfor %}
+			</tbody>
 		</table><br/>
 		With selected applications: 
 		<select name="action" id="evaluation-action">
@@ -222,6 +232,11 @@ th, td {
 					$(this).attr('checked', 'checked');
 			}); 
 			return false;
+		});
+		
+		$('.draftapp').each(function() {
+		    var percentage = $('.percent', this).html();
+		    $('.percent', this).html('<div class="percent-overlay"style="width: ' + percentage + '; height: ' + ($(this).height()-10) + 'px;">' + percentage + '</div>');
 		});
 
 	});
