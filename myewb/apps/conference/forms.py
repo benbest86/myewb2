@@ -145,7 +145,7 @@ class ConferenceRegistrationForm(forms.ModelForm):
     def clean(self):
         # If the card is declined at the bank, trnError will get set...
         if self.trnError:
-            raise forms.ValidationError(self.trnError)
+            raise forms.ValidationError("Credit card error: " + self.trnError)
         
         if self.errors:
             return None
@@ -231,15 +231,17 @@ class ConferenceRegistrationFormPreview(PaymentFormPreview):
     def done(self, request, cleaned_data):
         # add profile info, as it's needed for CC processing
         form = self.form(request.POST)
-        if not request.user.email or \
-            not request.user.get_profile().default_phone():
+        if not request.user.email:
 
             # simulate a cred card declined, to trigger form validation failure
-            response = (False, "Please fill out your profile information.")
+            response = (False, "Please edit your myEWB profile and enter an email address.")
 
         else:
             cleaned_data['email'] = request.user.email
-            cleaned_data['phone'] = request.user.get_profile().default_phone().number
+            if request.user.get_profile().default_phone():
+                cleaned_data['phone'] = request.user.get_profile().default_phone().number
+            else:
+                cleaned_data['phone'] = '416-481-3696'
             
             # this call sends it to the bank!!
             response = super(ConferenceRegistrationFormPreview, self).done(request, cleaned_data)

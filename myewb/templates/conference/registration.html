@@ -56,6 +56,19 @@
 	</style> 
 
 	{% if not registration %}
+	
+		{% if form.non_field_errors %}
+			<div class="uniForm">
+				<div class="ctrlHolder error">{{ form.non_field_errors }}</div>
+			</div>
+		{% else %}
+			{% if form.errors %}
+				<div class="uniForm">
+					<div class="ctrlHolder error">Please correct the errors below</div>
+				</div>
+			{% endif %}
+		{% endif %}
+	
 		<p>We are very happy to invite our student chapter members to join us for 3 exciting days of work and learning at our10th Anniversary National Conference from January 13-15, 2011!</p>
 		
 		<p>You will require a registration code from your chapter president to register below at the subsidized rate. These codes are valid through the first phase of registration from October 5-13.</p>
