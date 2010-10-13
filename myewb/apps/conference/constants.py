@@ -11,7 +11,10 @@ CONF_CODES = (('a', "test"),
               ('b', "unifar"),
               ('c', "unimid"),
               ('d', "uniclose"),
-              ('e', "staff")
+              ('e', "staff"),
+              ('f', "cityfar"),
+              ('g', "citymid"),
+              ('h', "cityclose"),
              )
               
 CONF_HASH = settings.CONF_HASH
@@ -50,6 +53,27 @@ CONF_OPTIONS = {'confreg-2011-double-test': {'cost': 175,
                                                'name': "University chapter (ON/QB) - single bed"},
                 'confreg-2011-nohotel-uniclose': {'cost': 280,
                                                'name': "University chapter (ON/QB) - no room"},
+
+                'confreg-2011-double-cityfar': {'cost': 250,
+                                               'name': "City network (BC/AB/NF) - shared bed"},
+                'confreg-2011-single-cityfar': {'cost': 370,
+                                               'name': "City network (BC/AB/NF) - single bed"},
+                'confreg-2011-nohotel-cityfar': {'cost': 200,
+                                               'name': "City network (BC/AB/NF) - no room"},
+
+                'confreg-2011-double-citymid': {'cost': 350,
+                                               'name': "City network (SK/MB/NB/NS) - shared bed"},
+                'confreg-2011-single-citymid': {'cost': 470,
+                                               'name': "City network (SK/MB/NB/NS) - single bed"},
+                'confreg-2011-nohotel-citymid': {'cost': 280,
+                                               'name': "City network (SK/MB/NB/NS) - no room"},
+
+                'confreg-2011-double-cityclose': {'cost': 500,
+                                               'name': "City network (ON/QB) - shared bed"},
+                'confreg-2011-single-cityclose': {'cost': 620,
+                                               'name': "City network (ON/QB) - single bed"},
+                'confreg-2011-nohotel-cityclose': {'cost': 400,
+                                               'name': "City network (ON/QB) - no room"},
 
                 'confreg-2011-double-staff': {'cost': 0,
                                              'name': "EWB Staff - quad room"},

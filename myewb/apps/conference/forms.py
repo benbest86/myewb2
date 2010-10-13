@@ -60,7 +60,8 @@ class ConferenceRegistrationForm(forms.ModelForm):
                                 help_text="(optional) If you wish to receive logistical updates and reminders by text message during the conference")
     
     code = forms.CharField(label='Registraton code',
-                           help_text='if you have a registration code, enter it here for a discounted rate.')
+                           help_text='if you have a registration code, enter it here for a discounted rate.',
+                           required=False)
     type = forms.ChoiceField(label='Registration type',
 							 choices=ROOM_CHOICES,
 							 widget=forms.RadioSelect,
@@ -72,25 +73,25 @@ class ConferenceRegistrationForm(forms.ModelForm):
     <th>No room</th>
   </tr>
   <tr>
-    <th>University chapters: BC/AB/NF</th>
-    <td>$100</td>    
-    <td>$220</td>    
-    <td>$80</td>    
+    <th>Subsidized: BC/AB/NF</th>
+    <td>$100 (student)<br/>$250 (general)</td>    
+    <td>$220 (student)<br/>$370 (general)</td>
+    <td>$80 (student)<br/>$200 (general)</td>    
   </tr>
   <tr>
-    <th>University chapters: SK/MB/NB/NS</th>
-    <td>$200</td>    
-    <td>$320</td>    
-    <td>$160</td>    
+    <th>Subsidized: SK/MB/NB/NS</th>
+    <td>$200 (student)<br/>$350 (general)</td>    
+    <td>$320 (student)<br/>$470 (general)</td>    
+    <td>$160 (student)<br/>$280 (general)</td>    
   </tr>
   <tr>
-    <th>University chapters: ON/QB</th>
-    <td>$350</td>    
-    <td>$470</td>    
-    <td>$280</td>    
+    <th>Subsidized: ON/QB</th>
+    <td>$350 (student)<br/>$500 (general)</td>    
+    <td>$470 (student)<br/>$620 (general)</td>    
+    <td>$280 (student)<br/>$400 (general)</td>    
   </tr>
   <tr>
-    <th>Unsubsidized (no registration code)</th>
+    <th>Standard<br/>(no registration code)</th>
     <td>$620</td>
     <td>$740</td>    
     <td>$500</td>    
@@ -121,7 +122,10 @@ class ConferenceRegistrationForm(forms.ModelForm):
 
     def clean_code(self):
         codestring = self.cleaned_data['code'].strip().lower()
-
+        
+        if not codestring:
+            return ""
+        
         try:
             code = ConferenceCode.objects.get(code=codestring)
                 
@@ -155,7 +159,12 @@ class ConferenceRegistrationForm(forms.ModelForm):
         cleaned_data['products'] = []
         total_cost = 0
         
-        sku = "confreg-2011-" + cleaned_data['type'] + "-" + cleaned_data['code'].getShortname()
+        if cleaned_data['code']:
+            codename = cleaned_data['code'].getShortname()
+        else:
+            codename = "open"
+        
+        sku = "confreg-2011-" + cleaned_data['type'] + "-" + codename 
         cost = CONF_OPTIONS[sku]['cost']
         name = CONF_OPTIONS[sku]['name']
         product, created = Product.objects.get_or_create(sku=sku)
@@ -247,12 +256,20 @@ class ConferenceRegistrationFormPreview(PaymentFormPreview):
             response = super(ConferenceRegistrationFormPreview, self).done(request, cleaned_data)
         
         if response[0] == True:
+            if cleaned_data['code']:
+                codename = cleaned_data['code'].getShortname()
+            else:
+                codename = "open"
+            
             registration = form.save(commit=False)
             registration.user = request.user
-            registration.type = "confreg-2011-" + cleaned_data['type'] + "-" + cleaned_data['code'].getShortname()
+            registration.type = "confreg-2011-" + cleaned_data['type'] + "-" + codename
             registration.amountPaid = CONF_OPTIONS[registration.type]['cost']
             registration.roomSize = cleaned_data['type']
-            registration.code = cleaned_data['code']
+            if cleaned_data['code']:
+                registration.code = cleaned_data['code']
+            else:
+                registration.code = None
             registration.receiptNum = response[2]
             registration.txid = response[1]
             
