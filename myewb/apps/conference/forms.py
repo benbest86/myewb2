@@ -238,7 +238,7 @@ class ConferenceRegistrationFormPreview(PaymentFormPreview):
 
         else:
             cleaned_data['email'] = request.user.email
-            if request.user.get_profile().default_phone():
+            if request.user.get_profile().default_phone() and request.user.get_profile().default_phone().number:
                 cleaned_data['phone'] = request.user.get_profile().default_phone().number
             else:
                 cleaned_data['phone'] = '416-481-3696'

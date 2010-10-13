@@ -16,7 +16,7 @@ def callback(request):
     time = request.POST.get('fired_at', None)
     email = request.POST.get('data[email]', None)
     
-    if type == 'unsubscribe' or (type == 'cleaned' and request.POST('data[reason]', None) == 'hard'):
+    if type == 'unsubscribe' or (type == 'cleaned' and request.POST.get('data[reason]', None) == 'hard'):
         # was there a pending email change in the sync queue? if so, we need 
         # to look up the old email
         e = ProfileEvent.objects.filter(email=email)
