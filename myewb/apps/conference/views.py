@@ -164,7 +164,7 @@ def list(request, chapter=None):
         else:
             # otherwise, show a summary page
             for chapter in chapters:
-                registrations = ConferenceRegistration.objects.filter(user__member_groups__group=chapter.network,
+                registrations = ConferenceRegistration.objects.filter(user__memberprofile__chapter=chapter.network,
                                                                       cancelled=False)
                 chapter.numRegistrations = registrations.count()
             
@@ -181,7 +181,7 @@ def list(request, chapter=None):
     if not group.user_is_admin(request.user) and not request.user.has_module_perms('conference'):
         return render_to_response('denied.html', context_instance=RequestContext(request))
         
-    registrations = ConferenceRegistration.objects.filter(user__member_groups__group=group,
+    registrations = ConferenceRegistration.objects.filter(user__memberprofile__chapter=group,
                                                           cancelled=False)
 
     return render_to_response('conference/list.html',
