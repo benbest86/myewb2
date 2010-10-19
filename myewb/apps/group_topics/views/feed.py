@@ -1,4 +1,4 @@
-"""myEWB GroupTopics RSS feeds
+"""myEWB GroupTopics atom feeds
 
 This file is part of myEWB
 Copyright 2010 Engineers Without Borders Canada

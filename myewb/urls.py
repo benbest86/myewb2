@@ -23,6 +23,9 @@ import os.path
 #from bookmarks.feeds import BookmarkFeed
 #bookmarks_feed_dict = {"feed_dict": { '': BookmarkFeed }}
 
+from group_topics.views.rss import RSSAllPosts
+rss = {'posts': RSSAllPosts}
+
 admin.autodiscover()
 
 urlpatterns = patterns('',
@@ -81,10 +84,15 @@ urlpatterns = patterns('',
 #    (r'^feeds/tweets/(.*)/$', 'django.contrib.syndication.views.feed', tweets_feed_dict),
 #    (r'^feeds/posts/(.*)/$', 'django.contrib.syndication.views.feed', blogs_feed_dict),
 #    (r'^feeds/bookmarks/(.*)/?$', 'django.contrib.syndication.views.feed', bookmarks_feed_dict),
+
+    # these are atom feeds, not rss.  just in case that's a useful distinction.
     url(r'^feeds/posts/group/(?P<group_slug>[-\w]+)/$', 'group_topics.views.feed.group', name="topic_feed_group"),
     url(r'^feeds/posts/tag/(?P<tag>[-\w]+)/$', 'group_topics.views.feed.tag', name="topic_feed_tag"),
     url(r'^feeds/posts/featured/$', 'group_topics.views.feed.featured', name="topic_feed_featured"),
     url(r'^feeds/posts/all/$', 'group_topics.views.feed.all', name="topic_feed_all"),
+    
+    # only really for the Polar Mobile app... but hey, let's do RSS as well
+    url(r'^rss/(?P<url>.*)/$', 'django.contrib.syndication.views.feed', {'feed_dict': rss}), 
     
     url(r'^newpost/$', 'group_topics.views.topics.new_topic', name="topic_new"),
     
