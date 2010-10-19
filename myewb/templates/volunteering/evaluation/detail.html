@@ -314,59 +314,77 @@ span.ui-icon {
 		{% endfor %}
 		
 		// replace <input type=text> with labels, and handle in-place editing
-    	$('.eval input[type=text]').addClass('inputbox');
-		$('.eval input[type=text]').click(function() {
-			var original_text = $(this).val();
+    	function inplace_save()
+    	{
+	        var myself = $(this);
+	        var original_text = $(this).data('original_text');
+            myself.unbind('blur');
+	        if (original_text != myself.val())
+	        {
+    	        myself.addClass('loading');
+   	        	$.post($(this).data('url'),
+   	               	  {'value': myself.val()},
+   	               	  function(data) {
+           	            myself.removeClass('loading');
+       	               	if (data != "invalid")
+       	               	{
+            	            myself.val(data);
+            	            //window.alert("success");
+       	               	}
+       	               	else
+       	               	{
+           	               	window.alert("invalid value");
+       	               	}
+       	 		    	myself.addClass('inputbox');
+       			    	myself.click(inplace_edit);
+           	       	  });
+	        }
+	        else
+	        {
+		    	myself.addClass('inputbox');
+		    	myself.click(inplace_edit);
+	        }
+    	}
+    	function inplace_edit()
+    	{
+			$(this).data('original_text', $(this).val());
 	        $(this).removeClass('inputbox');
-		    $(this).blur(function() {
-		        var myself = $(this);
-		        var criteria_id = $(this).attr('id').substr(9);
-		        if (original_text != myself.val())
-		        {
-	    	        myself.addClass('loading');
-    	        	$.post($(this).data('url'),
-    	               	  {'value': myself.val()},
-    	               	  function(data) {
-            	            myself.removeClass('loading');
-        	               	if (data != "invalid")
-        	               	{
-	            	            myself.val(data);
-	            	            myself.addClass('inputbox');
-	            	            window.alert("success");
-        	               	}
-        	               	else
-            	               	window.alert("invalid");
-               	            myself.unbind('blur');
-            	       	  });
-		        }
-		        else
-			    	myself.addClass('inputbox');
-		    });
-    	});
+	        $(this).unbind('click');
+		    $(this).blur(inplace_save);
+    	}
+    	// install the initial listener...
+    	$('.eval input[type=text]').addClass('inputbox');
+		$('.eval input[type=text]').click(inplace_edit);
 
 		// replace <textarea> with labels, and handle in-place editing		
-    	$('.eval textarea').addClass('inputbox').autoResize().trigger('change');
-    	$('.eval textarea').click(function() {
-		    var original_text = $(this).val();
+	    function inplace_save2()
+	    {
+	        var myself = $(this);
+	        var original_text = $(this).data('original_text');
+	        myself.unbind('blur');
+	        if (original_text != myself.val())
+	        {
+       	        myself.addClass('loading');
+       	        $.post('{% url evaluation_comment application.id %}',
+       	               {'key': myself.attr('name'),
+       	                'comment': myself.val()},
+       	               function(data) {
+               	            myself.removeClass('loading');
+                            myself.addClass('inputbox');
+               	       });
+            }
+            else
+                myself.addClass('inputbox');
+	    }
+    	function inplace_edit2()
+    	{
+		    $(this).data('original_text', $(this).val());
 	        $(this).removeClass('inputbox');
-		    $(this).blur(function() {
-		        var myself = $(this);
-		        if (original_text != myself.val())
-		        {
-        	        myself.addClass('loading');
-        	        $.post('{% url evaluation_comment application.id %}',
-        	               {'key': myself.attr('name'),
-        	                'comment': myself.val()},
-        	               function(data) {
-                	            myself.removeClass('loading');
-                	            myself.addClass('inputbox');
-                	            myself.unbind('blur');
-                	       });
-                }
-                else
-                    myself.addClass('inputbox');
-		    });
-    	});
+	        $(this).unbind('click');
+	        $(this).blur(inplace_save2);
+    	}
+    	$('.eval textarea').addClass('inputbox').autoResize().trigger('change');
+    	$('.eval textarea').click(inplace_edit2);
 
     	$('.intanswer textarea').addClass('inputbox').autoResize().trigger('change');
     	$('.intanswer textarea').click(function() {
