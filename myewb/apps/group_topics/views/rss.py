@@ -14,7 +14,7 @@ ITEMS_PER_FEED = getattr(settings, 'PINAX_ITEMS_PER_FEED', 20)
 
 class RSSAllPosts(Feed):
     title = "myEWB - Engineers Without Borders Canada"
-    link = "/rss/posts"
+    link = "/"
     description = "Discussions in Engineers Without Borders Canada"
     
     description_template = "topics/rss.html"
