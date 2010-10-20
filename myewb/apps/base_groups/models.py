@@ -172,7 +172,7 @@ class BaseGroup(Group):
             
     def send_mail_to_members(self, subject, htmlBody,
                              fail_silently=False, sender=None,
-                             context=None):
+                             context={}):
         """
         Creates and sends an email to all members of a network using Django's
         EmailMessage.
