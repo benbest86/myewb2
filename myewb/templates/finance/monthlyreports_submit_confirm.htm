@@ -1,0 +1,14 @@
+{% extends "finance/base.htm" %}
+
+{% block finance_body %}
+	<h2>Confirm Submission</h2>
+	Are you sure you would like to submit this monthly report? You cannot make changes once submitted.<br/><br/>
+	{% if empty %}
+		<a href="{% url monthlyreports_submit group_slug=group.slug year=year month=month %}" ><button>Submit Blank Report</button></a> <a href="{% url monthlyreports_current group_slug=group.slug %}"><button>Cancel Submit</button></a>
+	{% else %}
+		<a href="{% url monthlyreports_submit group_slug=group.slug %}" ><button>Submit Report</button></a> <a href="{% url monthlyreports_current group_slug=group.slug %}"><button>Cancel Submit</button></a>
+	{% endif %}
+	<br/><br/>
+	
+	
+{% endblock finance_body %}
