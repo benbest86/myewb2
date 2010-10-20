@@ -8,8 +8,9 @@ def send_mail(subject=None, txtMessage=None, htmlMessage=None,
               fromemail=None, recipients=None, shortname=None,
               priority=None, context={}, use_template=True,
               lang='en'):
+
     # try to be backwards-compatible
-    if htmlMessage and not recipients:
+    if htmlMessage and recipients == None:
         recipients = fromemail
         fromemail = htmlMessage
         htmlMessage = None

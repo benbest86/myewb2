@@ -19,7 +19,7 @@ from threadedcomments.models import ThreadedComment, FreeThreadedComment
 from attachments.models import Attachment
 from group_topics.models import GroupTopic, Watchlist, wiki_convert
 
-def send_to_watchlist(sender, instance, created, **kwargs):
+def send_to_watchlist(self):
     """
     Sends an email to everyone who is watching this thread, and/or to post owner.
     
@@ -29,12 +29,9 @@ def send_to_watchlist(sender, instance, created, **kwargs):
     on other types of objects.
     """
 
-    if not created:
-        return
-
     # build email
-    topic = instance.content_object
-    attachments = Attachment.objects.attachments_for_object(topic)
+    topic = self.content_object
+    attachments = Attachment.objects.attachments_for_object(self)
     
     ctx = {'group': topic.group,
            'title': topic.title,
@@ -64,8 +61,8 @@ def send_to_watchlist(sender, instance, created, **kwargs):
             recipients.add(c.user.email)
             
     # but remove original poster
-    if instance.user.email in recipients:
-        recipients.remove(instance.user.email)
+    if self.user.email in recipients:
+        recipients.remove(self.user.email)
         
     messagebody = """<p>Hello</p>        
 
@@ -81,7 +78,7 @@ def send_to_watchlist(sender, instance, created, **kwargs):
 added it to your watchlist.  To change your email preferences, 
 <a href="http://my.ewb.ca%s">click here</a>.
 </p>
-""" % (instance.user.visible_name(), topic.title, instance.comment, reverse('profile_settings'))
+""" % (self.user.visible_name(), topic.title, self.comment, reverse('profile_settings'))
       
     if len(recipients):
         send_mail(subject="Re: %s" % topic.title,
@@ -91,8 +88,8 @@ added it to your watchlist.  To change your email preferences,
                   recipients=recipients,
                   context=ctx,
                   shortname=topic.group.slug)
-        
-post_save.connect(send_to_watchlist, sender=ThreadedComment, dispatch_uid='sendreplytowatchlist')
+
+ThreadedComment.send_to_watchlist = send_to_watchlist
 
 def update_scores(sender, instance, **kwargs):
     """

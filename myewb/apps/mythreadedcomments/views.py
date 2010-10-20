@@ -130,6 +130,10 @@ def free_comment(request, content_type=None, object_id=None, edit_id=None, paren
         for af in attach_forms:
             attachment = af.save(request, new_comment)
             
+        # and send email
+        # (can't do this in a post-save hook since attachments aren't saved at that point)
+        new_comment.send_to_watchlist()
+            
         # handle tags
         newtags = set(form.cleaned_data['tags'].split(','))
         oldtags = set(new_comment.content_object.tags.split(','))
