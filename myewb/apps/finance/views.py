@@ -157,7 +157,7 @@ def create_donation(request, group_slug):
         else:
             form = DonationForm(request.POST, request.FILES) # A form bound to the POST data
         
-        donation_category = Category.objects.get(name="donation")
+        donation_category = Category.objects.get(name="Donation")
         #validate fields
         if form.is_valid(): # check if fields validated
                 cleaned_data = form.cleaned_data
@@ -660,7 +660,7 @@ def view_id(request, group_slug, id):
     template_data = dict()
     
     transaction = trans_chap.get(pk=id)
-    if transaction.category.name == "donation":
+    if transaction.category.name == "Donation":
         transaction = donations_chap.get(pk=id)
     elif transaction.type == "EX":
         transaction = expenditure_chap.get(pk=id)
@@ -919,13 +919,20 @@ def delete_id(request, id, group_slug):
     t = trans_chap.get(pk=id)
     permission = False
     delete = False
+    
+#    if user is staff, then can delete anything
+    if request.user.is_staff:
+        t.delete()
+        permission = True
+        delete = True
 #    make sure they have permission to delete (submitted, chapter)
-    if t.account == "CH":
-        if t.submitted == "N":
-            if t.group.slug == group.slug:
-                t.delete()
-                permission = True
-                delete = True
+    else:
+        if t.account == "CH":
+            if t.submitted == "N":
+                if t.group.slug == group.slug:
+                    t.delete()
+                    permission = True
+                    delete = True
                 
                 
     template_data["confirm"] = False
@@ -953,10 +960,14 @@ def confirm_delete_id(request, id, group_slug):
     permission = False
 
 #    make sure they have permission to delete (submitted, chapter)
-    if t.account == "CH":
-        if t.submitted == "N":
-            if t.group.slug == group.slug:
-                permission = True
+    if request.user.is_staff:
+            permission = True 
+    else:
+        if t.account == "CH":
+            if t.submitted == "N":
+                if t.group.slug == group.slug:
+                    permission = True
+
                 
     template_data["confirm"] = True
     template_data["trans"] = t
@@ -1034,19 +1045,21 @@ def monthlyreports_dashboard(request, year=None, month=None):
 #    make table of all networks and their submitted/not submitted monthly reports
     for n in networks:
         count = count + 1
-        mr = mr_chap.filter(group = n.id, date__year = year, date__month = month)
+        
         table.append([])
         table[count].append(n)
+        
+#        attach chapter monthly report
+        mr = mr_chap.filter(group = n.id, date__year = year, date__month = month).order_by('-enter_date')
         if mr:
-            for m in mr:
-                table[count].append(m)
+            table[count].append(mr[1])
         else:
             table[count].append("")
         
-        mr = mr_no.filter(group = n.id, date__year = year, date__month = month)    
+#        attach no monthly report
+        mr = mr_no.filter(group = n.id, date__year = year, date__month = month).order_by('-enter_date') 
         if mr:
-            for m in mr:
-                table[count].append(m)
+            table[count].append(mr[1])
         else:
             table[count].append("")
         
@@ -1263,6 +1276,28 @@ def monthlyreports_current(request, group_slug):
     return render_to_response('finance/monthlyreports_detail.htm', template_data, context_instance=RequestContext(request))
 
 @group_admin_required()
+def monthlyreports_submit_confirm(request, group_slug, year=None, month=None):
+    template_data = dict()
+    
+    template_data['empty'] = False
+    if year:
+        if month:
+            template_data['year'] = year
+            template_data['month'] = month
+            template_data['empty'] = True
+        else:
+ #            error since not month AND year
+            return HttpResponseForbidden()
+        
+    group = get_object_or_404(Network, slug=group_slug)
+    
+    template_data['group'] = group
+    template_data['is_group_admin'] = group.user_is_admin(request.user)
+    template_data['is_president'] = group.user_is_president(request.user)
+    
+    return render_to_response('finance/monthlyreports_submit_confirm.htm', template_data, context_instance=RequestContext(request))
+
+@group_admin_required()
 def monthlyreports_submit(request, group_slug, year=None, month=None):
 #======================================================
 #submit the most recent report
@@ -1270,7 +1305,9 @@ def monthlyreports_submit(request, group_slug, year=None, month=None):
     #    get chapter
     group = get_object_or_404(Network, slug=group_slug)
     trans_chap, income_chap, donations_chap, expenditure_chap, monthly_chap = create_chapter_filters(group_slug)
-    template_data = dict()  
+    template_data = dict()
+    
+#    this is for blank reports that are submitted (the right year and date is passed in)  
     if year:
         if month:
             if (int(year)*100 + int(month)) < (datetime.datetime.now().year*100 + datetime.datetime.now().month):
@@ -1282,12 +1319,11 @@ def monthlyreports_submit(request, group_slug, year=None, month=None):
                 monthly_report.creator = request.user
                 monthly_report.save()
                 template_data['submitted'] = True
-                template_data['message'] = "in month, year  submitted"
             else:
                 template_data['submitted'] = False
 
         else:
-#            error since not month AND date
+#            error since not month AND year
             return HttpResponseForbidden()
             
     else:
@@ -1298,6 +1334,12 @@ def monthlyreports_submit(request, group_slug, year=None, month=None):
     #    TODO: how to edit submitted transactions... NO only?
         if (min_date.year*100 + min_date.month) < (datetime.datetime.now().year*100 + datetime.datetime.now().month):
             transactions = trans.filter(bank_date__year = min_date.year, bank_date__month = min_date.month)    
+            
+            mr_check = monthly_chap.filter(date__year = min_date.year, date__month = min_date.month, type = "CH")
+            
+            if mr_check:
+                template_data['group'] = group
+                return render_to_response('finance/monthlyreports_submit_error.htm', template_data, context_instance=RequestContext(request))
             
             monthly_report = MonthlyReport()
             monthly_report.date=datetime.datetime(min_date.year,min_date.month, 1)
@@ -1316,10 +1358,8 @@ def monthlyreports_submit(request, group_slug, year=None, month=None):
                 t.save()
             
             template_data['submitted'] = True
-            template_data['message'] = "submitted"
         else:
             template_data['submitted'] = False
-            template_data['message'] = "not submitted"
     
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
@@ -1499,11 +1539,11 @@ def csv_donationreport(request, group_slug=None):
     row = ["Donation Report"]
     writer.writerow([fix_encoding(s) for s in row])
 #    TODO: make this actually look like the report
-    row = ["Account", "Type", "Bank Date", "Cheque Date", "Cheque Number", "Tax Receipt Required?", "Category", "Donor", "Address", "City", "Province", "Country", "Postal Code" "Description", "Amount"]
+    row = ["Account", "Type", "Bank Date", "Cheque Date", "Cheque Number", "Tax Receipt Required?", "Category", "Donor", "Address", "City", "Province", "Country", "Postal Code", "Description", "Amount"]
     writer.writerow([fix_encoding(s) for s in row])
     
     for t in donations:
-        row = [t.account, t.type, t.bank_date, t.cheque_date, t.cheque_num, t.taxreceipt, t.donation_category, t.donor, t.address, t.city, t.province, t.country, t.postalcode, t.description, t.amount]
+        row = [t.account, t.type, t.bank_date, t.cheque_date, t.cheque_num, t.taxreceipt, t.donation_category, t.donor, t.address, t.city, t.province, t.country, t.postal, t.description, t.amount]
         writer.writerow([fix_encoding(s) for s in row])
     
     return response
@@ -1514,9 +1554,9 @@ def csv_accountingreport(request):
 # accounting report
 #======================================================
 
-    income = Income.objects.filter(account="CH").exclude(category="donation").order_by('group')
-    donation = Donation.objects.filter(account="CH").order_by('group')
-    expenditure = Expenditure.objects.filter(account="CH").order_by('group')
+    income = Income.objects.filter(account="CH", bank_date__isnull=False).exclude(category="Donation").order_by('group')
+    donation = Donation.objects.filter(account="CH", bank_date__isnull=False).order_by('group')
+    expenditure = Expenditure.objects.filter(account="CH", bank_date__isnull=False).order_by('group')
     
     response = HttpResponse(mimetype='text/csv')
     response['Content-Disposition'] = 'attachment; filename=accounting_report.csv'
