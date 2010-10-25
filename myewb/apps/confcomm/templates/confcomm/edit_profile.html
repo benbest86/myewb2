@@ -1,0 +1,7 @@
+{% extends "confcomm/base.html" %}
+{% block body %}
+<form action="{% url confcomm_profile_edit %}" method="POST">
+    {{ form.as_p }}
+    <input type="submit" value="Submit" />
+</form>
+{% endblock body %}
