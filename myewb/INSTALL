@@ -117,6 +117,9 @@ On Windows: NOTE: This instructions are now out of date - see the general instru
 # On Windows 7
 # 2010-01-04 by BBEST
 
+0. **Seriously Consider** switching to Ubuntu if you're using this as a development
+   machine. :)
+
 1. install python from http://python.org
 
 2. install python setuptools from http://pypi.python.org/pypi/setuptools
