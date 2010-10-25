@@ -3,4 +3,11 @@ and fixes.
 
 
 USING Pinax-0.7.1
-None
+Two files in 0.7.1 must be patched. See the generic instructions or simply
+use the patch in this folder
+ex:
+
+$ cd $WORKON_HOME/pinax-env/lib/python2.6/site-packages/
+$ patch -p0 --dry-run < $MYEWB_HOME/patches/pinax-0.7.1.patch
+# if all goes according to plan
+$ patch -p0 < $MYEWB_HOME/patches/pinax-0.7.1.patch

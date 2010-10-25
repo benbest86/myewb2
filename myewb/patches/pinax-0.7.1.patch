@@ -1,0 +1,37 @@
+diff -NruB --exclude='*.pyc' /home/benjamin/.virtualenvs/p-env2/lib/python2.6/site-packages/pinax/apps/groups/base.py /home/benjamin/.virtualenvs/pinax-env/lib/python2.6/site-packages/pinax/apps/groups/base.py
+--- /home/benjamin/.virtualenvs/p-env2/lib/python2.6/site-packages/pinax/apps/groups/base.py	2010-10-25 10:33:39.000000000 +0000
++++ /home/benjamin/.virtualenvs/pinax-env/lib/python2.6/site-packages/pinax/apps/groups/base.py	2010-10-18 11:05:20.000000000 +0000
+@@ -34,7 +34,7 @@
+     """
+     
+     slug = models.SlugField(_('slug'), unique=True)
+-    name = models.CharField(_('name'), max_length=80, unique=True)
++    name = models.CharField(_('name'), max_length=80, unique=False)
+     creator = models.ForeignKey(User, verbose_name=_('creator'), related_name="%(class)s_created")
+     created = models.DateTimeField(_('created'), default=datetime.datetime.now)
+     description = models.TextField(_('description'))
+diff -NruB --exclude='*.pyc' /home/benjamin/.virtualenvs/p-env2/lib/python2.6/site-packages/pinax/apps/topics/models.py /home/benjamin/.virtualenvs/pinax-env/lib/python2.6/site-packages/pinax/apps/topics/models.py
+--- /home/benjamin/.virtualenvs/p-env2/lib/python2.6/site-packages/pinax/apps/topics/models.py	2010-10-25 10:33:39.000000000 +0000
++++ /home/benjamin/.virtualenvs/pinax-env/lib/python2.6/site-packages/pinax/apps/topics/models.py	2010-10-18 11:05:46.000000000 +0000
+@@ -28,7 +28,7 @@
+     object_id = models.PositiveIntegerField(null=True, blank=True)
+     group = generic.GenericForeignKey("content_type", "object_id")
+     
+-    title = models.CharField(_('title'), max_length=50)
++    title = models.CharField(_('title'), max_length=255)
+     creator = models.ForeignKey(User, related_name="created_topics", verbose_name=_('creator'))
+     created = models.DateTimeField(_('created'), default=datetime.now)
+     modified = models.DateTimeField(_('modified'), default=datetime.now) # topic modified when commented on
+diff -NruB --exclude='*.pyc' /home/benjamin/.virtualenvs/p-env2/lib/python2.6/site-packages/messages/models.py /home/benjamin/.virtualenvs/pinax-env/lib/python2.6/site-packages/messages/models.py
+--- /home/benjamin/.virtualenvs/p-env2/lib/python2.6/site-packages/messages/models.py	2010-10-25 10:33:47.000000000 +0000
++++ /home/benjamin/.virtualenvs/pinax-env/lib/python2.6/site-packages/messages/models.py	2010-10-18 11:06:20.000000000 +0000
+@@ -96,6 +96,6 @@
+     return Message.objects.filter(recipient=user, read_at__isnull=True, recipient_deleted_at__isnull=True).count()
+ 
+ # fallback for email notification if django-notification could not be found
+-if "notification" not in settings.INSTALLED_APPS:
+-    from messages.utils import new_message_email
+-    signals.post_save.connect(new_message_email, sender=Message)
++# if "notification" not in settings.INSTALLED_APPS:
++#     from messages.utils import new_message_email
++#     signals.post_save.connect(new_message_email, sender=Message)

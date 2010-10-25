@@ -1,9 +1,19 @@
 Installation instructions:
 
 Generic instructions:
-- install Pinax (http://pinaxproject.com)
+- install Pinax 0.7.1 (download at http://downloads.pinaxproject.com/Pinax-0.7.1-bundle.tar.gz)
+  preferably in a virtual environment. See below for better instructions on
+  Windows and Ubuntu for virtualenvs
+- upgrade django ("easy_install -U Django==1.1")
 - install lxml ("easy_install lxml" - if running Linux/Mac, see http://codespeak.net/lxml/installation.html for dependencies)
 - install pycountry ("easy_install pycountry")
+- from the myewb root directory add the following missing template files (they can be blank)
+    - templates/myewbstatus.html
+    - templates/about/status.html
+    - templates/conference/header.html
+    - templates/conference/footer.html
+
+NOTE: all of these edits are now contained in the patch in patches/pinax-0.7.1.patch
 
 edit these files in your Pinax env:
 (the pinax installation insturctions recommend installing to pinax-env though you may have chosen a different directory)
@@ -29,6 +39,7 @@ at the end of the file, comment out the last three lines: (we do our own email n
 On Ubuntu:
 # These instructions were last confirmed on a fresh Ubuntu Intrepid Ibex
 # 2009-10-08 by BBEST
+# Updated to reflect the changes in the generic instructions on 2010-10-25
 #
 # install necessary ubuntu packages
 $ sudo aptitude install build-essential python-dev libxml2 libxml2-dev libxslt1.1 libxslt1-dev python-virtualenv python-ldap python-imaging
@@ -59,16 +70,32 @@ $ python scripts/pinax-boot.py $WORKON_HOME/pinax-env
 # switch your virtual environment.
 $ workon pinax-env
 
+# upgrade django
+$ easy_install -U Django==1.1
+
 # install additional python packages
 $ easy_install pycountry
+
+# apply any relevant patches to the pinax
+# base. See patches/README for current
+# list, but there are patches and this should
+# work:
+
+$ cd $WORKON_HOME/pinax-env/lib/python2.6/site-packages/
+$ patch -p0 --dry-run < $MYEWB_HOME/patches/pinax-0.7.1.patch
+# if all goes according to plan
+$ patch -p0 < $MYEWB_HOME/patches/pinax-0.7.1.patch
+
+# NOTE:: the patches above also likely work for 0.7.3, try with the dry run
+# and if you have no errors then golden.
 
 # cd to the directory you are in now.
 # something like:
 $ cd myewb2/trunk/myewb
 
-# apply any relevant patches to the pinax
-# base. See patches/README for current
-# list
+# add missing template files
+$ touch templates/myewbstatus.html templates/about/status.html templates/conference/header.html templates/conference/footer.html
+
 
 # make manage.py executable if you like
 # If you don't do this step you will have to run
@@ -84,11 +111,14 @@ $ ./manage.py runserver
 And you should be good to go! Navigate to http://localhost:8000/ for the home
 page.
 
-On Windows:
+On Windows: NOTE: This instructions are now out of date - see the general instructions above for some changes
 # These instructions were last confirmed on Windows XP
 # # 2009-10-24 by BBEST and JBLIGHT
 # On Windows 7
 # 2010-01-04 by BBEST
+
+0. **Seriously Consider** switching to Ubuntu if you're using this as a development
+   machine. :)
 
 1. install python from http://python.org
 
@@ -124,7 +154,10 @@ NOTE: on windows 7 (and Vista?) you will have to run the command prompt with adm
 12. cd to C:\pinax and run 
     > Scripts/activate.bat
 
-13. cd to the myewb folder in the code trunk. Add a file called 
+13. Upgrade to Django 1.1 by running
+    > easy_install -U Django==1.1
+
+14. cd to the myewb folder in the code trunk. Add a file called
 local_settings.py and add the following two lines:
 
 import os
@@ -133,19 +166,21 @@ DATABASE_NAME = os.path.join(os.path.dirname(__file__), 'db_name.db')
 Substitue db_name with your preference.
 For some reason a fully qualified path is required here now.
 
-14.
+15.
 Run 
     > python manage.py syncdb
     enter a root user if you wish.
 
-15. run > python manage.py runserver
+16. run > python manage.py runserver
 
-16. navigate to http://localhost:8000/ in your browser (or http://127.0.0.1:8000/ in IE)
+17. navigate to http://localhost:8000/ in your browser (or http://127.0.0.1:8000/ in IE)
 
 NOTES: Please see the patches/ folder in this directory for any patches to the Pinax or Django
 code that need to be applied
 
-Mac OS X 10.6
+Mac OS X 10.6 - NOTE: These instructions may be out of date - please
+compare them against the added instructions in generic instructions
+at the top
 ----------------------------------------------------------------------
 ----------------------------------------------------------------------
 
