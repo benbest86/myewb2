@@ -150,6 +150,8 @@ def email_account_reset(request, group_slug):
             # you've gotta stop changing your name.
             if group_slug == 'grandriver':
                 group_slug = 'waterloopro'
+            elif group_slug == 'mcmaster':
+                group_slug = 'mac'
                 
             result = set_google_password(group_slug, request.POST.get("newpass", ""))
             if result:
