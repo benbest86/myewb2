@@ -233,6 +233,7 @@ INSTALLED_APPS = (
     'workspace',
     'mailchimp',
     'finance',
+    'confcomm',
 
     # our own third-party libs
     'contrib.django_evolution',
