@@ -2,9 +2,10 @@
 
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, Http404
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
+from django.contrib.auth.decorators import login_required
 
 from confcomm.models import ConferenceProfile
 from confcomm.forms import ConferenceProfileForm
@@ -13,12 +14,6 @@ def index(request):
     """
     Main landing page for the conference community.
     """
-    user = request.user
-    # assume all registered conference goers have a ConferenceProfile object
-    if not user.is_authenticated() or \
-            ConferenceProfile.objects.filter(member_profile__user=user).count() != 1:
-        return HttpResponseRedirect(reverse('confcomm_register'))
-
     return render_to_response('confcomm/index.html',
             {},
             context_instance=RequestContext(request),
@@ -37,14 +32,19 @@ def profile(request, username=None):
     """
     View for viewing a profile.
     """
-    user = request.user
     # boolean for whether or not current user owns the profile
     is_owner = False
-    if username is None:
-        username = user.username
-        is_owner = True
-    elif username == user.username:
-        is_owner = True
+    user = request.user
+    if not user.is_authenticated():
+        is_owner = False
+        if username is None:
+            return Http404
+    else:
+        if username is None:
+            username = user.username
+            is_owner = True
+        elif username == user.username:
+            is_owner = True
     profile = get_object_or_404(ConferenceProfile, member_profile__user__username=username)
 
 
@@ -55,6 +55,7 @@ def profile(request, username=None):
             },
             context_instance=RequestContext(request),)
 
+@login_required
 def profile_edit(request):
     user = request.user
     profile = get_object_or_404(ConferenceProfile, member_profile__user=user)
