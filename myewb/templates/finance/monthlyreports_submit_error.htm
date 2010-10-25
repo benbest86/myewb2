@@ -1,0 +1,9 @@
+{% extends "finance/base.htm" %}
+
+{% block finance_body %}
+	<h2>Error: Report Not Submitted</h2>
+	There is already a monthly report for that month. You cannot make changes to it once submitted. For changes to that report, please contact the National Office.
+	<br/><br/>
+	[<a href="{% url monthlyreports group_slug=group.slug %}" >monthly reports</a>]
+	
+{% endblock finance_body %}

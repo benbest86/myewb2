@@ -79,7 +79,9 @@ urlpatterns += patterns('finance.views',
     url(r'^(?P<group_slug>[-\w]+)/delete/(?P<id>\d+)/$',                            'delete_id',            name="delete_id"),
       
     url(r'^(?P<group_slug>[-\w]+)/monthly_reports/$',                               'monthlyreports',       name="monthlyreports"),
-    
+
+    url(r'^(?P<group_slug>[-\w]+)/monthly_reports/submit/confirm/$',                'monthlyreports_submit_confirm',name="monthlyreports_submit_confirm"),
+    url(r'^(?P<group_slug>[-\w]+)/monthly_reports/submit/confirm/(?P<year>\d{4})/(?P<month>\d{1,2})/$',                'monthlyreports_submit_confirm',name="monthlyreports_submit_confirm"),    
     url(r'^(?P<group_slug>[-\w]+)/monthly_reports/submit/$',                        'monthlyreports_submit',name="monthlyreports_submit"),
     url(r'^(?P<group_slug>[-\w]+)/monthly_reports/submit/(?P<year>\d{4})/(?P<month>\d{1,2})/$',                   'monthlyreports_submit',name="monthlyreports_submit"),
     url(r'^(?P<group_slug>[-\w]+)/monthly_reports/current/$',                       'monthlyreports_current',name="monthlyreports_current"),
