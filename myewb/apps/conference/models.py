@@ -84,7 +84,7 @@ class ConferenceCode(models.Model):
         # the type field above... so we hack it here to make it act like a
         # dictionary
         for code in CONF_CODES:
-            if code[0] == self.type:
+            if code[0] == self.type.lower():
                 return code[1]
         
         # should never get here, since the type field is restricted to CONF_CODES
