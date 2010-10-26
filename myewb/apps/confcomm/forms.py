@@ -7,3 +7,4 @@ from confcomm.models import ConferenceProfile
 class ConferenceProfileForm(forms.ModelForm):
     class Meta:
         model = ConferenceProfile
+        exclude = ('member_profile',)

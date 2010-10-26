@@ -61,9 +61,11 @@ def profile_edit(request):
     profile = get_object_or_404(ConferenceProfile, member_profile__user=user)
     if request.method == 'POST':
         form = ConferenceProfileForm(request.POST, instance=profile)
-        profile = form.save()
-        return HttpResponseRedirect(reverse('confcomm_profile'))
-    form = ConferenceProfileForm(instance=profile)
+        if form.is_valid():
+            profile = form.save()
+            return HttpResponseRedirect(reverse('confcomm_profile'))
+    else:
+        form = ConferenceProfileForm(instance=profile)
     return render_to_response('confcomm/edit_profile.html',
             {'form':form},
             context_instance=RequestContext(request),)

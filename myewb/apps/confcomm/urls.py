@@ -8,5 +8,5 @@ urlpatterns = patterns('confcomm.views',
 
         url('^profile/$', 'profile', name='confcomm_profile'),
         url('^profile/edit/$', 'profile_edit', name='confcomm_profile_edit'),
-        url('^profile/(?P<username>)/$', 'profile', name='confcomm_profile'),
+        url('^profile/(?P<username>\w+)/$', 'profile', name='confcomm_profile'),
 )
