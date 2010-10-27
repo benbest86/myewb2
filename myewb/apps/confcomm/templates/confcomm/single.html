@@ -7,9 +7,16 @@
     <a href="#/profile/">Profile</a>
     <a href="#/profile/edit/">Edit Profile</a>
 </div>
-<div id="main-view"></div>
-<div id="profile"></div>
-<div id="profile-form-container"></div>
+<div id="all" style="height:800px;">
+<div id="left" style="float: left; width: 65%;">
+    <div id="main-view"></div>
+    <div id="profile"></div>
+    <div id="profile-form-container"></div>
+</div>
+<div id="right" style="float:right; width: 35%;">
+    <div id="profile-list"></div>
+</div>
+</div>
 {% endblock body %}
 
 {% block extra_body %}
@@ -27,6 +34,15 @@
 <p><strong>Conference Goals:</strong> <%= model.get('conference_goals') %></p>
 <p><strong>What I am Doing Now:</strong> <%= model.get('what_now') %></p>
 <p><strong>I am registered for conference:</strong> <%= model.get('registered') %></p>
+</script>
+
+<script id="profile-list-template" type="x-ejs">
+<h2>Profiles</h2>
+<ul>
+<% collection.each(function(p){ %>
+    <li><a href="<%= p.hash() %>"><%= p.get('member_profile').name %></a></li>
+<% }); %>
+</ul>
 </script>
 
 <script id="main-template" type="x-ejs">
@@ -86,13 +102,22 @@
     var current_profile;
     /* SERVER ROUTES */
     var routes = {
-        profile_base: "{% url confcomm_profile_api_base %}"
+        profile_base: "{% url confcomm_profile_api_base %}",
+        profiles_base: "{% url confcomm_profile_api_profiles %}"
     }
     /* MODELS */
     var ConferenceProfile = Backbone.Model.extend({
+        initialize: function() {
+            var self = this;
+            if (!self.id) self.id = self.get('username');
+        },
         url: function() {
             var self = this;
             return routes.profile_base + self.id + '/';
+        },
+        hash: function() {
+            var self = this;
+            return '#/profile/?id=' + self.id;
         }
     });
     /* COLLECTIONS */
@@ -135,6 +160,15 @@
         render: function() {
             var self = this;
             $(self.el).html(_.template(self.template, {model:self.model}));
+        }});
+    var ProfilesView = Backbone.SPWA.View.extend({
+        el: $('#profile-list'),
+        template: $('#profile-list-template').html(),
+        render: function() {
+            var self = this;
+            console.log('in profile view.');
+            console.log(self.collection);
+            $(self.el).html(_.template(self.template, {collection:self.collection}));
         }});
     /* CONTROLLER */
     var Controller = Backbone.SPWA.Controller.extend({
@@ -194,6 +228,15 @@
             id: current_username
         });
         profiles = new ProfileStore();
+        all_profiles = new ProfileStore(); // 
+        all_profiles.url = routes.profiles_base;
+        all_profiles.fetch({success: function() {
+            console.log('success');
+            console.log(all_profiles);
+            var v = new ProfilesView();
+            v.collection = all_profiles;
+            v.render();
+        }});
         current_profile.fetch({success: function(){
             profiles.add(current_profile);
             if (!location.hash) {

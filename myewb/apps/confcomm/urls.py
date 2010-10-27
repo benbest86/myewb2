@@ -21,5 +21,5 @@ urlpatterns = patterns('confcomm.views',
         # ajaxified
         url('^piston/profile/(?P<username>\w+)/$', confprof_handler, {'emitter_format': 'json'}, name="confcomm_profile_api"),
         url('^piston/profile/$', confprof_handler, {'emitter_format': 'json'}, name="confcomm_profile_api_base"),
-        url('^piston/profiles/$', confprof_handler, {'emitter_format': 'json'}, name="confcomm_profile_api_base"),
+        url('^piston/profiles/$', confprof_handler, {'emitter_format': 'json'}, name="confcomm_profile_api_profiles"),
 )

@@ -68,7 +68,7 @@ def conference_profile_read(request, username=None):
 
 class AnonymousConferenceProfileHandler(AnonymousBaseHandler):
     model = ConferenceProfile
-    fields = ('conference_question', 'conference_goals', 'what_now', 'registered', 'avatar_url', ('member_profile', ('name', 'about', 'gender',),),)
+    fields = ('conference_question', 'conference_goals', 'what_now', 'registered', 'avatar_url', ('member_profile', ('name', 'about', 'gender',),),'username',)
 
     @classmethod
     def read(self, request, username=None):
@@ -81,7 +81,7 @@ class ConferenceProfileHandler(BaseHandler):
     anonymous = AnonymousConferenceProfileHandler
     model = ConferenceProfile
     allowed_methods = ('GET', 'PUT',)
-    fields = ('conference_question', 'conference_goals', 'what_now', 'registered', 'avatar_url', ('member_profile', ('name', 'about', 'gender',),),)
+    fields = ('conference_question', 'conference_goals', 'what_now', 'registered', 'avatar_url', ('member_profile', ('name', 'about', 'gender',),),'username',)
 
     @classmethod
     def read(self, request, username=None):
