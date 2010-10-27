@@ -1,0 +1,196 @@
+{% extends "confcomm/base.html" %}
+
+
+{% block body %}
+<div id="hash-nav">
+    <a href="#/">Home</a>
+    <a href="#/profile/">Profile</a>
+    <a href="#/profile/edit/">Edit Profile</a>
+</div>
+<div id="main-view"></div>
+<div id="profile"></div>
+<div id="profile-form-container"></div>
+{% endblock body %}
+
+{% block extra_body %}
+<script type="text/javascript" src="{{ STATIC_URL }}js/json2.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.ba-hashchange.min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/underscore-min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/backbone-min.js"></script>
+<script type="text/javascript" src="{{ STATIC_URL }}js/backbone.spwa.js"></script>
+
+{# templates #}
+<script id="profile-template" type="x-ejs">
+<h2>Profile for <%= model.get('member_profile').name %></h2>
+<p><strong>Conference Question:</strong> <%= model.get('conference_question') %></p>
+<p><strong>Conference Goals:</strong> <%= model.get('conference_goals') %></p>
+<p><strong>What I am Doing Now:</strong> <%= model.get('what_now') %></p>
+</script>
+
+<script id="main-template" type="x-ejs">
+<p><strong>Welcome <%= model.get('member_profile').name %>!</strong></p>
+<p>The dashboard would go here.</p>
+</script>
+
+<script id="profile-form-template" type="x-ejs">
+<h2>Edit your profile below</h2>
+<form id="profile-form" onsubmit="return false;">
+<p><strong>Conference Question:</strong> <textarea name="conference_question"><%= model.get('conference_question') %></textarea></p>
+<p><strong>Conference Goals:</strong> <textarea name="conference_goals"><%= model.get('conference_goals') %></textarea></p>
+<p><strong>What Now:</strong> <textarea name="what_now"><%= model.get('what_now') %></textarea></p>
+    <input id="update-profile" value="Update" type="submit" />
+</form>
+</script>
+
+<script type="text/javascript">
+;(function() {
+  // Helper function to get a URL from a Model or Collection as a property
+  // or as a function.
+  var getUrl = function(object) {
+    if (!(object && object.url)) throw new Error("A 'url' property or function must be specified");
+    return _.isFunction(object.url) ? object.url() : object.url;
+  };
+  // Map from CRUD to HTTP for our default `Backbone.sync` implementation.
+  var methodMap = {
+    'create': 'POST',
+    'update': 'PUT',
+    'delete': 'DELETE',
+    'read'  : 'GET'
+  };
+  Backbone.sync = function(method, model, success, error) {
+    var sendModel = method === 'create' || method === 'update';
+    // changing data to remove the {'model':} namespace on the data.
+    var data = sendModel ? JSON.stringify(model) : {};
+    var type = methodMap[method];
+    if (Backbone.emulateHttp && (type === 'PUT' || type === 'DELETE')) {
+      data._method = type;
+      type = 'POST';
+    }
+    $.ajax({
+      url       : getUrl(model),
+      type      : type,
+      data      : data,
+      dataType  : 'json',
+      success   : success,
+      error     : error,
+      contentType : 'application/json'
+    });
+  };
+  })();
+</script>
+<script type="text/javascript">
+;(function() {
+    var current_username;
+    var current_profile;
+    /* SERVER ROUTES */
+    var routes = {
+        profile_base: "{% url confcomm_profile_api_base %}"
+    }
+    /* MODELS */
+    var ConferenceProfile = Backbone.Model.extend({
+        url: function() {
+            var self = this;
+            return routes.profile_base + self.id + '/';
+        }
+    });
+    /* COLLECTIONS */
+    var ProfileStore = Backbone.Collection.extend({
+        model: ConferenceProfile
+    });
+    /* VIEWS */
+    var MainView = Backbone.SPWA.View.extend({
+        el: $('#main-view'),
+        template: $('#main-template').html(),
+        render: function() {
+            var self = this;
+            $(self.el).html(_.template(self.template, {model: current_profile}));
+        }
+    });
+    var ProfileView = Backbone.SPWA.View.extend({
+        el: $('#profile'),
+        template: $('#profile-template').html(),
+        render: function() {
+            var self = this;
+            $(self.el).html(_.template(self.template, {model:self.model}));
+            // self.handleEvents();
+        }
+    });
+    var ProfileFormView = Backbone.SPWA.View.extend({
+        el: $('#profile-form-container'),
+        template: $('#profile-form-template').html(),
+        events: {'submit #profile-form': 'update_profile'},
+        update_profile: function() {
+            var self = this;
+            var inputs = $('#profile-form').find('textarea');
+            console.log(inputs);
+            var data = {}
+            _.each(inputs, function(i) {
+                if (i.name) data[i.name] = i.value;
+            });
+            console.log(data);
+            // self.model.set(data);
+            self.model.save(data, {success: function(){console.log('success!'); location.hash='/profile/'}});
+            return false;
+        },
+        render: function() {
+            var self = this;
+            $(self.el).html(_.template(self.template, {model:self.model}));
+        }});
+    /* CONTROLLER */
+    var Controller = Backbone.SPWA.Controller.extend({
+        routes: {
+            '/': 'main',
+            '/profile/': 'profile',
+            '/profile/edit/': 'edit_profile'
+        },
+        views: {
+            'Profile': ProfileView,
+            'ProfileForm': ProfileFormView,
+            'Main': MainView
+        },
+        main: function(args) {
+            var self = this;
+            self.hideAll();
+            var view = self.getView('Main');
+            view.show();
+        },
+        profile: function(args) {
+            var self = this;
+            self.hideAll();
+            var view = self.getView('Profile');
+            var id = args.id ? args.id : current_username;
+            view.model = profiles.get(id);
+            view.show();
+        },
+        edit_profile: function(args) {
+            var self = this;
+            self.hideAll();
+            var view = self.getView('ProfileForm');
+            var id = current_username;
+            view.model = profiles.get(id);
+            view.show();
+        }
+    });
+
+    app = new Controller();
+
+    /* GO TIME */
+    $(function() {
+        current_username = '{{ username }}';
+        current_profile = new ConferenceProfile({
+            id: current_username
+        });
+        profiles = new ProfileStore();
+        current_profile.fetch({success: function(){
+            profiles.add(current_profile);
+            if (!location.hash) {
+                location.hash = '/';
+            }
+            else {
+                $(window).hashchange();
+            }
+        }});
+    });
+})();
+</script>
+{% endblock extra_body %}

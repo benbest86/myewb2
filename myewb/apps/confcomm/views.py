@@ -10,6 +10,16 @@ from django.contrib.auth.decorators import login_required
 from confcomm.models import ConferenceProfile
 from confcomm.forms import ConferenceProfileForm
 
+@login_required
+def single_page(request):
+    """
+    The single initial page for AJAX version.
+    """
+    return render_to_response('confcomm/single.html',
+            {'username': request.user.username},
+            context_instance=RequestContext(request),
+            )
+
 def index(request):
     """
     Main landing page for the conference community.

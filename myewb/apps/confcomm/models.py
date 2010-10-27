@@ -23,6 +23,8 @@ class ConferenceProfile(models.Model):
     for the conference community website.
     """
     member_profile = models.ForeignKey(MemberProfile, unique=True, verbose_name=_('member profile this profile is linked to.'))
+    # additional personal information
+    what_now = models.TextField(_("What you are doing now."), default="")
     # additional information we want for conference.
     interests = models.ManyToManyField(ConferenceInterest, related_name='interested_users', verbose_name=_('List of interests.'), blank=True)
     conference_question = models.TextField(_("One question you want to answer at conference."))
