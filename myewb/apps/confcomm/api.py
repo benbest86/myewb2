@@ -1,8 +1,11 @@
 from django.utils import simplejson
+from django.utils.html import urlquote
 from django.core.serializers.json import DateTimeAwareJSONEncoder
 from django.conf import settings
+from django.http import HttpResponseRedirect
+from django.contrib.auth.models import User
 
-from piston.handler import BaseHandler
+from piston.handler import BaseHandler, AnonymousBaseHandler
 from piston.utils import rc
 
 from confcomm.models import ConferenceProfile
@@ -41,24 +44,48 @@ class DjangoAuthentication(object):
         path = urlquote(self.request.get_full_path())
         tup = (self.login_url, self.redirect_field_name, path)
         return HttpResponseRedirect('%s?%s=%s' %tup)
+
+def conference_profile_read(request, username=None):
+    if username is None:
+        kwargs = dict([(str(k),str(v)) for (k, v) in request.GET.items()])
+        return ConferenceProfile.objects.filter(**kwargs)
+    try:
+        p = ConferenceProfile.objects.get(member_profile__user__username=username)
+        return p
+    # create a conference profile for anyone who exists but is not in the system yet
+    except ConferenceProfile.DoesNotExist:
+        try:
+            user = User.objects.get(username=username)
+            member_profile = user.memberprofile_set.get()
+            registered = user.conference_registrations.count() > 0
+            p = ConferenceProfile.objects.create(member_profile=member_profile, registered=registered)
+            return p
+
+        except Exception, e:
+            resp = rc.NOT_FOUND
+            resp.write('Could not find profile for %s. Error %s.' % (username, e))
+            return resp
+
+class AnonymousConferenceProfileHandler(AnonymousBaseHandler):
+    model = ConferenceProfile
+    fields = ('conference_question', 'conference_goals', 'what_now', 'registered', 'avatar_url', ('member_profile', ('name', 'about', 'gender',),),)
+
+    @classmethod
+    def read(self, request, username=None):
+        return conference_profile_read(request, username)
    
 class ConferenceProfileHandler(BaseHandler):
     """
     Authenticated entry point for conference profiles.
     """
+    anonymous = AnonymousConferenceProfileHandler
     model = ConferenceProfile
     allowed_methods = ('GET', 'PUT',)
-    fields = ('conference_question', 'conference_goals', 'what_now', ('member_profile', ('name', 'about', 'gender',),),)
+    fields = ('conference_question', 'conference_goals', 'what_now', 'registered', 'avatar_url', ('member_profile', ('name', 'about', 'gender',),),)
 
     @classmethod
-    def read(self, request, username):
-        try:
-            p = ConferenceProfile.objects.get(member_profile__user__username=username)
-            return p
-        except:
-            resp = rc.NOT_FOUND
-            resp.write('Could not find profile for %s' % username)
-            return resp
+    def read(self, request, username=None):
+        return conference_profile_read(request, username)
 
     @classmethod
     def update(self, request, username):

@@ -3,8 +3,8 @@ from piston.resource import Resource
 from piston.authentication import NoAuthentication
 from confcomm.api import ConferenceProfileHandler, DjangoAuthentication
 
-# auth = DjangoAuthentication()
-auth = NoAuthentication()
+auth = DjangoAuthentication()
+# auth = NoAuthentication()
 confprof_handler = Resource(ConferenceProfileHandler, authentication=auth)
 
 # place app url patterns here
@@ -21,4 +21,5 @@ urlpatterns = patterns('confcomm.views',
         # ajaxified
         url('^piston/profile/(?P<username>\w+)/$', confprof_handler, {'emitter_format': 'json'}, name="confcomm_profile_api"),
         url('^piston/profile/$', confprof_handler, {'emitter_format': 'json'}, name="confcomm_profile_api_base"),
+        url('^piston/profiles/$', confprof_handler, {'emitter_format': 'json'}, name="confcomm_profile_api_base"),
 )
