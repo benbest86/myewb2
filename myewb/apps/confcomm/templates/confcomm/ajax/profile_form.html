@@ -1,0 +1,7 @@
+<h2>Edit your profile below</h2>
+<form id="profile-form" onsubmit="return false;">
+<p><strong>Conference Question:</strong> <textarea class="profile-input" name="conference_question"><%= model.get('conference_question') %></textarea></p>
+<p><strong>Conference Goals:</strong> <textarea class="profile-input" name="conference_goals"><%= model.get('conference_goals') %></textarea></p>
+<p><strong>What Now:</strong> <textarea class="profile-input" name="what_now"><%= model.get('what_now') %></textarea></p>
+    <input id="update-profile" value="Update" type="submit" />
+</form>

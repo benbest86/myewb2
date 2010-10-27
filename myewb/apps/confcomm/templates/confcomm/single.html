@@ -26,40 +26,6 @@
 <script type="text/javascript" src="{{ STATIC_URL }}js/backbone-min.js"></script>
 <script type="text/javascript" src="{{ STATIC_URL }}js/backbone.spwa.js"></script>
 
-{# templates #}
-<script id="profile-template" type="x-ejs">
-<h2>Profile for <%= model.get('member_profile').name %></h2>
-<img src="<%= model.get('avatar_url') %> />
-<p><strong>Conference Question:</strong> <%= model.get('conference_question') %></p>
-<p><strong>Conference Goals:</strong> <%= model.get('conference_goals') %></p>
-<p><strong>What I am Doing Now:</strong> <%= model.get('what_now') %></p>
-<p><strong>I am registered for conference:</strong> <%= model.get('registered') %></p>
-</script>
-
-<script id="profile-list-template" type="x-ejs">
-<h2>Profiles</h2>
-<ul>
-<% collection.each(function(p){ %>
-    <li><a href="<%= p.hash() %>"><%= p.get('member_profile').name %></a></li>
-<% }); %>
-</ul>
-</script>
-
-<script id="main-template" type="x-ejs">
-<p><strong>Welcome <%= model.get('member_profile').name %>!</strong></p>
-<p>The dashboard would go here.</p>
-</script>
-
-<script id="profile-form-template" type="x-ejs">
-<h2>Edit your profile below</h2>
-<form id="profile-form" onsubmit="return false;">
-<p><strong>Conference Question:</strong> <textarea class="profile-input" name="conference_question"><%= model.get('conference_question') %></textarea></p>
-<p><strong>Conference Goals:</strong> <textarea class="profile-input" name="conference_goals"><%= model.get('conference_goals') %></textarea></p>
-<p><strong>What Now:</strong> <textarea class="profile-input" name="what_now"><%= model.get('what_now') %></textarea></p>
-    <input id="update-profile" value="Update" type="submit" />
-</form>
-</script>
-
 <script type="text/javascript">
 ;(function() {
   // Helper function to get a URL from a Model or Collection as a property
@@ -96,6 +62,7 @@
   };
   })();
 </script>
+
 <script type="text/javascript">
 ;(function() {
     var current_username;
@@ -103,9 +70,36 @@
     /* SERVER ROUTES */
     var routes = {
         profile_base: "{% url confcomm_profile_api_base %}",
-        profiles_base: "{% url confcomm_profile_api_profiles %}"
+        profiles_base: "{% url confcomm_profile_api_profiles %}",
+        templates_base: "{{ STATIC_URL }}templates/confcomm/"
     }
-    /* MODELS */
+    /* Extended BaseView of Backbone.SPWA.View */
+    var BaseView = Backbone.SPWA.View.extend({
+        _template_cache: {},
+        // get the current template - either from the cache or from the network.
+        template: function() {
+            var self = this;
+            // return empty string if no template name given.
+            if (!self.template_name) {
+                return "";
+            }
+            // check the cache first
+            var t = self._template_cache[self.template_name];
+            if (!t) {
+                // synchronously grab template from the server otherwise
+                // TODO: find a better non-blocking way
+                $.ajax(
+                    {
+                    url:routes.templates_base + self.template_name,
+                    async: false,
+                    success: function(data){
+                        self._template_cache[self.template_name] = data;
+                        t = data;
+                }});
+            }
+            return t;
+        }
+    });
     var ConferenceProfile = Backbone.Model.extend({
         initialize: function() {
             var self = this;
@@ -125,26 +119,26 @@
         model: ConferenceProfile
     });
     /* VIEWS */
-    var MainView = Backbone.SPWA.View.extend({
+    var MainView = BaseView.extend({
         el: $('#main-view'),
-        template: $('#main-template').html(),
+        template_name: 'main.html',
         render: function() {
             var self = this;
-            $(self.el).html(_.template(self.template, {model: current_profile}));
+            $(self.el).html(_.template(self.template(), {model: current_profile}));
         }
     });
-    var ProfileView = Backbone.SPWA.View.extend({
+    var ProfileView = BaseView.extend({
         el: $('#profile'),
-        template: $('#profile-template').html(),
+        template_name: 'profile.html',
         render: function() {
             var self = this;
-            $(self.el).html(_.template(self.template, {model:self.model}));
+            $(self.el).html(_.template(self.template(), {model:self.model}));
             // self.handleEvents();
         }
     });
-    var ProfileFormView = Backbone.SPWA.View.extend({
+    var ProfileFormView = BaseView.extend({
         el: $('#profile-form-container'),
-        template: $('#profile-form-template').html(),
+        template_name: 'profile_form.html',
         events: {'submit #profile-form': 'update_profile'},
         update_profile: function() {
             var self = this;
@@ -159,16 +153,14 @@
         },
         render: function() {
             var self = this;
-            $(self.el).html(_.template(self.template, {model:self.model}));
+            $(self.el).html(_.template(self.template(), {model:self.model}));
         }});
-    var ProfilesView = Backbone.SPWA.View.extend({
+    var ProfilesView = BaseView.extend({
         el: $('#profile-list'),
-        template: $('#profile-list-template').html(),
+        template_name: 'profile_list.html',
         render: function() {
             var self = this;
-            console.log('in profile view.');
-            console.log(self.collection);
-            $(self.el).html(_.template(self.template, {collection:self.collection}));
+            $(self.el).html(_.template(self.template(), {collection:self.collection}));
         }});
     /* CONTROLLER */
     var Controller = Backbone.SPWA.Controller.extend({
@@ -231,8 +223,6 @@
         all_profiles = new ProfileStore(); // 
         all_profiles.url = routes.profiles_base;
         all_profiles.fetch({success: function() {
-            console.log('success');
-            console.log(all_profiles);
             var v = new ProfilesView();
             v.collection = all_profiles;
             v.render();
