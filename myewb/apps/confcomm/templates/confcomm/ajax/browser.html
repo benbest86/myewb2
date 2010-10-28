@@ -2,6 +2,6 @@
 <% collection.each(function(p) { %>
 <div id="<%= p.get('username') %>-summary" class="profile-summary">
     <a href="<%= p.hash() %>"><img height="160px" width="160px" src="<%= p.get('avatar_url') %>" /></a>
-    <p><a href="<%= p.hash() %>"><strong><%= p.get('member_profile').name %></strong></a></p>
+    <p><a href="<%= p.hash() %>"><strong><%= p.get('name')%></strong></a></p>
 </div>
 <% }); %>

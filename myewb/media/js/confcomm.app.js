@@ -66,9 +66,22 @@
             return '#/profile/?id=' + self.id;
         }
     });
+    var SummaryProfile = Backbone.Model.extend({
+        initialize: function() {
+            var self = this;
+            if (!self.id) self.id = self.get('username');
+        },
+        hash: function() {
+            var self = this;
+            return '#/profile/?id=' + self.id;
+        }
+    });
     /* COLLECTIONS */
     var ProfileStore = Backbone.Collection.extend({
         model: ConferenceProfile
+    });
+    var SummaryStore = Backbone.Collection.extend({
+        model: SummaryProfile
     });
     /* VIEWS */
     var ProfileView = BaseView.extend({
@@ -206,7 +219,7 @@
             id: current_username
         });
         profiles = new ProfileStore();
-        profile_summaries = new ProfileStore(); // 
+        profile_summaries = new SummaryStore(); // 
         profile_summaries.url = routes.profiles_base;
         profile_summaries.fetch({success: function() {
             browser_view = new BrowserView();

@@ -8,9 +8,13 @@ from django.contrib.auth.models import User
 from piston.handler import BaseHandler, AnonymousBaseHandler
 from piston.utils import rc
 
+from profiles.models import MemberProfile
+
 from confcomm.models import ConferenceProfile
 from confcomm.forms import ConferenceProfileForm
  
+from avatar.templatetags.avatar_tags import avatar_url
+
 class DjangoAuthentication(object):
     """
     Django authentication. 
@@ -57,7 +61,7 @@ def conference_profile_read(request, username=None):
         try:
             user = User.objects.get(username=username)
             member_profile = user.memberprofile_set.get()
-            registered = user.conference_registrations.count() > 0
+            registered = user.conference_registrations.filter(cancelled=False).count() > 0
             p = ConferenceProfile.objects.create(member_profile=member_profile, registered=registered)
             return p
 
@@ -103,3 +107,33 @@ class ConferenceProfileHandler(BaseHandler):
         resp = rc.FORBIDDEN
         resp.write('Forbidden: You may only update your own profile.')
         return resp
+
+class ProfileSummaryHandler(BaseHandler):
+    """
+    Grabs summaries of profiles for the main view.
+    """
+    allowed_methods = ('GET',)
+    # fields = ('name', 'username', 'avatar_url', 'registered')
+
+    @classmethod
+    def read(self, request):
+        filters = dict([(str(k), str(v)) for (k, v) in request.GET.items()])
+        start = int(filters.pop('start', 0))
+        end = int(filters.pop('end', 6))
+        try:
+            mps = MemberProfile.objects.filter(**filters)[start:end]
+        except Exception, e:
+            resp = rc.BAD_REQUEST
+            resp.write('The filters you provided were not valid. %s %s' % (str(filters), e))
+            return resp
+        results = []
+        for mp in mps:
+            d = {
+                    'name': mp.name,
+                    'username': mp.user.username,
+                    'avatar_url': avatar_url(mp.user, 160),
+                    'registered': mp.user.conference_registrations.filter(cancelled=False).count() > 0,
+                }
+            results.append(d)
+        return results
+

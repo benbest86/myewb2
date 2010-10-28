@@ -1,11 +1,12 @@
 from django.conf.urls.defaults import *
 from piston.resource import Resource
 from piston.authentication import NoAuthentication
-from confcomm.api import ConferenceProfileHandler, DjangoAuthentication
+from confcomm.api import ConferenceProfileHandler, DjangoAuthentication, ProfileSummaryHandler
 
 auth = DjangoAuthentication()
-# auth = NoAuthentication()
+noauth = NoAuthentication()
 confprof_handler = Resource(ConferenceProfileHandler, authentication=auth)
+profsummary_handler = Resource(ProfileSummaryHandler, authentication=noauth)
 
 # place app url patterns here
 
@@ -22,4 +23,5 @@ urlpatterns = patterns('confcomm.views',
         url('^piston/profile/(?P<username>\w+)/$', confprof_handler, {'emitter_format': 'json'}, name="confcomm_profile_api"),
         url('^piston/profile/$', confprof_handler, {'emitter_format': 'json'}, name="confcomm_profile_api_base"),
         url('^piston/profiles/$', confprof_handler, {'emitter_format': 'json'}, name="confcomm_profile_api_profiles"),
+        url('^piston/profile_summaries/$', profsummary_handler, {'emitter_format': 'json'}, name='confcomm_profile_api_summaries'),
 )
