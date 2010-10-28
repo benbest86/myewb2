@@ -71,14 +71,6 @@
         model: ConferenceProfile
     });
     /* VIEWS */
-    var MainView = BaseView.extend({
-        el: $('#main-view'),
-        template_name: 'main.html',
-        render: function() {
-            var self = this;
-            $(self.el).html(_.template(self.template(), {model: current_profile}));
-        }
-    });
     var ProfileView = BaseView.extend({
         el: $('#profile'),
         template_name: 'profile.html',
@@ -86,7 +78,6 @@
             var self = this;
             $(self.el).html(_.template(self.template(), {model:self.model}));
             $.facebox({div:'#profile'});
-            // self.handleEvents();
         }
     });
     var ProfileFormView = BaseView.extend({
@@ -101,7 +92,6 @@
             _.each(inputs, function(i) {
                 if (i.name) data[i.name] = i.value;
             });
-            // self.model.set(data);
             self.model.save(data, {success: function(){location.hash='/profile/'}});
             return false;
         },
@@ -117,13 +107,6 @@
             // re-delegate the events so they are attached to the facebox copy of the
             // form
             self.delegateEvents();
-        }});
-    var ProfilesView = BaseView.extend({
-        el: $('#profile-list'),
-        template_name: 'profile_list.html',
-        render: function() {
-            var self = this;
-            $(self.el).html(_.template(self.template(), {collection:self.collection}));
         }});
     var FiltersView = BaseView.extend({
         el: $('#filters'),
@@ -170,24 +153,20 @@
     /* CONTROLLER */
     var Controller = Backbone.SPWA.Controller.extend({
         routes: {
-            '/': 'main',
             '/profile/': 'profile',
             '/profile/edit/': 'edit_profile'
         },
         views: {
             'Profile': ProfileView,
-            'ProfileForm': ProfileFormView,
-            'Main': MainView
+            'ProfileForm': ProfileFormView
         },
         main: function(args) {
             var self = this;
-            // self.hideAll();
             var view = self.getView('Main');
             view.show();
         },
         profile: function(args) {
             var self = this;
-            // self.hideAll();
             var view = self.getView('Profile');
             var id = args.id ? args.id : current_username;
             view.model = profiles.get(id);
@@ -211,7 +190,6 @@
         },
         edit_profile: function(args) {
             var self = this;
-            // self.hideAll();
             var view = self.getView('ProfileForm');
             var id = current_username;
             view.model = profiles.get(id);
@@ -233,20 +211,17 @@
         profile_summaries.fetch({success: function() {
             browser_view = new BrowserView();
             browser_view.collection = profile_summaries;
-            browser_view.show();
-            // var v = new ProfilesView();
-            // v.collection = profile_summaries;
-            // v.render();
+            browser_view.render();
         }});
        /* Load all the default templates */
        news_view = new NewsView;
-       news_view.show();
+       news_view.render();
        stats_view = new StatsView;
-       stats_view.show();
+       stats_view.render();
        login_view = new LoginView;
-       login_view.show();
+       login_view.render();
        filters_view = new FiltersView;
-       filters_view.show();
+       filters_view.render();
        current_profile.fetch({success: function(){
            profiles.add(current_profile);
            // if (!location.hash) {
