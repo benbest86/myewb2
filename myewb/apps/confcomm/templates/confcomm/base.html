@@ -1,1 +1,191 @@
-{% extends "site_base.html" %}
+{% extends "base.html" %}
+
+{% load i18n %}
+{# {% load openid_tags %} #}
+{% load ifsetting_tag %}
+{% load analytics %}
+
+
+
+{% block extra_head_base %}
+		<link rel="SHORTCUT ICON" href="{{ STATIC_URL}}favicon.ico" />
+		{% block extra_head %}{% endblock %}
+		<link rel="stylesheet" href="{{ STATIC_URL }}css/myewb2.css?d=20100629" />
+		<script type="text/javascript">
+		
+//  External links in posts, etc., should open in a new window    
+$(document).ready(function(){
+	$(".textbody a[ href^='http']").attr('target','_blank');
+	
+	$(".openlinks a").attr('target','_blank');
+});
+		
+		
+        $(document).ready(function() {
+    		  $('.toolbarheader').click(function(){	
+                $(this).next().slideToggle();
+                $(this).toggleClass('hidebox');
+                if($(this).attr('id')) {
+                    //console.log($(this).attr('id'));
+                    
+                    {% if user.is_authenticated %}
+                    var action = "";
+                    if ($(this).hasClass('hidebox'))
+                        action = "close";
+                    else
+                        action = "show";
+                    
+                    $.ajax({
+                      url: "{% url profile_toolbar_action %}" + action + "/" + $(this).attr('id') + "/",
+                      cache: false,  // this prepends another query onto the end with a timestamp - make sure it doesn't mix up the handler page?
+                      
+                      //success: function(html){
+                      //  console.log(html);
+                      //}   // just for debugging; not actually required to send anything back.
+                    });
+                    {% endif %}
+                    {# state saving only works if youre logged in, so only really try then #}
+                    
+                    
+                } else {
+                    //console.log('no id');
+                }
+                // indicates that the box *below* is hidden
+
+          	  });
+          	  
+        {% block frontpagerightJS %}
+
+          	  
+        {% endblock frontpagerightJS %}
+          	  
+          	  
+        });
+        
+	$(document).ready(function() {
+        if (jQuery.browser.msie) {
+           if(parseInt(jQuery.browser.version) == 6) {
+                $('#ie6alert').html('<div>        <span>Uhoh.</span> Looks like you\'re using Internet Explorer 6. It\'s pretty sketchy with myEWB, so we\'d suggest upgrading to <a href="http://getfirefox.com" target="_blank" title="It\'s great.">Firefox</a>, <a href="http://www.google.com/chrome" target="_blank" title="It\'s great too.">Chrome</a>, or <a href="http://www.microsoft.com/windows/internet-explorer/default.aspx" target="_blank" title="...but preferably, one of the first two. :)">Internet Explorer 8</a>. Sorry!    </div>');
+                $('#ie6alert').show();
+           }
+        }
+    });
+        
+        
+        
+        
+		</script>
+		
+{% endblock %}
+
+{% block subnav_base %}
+{% endblock %}
+
+{% block login %}
+	{% ifnotequal request.path "/account/login/" %}
+	<div class="login">
+    {% if user.is_authenticated %}
+		Signed in as <a class="username" href="{% url profile_detail user %}"><strong>{{ user.visible_name }}</strong></a>.
+		<br/>
+		<div id="inbox_count">
+			<a href="{% url messages_inbox %}">{{ messages_inbox_count }} unread myEWB message{% ifnotequal messages_inbox_count 1 %}s{% endifnotequal %}</a>
+		</div>
+		{% if user.google_username %}
+			This account is linked to <a href="http://mail.ewb.ca" target="_new">{{ user.google_username }}@ewb.ca</a><br/>
+		{% endif %}
+		
+		<a class="signout" href="{% url acct_logout %}">{% trans "sign out" %}</a>
+    {% else %}
+        <a href="{% url acct_login %}?url={{request.path}}">{% trans "Login" %}</a>
+{% ifsetting ACCOUNT_OPEN_SIGNUP %}{% trans "or" %} <a href="{% url acct_signup %}"><strong>{% trans "Sign up" %}</strong></a>{% endifsetting %}
+    {% endif %}
+	</div>
+	{% endifnotequal %}
+{% endblock %}
+
+{% block logo_link_image %}<a href="{% url home %}"><img src="{{ STATIC_URL }}images/logos/title-graphic-worldcup.png" alt="Engineers Without Borders" border="0" title="Go Ghana!" /></a>{% endblock %}
+
+{% block myewb_link_image %}{% endblock %}
+
+
+{% block subnav %}
+{% endblock %}
+
+{% block footer %}
+<ul class="legal">
+	<li><a href="{% url terms %}">Terms of Use</a></li>
+	<li><a href="{% url privacy %}">Privacy Policy</a></li>
+    <li>&copy; 2005&ndash;{% now "y" %} <a href="http://www.ewb.ca/">{% trans "EWB-ISF Canada" %}</a></li>
+	{% if user.is_staff %}<li><a href="/admin/">{% trans "Admin" %}</a></li>{% endif %}
+	{% block locale_switcher %}
+		<li>
+	    <form action="{% if request.user.is_authenticated %}{% url acct_language_change %}{% else %}/i18n/setlang/{% endif %}" method="post" id="locale_switcher">
+	        <select name="language" onchange="$('#locale_switcher').submit()">
+	            {% for lang in LANGUAGES %}
+	                <option value="{{ lang.0 }}"{% ifequal lang.0 LANGUAGE_CODE %} selected="selected"{% endifequal %}>{{ lang.1 }}</option>
+	            {% endfor %}
+	        </select>
+	    </form>
+		</li>
+	{% endblock %}
+	
+	<li>timezone: 
+		<form action="{% url timezone_switch %}" method="post" id="language-switcher">
+			<select name="timezone" onchange="$('#language-switcher').submit()">
+				<option value="auto">auto-detect {% if detected_timezone %}({{detected_timezone}}){% endif %}</option>
+				{% for tz in timezones %}
+					<option value="{{tz}}" {% ifequal tz current_timezone %}selected="selected"{% endifequal %}>{{ tz }}</option>
+				{% endfor %}
+			</select>
+			<input type="hidden" name="redirect" value="{{ request.path }}"/>
+		</form>
+	</li>
+</ul>
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-907833-2']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
+
+{% endblock %}
+
+{% block extra_body_base %}
+    {#{% urchin %}    #}
+    
+    {# javascript keepalive for who's online counter #}
+    <script type="text/javascript">
+    function keepalive()
+    {
+        jQuery.get('{% url whosonline_refresh %}',
+                function(data)
+                {
+            		$('#box-online-contents').html(data);
+            		var new_inbox = $('#box-online-contents div#inbox_count_ajax').html()
+               		$('#inbox_count').html(new_inbox);
+                });
+        setTimeout('keepalive()', 5 * 60 * 1000);
+    }
+                        
+    $(document).ready(function() {
+        setTimeout('keepalive()', 5 * 60 * 1000);
+    });
+    
+    </script>
+    
+    {% block extra_body %}{% endblock %}
+
+
+<div id="ie6alert" style="display:none;">
+    
+</div>
+
+{% endblock %}

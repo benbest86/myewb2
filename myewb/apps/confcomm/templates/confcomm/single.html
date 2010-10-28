@@ -7,16 +7,58 @@
     <a href="#/profile/">Profile</a>
     <a href="#/profile/edit/">Edit Profile</a>
 </div>
-<div id="all" style="height:800px;">
-<div id="left" style="float: left; width: 65%;">
-    <div id="main-view"></div>
-    <div id="profile"></div>
-    <div id="profile-form-container"></div>
+<div id="all">
+<div id="left">
+    <div class="section" id="filters"></div>
+    <div class="section" id="browser"></div>
 </div>
-<div id="right" style="float:right; width: 35%;">
-    <div id="profile-list"></div>
+<div id="right">
+    <div id="cc-login" class="sidebar-section"></div>
+    <div id="my-profile" class="sidebar-section"></div>
+    <div id="stats" class="sidebar-section"></div>
+    <div id="news" class="sidebar-section"></div>
+    {# <div id="profile-list"></div> #}
 </div>
+
 </div>
+<div id="profile"></div>
+<div id="profile-form-container"></div>
+<style type="text/css">
+    .section {
+        border: 1px solid black;
+        margin: 9px 4px;
+    }
+    .sidebar-section {
+        border: 1px solid black;
+        height: 180px;
+        margin: 9px 4px;
+    }
+    .sidebar-section img {
+        float: left;
+    }
+    #all {
+        height: 800px;
+    }
+    #left {
+        float: left;
+        width: 65%;
+    }
+    #right {
+        float: right;
+        width: 35%;
+    }
+
+    #filters {
+        height: 180px;
+    }
+    #browser {
+        height: 580px;
+    }
+    .profile-summary {
+        float: left;
+        margin: 25px;
+    }
+</style>
 {% endblock body %}
 
 {% block extra_body %}

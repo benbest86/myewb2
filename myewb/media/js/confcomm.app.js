@@ -11,6 +11,13 @@
     // holds the profile summary collection
     var profile_summaries;
     /* Extended BaseView of Backbone.SPWA.View */
+    /* VIEW VARIABLES */
+    var filters_view;
+    // var browser_view;
+    var login_view;
+    var my_profile_view;
+    var news_view;
+    var stats_view;
     var BaseView = Backbone.SPWA.View.extend({
         _template_cache: {},
         // get the current template - either from the cache or from the network.
@@ -99,6 +106,48 @@
             var self = this;
             $(self.el).html(_.template(self.template(), {collection:self.collection}));
         }});
+    var FiltersView = BaseView.extend({
+        el: $('#filters'),
+        template_name: 'filters.html',
+        render: function() {
+            var self = this;
+            $(self.el).html(_.template(self.template()));
+        }});
+    var NewsView = BaseView.extend({
+        el: $('#news'),
+        template_name: 'news.html',
+        render: function() {
+            var self = this;
+            $(self.el).html(_.template(self.template()));
+        }});
+    var MyProfileView = BaseView.extend({
+        el: $('#my-profile'),
+        template_name: 'my_profile.html',
+        render: function() {
+            var self = this;
+            $(self.el).html(_.template(self.template(), {model: self.model}));
+        }});
+    var StatsView = BaseView.extend({
+        el: $('#stats'),
+        template_name: 'stats.html',
+        render: function() {
+            var self = this;
+            $(self.el).html(_.template(self.template()));
+        }});
+    var LoginView = BaseView.extend({
+        el: $('#cc-login'),
+        template_name: 'cc_login.html',
+        render: function() {
+            var self = this;
+            $(self.el).html(_.template(self.template()));
+        }});
+    var BrowserView = BaseView.extend({
+        el: $('#browser'),
+        template_name: 'browser.html',
+        render: function() {
+            var self = this;
+            $(self.el).html(_.template(self.template(), {collection: self.collection}));
+        }});
     /* CONTROLLER */
     var Controller = Backbone.SPWA.Controller.extend({
         routes: {
@@ -159,18 +208,33 @@
         profile_summaries = new ProfileStore(); // 
         profile_summaries.url = routes.profiles_base;
         profile_summaries.fetch({success: function() {
-            var v = new ProfilesView();
-            v.collection = profile_summaries;
-            v.render();
+            browser_view = new BrowserView();
+            browser_view.collection = profile_summaries;
+            browser_view.show();
+            // var v = new ProfilesView();
+            // v.collection = profile_summaries;
+            // v.render();
         }});
-        current_profile.fetch({success: function(){
-            profiles.add(current_profile);
-            if (!location.hash) {
-                location.hash = '/';
-            }
-            else {
-                $(window).hashchange();
-            }
-        }});
+       /* Load all the default templates */
+       news_view = new NewsView;
+       news_view.show();
+       stats_view = new StatsView;
+       stats_view.show();
+       login_view = new LoginView;
+       login_view.show();
+       filters_view = new FiltersView;
+       filters_view.show();
+       current_profile.fetch({success: function(){
+           profiles.add(current_profile);
+           // if (!location.hash) {
+           //     location.hash = '/';
+           // }
+           // else {
+           //     $(window).hashchange();
+           // }
+           my_profile_view = new MyProfileView();
+           my_profile_view.model = current_profile;
+           my_profile_view.render();
+       }});
     });
 })();
