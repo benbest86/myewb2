@@ -2,22 +2,30 @@
     // needs the following globals
     // routes, current_user
     /* SERVER ROUTES */
-    var routes = CONFCOMM_GLOBALS.routes;
-    var current_username = CONFCOMM_GLOBALS.username;
-    // holds the current users' profile
-    var current_profile;
-    // holds the profiles collection
-    var profiles;
-    // holds the profile summary collection
-    var profile_summaries;
-    /* Extended BaseView of Backbone.SPWA.View */
-    /* VIEW VARIABLES */
-    var filters_view;
-    // var browser_view;
-    var login_view;
-    var my_profile_view;
-    var news_view;
-    var stats_view;
+    var DEBUG = true;
+    console.log('just before debug');
+    if (!DEBUG) { // leave a bunch of global variables so I can get at them through the console
+        console.log('not debug');
+        var routes;
+        var current_username;
+        // holds the current users' profile
+        var current_profile;
+        // holds the profiles collection
+        var profiles;
+        // holds the profile summary collection
+        var profile_summaries;
+        /* Extended BaseView of Backbone.SPWA.View */
+        /* VIEW VARIABLES */
+        var filters_view;
+        // var browser_view;
+        var login_view;
+        var my_profile_view;
+        var news_view;
+        var stats_view;
+    }   
+    routes = CONFCOMM_GLOBALS.routes;
+    current_username = CONFCOMM_GLOBALS.username;
+
     var BaseView = Backbone.SPWA.View.extend({
         _template_cache: {},
         // get the current template - either from the cache or from the network.
@@ -77,16 +85,18 @@
         render: function() {
             var self = this;
             $(self.el).html(_.template(self.template(), {model:self.model}));
+            $.facebox({div:'#profile'});
             // self.handleEvents();
         }
     });
     var ProfileFormView = BaseView.extend({
+        content_holder: '#profile-form-container',
         el: $('#profile-form-container'),
         template_name: 'profile_form.html',
-        events: {'submit #profile-form': 'update_profile'},
+        events: {'submit form': 'update_profile'},
         update_profile: function() {
             var self = this;
-            var inputs = $('#profile-form').find('.profile-input');
+            var inputs = self.$('form').find('.profile-input');
             var data = {}
             _.each(inputs, function(i) {
                 if (i.name) data[i.name] = i.value;
@@ -97,7 +107,16 @@
         },
         render: function() {
             var self = this;
-            $(self.el).html(_.template(self.template(), {model:self.model}));
+            // since our form is in the facebox we have to do some monkey business here
+            // use content_holder to render the template
+            $(self.content_holder).html(_.template(self.template(), {model:self.model}));
+            $.facebox({div:self.content_holder});
+            // after facebox copies the html to its own div, reset self.el to the 
+            // content in the facebox
+            self.el = $('#facebox').find('.content').first();
+            // re-delegate the events so they are attached to the facebox copy of the
+            // form
+            self.delegateEvents();
         }});
     var ProfilesView = BaseView.extend({
         el: $('#profile-list'),
@@ -162,13 +181,13 @@
         },
         main: function(args) {
             var self = this;
-            self.hideAll();
+            // self.hideAll();
             var view = self.getView('Main');
             view.show();
         },
         profile: function(args) {
             var self = this;
-            self.hideAll();
+            // self.hideAll();
             var view = self.getView('Profile');
             var id = args.id ? args.id : current_username;
             view.model = profiles.get(id);
@@ -176,24 +195,28 @@
                 var profile_to_get = new ConferenceProfile({
                     id: id
                 });
+                // get our nice facebox loading spinner
+                $.facebox(function() {
                 profile_to_get.fetch({success: function(){
                     profiles.add(profile_to_get);
                     view.model = profile_to_get;
-                    view.show();
+                    view.render();
                     }
+                    });
                 });
             }
             else {
-                view.show();
+                view.render();
             }
         },
         edit_profile: function(args) {
             var self = this;
-            self.hideAll();
+            // self.hideAll();
             var view = self.getView('ProfileForm');
             var id = current_username;
             view.model = profiles.get(id);
-            view.show();
+            console.log(view.model);
+            view.render();
         }
     });
 
