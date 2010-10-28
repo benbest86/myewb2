@@ -287,5 +287,16 @@
        else {
            $(window).hashchange();
        }
+       // bind some events to facebox to help with nav
+       // change back to the last hash when we close a facebox
+       $(document).bind('close.facebox', function() {
+           location.hash = $(document).data('last_hash');
+       });
+       // keep track of the last hash so we can return to it after
+       // closing a facebox
+       $(window).hashchange(function() {
+           $(document).data('last_hash', $(document).data('this_hash'));
+           $(document).data('this_hash', location.hash);
+       });
     });
 })();

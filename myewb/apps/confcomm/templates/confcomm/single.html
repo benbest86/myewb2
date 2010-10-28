@@ -84,6 +84,9 @@
         },
         username: "{{ username }}"
     }
+    $.facebox.settings.closeImage = "{{ STATIC_URL }}pinax/images/facebox/closelabel.gif"
+    $.facebox.settings.loadingImage = "{{ STATIC_URL }}pinax/images/facebox/loading.gif"
+    $.facebox.settings.opacity = 0.5;
 </script>
 {# all of our app's js is here #}
 <script type="text/javascript" src="{{ STATIC_URL}}js/confcomm.app.js"></script>
