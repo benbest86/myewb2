@@ -20,7 +20,7 @@
         var news_view;
         var stats_view;
         var browser_pagination_view;
-    }   
+    }
     routes = CONFCOMM_GLOBALS.routes;
     current_username = CONFCOMM_GLOBALS.username;
 
