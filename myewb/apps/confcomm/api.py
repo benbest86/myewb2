@@ -48,7 +48,7 @@ class DjangoAuthentication(object):
 def conference_profile_read(request, username=None):
     if username is None:
         kwargs = dict([(str(k),str(v)) for (k, v) in request.GET.items()])
-        return ConferenceProfile.objects.filter(**kwargs)
+        return ConferenceProfile.objects.filter(**kwargs)[:6]
     try:
         p = ConferenceProfile.objects.get(member_profile__user__username=username)
         return p
