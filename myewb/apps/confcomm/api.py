@@ -118,10 +118,10 @@ class ProfileSummaryHandler(BaseHandler):
     @classmethod
     def read(self, request):
         filters = dict([(str(k), str(v)) for (k, v) in request.GET.items()])
-        start = int(filters.pop('start', 0))
-        end = int(filters.pop('end', 6))
+        page = int(filters.pop('page', 1))
         try:
-            mps = MemberProfile.objects.filter(**filters)[start:end]
+            all_mps = MemberProfile.objects.filter(**filters)
+            mps = all_mps[(page-1)*6:page*6]
         except Exception, e:
             resp = rc.BAD_REQUEST
             resp.write('The filters you provided were not valid. %s %s' % (str(filters), e))
@@ -135,5 +135,5 @@ class ProfileSummaryHandler(BaseHandler):
                     'registered': mp.user.conference_registrations.filter(cancelled=False).count() > 0,
                 }
             results.append(d)
-        return results
+        return {'pagination': {'current': page, 'last': all_mps.count()/6 + 1}, 'models': results}
 

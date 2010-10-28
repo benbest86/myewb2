@@ -2,15 +2,11 @@
 
 
 {% block body %}
-<div id="hash-nav">
-    <a href="#/">Home</a>
-    <a href="#/profile/">Profile</a>
-    <a href="#/profile/edit/">Edit Profile</a>
-</div>
 <div id="all">
 <div id="left">
     <div class="section" id="filters"></div>
     <div class="section" id="browser"></div>
+    <div id="paginator"></div>
 </div>
 <div id="right">
     <div id="cc-login" class="sidebar-section"></div>
@@ -57,6 +53,10 @@
     .profile-summary {
         float: left;
         margin: 25px;
+    }
+    ul.pagination li {
+        display: inline;
+        list-style-type: none;
     }
 </style>
 {% endblock body %}

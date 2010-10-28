@@ -3,9 +3,7 @@
     // routes, current_user
     /* SERVER ROUTES */
     var DEBUG = true;
-    console.log('just before debug');
     if (!DEBUG) { // leave a bunch of global variables so I can get at them through the console
-        console.log('not debug');
         var routes;
         var current_username;
         // holds the current users' profile
@@ -14,18 +12,19 @@
         var profiles;
         // holds the profile summary collection
         var profile_summaries;
-        /* Extended BaseView of Backbone.SPWA.View */
         /* VIEW VARIABLES */
         var filters_view;
-        // var browser_view;
+        var browser_view;
         var login_view;
         var my_profile_view;
         var news_view;
         var stats_view;
+        var browser_pagination_view;
     }   
     routes = CONFCOMM_GLOBALS.routes;
     current_username = CONFCOMM_GLOBALS.username;
 
+    /* Extended BaseView of Backbone.SPWA.View */
     var BaseView = Backbone.SPWA.View.extend({
         _template_cache: {},
         // get the current template - either from the cache or from the network.
@@ -76,12 +75,32 @@
             return '#/profile/?id=' + self.id;
         }
     });
+    var Paginator = Backbone.Model.extend({
+        initialize: function(data) {
+            var self = this;
+            // make sure we've got ints
+            data['current'] = data['current'] - 0;
+            data['last'] = data['last'] - 0;
+            self.set(data);
+        }
+    });
     /* COLLECTIONS */
     var ProfileStore = Backbone.Collection.extend({
         model: ConferenceProfile
     });
     var SummaryStore = Backbone.Collection.extend({
-        model: SummaryProfile
+        model: SummaryProfile,
+        parse: function(resp) {
+            return resp.models;
+        },
+        url: function() {
+            return this.qs ? this.base_url + '?' + this.qs : this.base_url;
+        },
+        qs: '',
+        fetch_success: function(collection, resp) {
+            browser_pagination_view.model = new Paginator(resp.pagination);
+            browser_pagination_view.render();
+        }
     });
     /* VIEWS */
     var ProfileView = BaseView.extend({
@@ -163,20 +182,42 @@
             var self = this;
             $(self.el).html(_.template(self.template(), {collection: self.collection}));
         }});
+    var BrowserPaginationView = BaseView.extend({
+        el: $('#paginator'),
+        template_name: 'browser_paginator.html',
+        render: function() {
+            var self = this;
+            $(self.el).html(_.template(self.template(), {model: self.model}));
+        }});
     /* CONTROLLER */
     var Controller = Backbone.SPWA.Controller.extend({
         routes: {
             '/profile/': 'profile',
-            '/profile/edit/': 'edit_profile'
+            '/profile/edit/': 'edit_profile',
+            '/': 'browser'
         },
         views: {
             'Profile': ProfileView,
-            'ProfileForm': ProfileFormView
+            'ProfileForm': ProfileFormView,
+            'Browser': BrowserView
         },
-        main: function(args) {
+        browser: function(args) {
             var self = this;
-            var view = self.getView('Main');
-            view.show();
+            var view = self.getView('Browser');
+            // fetch the next page of results
+            // and render only if the state has changed
+            if (!(args === self.last_state)){
+                page = args['page'] || 1;
+                profile_summaries.qs = 'page=' + page;
+                profile_summaries.fetch({
+                    success:function(self, resp) {
+                        self.fetch_success(self, resp);
+                        view.collection = self;
+                        view.render();
+                        self.last_state = args;
+                    }
+                });
+            }
         },
         profile: function(args) {
             var self = this;
@@ -206,7 +247,6 @@
             var view = self.getView('ProfileForm');
             var id = current_username;
             view.model = profiles.get(id);
-            console.log(view.model);
             view.render();
         }
     });
@@ -220,12 +260,12 @@
         });
         profiles = new ProfileStore();
         profile_summaries = new SummaryStore(); // 
-        profile_summaries.url = routes.profiles_base;
-        profile_summaries.fetch({success: function() {
-            browser_view = new BrowserView();
-            browser_view.collection = profile_summaries;
-            browser_view.render();
-        }});
+        profile_summaries.base_url = routes.profiles_base;
+       // don't render this guy just wait - wait until we've fetched the profile_summaries
+       // and rendered the first BrowserView on page load
+       browser_pagination_view = new BrowserPaginationView;
+       browser_view = new BrowserView;
+       browser_view.collection = profile_summaries;
        /* Load all the default templates */
        news_view = new NewsView;
        news_view.render();
@@ -237,15 +277,15 @@
        filters_view.render();
        current_profile.fetch({success: function(){
            profiles.add(current_profile);
-           // if (!location.hash) {
-           //     location.hash = '/';
-           // }
-           // else {
-           //     $(window).hashchange();
-           // }
            my_profile_view = new MyProfileView();
            my_profile_view.model = current_profile;
            my_profile_view.render();
        }});
+       if (!location.hash) {
+           location.hash = '/';
+       }
+       else {
+           $(window).hashchange();
+       }
     });
 })();
