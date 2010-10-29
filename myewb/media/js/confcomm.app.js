@@ -96,11 +96,7 @@
         url: function() {
             return this.qs ? this.base_url + '?' + this.qs : this.base_url;
         },
-        qs: '',
-        fetch_success: function(collection, resp) {
-            browser_pagination_view.model = new Paginator(resp.pagination);
-            browser_pagination_view.render();
-        }
+        qs: ''
     });
     /* VIEWS */
     var ProfileView = BaseView.extend({
@@ -181,12 +177,14 @@
         render: function() {
             var self = this;
             $(self.el).html(_.template(self.template(), {collection: self.collection}));
+            self.paginator.render();
         }});
     var BrowserPaginationView = BaseView.extend({
         el: $('#paginator'),
         template_name: 'browser_paginator.html',
         render: function() {
             var self = this;
+            self.el = $('#paginator');
             $(self.el).html(_.template(self.template(), {model: self.model}));
         }});
     /* CONTROLLER */
@@ -211,8 +209,9 @@
                 profile_summaries.qs = 'page=' + page;
                 profile_summaries.fetch({
                     success:function(self, resp) {
-                        self.fetch_success(self, resp);
+                        browser_pagination_view.model = new Paginator(resp.pagination);
                         view.collection = self;
+                        view.paginator = browser_pagination_view;
                         view.render();
                         self.last_state = args;
                     }
