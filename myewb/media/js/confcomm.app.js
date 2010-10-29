@@ -6,6 +6,7 @@
     if (!DEBUG) { // leave a bunch of global variables so I can get at them through the console
         var routes;
         var current_username;
+        var filter_lists;
         // holds the current users' profile
         var current_profile;
         // holds the profiles collection
@@ -23,6 +24,7 @@
     }
     routes = CONFCOMM_GLOBALS.routes;
     current_username = CONFCOMM_GLOBALS.username;
+    filter_lists = CONFCOMM_GLOBALS.filter_lists;
 
     /* Extended BaseView of Backbone.SPWA.View */
     var BaseView = Backbone.SPWA.View.extend({
@@ -141,7 +143,7 @@
         template_name: 'filters.html',
         render: function() {
             var self = this;
-            $(self.el).html(_.template(self.template()));
+            $(self.el).html(_.template(self.template(), {filter_lists: filter_lists}));
         }});
     var NewsView = BaseView.extend({
         el: $('#news'),

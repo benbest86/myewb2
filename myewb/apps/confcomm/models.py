@@ -47,9 +47,9 @@ for chapter in chapterlist:
     CHAPTER_CHOICES.append((chapter.slug, chapter.chapter_info.chapter_name))
 
 CANADA_ROLE_CHOICES = (
+        ('m', 'Member',),
         ('e', 'Executive',),
         ('p', 'President',),
-        ('m', 'Member',),
         )
 class CanadaCohort(models.Model):
     """
@@ -61,9 +61,9 @@ class CanadaCohort(models.Model):
     members = models.ManyToManyField(MemberProfile)
 
 AFRICA_ROLE_CHOICES = (
-        ('j', 'Junior Fellow/Operation 21',),
-        ('s', 'African Programs Staff/Overseas Volunteer Staff',),
-        ('p', 'Professional Fellow',),
+        ('j', 'JF/Op 21',),
+        ('p', 'ProF',),
+        ('s', 'APS/OVS',),
         )
 AFRICA_COUNTRY_CHOICES = (
         ('bf', 'Burkina Faso',),
