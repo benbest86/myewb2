@@ -90,8 +90,8 @@
     var CONFCOMM_GLOBALS = {
         routes: {
             profile_base: "{% url confcomm_profile_api_base %}",
-            profiles_base: "{% url confcomm_profile_api_summaries %}",
-            templates_base: "{{ STATIC_URL }}templates/confcomm/"
+            templates_base: "{{ STATIC_URL }}templates/confcomm/",
+            cohorts_base: "{% url confcomm_cohorts %}"
         },
         username: "{{ username }}",
         filter_lists: {

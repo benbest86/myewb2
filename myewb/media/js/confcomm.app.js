@@ -11,8 +11,8 @@
         var current_profile;
         // holds the profiles collection
         var profiles;
-        // holds the profile summary collection
-        var profile_summaries;
+        // holds the cohort summary collection
+        var cohort_summaries;
         /* VIEW VARIABLES */
         var filters_view;
         var browser_view;
@@ -220,8 +220,8 @@
             if (!(args === self.last_state)){
                 view.loading();
                 page = args['page'] || 1;
-                profile_summaries.qs = 'page=' + page;
-                profile_summaries.fetch({
+                cohort_summaries.qs = 'page=' + page;
+                cohort_summaries.fetch({
                     success:function(self, resp) {
                         browser_pagination_view.model = new Paginator(resp.pagination);
                         view.collection = self;
@@ -272,13 +272,13 @@
             id: current_username
         });
         profiles = new ProfileStore();
-        profile_summaries = new SummaryStore(); // 
-        profile_summaries.base_url = routes.profiles_base;
-       // don't render this guy just wait - wait until we've fetched the profile_summaries
+        cohort_summaries = new SummaryStore();
+        cohort_summaries.base_url = routes.cohorts_base;
+       // don't render this guy just wait - wait until we've fetched the cohort_summaries
        // and rendered the first BrowserView on page load
        browser_pagination_view = new BrowserPaginationView;
        browser_view = new BrowserView;
-       browser_view.collection = profile_summaries;
+       browser_view.collection = cohort_summaries;
        /* Load all the default templates */
        news_view = new NewsView;
        news_view.loading();
