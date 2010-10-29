@@ -93,7 +93,6 @@ class ConferenceProfileHandler(BaseHandler):
 
     @classmethod
     def update(self, request, username):
-        print 'Well, we got the the update method.'
         if request.user.username == username:
             p = ConferenceProfile.objects.get(member_profile__user__username=username)
             form = ConferenceProfileForm(request.data, instance=p)
