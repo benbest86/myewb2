@@ -107,9 +107,21 @@
             return resp.models;
         },
         url: function() {
-            return this.qs ? this.base_url + '?' + this.qs : this.base_url;
+            return this._qs ? this.base_url + '?' + this._qs : this.base_url;
         },
-        qs: ''
+        // takes an object of query args to be serialized
+        // and removes illegal args
+        set_qs: function(qs_args) {
+            allowed_args = ['page', 'chapter', 'role', 'year'];
+            qs_obj = {}
+            _.each(allowed_args, function(a) {
+                if (qs_args[a]){
+                    qs_obj[a] = qs_args[a]
+                }
+            });
+            this._qs = $.param(qs_obj);
+        },
+        _qs: ''
     });
     /* VIEWS */
     var ProfileView = BaseView.extend({
@@ -186,7 +198,19 @@
         }});
     var BrowserView = BaseView.extend({
         el: $('#browser'),
+        // events: {'change .filter': 'update_filters'},
+        // attach some events that are outside of the scope of el
+        bind_to_filters: function() {
+            var self = this;
+            $('.filter').bind('change', function() {
+                self.update_filters();
+            });
+        },
         template_name: 'browser.html',
+        update_filters: function() {
+            var qs = $('#filter-controls').serialize();
+            location.hash = '/?' + qs;
+        },
         render: function() {
             var self = this;
             $(self.el).html(_.template(self.template(), {collection: self.collection}));
@@ -219,8 +243,10 @@
             // and render only if the state has changed
             if (!(args === self.last_state)){
                 view.loading();
-                page = args['page'] || 1;
-                cohort_summaries.qs = 'page=' + page;
+                params = {}
+                args['page'] = args['page'] || 1;
+                // set our querystring
+                cohort_summaries.set_qs(args);
                 cohort_summaries.fetch({
                     success:function(self, resp) {
                         browser_pagination_view.model = new Paginator(resp.pagination);
@@ -292,6 +318,8 @@
        filters_view = new FiltersView;
        filters_view.loading();
        filters_view.render();
+       // TODO: fix this - a bit of an ugly hack.
+       browser_view.bind_to_filters();
        my_profile_view = new MyProfileView();
        my_profile_view.loading();
        current_profile.fetch({success: function(){

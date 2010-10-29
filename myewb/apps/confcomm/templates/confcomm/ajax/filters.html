@@ -1,23 +1,25 @@
 <h3>Who's coming to conference?</h3>
 <p><strong>Filter by Lastname:</strong> A B C D E F G H I J K L M N O P Q R S T U V W X Y Z</p>
 <p><strong>Filter by:</strong>
-<select name="chapter">
+<form id="filter-controls">
+<select class="filter" name="chapter">
     <option value="">All Chapters</option>
     <% _.each(filter_lists.chapters_list, function(c) { %>
     <option value="<%= c[0] %>"><%= c[0] %></option>
     <% }); %>
 </select>
-<select name="role">
+<select class="filter" name="role">
     <option value="">All Roles</option>
     <% _.each(filter_lists.roles_list, function(r) { %>
     <option value="<%= r[0] %>"><%= r[1] %></option>
     <% }); %>
 </select>
-<select name="year">
+<select class="filter" name="year">
     <option value="">All Years</option>
     <% _.each(filter_lists.years_list, function(y) { %>
     <option value="<%= y[0] %>"><%= y[1] %></option>
     <% }); %>
 </select>
+</form>
 
 </p>
