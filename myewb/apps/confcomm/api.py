@@ -108,6 +108,7 @@ class ConferenceProfileHandler(BaseHandler):
         resp.write('Forbidden: You may only update your own profile.')
         return resp
 
+PAGE_SIZE = 9
 class ProfileSummaryHandler(BaseHandler):
     """
     Grabs summaries of profiles for the main view.
@@ -121,7 +122,7 @@ class ProfileSummaryHandler(BaseHandler):
         page = int(filters.pop('page', 1))
         try:
             all_mps = MemberProfile.objects.filter(**filters)
-            mps = all_mps[(page-1)*6:page*6]
+            mps = all_mps[(page-1)*PAGE_SIZE:page*PAGE_SIZE]
         except Exception, e:
             resp = rc.BAD_REQUEST
             resp.write('The filters you provided were not valid. %s %s' % (str(filters), e))
@@ -135,5 +136,8 @@ class ProfileSummaryHandler(BaseHandler):
                     'registered': mp.user.conference_registrations.filter(cancelled=False).count() > 0,
                 }
             results.append(d)
-        return {'pagination': {'current': page, 'last': all_mps.count()/6 + 1}, 'models': results}
+        last_page = all_mps.count() / PAGE_SIZE
+        if all_mps.count() % PAGE_SIZE != 0:
+            last_page += 1
+        return {'pagination': {'current': page, 'last': last_page}, 'models': results}
 
