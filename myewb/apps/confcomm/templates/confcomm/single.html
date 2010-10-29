@@ -5,16 +5,15 @@
 <div id="all">
 <div id="left">
     <div class="section" id="filters"></div>
-    <div class="section" id="browser"></div>
+    <div class="section" id="browser">Loading profiles...</div>
 </div>
 <div id="right">
     <div id="cc-login" class="sidebar-section"></div>
-    <div id="my-profile" class="sidebar-section"></div>
-    <div id="stats" class="sidebar-section"></div>
-    <div id="news" class="sidebar-section"></div>
+    <div id="my-profile" class="sidebar-section">Loading your profile...</div>
+    <div id="stats" class="sidebar-section">Loading conference stats...</div>
+    <div id="news" class="sidebar-section">Loading conference news...</div>
     {# <div id="profile-list"></div> #}
 </div>
-
 </div>
 <div id="profile" style="display:none;"></div>
 <div id="profile-form-container" style="display:none;"></div>
@@ -101,7 +100,8 @@
             africa_roles_list: {{ africa_roles_list|safe }},
             countries_list: {{ countries_list|safe }},
             years_list: {{ years_list|safe }}
-        }
+        },
+        loading_image: "{{ STATIC_URL }}pinax/images/facebox/loading.gif"
     }
     $.facebox.settings.closeImage = "{{ STATIC_URL }}pinax/images/facebox/closelabel.gif"
     $.facebox.settings.loadingImage = "{{ STATIC_URL }}pinax/images/facebox/loading.gif"
@@ -109,4 +109,9 @@
 </script>
 {# all of our app's js is here #}
 <script type="text/javascript" src="{{ STATIC_URL}}js/confcomm.app.js"></script>
+{# preload some images #}
+<div style="display:none;">
+    <img src="{{ STATIC_URL }}pinax/images/facebox/loading.gif" />
+    <img src="{{ STATIC_URL }}pinax/images/facebox/closelabel.gif" />
+</div>
 {% endblock extra_body %}

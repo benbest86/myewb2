@@ -21,36 +21,47 @@
         var news_view;
         var stats_view;
         var browser_pagination_view;
+        var loading_image;
     }
     routes = CONFCOMM_GLOBALS.routes;
     current_username = CONFCOMM_GLOBALS.username;
     filter_lists = CONFCOMM_GLOBALS.filter_lists;
+    loading_image = CONFCOMM_GLOBALS.loading_image;
 
     /* Extended BaseView of Backbone.SPWA.View */
     var BaseView = Backbone.SPWA.View.extend({
         _template_cache: {},
-        // get the current template - either from the cache or from the network.
-        template: function() {
+        // get a template - either from the cache or from the network.
+        // leave out tname to get the views' default template
+        template: function(tname) {
             var self = this;
             // return empty string if no template name given.
-            if (!self.template_name) {
+            tname = tname || self.template_name;
+            if (!tname) {
                 return "";
             }
             // check the cache first
-            var t = self._template_cache[self.template_name];
+            var t = self._template_cache[tname];
             if (!t) {
                 // synchronously grab template from the server otherwise
                 // TODO: find a better non-blocking way
                 $.ajax(
                     {
-                    url:routes.templates_base + self.template_name,
+                    url:routes.templates_base + tname,
                     async: false,
                     success: function(data){
-                        self._template_cache[self.template_name] = data;
+                        self._template_cache[tname] = data;
                         t = data;
                 }});
             }
             return t;
+        },
+        loading: function() {
+            var self = this;
+            if (!self.el) {
+                return false;
+            }
+            $(self.el).html(_.template(self.template('loading.html'), {loading_image: loading_image}));
         }
     });
     var ConferenceProfile = Backbone.Model.extend({
@@ -207,6 +218,7 @@
             // fetch the next page of results
             // and render only if the state has changed
             if (!(args === self.last_state)){
+                view.loading();
                 page = args['page'] || 1;
                 profile_summaries.qs = 'page=' + page;
                 profile_summaries.fetch({
@@ -269,16 +281,21 @@
        browser_view.collection = profile_summaries;
        /* Load all the default templates */
        news_view = new NewsView;
+       news_view.loading();
        news_view.render();
        stats_view = new StatsView;
+       stats_view.loading();
        stats_view.render();
        login_view = new LoginView;
+       login_view.loading();
        login_view.render();
        filters_view = new FiltersView;
+       filters_view.loading();
        filters_view.render();
+       my_profile_view = new MyProfileView();
+       my_profile_view.loading();
        current_profile.fetch({success: function(){
            profiles.add(current_profile);
-           my_profile_view = new MyProfileView();
            my_profile_view.model = current_profile;
            my_profile_view.render();
        }});
