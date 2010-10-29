@@ -22,6 +22,7 @@
         var stats_view;
         var browser_pagination_view;
         var loading_image;
+        var name_filter_view;
     }
     routes = CONFCOMM_GLOBALS.routes;
     current_username = CONFCOMM_GLOBALS.username;
@@ -112,7 +113,7 @@
         // takes an object of query args to be serialized
         // and removes illegal args
         set_qs: function(qs_args) {
-            allowed_args = ['page', 'chapter', 'role', 'year'];
+            allowed_args = ['page', 'chapter', 'role', 'year', 'last_name',];
             qs_obj = {}
             _.each(allowed_args, function(a) {
                 if (qs_args[a]){
@@ -224,6 +225,31 @@
             self.el = $('#paginator');
             $(self.el).html(_.template(self.template(), {model: self.model}));
         }});
+    var NameFilterView = BaseView.extend({
+        template_name: 'last_name_filter.html',
+        current_letter: 'All',
+        events: {'click a': 'update_last_name'},
+        update_last_name: function(e) {
+            var self = this;
+            self.el = $('#name-filter');
+            var v = $(e.target).html();
+            self.current_letter = v;
+            if (v === 'All') {
+                v = ''
+            }
+            $('#hidden-last-name').val(v);
+            $('#hidden-last-name').trigger('change');
+            // redraw
+            self.render();
+            return false;
+        },
+        render: function() {
+            var self = this;
+            self.el = $('#name-filter');
+            $(self.el).html(_.template(self.template(), {current_letter: self.current_letter}));
+            self.delegateEvents();
+        }
+    });
     /* CONTROLLER */
     var Controller = Backbone.SPWA.Controller.extend({
         routes: {
@@ -318,6 +344,8 @@
        filters_view = new FiltersView;
        filters_view.loading();
        filters_view.render();
+       name_filter_view = new NameFilterView;
+       name_filter_view.render();
        // TODO: fix this - a bit of an ugly hack.
        browser_view.bind_to_filters();
        my_profile_view = new MyProfileView();

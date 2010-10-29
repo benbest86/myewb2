@@ -150,8 +150,10 @@ class CohortHandler(BaseHandler):
 
     @classmethod
     def read(self, request):
-        filters = dict([(str(k), str(v)) for (k, v) in request.GET.items()])
+        allowed_filters = ['chapter', 'year', 'role', 'page', 'last_name']
+        filters = dict([(str(k), str(v)) for (k, v) in request.GET.items() if k in allowed_filters])
         page = int(filters.pop('page', 1))
+        last_name = filters.pop('last_name', None)
         try:
             if filters:
                 all_cohorts = Cohort.objects.filter(**filters)
@@ -160,13 +162,16 @@ class CohortHandler(BaseHandler):
                     all_mps = all_mps | cohort.members.exclude(name__isnull=True)
             else:
                 all_mps = MemberProfile.objects.exclude(name__isnull=True)
-            mps = all_mps.distinct()[(page-1)*PAGE_SIZE:page*PAGE_SIZE]
+            mps = all_mps.distinct()
+            if last_name is not None:
+                mps = mps.filter(last_name__istartswith=last_name)
+            paged_mps = mps[(page-1)*PAGE_SIZE:page*PAGE_SIZE]
         except Exception, e:
             resp = rc.BAD_REQUEST
             resp.write('The filters you provided were not valid. %s %s' % (str(filters), e))
             return resp
         results = []
-        for mp in mps:
+        for mp in paged_mps:
             d = {
                     'name': mp.name,
                     'username': mp.user.username,
@@ -174,8 +179,8 @@ class CohortHandler(BaseHandler):
                     'registered': mp.user.conference_registrations.filter(cancelled=False).count() > 0,
                 }
             results.append(d)
-        last_page = all_mps.count() / PAGE_SIZE
-        if all_mps.count() % PAGE_SIZE != 0:
+        last_page = mps.count() / PAGE_SIZE
+        if mps.count() % PAGE_SIZE != 0:
             last_page += 1
         qs = request.META['QUERY_STRING'].split('&')
         qs = "&".join([param for param in qs if param[:5] != 'page='])
