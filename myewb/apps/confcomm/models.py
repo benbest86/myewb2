@@ -46,6 +46,25 @@ chapterlist = Network.objects.filter(chapter_info__isnull=False, is_active=True)
 for chapter in chapterlist:
     CHAPTER_CHOICES.append((chapter.slug, chapter.chapter_info.chapter_name))
 
+ROLE_CHOICES = (
+        ('m', 'Member',),
+        ('e', 'Executive',),
+        ('p', 'President',),
+        ('j', 'JF/Op 21',),
+        ('f', 'ProF',),
+        ('s', 'APS/OVS',),
+        )
+
+class Cohort(models.Model):
+    """
+    A definition of a Cohort of people we are looking at.
+    """
+    chapter = models.CharField(max_length=10, choices=CHAPTER_CHOICES, null=True, blank=True)
+    role = models.CharField(max_length=1, choices=ROLE_CHOICES)
+    year = models.PositiveIntegerField()
+    members = models.ManyToManyField(MemberProfile)
+
+
 CANADA_ROLE_CHOICES = (
         ('m', 'Member',),
         ('e', 'Executive',),

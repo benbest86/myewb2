@@ -10,7 +10,7 @@ from piston.utils import rc
 
 from profiles.models import MemberProfile
 
-from confcomm.models import ConferenceProfile
+from confcomm.models import ConferenceProfile, Cohort
 from confcomm.forms import ConferenceProfileForm
  
 from avatar.templatetags.avatar_tags import avatar_url
@@ -121,8 +121,42 @@ class ProfileSummaryHandler(BaseHandler):
         filters = dict([(str(k), str(v)) for (k, v) in request.GET.items()])
         page = int(filters.pop('page', 1))
         try:
-            all_mps = MemberProfile.objects.filter(**filters)
+            all_mps = MemberProfile.objects.exclude(name__isnull=True).filter(**filters)
             mps = all_mps[(page-1)*PAGE_SIZE:page*PAGE_SIZE]
+        except Exception, e:
+            resp = rc.BAD_REQUEST
+            resp.write('The filters you provided were not valid. %s %s' % (str(filters), e))
+            return resp
+        results = []
+        for mp in mps:
+            d = {
+                    'name': mp.name,
+                    'username': mp.user.username,
+                    'avatar_url': avatar_url(mp.user, 160),
+                    'registered': mp.user.conference_registrations.filter(cancelled=False).count() > 0,
+                }
+            results.append(d)
+        last_page = all_mps.count() / PAGE_SIZE
+        if all_mps.count() % PAGE_SIZE != 0:
+            last_page += 1
+        return {'pagination': {'current': page, 'last': last_page}, 'models': results}
+
+class CohortHandler(BaseHandler):
+    """
+    Grabs summaries of profiles for the main view.
+    """
+    allowed_methods = ('GET',)
+
+    @classmethod
+    def read(self, request):
+        filters = dict([(str(k), str(v)) for (k, v) in request.GET.items()])
+        page = int(filters.pop('page', 1))
+        try:
+            all_cohorts = Cohort.objects.filter(**filters)
+            all_mps = MemberProfile.objects.none()
+            for cohort in all_cohorts:
+                all_mps = all_mps | cohort.members.exclude(name__isnull=True)
+            mps = all_mps.distinct()[(page-1)*PAGE_SIZE:page*PAGE_SIZE]
         except Exception, e:
             resp = rc.BAD_REQUEST
             resp.write('The filters you provided were not valid. %s %s' % (str(filters), e))

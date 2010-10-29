@@ -1,6 +1,6 @@
 <h3>Who's coming to conference?</h3>
 <p><strong>Filter by Lastname:</strong> A B C D E F G H I J K L M N O P Q R S T U V W X Y Z</p>
-<p><strong>Canadian Programs:</strong>
+<p><strong>Filter by:</strong>
 <select name="chapter">
     <option value="">All Chapters</option>
     <% _.each(filter_lists.chapters_list, function(c) { %>
@@ -9,7 +9,7 @@
 </select>
 <select name="role">
     <option value="">All Roles</option>
-    <% _.each(filter_lists.canada_roles_list, function(r) { %>
+    <% _.each(filter_lists.roles_list, function(r) { %>
     <option value="<%= r[0] %>"><%= r[1] %></option>
     <% }); %>
 </select>
@@ -20,24 +20,4 @@
     <% }); %>
 </select>
 
-</p><p>
-<strong>African Programs:</strong>
-<select name="country">
-    <option value="">All Countries</option>
-    <% _.each(filter_lists.countries_list, function(c) { %>
-    <option value="<%= c[0] %>"><%= c[0] %></option>
-    <% }); %>
-</select>
-<select name="role">
-    <option value="">All Roles</option>
-    <% _.each(filter_lists.africa_roles_list, function(r) { %>
-    <option value="<%= r[0] %>"><%= r[1] %></option>
-    <% }); %>
-</select>
-<select name="year">
-    <option value="">All Years</option>
-    <% _.each(filter_lists.years_list, function(y) { %>
-    <option value="<%= y[0] %>"><%= y[1] %></option>
-    <% }); %>
-</select>
 </p>
