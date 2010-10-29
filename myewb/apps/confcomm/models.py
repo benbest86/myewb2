@@ -55,7 +55,7 @@ class CanadaCohort(models.Model):
     """
     A definition of a Cohort of people that we are looking at.
     """
-    chapter = models.CharField(max_length=2,choices=CHAPTER_CHOICES)
+    chapter = models.CharField(max_length=40,choices=CHAPTER_CHOICES)
     role = models.CharField(max_length=1, choices=CANADA_ROLE_CHOICES)
     year = models.PositiveIntegerField()
     members = models.ManyToManyField(MemberProfile)
@@ -66,19 +66,21 @@ AFRICA_ROLE_CHOICES = (
         ('p', 'Professional Fellow',),
         )
 AFRICA_COUNTRY_CHOICES = (
-        ('b', 'Burkina Faso',),
-        ('g', 'Ghana',),
-        ('m', 'Malawi',),
-        ('z', 'Zambia',),
-        ('p', 'Philippines',),
-        ('t', 'Tanzania',),
-        ('c', 'Cameroon',),
+        ('bf', 'Burkina Faso',),
+        ('gh', 'Ghana',),
+        ('mw', 'Malawi',),
+        ('zm', 'Zambia',),
+        ('ml', 'Mali',),
+        ('ph', 'Philippines',),
+        ('tz', 'Tanzania',),
+        ('cm', 'Cameroon',),
+        ('kh', 'Cambodia',),
         )
 class AfricaCohort(models.Model):
     """
     A definition of a Cohort in terms of Africa.
     """
-    country = models.CharField(_('Country'), max_length=1, choices=ARFICA_COUNTRY_CHOICES) # Ghana, Burkina, etc.
+    country = models.CharField(_('Country'), max_length=2, choices=AFRICA_COUNTRY_CHOICES) # Ghana, Burkina, etc.
     role = models.CharField(_('Role'), max_length=1, choices=AFRICA_ROLE_CHOICES) # APS/OVS, JF/OP21, ProF
     year = models.PositiveIntegerField()
     members = models.ManyToManyField(MemberProfile)
@@ -87,7 +89,7 @@ class ConferenceInvitation(models.Model):
     """
     Keep track of invitations that are sent and clicked on.
     """
-    sender = models.ForeignKey(MemberProfile)
-    receiver = models.ForeignKey(MemberProfile)
-    code = models.CharField()
+    sender = models.ForeignKey(MemberProfile, related_name='sent_conference_invitations')
+    receiver = models.ForeignKey(MemberProfile, related_name='received_conference_invitations')
+    code = models.CharField(max_length=12)
     activated = models.BooleanField()
