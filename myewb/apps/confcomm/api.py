@@ -138,7 +138,9 @@ class ProfileSummaryHandler(BaseHandler):
         last_page = all_mps.count() / PAGE_SIZE
         if all_mps.count() % PAGE_SIZE != 0:
             last_page += 1
-        return {'pagination': {'current': page, 'last': last_page}, 'models': results}
+        qs = request.META['QUERY_STRING'].split('&')
+        qs = "&".join([param for param in qs if param[:5] != 'page='])
+        return {'pagination': {'current': page, 'last': last_page, 'qs': qs,}, 'models': results}
 
 class CohortHandler(BaseHandler):
     """
@@ -175,5 +177,7 @@ class CohortHandler(BaseHandler):
         last_page = all_mps.count() / PAGE_SIZE
         if all_mps.count() % PAGE_SIZE != 0:
             last_page += 1
-        return {'pagination': {'current': page, 'last': last_page}, 'models': results}
+        qs = request.META['QUERY_STRING'].split('&')
+        qs = "&".join([param for param in qs if param[:5] != 'page='])
+        return {'pagination': {'current': page, 'last': last_page, 'qs': qs,}, 'models': results}
 
