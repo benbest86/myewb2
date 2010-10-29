@@ -94,7 +94,12 @@
             profiles_base: "{% url confcomm_profile_api_summaries %}",
             templates_base: "{{ STATIC_URL }}templates/confcomm/"
         },
-        username: "{{ username }}"
+        username: "{{ username }}",
+        chapters_list: {{ chapters_list|safe }},
+        canada_roles_list: {{ canada_roles_list|safe }},
+        africa_roles_list: {{ africa_roles_list|safe }},
+        countries_list: {{ countries_list|safe }},
+        years_list: {{ years_list|safe }}
     }
     $.facebox.settings.closeImage = "{{ STATIC_URL }}pinax/images/facebox/closelabel.gif"
     $.facebox.settings.loadingImage = "{{ STATIC_URL }}pinax/images/facebox/loading.gif"
