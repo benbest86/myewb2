@@ -152,10 +152,13 @@ class CohortHandler(BaseHandler):
         filters = dict([(str(k), str(v)) for (k, v) in request.GET.items()])
         page = int(filters.pop('page', 1))
         try:
-            all_cohorts = Cohort.objects.filter(**filters)
-            all_mps = MemberProfile.objects.none()
-            for cohort in all_cohorts:
-                all_mps = all_mps | cohort.members.exclude(name__isnull=True)
+            if filters:
+                all_cohorts = Cohort.objects.filter(**filters)
+                all_mps = MemberProfile.objects.none()
+                for cohort in all_cohorts:
+                    all_mps = all_mps | cohort.members.exclude(name__isnull=True)
+            else:
+                all_mps = MemberProfile.objects.exclude(name__isnull=True)
             mps = all_mps.distinct()[(page-1)*PAGE_SIZE:page*PAGE_SIZE]
         except Exception, e:
             resp = rc.BAD_REQUEST
