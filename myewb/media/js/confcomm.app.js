@@ -387,30 +387,13 @@
             if (!id) {
                 return
             }
-            view.model = profiles.get(id);
-            if (!view.model) {
-                var profile_to_get = new ConferenceProfile({
-                    id: id
-                });
-                // get our nice facebox loading spinner
-                $.facebox(function() {
-                    profile_to_get.fetch({
-                        success: function(){
-                            profiles.add(profile_to_get);
-                            view.model = profile_to_get;
-                            view.render();
-                        },
-                        error: function() {
-                            // close the facebox on an error
-                            // TODO: Add error message
-                            $(document).trigger('close.facebox');
-                        }
-                    });
-                });
-            }
-            else {
-                view.render();
-            }
+            view.async_render(id, profiles, {
+                error: function(){
+                // close the facebox on an error
+                // TODO: Add error message
+                $(document).trigger('close.facebox');
+            }}
+            );
         },
         edit_profile: function(args) { // TODO remove if I don't need it again
             if (anon) {
