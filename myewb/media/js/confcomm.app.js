@@ -7,6 +7,7 @@
         var routes;
         var current_username;
         var filter_lists;
+        var anon;
         // holds the current users' profile
         var current_profile;
         // holds the profiles collection
@@ -28,6 +29,7 @@
     current_username = CONFCOMM_GLOBALS.username;
     filter_lists = CONFCOMM_GLOBALS.filter_lists;
     loading_image = CONFCOMM_GLOBALS.loading_image;
+    anon = CONFCOMM_GLOBALS.anon;
 
     /* Extended BaseView of Backbone.SPWA.View */
     var BaseView = Backbone.SPWA.View.extend({
@@ -325,7 +327,10 @@
         profile: function(args) {
             var self = this;
             var view = self.getView('Profile');
-            var id = args.id ? args.id : current_username;
+            var id = args.id;
+            if (!id) {
+                return
+            }
             view.model = profiles.get(id);
             if (!view.model) {
                 var profile_to_get = new ConferenceProfile({
@@ -346,6 +351,9 @@
             }
         },
         edit_profile: function(args) {
+            if (anon) {
+                return
+            }
             var self = this;
             var view = self.getView('ProfileForm');
             var id = current_username;
@@ -358,9 +366,6 @@
 
     /* GO TIME */
     $(function() {
-        current_profile = new ConferenceProfile({
-            id: current_username
-        });
         profiles = new ProfileStore();
         cohort_summaries = new SummaryStore();
         cohort_summaries.base_url = routes.cohorts_base;
@@ -376,9 +381,6 @@
         stats_view = new StatsView;
         stats_view.loading();
         stats_view.render();
-        login_view = new LoginView;
-        login_view.loading();
-        login_view.render();
         filters_view = new FiltersView;
         filters_view.loading();
         filters_view.render();
@@ -386,13 +388,27 @@
         name_filter_view.render();
         // TODO: fix this - a bit of an ugly hack.
         browser_view.bind_to_filters();
-        my_profile_view = new MyProfileView();
-        my_profile_view.loading();
-        current_profile.fetch({success: function(){
-            profiles.add(current_profile);
-            my_profile_view.model = current_profile;
-            my_profile_view.render();
-        }});
+        // show the my_profile view if the user is logged in
+        if (!anon) {
+            current_profile = new ConferenceProfile({
+                id: current_username
+            });
+            my_profile_view = new MyProfileView();
+            $(my_profile_view.el).show();
+            my_profile_view.loading();
+            current_profile.fetch({success: function(){
+                profiles.add(current_profile);
+                my_profile_view.model = current_profile;
+                my_profile_view.render();
+            }});
+        }
+        // show the login view if the user is not logged in
+        else {
+            login_view = new LoginView;
+            $(login_view.el).show();
+            login_view.loading();
+            login_view.render();
+        }
         if (!location.hash) {
             location.hash = '/';
         }

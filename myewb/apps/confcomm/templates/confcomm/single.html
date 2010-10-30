@@ -8,8 +8,8 @@
     <div class="section" id="browser">Loading profiles...</div>
 </div>
 <div id="right">
-    <div id="cc-login" class="sidebar-section"></div>
-    <div id="my-profile" class="sidebar-section">Loading your profile...</div>
+    <div id="cc-login" class="sidebar-section" style="display: none;"></div>
+    <div id="my-profile" class="sidebar-section" style="display: none;">Loading your profile...</div>
     <div id="stats" class="sidebar-section">Loading conference stats...</div>
     <div id="news" class="sidebar-section">Loading conference news...</div>
     {# <div id="profile-list"></div> #}
@@ -94,6 +94,7 @@
             cohorts_base: "{% url confcomm_cohorts %}"
         },
         username: "{{ username }}",
+        anon: {{ anon }},
         filter_lists: {
             chapters_list: {{ chapters_list|safe }},
             canada_roles_list: {{ canada_roles_list|safe }},

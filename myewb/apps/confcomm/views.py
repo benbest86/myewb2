@@ -13,14 +13,20 @@ from confcomm.models import ConferenceProfile, AFRICA_ROLE_CHOICES, \
         ROLE_CHOICES
 from confcomm.forms import ConferenceProfileForm
 
-@login_required
 def single_page(request):
     """
     The single initial page for AJAX version.
     """
+    if request.user and request.user.is_authenticated():
+        username = request.user.username
+        anon = 0
+    else:
+        username = ""
+        anon = 1
     return render_to_response('confcomm/single.html',
             {
-                'username': request.user.username,
+                'username': username,
+                'anon': anon,
                 'countries_list': json.dumps(AFRICA_COUNTRY_CHOICES),
                 'chapters_list': json.dumps(CHAPTER_CHOICES),
                 'canada_roles_list': json.dumps(CANADA_ROLE_CHOICES),
