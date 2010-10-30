@@ -110,7 +110,7 @@ class ConferenceProfileHandler(BaseHandler):
         resp.write('Forbidden: You may only update your own profile.')
         return resp
 
-PAGE_SIZE = 9
+PAGE_SIZE = 8
 class ProfileSummaryHandler(BaseHandler):
     """
     Grabs summaries of profiles for the main view.
