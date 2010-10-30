@@ -64,6 +64,9 @@ class Cohort(models.Model):
     year = models.PositiveIntegerField()
     members = models.ManyToManyField(MemberProfile)
 
+    def __unicode__(self):
+        return '%s %s %d' % (self.chapter, self.get_role_display(), self.year)
+
 
 CANADA_ROLE_CHOICES = (
         ('m', 'Member',),
