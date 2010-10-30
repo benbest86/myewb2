@@ -364,51 +364,51 @@
         profiles = new ProfileStore();
         cohort_summaries = new SummaryStore();
         cohort_summaries.base_url = routes.cohorts_base;
-       // don't render this guy just wait - wait until we've fetched the cohort_summaries
-       // and rendered the first BrowserView on page load
-       browser_pagination_view = new BrowserPaginationView;
-       browser_view = new BrowserView;
-       browser_view.collection = cohort_summaries;
-       /* Load all the default templates */
-       news_view = new NewsView;
-       news_view.loading();
-       news_view.render();
-       stats_view = new StatsView;
-       stats_view.loading();
-       stats_view.render();
-       login_view = new LoginView;
-       login_view.loading();
-       login_view.render();
-       filters_view = new FiltersView;
-       filters_view.loading();
-       filters_view.render();
-       name_filter_view = new NameFilterView;
-       name_filter_view.render();
-       // TODO: fix this - a bit of an ugly hack.
-       browser_view.bind_to_filters();
-       my_profile_view = new MyProfileView();
-       my_profile_view.loading();
-       current_profile.fetch({success: function(){
-           profiles.add(current_profile);
-           my_profile_view.model = current_profile;
-           my_profile_view.render();
-       }});
-       if (!location.hash) {
-           location.hash = '/';
-       }
-       else {
-           $(window).hashchange();
-       }
-       // bind some events to facebox to help with nav
-       // change back to the last hash when we close a facebox
-       $(document).bind('close.facebox', function() {
-           location.hash = $(document).data('last_hash');
-       });
-       // keep track of the last hash so we can return to it after
-       // closing a facebox
-       $(window).hashchange(function() {
-           $(document).data('last_hash', $(document).data('this_hash'));
-           $(document).data('this_hash', location.hash);
-       });
+        // don't render this guy just wait - wait until we've fetched the cohort_summaries
+        // and rendered the first BrowserView on page load
+        browser_pagination_view = new BrowserPaginationView;
+        browser_view = new BrowserView;
+        browser_view.collection = cohort_summaries;
+        /* Load all the default templates */
+        news_view = new NewsView;
+        news_view.loading();
+        news_view.render();
+        stats_view = new StatsView;
+        stats_view.loading();
+        stats_view.render();
+        login_view = new LoginView;
+        login_view.loading();
+        login_view.render();
+        filters_view = new FiltersView;
+        filters_view.loading();
+        filters_view.render();
+        name_filter_view = new NameFilterView;
+        name_filter_view.render();
+        // TODO: fix this - a bit of an ugly hack.
+        browser_view.bind_to_filters();
+        my_profile_view = new MyProfileView();
+        my_profile_view.loading();
+        current_profile.fetch({success: function(){
+            profiles.add(current_profile);
+            my_profile_view.model = current_profile;
+            my_profile_view.render();
+        }});
+        if (!location.hash) {
+            location.hash = '/';
+        }
+        else {
+            $(window).hashchange();
+        }
+        // bind some events to facebox to help with nav
+        // change back to the last hash when we close a facebox
+        $(document).bind('close.facebox', function() {
+            location.hash = $(document).data('last_hash');
+        });
+        // keep track of the last hash so we can return to it after
+        // closing a facebox
+        $(window).hashchange(function() {
+            $(document).data('last_hash', $(document).data('this_hash'));
+            $(document).data('this_hash', location.hash);
+        });
     });
 })();
