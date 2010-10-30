@@ -158,6 +158,40 @@
                 return false;
             }
             $(self.el).html(_.template(self.template('loading.html'), {loading_image: loading_image}));
+        },
+        async_render: function(id, collection, callbacks) {
+            var self = this;
+            self.model = collection.get(id);
+            if (!self.model) {
+                var model_to_get = new collection.model({
+                    id: id
+                });
+                // get our nice facebox loading spinner
+                callbacks['success'] = function() {
+                            collection.add(model_to_get);
+                            self.model = model_to_get;
+                            self.render();
+                }
+                // get our loading function. not appropriate if we're not faceboxing though?
+                $.facebox(function() {
+                    // model_to_get.fetch({
+                    //     success: function(){
+                    //         collection.add(model_to_get);
+                    //         self.model = model_to_get;
+                    //         self.render();
+                    //     },
+                    //     error: function() {
+                    //         // close the facebox on an error
+                    //         // TODO: Add error message
+                    //         $(document).trigger('close.facebox');
+                    //     }
+                    // });
+                    model_to_get.fetch(callbacks);
+                });
+            }
+            else {
+                self.render();
+            }
         }
     });
 
