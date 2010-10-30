@@ -370,7 +370,6 @@
         },
         views: {
             'Profile': ProfileView,
-            'ProfileForm': ProfileFormView,
             'Browser': BrowserView,
             'Invitation': InvitationView
         },
@@ -410,16 +409,6 @@
                 $(document).trigger('close.facebox');
             }}
             );
-        },
-        edit_profile: function(args) { // TODO remove if I don't need it again
-            if (anon) {
-                return
-            }
-            var self = this;
-            var view = self.getView('ProfileForm');
-            var id = current_username;
-            view.model = profiles.get(id);
-            view.render();
         },
         invitation: function(args) {
             var self = this;
