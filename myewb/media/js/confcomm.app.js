@@ -33,6 +33,68 @@
     loading_image = CONFCOMM_GLOBALS.loading_image;
     anon = CONFCOMM_GLOBALS.anon;
 
+    /* MODELS */
+    var ConferenceProfile = Backbone.Model.extend({
+        initialize: function() {
+            var self = this;
+            if (!self.id) self.id = self.get('username');
+        },
+        url: function() {
+            var self = this;
+            return routes.profile_base + self.id + '/';
+        },
+        hash: function() {
+            var self = this;
+            return '#/profile/?id=' + self.id;
+        }
+    });
+    var SummaryProfile = Backbone.Model.extend({
+        initialize: function() {
+            var self = this;
+            if (!self.id) self.id = self.get('username');
+        },
+        hash: function() {
+            var self = this;
+            return '#/profile/?id=' + self.id;
+        }
+    });
+    var Paginator = Backbone.Model.extend({
+        initialize: function(data) {
+            var self = this;
+            // make sure we've got ints
+            data['current'] = data['current'] - 0;
+            data['last'] = data['last'] - 0;
+            self.set(data);
+        }
+    });
+    /* COLLECTIONS */
+    var ProfileStore = Backbone.Collection.extend({
+        model: ConferenceProfile
+    });
+    var SummaryStore = Backbone.Collection.extend({
+        model: SummaryProfile,
+        parse: function(resp) {
+            return resp.models;
+        },
+        url: function() {
+            return this._qs ? this.base_url + '?' + this._qs : this.base_url;
+        },
+        // takes an object of query args to be serialized
+        // and removes illegal args
+        set_qs: function(qs_args) {
+            allowed_args = ['page', 'chapter', 'role', 'year', 'last_name',];
+            qs_obj = {}
+            _.each(allowed_args, function(a) {
+                if (qs_args[a]){
+                    qs_obj[a] = qs_args[a]
+                }
+            });
+            this._qs = $.param(qs_obj);
+        },
+        _qs: ''
+    });
+
+    /* VIEWS */
     /* Extended BaseView of Backbone.SPWA.View */
     var BaseView = Backbone.SPWA.View.extend({
         _template_cache: {},
@@ -98,66 +160,7 @@
             $(self.el).html(_.template(self.template('loading.html'), {loading_image: loading_image}));
         }
     });
-    var ConferenceProfile = Backbone.Model.extend({
-        initialize: function() {
-            var self = this;
-            if (!self.id) self.id = self.get('username');
-        },
-        url: function() {
-            var self = this;
-            return routes.profile_base + self.id + '/';
-        },
-        hash: function() {
-            var self = this;
-            return '#/profile/?id=' + self.id;
-        }
-    });
-    var SummaryProfile = Backbone.Model.extend({
-        initialize: function() {
-            var self = this;
-            if (!self.id) self.id = self.get('username');
-        },
-        hash: function() {
-            var self = this;
-            return '#/profile/?id=' + self.id;
-        }
-    });
-    var Paginator = Backbone.Model.extend({
-        initialize: function(data) {
-            var self = this;
-            // make sure we've got ints
-            data['current'] = data['current'] - 0;
-            data['last'] = data['last'] - 0;
-            self.set(data);
-        }
-    });
-    /* COLLECTIONS */
-    var ProfileStore = Backbone.Collection.extend({
-        model: ConferenceProfile
-    });
-    var SummaryStore = Backbone.Collection.extend({
-        model: SummaryProfile,
-        parse: function(resp) {
-            return resp.models;
-        },
-        url: function() {
-            return this._qs ? this.base_url + '?' + this._qs : this.base_url;
-        },
-        // takes an object of query args to be serialized
-        // and removes illegal args
-        set_qs: function(qs_args) {
-            allowed_args = ['page', 'chapter', 'role', 'year', 'last_name',];
-            qs_obj = {}
-            _.each(allowed_args, function(a) {
-                if (qs_args[a]){
-                    qs_obj[a] = qs_args[a]
-                }
-            });
-            this._qs = $.param(qs_obj);
-        },
-        _qs: ''
-    });
-    /* VIEWS */
+
     var ProfileView = BaseView.extend({
         el: $('#profile'),
         template_name: 'profile.html',
