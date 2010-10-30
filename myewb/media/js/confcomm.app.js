@@ -57,6 +57,35 @@
             }
             return t;
         },
+        _state: {},
+        _filter_state: function(state) {
+            // override this to filter state values
+            return state;
+        },
+        set_state: function(state) {
+            this._state = this._filter_state(state);
+        },
+        get_state: function(state) {
+            return this._state;
+        },
+        // pass in a state to compare to the current state of the view
+        compare_state: function(state) {
+            var self = this;
+            var new_state = self._filter_state(state);
+            var new_state_keys = _.keys(new_state);
+            // see if the key length is the same - if not state has changed.
+            if (new_state_keys.length != _.keys(self._state).length) {
+                return false;
+            }
+            // check each property in the state for differences
+            for (k in new_state) {
+                if (new_state[k] !== self._state[k]) {
+                    return false;
+                }
+            }
+            // everything has passed so state is the same
+            return true;
+        },
         loading: function() {
             var self = this;
             if (!self.el) {
@@ -207,6 +236,15 @@
                 self.update_filters();
             });
         },
+        _filter_state: function(state) {
+            var new_state = {};
+            _.each(['chapter', 'role', 'year', 'last_name', 'page'], function(f) {
+                if (state[f]) {
+                    new_state[f] = state[f];
+                }
+            });
+            return new_state;
+        },
         template_name: 'browser.html',
         update_filters: function() {
             var qs = $('#filter-controls').serialize();
@@ -267,10 +305,10 @@
             var view = self.getView('Browser');
             // fetch the next page of results
             // and render only if the state has changed
-            if (!(args === self.last_state)){
+            args['page'] = args['page'] || 1;
+            if (!view.compare_state(args)){
                 view.loading();
                 params = {}
-                args['page'] = args['page'] || 1;
                 // set our querystring
                 cohort_summaries.set_qs(args);
                 cohort_summaries.fetch({
@@ -279,7 +317,7 @@
                         view.collection = self;
                         view.paginator = browser_pagination_view;
                         view.render();
-                        self.last_state = args;
+                        view.set_state(args);
                     }
                 });
             }
