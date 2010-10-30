@@ -55,7 +55,12 @@
         },
         hash: function() {
             var self = this;
-            return '#/profile/?id=' + self.id;
+            if (self.get('has_profile')) {
+                return '#/profile/?id=' + self.id;
+            }
+            else {
+                return '#/invitation/?id=' + self.id;
+            }
         }
     });
     var Paginator = Backbone.Model.extend({
@@ -347,16 +352,27 @@
             self.delegateEvents();
         }
     });
+    var InvitationView = BaseView.extend({
+        template_name: 'invitation.html',
+        el: '#invitation',
+        render: function() {
+            var self = this;
+            $(self.el).html(_.template(self.template(), {model: self.model}));
+            $.facebox({'div':self.el});
+        }
+    });
     /* CONTROLLER */
     var Controller = Backbone.SPWA.Controller.extend({
         routes: {
             '/profile/': 'profile',
-            '/': 'browser'
+            '/': 'browser',
+            '/invitation/': 'invitation'
         },
         views: {
             'Profile': ProfileView,
             'ProfileForm': ProfileFormView,
-            'Browser': BrowserView
+            'Browser': BrowserView,
+            'Invitation': InvitationView
         },
         browser: function(args) {
             var self = this;
@@ -404,6 +420,25 @@
             var id = current_username;
             view.model = profiles.get(id);
             view.render();
+        },
+        invitation: function(args) {
+            var self = this;
+            if (anon) {
+                // TODO: redirect to login or signup
+                return;
+            }
+            var id = args.id;
+            if (!id) {
+                // TODO: send error message?
+                return;
+            }
+            var self = this;
+            var view = self.getView('Invitation');
+            view.async_render(id, cohort_summaries, {
+                error: function () {
+                    $(document).trigger('close.facebox');
+                }
+            });
         }
     });
 
