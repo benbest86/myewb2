@@ -3,6 +3,12 @@
 <div id="<%= p.get('username') %>-summary" class="profile-summary">
     <a href="#<%= p.hash() %>"><img height="160px" width="160px" src="<%= p.get('avatar_url') %>" /></a>
     <p><a href="#<%= p.hash() %>"><strong><%= p.get('name')%></strong></a></p>
+    <% if (p.get('registered')) { %>
+    <p><strong>Registered!</strong></p>
+    <% }
+    else {%>
+    <p><strong>Not Registered:</strong> <a href="#<%= p.invite_hash() %>">Invite</a></p>
+    <% } %>
 </div>
 <% }); %>
 <div id="paginator"></div>
