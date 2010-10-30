@@ -53,22 +53,8 @@ def conference_profile_read(request, username=None):
     if username is None:
         kwargs = dict([(str(k),str(v)) for (k, v) in request.GET.items()])
         return ConferenceProfile.objects.filter(**kwargs)[:6]
-    try:
-        p = ConferenceProfile.objects.get(member_profile__user__username=username)
-        return p
-    # create a conference profile for anyone who exists but is not in the system yet
-    except ConferenceProfile.DoesNotExist:
-        try:
-            user = User.objects.get(username=username)
-            member_profile = user.memberprofile_set.get()
-            registered = user.conference_registrations.filter(cancelled=False).count() > 0
-            p = ConferenceProfile.objects.create(member_profile=member_profile, registered=registered)
-            return p
-
-        except Exception, e:
-            resp = rc.NOT_FOUND
-            resp.write('Could not find profile for %s. Error %s.' % (username, e))
-            return resp
+    p = ConferenceProfile.objects.get(member_profile__user__username=username)
+    return p
 
 class AnonymousConferenceProfileHandler(AnonymousBaseHandler):
     model = ConferenceProfile
@@ -76,7 +62,12 @@ class AnonymousConferenceProfileHandler(AnonymousBaseHandler):
 
     @classmethod
     def read(self, request, username=None):
-        return conference_profile_read(request, username)
+        try:
+            return conference_profile_read(request, username)
+        except ConferenceProfile.DoesNotExist:
+            resp = rc.NOT_FOUND
+            resp.write('No profile found for %s.' % username)
+            return resp
    
 class ConferenceProfileHandler(BaseHandler):
     """
@@ -89,7 +80,19 @@ class ConferenceProfileHandler(BaseHandler):
 
     @classmethod
     def read(self, request, username=None):
-        return conference_profile_read(request, username)
+        try:
+            return conference_profile_read(request, username)
+        # create a conference profile if a user is accessing their own profile and it doesn't exist
+        except ConferenceProfile.DoesNotExist:
+            if username == request.user.username:
+                user = User.objects.get(username=username)
+                member_profile = user.memberprofile_set.get()
+                registered = user.conference_registrations.filter(cancelled=False).count() > 0
+                p = ConferenceProfile.objects.create(member_profile=member_profile, registered=registered)
+                return p
+            resp = rc.NOT_FOUND
+            resp.write('No profile found for %s.' % username)
+            return resp
 
     @classmethod
     def update(self, request, username):
@@ -177,6 +180,7 @@ class CohortHandler(BaseHandler):
                     'username': mp.user.username,
                     'avatar_url': avatar_url(mp.user, 160),
                     'registered': mp.user.conference_registrations.filter(cancelled=False).count() > 0,
+                    'has_profile': mp.conferenceprofile_set.count() > 0,
                 }
             results.append(d)
         last_page = mps.count() / PAGE_SIZE

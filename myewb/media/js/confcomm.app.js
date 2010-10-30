@@ -2,7 +2,7 @@
     // needs the following globals
     // routes, current_user
     /* SERVER ROUTES */
-    var DEBUG = true;
+    var DEBUG = false;
     if (!DEBUG) { // leave a bunch of global variables so I can get at them through the console
         var routes;
         var current_username;
@@ -24,6 +24,8 @@
         var browser_pagination_view;
         var loading_image;
         var name_filter_view;
+        var this_hash;
+        var last_hash;
     }
     routes = CONFCOMM_GLOBALS.routes;
     current_username = CONFCOMM_GLOBALS.username;
@@ -177,11 +179,18 @@
             _.each(inputs, function(i) {
                 if (i.name) data[i.name] = i.value;
             });
-            self.model.save(data, {success: function(){location.hash='/profile/'}});
+            var id = self.model.username || self.model.id;
+            $.facebox(function() {
+                self.model.save(data, {success: function(){location.hash='/profile/?id=' + id}});
+            });
             return false;
         },
         render: function() {
             var self = this;
+            // if we don't have a model, cancel
+            if (!self.model) {
+                return;
+            }
             // since our form is in the facebox we have to do some monkey business here
             // use content_holder to render the template
             $(self.content_holder).html(_.template(self.template(), {model:self.model}));
@@ -209,6 +218,15 @@
         }});
     var MyProfileView = BaseView.extend({
         el: $('#my-profile'),
+        events: {'click a.edit-profile':'edit_profile'},
+        edit_profile: function () {
+            if (anon) {
+                return
+            }
+            var self = this;
+            profile_form_view.model = profiles.get(current_username);
+            profile_form_view.render();
+        },
         template_name: 'my_profile.html',
         render: function() {
             var self = this;
@@ -294,7 +312,6 @@
     var Controller = Backbone.SPWA.Controller.extend({
         routes: {
             '/profile/': 'profile',
-            '/profile/edit/': 'edit_profile',
             '/': 'browser'
         },
         views: {
@@ -338,11 +355,17 @@
                 });
                 // get our nice facebox loading spinner
                 $.facebox(function() {
-                profile_to_get.fetch({success: function(){
-                    profiles.add(profile_to_get);
-                    view.model = profile_to_get;
-                    view.render();
-                    }
+                    profile_to_get.fetch({
+                        success: function(){
+                            profiles.add(profile_to_get);
+                            view.model = profile_to_get;
+                            view.render();
+                        },
+                        error: function() {
+                            // close the facebox on an error
+                            // TODO: Add error message
+                            $(document).trigger('close.facebox');
+                        }
                     });
                 });
             }
@@ -350,7 +373,7 @@
                 view.render();
             }
         },
-        edit_profile: function(args) {
+        edit_profile: function(args) { // TODO remove if I don't need it again
             if (anon) {
                 return
             }
@@ -389,6 +412,7 @@
         // TODO: fix this - a bit of an ugly hack.
         browser_view.bind_to_filters();
         // show the my_profile view if the user is logged in
+        profile_form_view = new ProfileFormView;
         if (!anon) {
             current_profile = new ConferenceProfile({
                 id: current_username
@@ -409,6 +433,7 @@
             login_view.loading();
             login_view.render();
         }
+        this_hash = '/';
         if (!location.hash) {
             location.hash = '/';
         }
@@ -418,13 +443,13 @@
         // bind some events to facebox to help with nav
         // change back to the last hash when we close a facebox
         $(document).bind('close.facebox', function() {
-            location.hash = $(document).data('last_hash');
+            location.hash = last_hash;
         });
         // keep track of the last hash so we can return to it after
         // closing a facebox
         $(window).hashchange(function() {
-            $(document).data('last_hash', $(document).data('this_hash'));
-            $(document).data('this_hash', location.hash);
+            last_hash = this_hash;
+            this_hash = location.hash;
         });
     });
 })();
