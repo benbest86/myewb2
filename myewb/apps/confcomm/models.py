@@ -59,7 +59,7 @@ class Cohort(models.Model):
     """
     A definition of a Cohort of people we are looking at.
     """
-    chapter = models.CharField(max_length=10, choices=CHAPTER_CHOICES, null=True, blank=True)
+    chapter = models.CharField(max_length=20, choices=CHAPTER_CHOICES, null=True, blank=True)
     role = models.CharField(max_length=1, choices=ROLE_CHOICES)
     year = models.PositiveIntegerField()
     members = models.ManyToManyField(MemberProfile)
