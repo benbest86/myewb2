@@ -1,4 +1,5 @@
-{% extends "base.html" %}
+{# {% extends "base.html" %} #}
+{% extends 'conference/confsite.html' %}
 
 {% load i18n %}
 {# {% load openid_tags %} #}
@@ -10,7 +11,7 @@
 {% block extra_head_base %}
 		<link rel="SHORTCUT ICON" href="{{ STATIC_URL}}favicon.ico" />
 		{% block extra_head %}{% endblock %}
-		<link rel="stylesheet" href="{{ STATIC_URL }}css/myewb2.css?d=20100629" />
+		<link rel="stylesheet" href="{{ STATIC_URL }}css/confcomm.css?d=20101030" />
 		<script type="text/javascript">
 		
 //  External links in posts, etc., should open in a new window    

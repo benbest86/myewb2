@@ -1,13 +1,26 @@
+<div class="paginator"></div>
+<!-- @@@ SEAN -->
+
+
 <% collection.each(function(p) { %>
 <div id="<%= p.get('username') %>-summary" class="profile-summary">
-    <a href="#<%= p.hash() %>"><img height="160px" width="160px" src="<%= p.get('avatar_url') %>" /></a>
-    <p><a href="#<%= p.hash() %>"><strong><%= p.get('name')%></strong></a></p>
+    <a class="profile-thumbnail-pic" href="#<%= p.hash() %>"><img src="<%= p.get('avatar_url') %>" /></a>
+    <p class="profile-details">
+    
+    <span class="profile-details-name"><a href="#<%= p.hash() %>"><strong><%= p.get('name')%></strong></a></span>
+    
+    <span class="profile-details-registration">
     <% if (p.get('registered')) { %>
-    <p><strong>Registered!</strong></p>
+    <strong>Registered!</strong></p>
     <% }
     else {%>
-    <p><strong>Not Registered:</strong> <a href="#<%= p.invite_hash() %>">Invite</a></p>
+    <strong>Not Registered:</strong> <a href="#<%= p.invite_hash() %>">Invite</a>
     <% } %>
+    </span>
+    
+    
+    </p>
+    
 </div>
 <% }); %>
-<div id="paginator"></div>
+<div class="paginator"></div>

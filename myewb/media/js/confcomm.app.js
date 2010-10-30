@@ -323,7 +323,7 @@
         template_name: 'browser_paginator.html',
         render: function() {
             var self = this;
-            self.el = $('#paginator');
+            self.el = $('.paginator');    // @@@ SEAN
             $(self.el).html(_.template(self.template(), {model: self.model}));
         }});
     var NameFilterView = BaseView.extend({
