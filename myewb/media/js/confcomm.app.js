@@ -45,7 +45,7 @@
         },
         hash: function() {
             var self = this;
-            return '#/profile/?id=' + self.id;
+            return '/profile/?id=' + self.id;
         }
     });
     var SummaryProfile = Backbone.Model.extend({
@@ -55,12 +55,11 @@
         },
         hash: function() {
             var self = this;
-            if (self.get('has_profile')) {
-                return '#/profile/?id=' + self.id;
-            }
-            else {
-                return '#/invitation/?id=' + self.id;
-            }
+            return self.get('has_profile') ? '/profile/?id=' + self.id : self.invite_hash();
+        },
+        invite_hash: function() {
+            var self = this;
+            return '/invitation/?id=' + self.id;
         }
     });
     var Paginator = Backbone.Model.extend({
