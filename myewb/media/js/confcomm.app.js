@@ -174,7 +174,7 @@
         content_holder: '#profile-form-container',
         el: $('#profile-form-container'),
         template_name: 'profile_form.html',
-        events: {'submit form': 'update_profile'},
+        // events: {'submit form': 'update_profile'},
         update_profile: function() {
             var self = this;
             var inputs = self.$('form').find('.profile-input');
@@ -203,7 +203,9 @@
             self.el = $('#facebox').find('.content').first();
             // re-delegate the events so they are attached to the facebox copy of the
             // form
-            self.delegateEvents();
+            // XXX: Might not work in IE with submit event so have to manually go
+            //self.delegateEvents();
+            self.$('form').bind('submit', function() { self.update_profile(); return false;});
         }});
     var FiltersView = BaseView.extend({
         el: $('#filters'),
