@@ -4,7 +4,7 @@
 <strong>Filter by:</strong> <select class="filter" name="chapter">
     <option value="">All Chapters</option>
     <% _.each(filter_lists.chapters_list, function(c) { %>
-    <option value="<%= c[0] %>"><%= c[0] %></option>
+    <option value="<%= c[0] %>"><%= c[1] %></option>
     <% }); %>
 </select>
 <select class="filter" name="role">
