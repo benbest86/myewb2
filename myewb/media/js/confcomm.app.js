@@ -27,6 +27,7 @@
         var this_hash;
         var last_hash;
         var show_my_profile;
+        var invitation_view;
     }
     routes = CONFCOMM_GLOBALS.routes;
     current_username = CONFCOMM_GLOBALS.username;
@@ -343,7 +344,10 @@
         }});
     var BrowserView = BaseView.extend({
         el: $('#browser'),
-        // events: {'change .filter': 'update_filters'},
+        events: {
+            'click a.invitation': 'open_invite',
+            'click .no-profile a.profile-link': 'open_invite',
+        },
         // attach some events that are outside of the scope of el
         bind_to_filters: function() {
             var self = this;
@@ -365,10 +369,29 @@
             var qs = $('#filter-controls').serialize();
             location.hash = '/?' + qs;
         },
+        open_invite: function(e) {
+            var self = this;
+            if (anon) {
+                // TODO: redirect to login or signup
+                return;
+            }
+            var id = $(e.target).parents('div.profile-summary').first().attr('id').split('-')[0];
+            if (!id) {
+                // TODO: send error message?
+                return;
+            }
+            var view = invitation_view;
+            view.async_render(id, cohort_summaries, {
+                error: function () {
+                    $(document).trigger('close.facebox');
+                }
+            });
+        },
         render: function() {
             var self = this;
             $(self.el).html(_.template(self.template(), {collection: self.collection}));
             self.paginator.render();
+            self.delegateEvents();
         }});
     var BrowserPaginationView = BaseView.extend({
         el: $('#paginator'),
@@ -438,13 +461,11 @@
     var Controller = Backbone.SPWA.Controller.extend({
         routes: {
             '/profile/': 'profile',
-            '/': 'browser',
-            '/invitation/': 'invitation'
+            '/': 'browser'
         },
         views: {
             'Profile': ProfileView,
             'Browser': BrowserView,
-            'Invitation': InvitationView
         },
         browser: function(args) {
             var self = this;
@@ -482,25 +503,6 @@
                 $(document).trigger('close.facebox');
             }}
             );
-        },
-        invitation: function(args) {
-            var self = this;
-            if (anon) {
-                // TODO: redirect to login or signup
-                return;
-            }
-            var id = args.id;
-            if (!id) {
-                // TODO: send error message?
-                return;
-            }
-            var self = this;
-            var view = self.getView('Invitation');
-            view.async_render(id, cohort_summaries, {
-                error: function () {
-                    $(document).trigger('close.facebox');
-                }
-            });
         }
     });
 
@@ -530,6 +532,7 @@
         name_filter_view.render();
         // TODO: fix this - a bit of an ugly hack.
         browser_view.bind_to_filters();
+        invitation_view = new InvitationView;
         // show the my_profile view if the user is logged in
         profile_form_view = new ProfileFormView;
         login_view = new LoginView;
