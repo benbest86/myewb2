@@ -353,11 +353,32 @@
     });
     var InvitationView = BaseView.extend({
         template_name: 'invitation.html',
-        el: '#invitation',
+        content_holder: '#invitation',
+        el: $('#invitation'),
+        send_invitation: function() {
+            var self = this;
+            var inputs = self.$('form').find('.invitation-input');
+            var data = {};
+            _.each(inputs, function(i) {
+                if (i.name) data[i.name] = i.value;
+            });
+            $.ajax({url: routes.email, data:data, type:'post', success:function(resp) {$(document).trigger('close.facebox');alert(resp);}})
+            return false;
+        },
         render: function() {
             var self = this;
-            $(self.el).html(_.template(self.template(), {model: self.model}));
-            $.facebox({'div':self.el});
+            // since our form is in the facebox we have to do some monkey business here
+            // use content_holder to render the template
+            $(self.content_holder).html(_.template(self.template(), {model: self.model}));
+            $.facebox({div:self.content_holder});
+            // after facebox copies the html to its own div, reset self.el to the
+            // content in the facebox
+            self.el = $('#facebox').find('.content').first();
+            // re-delegate the events so they are attached to the facebox copy of the
+            // form
+            // XXX: Might not work in IE with submit event so have to manually go
+            //self.delegateEvents();
+            self.$('form').bind('submit', function() { self.send_invitation(); return false;});
         }
     });
     /* CONTROLLER */

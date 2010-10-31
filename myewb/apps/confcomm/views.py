@@ -2,7 +2,8 @@
 
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
-from django.http import HttpResponseRedirect, Http404
+from django.http import HttpResponseRedirect, Http404, HttpResponse, \
+        HttpResponseBadRequest
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
@@ -36,6 +37,14 @@ def single_page(request):
             },
             context_instance=RequestContext(request),
             )
+
+@login_required
+def send_invitation(request):
+    if request.method == 'POST':
+        name = User.objects.get(username=request.POST['to']).get_profile().name
+        return HttpResponse(name)
+    else:
+        return HttpResponseBadRequest()
 
 def index(request):
     """

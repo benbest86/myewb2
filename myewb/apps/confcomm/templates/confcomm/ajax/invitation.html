@@ -1,2 +1,8 @@
-<h2>Invitation</h2>
+<h2>Send an Invitation to <%= model.get('name') %></h2>
 <p>You're invited!</p>
+<form>
+    <textarea name="body" class="invitation-input">Default message here...</textarea>
+    <input type="hidden" class="invitation-input" name="to" value="<%= model.get('username') %>" />
+    <p>Some extra text with a link that will be added at the bottom of all e-mails here</p>
+    <input type="submit" value="Send" />
+</form>

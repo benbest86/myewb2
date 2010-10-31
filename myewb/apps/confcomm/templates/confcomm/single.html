@@ -43,7 +43,8 @@
         routes: {
             profile_base: "{% url confcomm_profile_api_base %}",
             templates_base: "{{ STATIC_URL }}templates/confcomm/",
-            cohorts_base: "{% url confcomm_cohorts %}"
+            cohorts_base: "{% url confcomm_cohorts %}",
+            email: "{% url confcomm_email %}"
         },
         username: "{{ username }}",
         anon: {{ anon }},
