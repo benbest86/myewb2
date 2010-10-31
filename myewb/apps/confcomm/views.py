@@ -9,12 +9,13 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.utils import simplejson as json
 
+from mailer import send_mail
 from account_extra.forms import EmailLoginForm
 
 from confcomm.models import ConferenceProfile, AFRICA_ROLE_CHOICES, \
         AFRICA_COUNTRY_CHOICES, CHAPTER_CHOICES, CANADA_ROLE_CHOICES, \
         ROLE_CHOICES
-from confcomm.forms import ConferenceProfileForm
+from confcomm.forms import ConferenceProfileForm, InvitationForm
 
 def single_page(request):
     """
@@ -43,10 +44,20 @@ def single_page(request):
 @login_required
 def send_invitation(request):
     if request.method == 'POST':
-        name = User.objects.get(username=request.POST['to']).get_profile().name
-        return HttpResponse(name)
+        invitation = InvitationForm(request.POST)
+        if invitation.is_valid():
+            data = invitation.cleaned_data
+            # TODO enable this and test it somehow...
+            # send_mail(subject=data['subject'],
+            #           txtMessage=data['body'],
+            #           fromemail=invitation.sender_email,
+            #           recipients=[invitation.recipient.email,]
+            #           )
+            return HttpResponse('Invitation sent to %s.' % invitation.recipient.get_profile().name)
+        else:
+            return HttpResponseBadRequest('Sending mail failed: %s' % " ".join(["%s: %s." % (k, v) for k, v in invitation.errors.items()]))
     else:
-        return HttpResponseBadRequest()
+        return HttpResponseBadRequest('Sending email requires a POST method')
 
 def index(request):
     """

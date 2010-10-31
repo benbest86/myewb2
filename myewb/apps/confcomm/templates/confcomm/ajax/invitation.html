@@ -3,7 +3,7 @@
 <form>
     <p><input name="subject" class="invitation-input" value="Come to EWB National Conference 2011" type="text" size="50" style="width: 425px;" /></p>
     <p><textarea name="body" class="invitation-input" rows="10" cols="50" style="width: 425px;">Default message here...</textarea></p>
-    <input type="hidden" class="invitation-input" name="to" value="<%= model.get('username') %>" />
+    <input type="hidden" class="invitation-input" name="recipient" value="<%= model.get('username') %>" />
     <p>Some extra text with a link that will be added at the bottom of all e-mails here</p>
     <input type="submit" value="Send" />
 </form>
