@@ -362,6 +362,7 @@
             _.each(inputs, function(i) {
                 if (i.name) data[i.name] = i.value;
             });
+            data['from'] = current_username;
             $.ajax({url: routes.email, data:data, type:'post', success:function(resp) {$(document).trigger('close.facebox');alert(resp);}})
             return false;
         },
