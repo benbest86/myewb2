@@ -9,6 +9,8 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.utils import simplejson as json
 
+from account_extra.forms import EmailLoginForm
+
 from confcomm.models import ConferenceProfile, AFRICA_ROLE_CHOICES, \
         AFRICA_COUNTRY_CHOICES, CHAPTER_CHOICES, CANADA_ROLE_CHOICES, \
         ROLE_CHOICES
@@ -105,3 +107,19 @@ def profile_edit(request):
     return render_to_response('confcomm/edit_profile.html',
             {'form':form},
             context_instance=RequestContext(request),)
+
+def login(request):
+    form = EmailLoginForm(request.POST)
+    if form.login(request):
+        response = {
+                'username': form.user.username,
+                'message': 'Successfully logged in.',
+                'success': True,
+        }
+    else:
+        response = {
+                'message': 'Your login credentials did not match. Please try again.',
+                'success': False,
+                'login_name': request.POST['login_name'],
+        }
+    return HttpResponse(json.dumps(response))

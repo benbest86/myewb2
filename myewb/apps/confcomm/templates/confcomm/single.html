@@ -44,7 +44,9 @@
             profile_base: "{% url confcomm_profile_api_base %}",
             templates_base: "{{ STATIC_URL }}templates/confcomm/",
             cohorts_base: "{% url confcomm_cohorts %}",
-            email: "{% url confcomm_email %}"
+            email: "{% url confcomm_email %}",
+            login_url: "{% url confcomm_login %}",
+            logout_url: "{% url acct_logout %}"
         },
         username: "{{ username }}",
         anon: {{ anon }},

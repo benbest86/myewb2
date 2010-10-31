@@ -16,6 +16,7 @@ urlpatterns = patterns('confcomm.views',
         url('^$', 'index', name='confcomm_index'),
         url('^app/$', 'single_page', name='confcomm_app'),
         url('^register/$', 'register', name='confcomm_register'),
+        url('^login/$', 'login', name='confcomm_login'),
 
         url('^profile/$', 'profile', name='confcomm_profile'),
         url('^profile/edit/$', 'profile_edit', name='confcomm_profile_edit'),

@@ -26,6 +26,7 @@
         var name_filter_view;
         var this_hash;
         var last_hash;
+        var show_my_profile;
     }
     routes = CONFCOMM_GLOBALS.routes;
     current_username = CONFCOMM_GLOBALS.username;
@@ -261,7 +262,10 @@
         }});
     var MyProfileView = BaseView.extend({
         el: $('#my-profile'),
-        events: {'click a.edit-profile':'edit_profile'},
+        events: {
+            'click a.edit-profile':'edit_profile',
+            'click a#logout': 'logout',
+        },
         edit_profile: function () {
             if (anon) {
                 return
@@ -269,6 +273,24 @@
             var self = this;
             profile_form_view.model = profiles.get(current_username);
             profile_form_view.render();
+        },
+        logout: function(e) {
+            var self = this;
+            self.loading();
+            $.ajax({
+                url: routes.logout_url,
+                success: function() {
+                    self.hide();
+                    anon = true;
+                    current_username = null;
+                    login_view.error_message = "";
+                    login_view.show();
+                },
+                error: function() {
+                    self.render();
+                }
+            });
+            e.preventDefault();
         },
         template_name: 'my_profile.html',
         render: function() {
@@ -285,9 +307,39 @@
     var LoginView = BaseView.extend({
         el: $('#cc-login'),
         template_name: 'cc_login.html',
+        error_message: "",
+        login_name: "",
+        login: function() {
+            var self = this;
+            $.ajax({
+                url: routes.login_url,
+                type: 'post',
+                data: self.$('form').serialize(),
+                dataType: 'json',
+                success: function(data) {
+                    if (data.success) {
+                        self.hide();
+                        current_username = data.username;
+                        anon = false;
+                        show_my_profile();
+                    }
+                    else {
+                        self.error_message = data.message;
+                        self.login_name = data.login_name;
+                        self.render();
+                    }
+                }
+            });
+            self.loading();
+        },
         render: function() {
             var self = this;
-            $(self.el).html(_.template(self.template()));
+            $(self.el).html(_.template(self.template(), {error_message: self.error_message, login_name: self.login_name}));
+
+            self.$('form').unbind('submit').bind('submit', function() {
+                self.login();
+                return false;
+            });
         }});
     var BrowserView = BaseView.extend({
         el: $('#browser'),
@@ -480,11 +532,12 @@
         browser_view.bind_to_filters();
         // show the my_profile view if the user is logged in
         profile_form_view = new ProfileFormView;
-        if (!anon) {
+        login_view = new LoginView;
+        my_profile_view = new MyProfileView();
+        show_my_profile = function() {
             current_profile = new ConferenceProfile({
                 id: current_username
             });
-            my_profile_view = new MyProfileView();
             $(my_profile_view.el).show();
             my_profile_view.loading();
             current_profile.fetch({success: function(){
@@ -493,9 +546,11 @@
                 my_profile_view.render();
             }});
         }
+        if (!anon) {
+            show_my_profile();
+        }
         // show the login view if the user is not logged in
         else {
-            login_view = new LoginView;
             $(login_view.el).show();
             login_view.loading();
             login_view.render();

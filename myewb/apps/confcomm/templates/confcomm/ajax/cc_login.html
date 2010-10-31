@@ -1,1 +1,11 @@
-<h3>Login info</h3>
+<h4>Login</h4>
+<form>
+    <p>Email: <input type="text" maxlength="75" name="login_name" id="id_login_name" <% if (login_name) { %> value="<%= login_name %>" <% } %>></p>
+    <p>Password: <input type="password" id="id_password" name="password"></p>
+    <% if (error_message) { %>
+        <p class="error-message"><%= error_message %></p>
+    <% } %>
+    Remember Me: <input type="checkbox" id="id_remember" name="remember">
+    <br>
+    <input type="submit" value="sign in »"><br>
+</form>
