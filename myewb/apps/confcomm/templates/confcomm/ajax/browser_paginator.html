@@ -1,3 +1,12 @@
+<div class="pagination-prev-next">
+    <% if (model.get('current') !== 1) { %>
+        <span><a href="#/?page=<%= model.get('current')-1 %>&<%= model.get('qs') %>">&laquo; prev</a></span>
+    <% } %>
+    <% if (model.get('current') < model.get('last')) { %>
+        <span><a href="#/?page=<%= model.get('current')+1 %>&<%= model.get('qs') %>">next &raquo;</a></span>
+    <% } %>
+</div>
+
 <ul class='pagination'>
     <% if (model.get('current') !== 1) { %>
     <li><a href="#/?page=1&<%= model.get('qs') %>">1</a></li>
@@ -24,3 +33,5 @@
     <% } %>
 </ul>
 <!-- SEAN @@@ -->
+
+
