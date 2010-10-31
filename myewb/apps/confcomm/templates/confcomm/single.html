@@ -51,6 +51,9 @@
 {# awesome messaging plugin #}
 <link rel="stylesheet" href="{{ STATIC_URL }}css/jquery.jgrowl.css" />    
 <script type="text/javascript" src="{{ STATIC_URL}}js/jquery.jgrowl_google.js"></script>
+{# iframe uploader so we can upload photos #}
+<script type="text/javascript" src="{{ STATIC_URL}}js/jquery.form.js"></script>
+
 {# globals we need from the server #}
 <script type="text/javascript">
     var CONFCOMM_GLOBALS = {
@@ -60,7 +63,8 @@
             cohorts_base: "{% url confcomm_cohorts %}",
             email: "{% url confcomm_email %}",
             login_url: "{% url confcomm_login %}",
-            logout_url: "{% url acct_logout %}"
+            logout_url: "{% url acct_logout %}",
+            avatar_url: "{% url confcomm_avatar %}"
         },
         username: "{{ username }}",
         anon: {{ anon }},

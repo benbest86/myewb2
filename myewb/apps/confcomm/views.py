@@ -10,6 +10,7 @@ from django.contrib.auth.decorators import login_required
 from django.utils import simplejson as json
 
 from mailer import send_mail
+from avatar.views import change as change_avatar
 from account_extra.forms import EmailLoginForm
 
 from confcomm.models import ConferenceProfile, AFRICA_ROLE_CHOICES, \
@@ -134,3 +135,8 @@ def login(request):
                 'login_name': request.POST['login_name'],
         }
     return HttpResponse(json.dumps(response))
+
+@login_required
+def update_avatar(request):
+    change_avatar(request, next_override='/')
+    return HttpResponse("<textarea>{success: true}</textarea>")

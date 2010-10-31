@@ -211,13 +211,31 @@
                 if (i.name) data[i.name] = i.value;
             });
             var id = self.model.username || self.model.id;
-            $.facebox(function() {
-                self.model.save(data, {success: function(){
-                    location.hash='/profile/?id=' + id;
-                    messages.info('Your profile has been successfully updated.', {'header': 'Profile Updated'});
+            if (data['avatar']) {
+                // submit form through iframe
+                self.$('form').ajaxSubmit({
+                    beforeSubmit: function() {
+                        messages.info('You are uploading a new photo - this may take some time.', {header: 'Photo uploading'});
+                    },
+                    success: function() {
+                        delete data['avatar'];
+                        messages.info('Photo uploaded successfully.', {header: 'Photo uploaded successfully.'});
+                        self.model.save(data, {success: function(){
+                            location.hash='/profile/?id=' + id;
+                            messages.info('Your profile information has been successfully updated.', {'header': 'Profile Updated'});
+                            my_profile_view.render();
+                            }});
                     }});
-            });
-            return false;
+            }
+            else {
+                $.facebox(function() {
+                    self.model.save(data, {success: function(){
+                        location.hash='/profile/?id=' + id;
+                        messages.info('Your profile information has been successfully updated.', {'header': 'Profile Updated'});
+                    }});
+                });
+                return false;
+            }
         },
         render: function() {
             var self = this;
@@ -227,7 +245,7 @@
             }
             // since our form is in the facebox we have to do some monkey business here
             // use content_holder to render the template
-            $(self.content_holder).html(_.template(self.template(), {model:self.model}));
+            $(self.content_holder).html(_.template(self.template(), {model:self.model, avatar_url:routes.avatar_url}));
             $.facebox({div:self.content_holder});
             // after facebox copies the html to its own div, reset self.el to the 
             // content in the facebox
