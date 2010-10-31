@@ -24,10 +24,10 @@
         var browser_pagination_view;
         var loading_image;
         var name_filter_view;
-        var this_hash;
-        var last_hash;
+        var hash_history;
         var show_my_profile;
         var invitation_view;
+        var messages;
     }
     routes = CONFCOMM_GLOBALS.routes;
     current_username = CONFCOMM_GLOBALS.username;
@@ -180,18 +180,6 @@
                 }
                 // get our loading function. not appropriate if we're not faceboxing though?
                 $.facebox(function() {
-                    // model_to_get.fetch({
-                    //     success: function(){
-                    //         collection.add(model_to_get);
-                    //         self.model = model_to_get;
-                    //         self.render();
-                    //     },
-                    //     error: function() {
-                    //         // close the facebox on an error
-                    //         // TODO: Add error message
-                    //         $(document).trigger('close.facebox');
-                    //     }
-                    // });
                     model_to_get.fetch(callbacks);
                 });
             }
@@ -224,7 +212,10 @@
             });
             var id = self.model.username || self.model.id;
             $.facebox(function() {
-                self.model.save(data, {success: function(){location.hash='/profile/?id=' + id}});
+                self.model.save(data, {success: function(){
+                    location.hash='/profile/?id=' + id;
+                    messages.info('Your profile has been successfully updated.', {'header': 'Profile Updated'});
+                    }});
             });
             return false;
         },
@@ -372,12 +363,18 @@
         open_invite: function(e) {
             var self = this;
             if (anon) {
-                // TODO: redirect to login or signup
+                // have to prevent the default and then set the 
+                // location.hash manually so we don't get the hashchange
+                // after the fact
+                e.preventDefault();
+                location.hash = $(e.target).attr('href');
+                messages.info("Please login to send an invite.", {header: 'Please login.'});
+                location.hash = hash_history.pop();
+                $("#id_login_name").focus();
                 return;
             }
             var id = $(e.target).parents('div.profile-summary').first().attr('id').split('-')[0];
             if (!id) {
-                // TODO: send error message?
                 return;
             }
             var view = invitation_view;
@@ -499,7 +496,7 @@
             view.async_render(id, profiles, {
                 error: function(){
                 // close the facebox on an error
-                // TODO: Add error message
+                messages.error('Error fetching profile.');
                 $(document).trigger('close.facebox');
             }}
             );
@@ -507,9 +504,23 @@
     });
 
     app = new Controller();
+    // abstract away our messaging to jGrowl
+    messages = {
+        info: function(m, o) {
+            o = o || {};
+            o = _.extend({header: 'Info'}, o);
+            $.jGrowl(m, o);
+        },
+        error: function(m, o) {
+            o = o || {};
+            o = _.extend({header: 'Error'}, o);
+            $.jGrowl(m, o);
+        }
+    }
 
     /* GO TIME */
     $(function() {
+        hash_history = ['/'];
         profiles = new ProfileStore();
         cohort_summaries = new SummaryStore();
         cohort_summaries.base_url = routes.cohorts_base;
@@ -558,7 +569,6 @@
             login_view.loading();
             login_view.render();
         }
-        this_hash = '/';
         if (!location.hash) {
             location.hash = '/';
         }
@@ -568,13 +578,14 @@
         // bind some events to facebox to help with nav
         // change back to the last hash when we close a facebox
         $(document).bind('close.facebox', function() {
-            location.hash = last_hash;
+            hash_history.pop();
+            location.hash = hash_history.pop();
         });
         // keep track of the last hash so we can return to it after
         // closing a facebox
         $(window).hashchange(function() {
-            last_hash = this_hash;
-            this_hash = location.hash;
+            hash_history.push(location.hash);
+            hash_history = hash_history.slice(0, 4);
         });
     });
 })();
