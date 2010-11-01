@@ -68,39 +68,7 @@ class ConferenceRegistrationForm(forms.ModelForm):
     type = forms.ChoiceField(label='Registration type',
 							 choices=ROOM_CHOICES,
 							 widget=forms.RadioSelect,
-							 help_text="""<table border='1' class='descform' id='confoptiontable' style='display: none;'>
-  <tr>
-    <th>&nbsp;</th>
-    <th>Shared bed</th>
-    <th>Single bed</th>
-    <th>No room</th>
-  </tr>
-  <tr>
-    <th>Subsidized: BC/AB/NF</th>
-    <td>$100 (student)<br/>$250 (general)</td>    
-    <td>$220 (student)<br/>$370 (general)</td>
-    <td>$80 (student)<br/>$200 (general)</td>    
-  </tr>
-  <tr>
-    <th>Subsidized: SK/MB/NB/NS</th>
-    <td>$200 (student)<br/>$350 (general)</td>    
-    <td>$320 (student)<br/>$470 (general)</td>    
-    <td>$160 (student)<br/>$280 (general)</td>    
-  </tr>
-  <tr>
-    <th>Subsidized: ON/QB</th>
-    <td>$350 (student)<br/>$500 (general)</td>    
-    <td>$470 (student)<br/>$620 (general)</td>    
-    <td>$280 (student)<br/>$400 (general)</td>    
-  </tr>
-  <tr>
-    <th>Standard<br/>(no registration code)</th>
-    <td>$620</td>
-    <td>$740</td>    
-    <td>$500</td>    
-  </tr>
-</table>
-<a href='#' id='confoptiontablelink'>click here for a rate guide and explanation</a>""")
+							 help_text="""<a href='#' id='confoptiontablelink'>click here for a rate guide and explanation</a>""")
     
     africaFund = forms.ChoiceField(label='Support an African delegate?',
                                    choices=AFRICA_FUND,
