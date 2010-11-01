@@ -469,14 +469,18 @@
                 if (i.name) data[i.name] = i.value;
             });
             data['sender'] = current_username;
-            $.ajax({url: routes.email, data:data, type:'post', success:function(resp) {$(document).trigger('close.facebox');alert(resp);}})
+            $.ajax({url: routes.email, data:data, type:'post', success:function(resp) {
+                $(document).trigger('close.facebox');
+                messages.info('Your E-mail has been sent.', {header: 'E-mail sent'})
+        I   }});
             return false;
         },
         render: function() {
             var self = this;
             // since our form is in the facebox we have to do some monkey business here
             // use content_holder to render the template
-            $(self.content_holder).html(_.template(self.template(), {model: self.model}));
+            var sender_name = current_profile.get('member_profile').name.split(' ')[0];
+            $(self.content_holder).html(_.template(self.template(), {model: self.model, site_url: routes.site_url, sender_name:sender_name}));
             $.facebox({div:self.content_holder});
             // after facebox copies the html to its own div, reset self.el to the
             // content in the facebox
