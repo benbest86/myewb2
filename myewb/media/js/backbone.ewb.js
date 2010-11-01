@@ -17,14 +17,19 @@
   };
   Backbone.sync = function(method, model, success, error) {
     var sendModel = method === 'create' || method === 'update';
-    // changing data to remove the {'model':} namespace on the data.
+    // changing data to remove the {'model':} namespace on the data - required for
+    // piston.
     var data = sendModel ? JSON.stringify(model) : {};
     var type = methodMap[method];
     if (Backbone.emulateHttp && (type === 'PUT' || type === 'DELETE')) {
       data._method = type;
       type = 'POST';
     }
-    $.ajax({
+    // kill any pending requests that haven't completed
+    if (model.pending_request && model.pending_request.readyState != 4) {
+        model.pending_request.abort();
+    }
+    model.pending_request = $.ajax({
       url       : getUrl(model),
       type      : type,
       data      : data,
