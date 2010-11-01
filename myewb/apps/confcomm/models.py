@@ -51,17 +51,12 @@ class ConferenceProfile(models.Model):
     def __unicode__(self):
         return '%s - %s' % (self.member_profile.name, (self.registered and 'registered' or 'not registered'))
 
-CHAPTER_CHOICES = []
-chapterlist = Network.objects.filter(chapter_info__isnull=False, is_active=True).order_by('name')
-for chapter in chapterlist:
-    CHAPTER_CHOICES.append((chapter.slug, chapter.chapter_info.chapter_name))
-
 CHAPTER_CHOICES = (
     ('carleton', 'Carleton',),
     ('concordia', 'Concordia',),
     ('dal', 'Dalhousie',),
     ('uoguelph', 'Guelph',),
-    ('laval', 'Laval',),
+    ('ulaval', 'Laval',),
     ('mcmaster', 'McMaster',),
     ('mcgill', 'McGill ',),
     ('mun', 'MUN',),
