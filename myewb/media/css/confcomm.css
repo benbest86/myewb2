@@ -1,0 +1,294 @@
+#content {
+margin-left:0;
+
+}
+
+#sidebar {
+display:none;
+
+}
+
+#header_sp .textsub {
+display: none;
+}
+
+
+h1, h2, h3, h4, h5, h6 {
+font-family:"Lucida Grande",Geneva,Verdana,Arial,Helvetica,sans-serif;
+
+}
+
+h2 {
+  font-size: 20px;
+  font-weight: bold;
+  text-decoration: none;
+}
+
+
+
+
+/* removed from   single.html */
+
+    .section {
+/*         border: 1px solid black; */
+        margin: 9px 4px;
+    }
+    .sidebar-section {
+        border: 1px solid black;
+        height: 180px;
+        margin: 9px 4px;
+    }
+    .sidebar-section img {
+        float: left;
+    }
+/*
+    .profile-container img {
+        float: left;
+    }
+*/
+
+
+    #all {
+        min-height: 720px;
+        /* prevents the page from jumping a bit when you click next or previous page */
+    }
+
+    #left {
+        float: left;
+        width: 68%;
+    }
+    #right {
+        float: right;
+        width: 32%;
+    }
+
+    #filters {
+/*         height: 140px; */
+    }
+/*
+    #browser {
+        height: 820px;
+    }
+*/
+
+
+    .paginator {
+        clear: both;
+    }
+    ul.pagination li {
+        display: inline;
+        list-style-type: none;
+        
+        /* todo - fix the paginator so the current page isn't as thin */
+        
+    }
+    ul.pagination li a, ul.pagination li.currentpage, div.pagination-prev-next a  {
+
+            padding:4px 6px;
+
+    
+    
+    }
+    #facebox .content {
+        height: 400px;
+    }
+    #facebox .body {
+        width: 600px;
+    }
+
+
+
+/* end of single.html contents */
+
+
+
+
+ul.pagination {
+
+background-color: #D7D8D9;
+
+            padding:4px;
+
+}
+
+div.pagination-prev-next {
+float:right;
+            padding:4px;
+
+}
+
+
+
+h3 {
+font-size:24px;
+}
+
+#all div, #all p {
+font-size:14px;
+}
+
+
+div#browser {
+margin-left: 0;
+}
+
+
+
+a:hover {
+text-decoration: none;
+}
+
+
+/* Profile browser */
+
+.profile-summary {
+    float: left;
+
+/* background-color: #eee; */
+
+margin:0;
+width: 280px;
+
+margin-bottom: 15px;
+margin-right: 20px;
+height: 110px;
+}
+
+div.profile-summary:hover {
+/* background-color: #eee; */
+/* too much?  :)  */
+}
+
+a.profile-thumbnail-pic img {
+width:100px;
+border: 0;
+}
+
+a.profile-thumbnail-pic {
+border:1px solid blue;
+background-color: white;
+padding:4px;
+margin-right: 8px;
+float:left;
+
+display: block;
+}
+a.profile-thumbnail-pic:visited {
+border:1px solid purple;
+}
+
+
+a.profile-thumbnail-pic:hover {
+/* border:1px solid #eee; */
+/* background-color: #eee; */
+
+/*
+padding:3px;
+border-width: 2px;
+*/
+}
+
+
+
+p.profile-details {
+margin:0;
+margin-top:5px;
+}
+
+p.profile-details span {
+display: block;
+}
+
+
+.profile-details-name {
+font-size: 16px;
+margin-bottom: 1px;
+}
+
+
+
+
+
+
+/*  Sidebars */
+
+div.sidebar-section {
+        border: none;
+
+background: #eee;
+
+border-right:1px solid #D7D8D9;
+border-bottom:2px solid #D7D8D9;
+
+}
+
+div.sidebar-section-heading {
+background-color: #D7D8D9;
+
+border-bottom: 2px solid #ddd;
+}
+
+div.sidebar-section-heading h3 {
+margin:0;
+font-size: 16px;
+
+padding:6px 9px;
+padding-bottom: 5px;
+}
+
+div.sidebar-section-contents {
+margin:4px 6px;
+}
+
+
+
+
+/* Profile container */
+
+div.profile-container {
+
+
+}
+
+div.profile-container h2 {
+
+margin:0.1em 0 0.7em;
+}
+
+div.profile-container-details p {
+font-size: 14px;
+margin-bottom: 10px;
+
+margin-left: 184px;
+}
+
+#facebox div.profile-container img.facebox-profile-img {
+margin-right: 4px;
+float: left;
+
+padding:5px;
+border: 1px solid #ddd;
+}
+
+span.facebox-profile-question {
+display: block;
+font-weight: bold;
+text-transform: uppercase;
+font-size: 12px;
+letter-spacing: 0.2em;
+
+margin-bottom: 0.25em;
+
+color: #333;
+}
+
+span.facebox-profile-answer {
+display: block;
+
+font-family: Georgia, Times, serif;
+
+font-size: 18px;
+
+line-height:1.25em;
+
+}
