@@ -10,7 +10,7 @@ from django.contrib.auth.models import User
 class ConferenceProfileForm(forms.ModelForm):
     class Meta:
         model = ConferenceProfile
-        exclude = ('member_profile',)
+        exclude = ('member_profile', 'updated',)
 
 class InvitationForm(forms.Form):
     recipient = forms.CharField()

@@ -58,7 +58,7 @@ def conference_profile_read(request, username=None):
 
 class AnonymousConferenceProfileHandler(AnonymousBaseHandler):
     model = ConferenceProfile
-    fields = ('conference_question', 'conference_goals', 'what_now', 'registered', 'avatar_url', ('member_profile', ('name', 'about', 'gender',),), 'username', ('cohorts', ('chapter', 'role', 'year', 'display', 'relevant_properties',),),)
+    fields = ('conference_question', 'conference_goals', 'what_now', 'registered', 'avatar_url', ('member_profile', ('name', 'about', 'gender',),), 'username', ('cohorts', ('chapter', 'role', 'year', 'display', 'relevant_properties',),),'updated',)
 
     @classmethod
     def read(self, request, username=None):
@@ -76,7 +76,7 @@ class ConferenceProfileHandler(BaseHandler):
     anonymous = AnonymousConferenceProfileHandler
     model = ConferenceProfile
     allowed_methods = ('GET', 'PUT',)
-    fields = ('conference_question', 'conference_goals', 'what_now', 'registered', 'avatar_url', ('member_profile', ('name', 'about', 'gender',),), 'username', ('cohorts', ('chapter', 'role', 'year', 'display', 'relevant_properties',),),)
+    fields = ('conference_question', 'conference_goals', 'what_now', 'registered', 'avatar_url', ('member_profile', ('name', 'about', 'gender',),), 'username', ('cohorts', ('chapter', 'role', 'year', 'display', 'relevant_properties',),),'updated',)
 
     @classmethod
     def read(self, request, username=None):
@@ -100,7 +100,9 @@ class ConferenceProfileHandler(BaseHandler):
             p = ConferenceProfile.objects.get(member_profile__user__username=username)
             form = ConferenceProfileForm(request.data, instance=p)
             if form.is_valid():
-                p = form.save()
+                p = form.save(commit=False)
+                p.updated = True
+                p.save()
                 return p
             else:
                 resp = rc.BAD_REQUEST
