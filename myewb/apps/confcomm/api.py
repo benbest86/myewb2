@@ -113,39 +113,6 @@ class ConferenceProfileHandler(BaseHandler):
         return resp
 
 PAGE_SIZE = 8
-class ProfileSummaryHandler(BaseHandler):
-    """
-    Grabs summaries of profiles for the main view.
-    """
-    allowed_methods = ('GET',)
-    # fields = ('name', 'username', 'avatar_url', 'registered')
-
-    @classmethod
-    def read(self, request):
-        filters = dict([(str(k), str(v)) for (k, v) in request.GET.items()])
-        page = int(filters.pop('page', 1))
-        try:
-            all_mps = MemberProfile.objects.exclude(name__isnull=True, user__is_active=False, user__is_bulk=True).filter(**filters)
-            mps = all_mps[(page-1)*PAGE_SIZE:page*PAGE_SIZE]
-        except Exception, e:
-            resp = rc.BAD_REQUEST
-            resp.write('The filters you provided were not valid. %s %s' % (str(filters), e))
-            return resp
-        results = []
-        for mp in mps:
-            d = {
-                    'name': mp.name,
-                    'username': mp.user.username,
-                    'avatar_url': avatar_url(mp.user, 160),
-                    'registered': mp.user.conference_registrations.filter(cancelled=False).count() > 0,
-                }
-            results.append(d)
-        last_page = all_mps.count() / PAGE_SIZE
-        if all_mps.count() % PAGE_SIZE != 0:
-            last_page += 1
-        qs = request.META['QUERY_STRING'].split('&')
-        qs = "&".join([param for param in qs if param[:5] != 'page='])
-        return {'pagination': {'current': page, 'last': last_page, 'qs': qs,}, 'models': results}
 
 class CohortHandler(BaseHandler):
     """
