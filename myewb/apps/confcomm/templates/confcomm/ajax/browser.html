@@ -3,7 +3,7 @@
 
 
 <% collection.each(function(p) { %>
-<div id="<%= p.get('username') %>-summary" class="profile-summary<% if (!p.get('has_profile')) { %> no-profile<% } %>">
+<div id="<%= p.get('username') %>-summary" class="profile-summary<% if (!p.get('registered')) { %> un-registered<% } %>">
     <a class="profile-thumbnail-pic profile-link" href="#<%= p.hash() %>"><img src="<%= p.get('avatar_url') %>" /></a>
     <p class="profile-details">
     
@@ -11,10 +11,10 @@
     
     <span class="profile-details-registration">
     <% if (p.get('registered')) { %>
-    <strong>Registered!</strong></p>
+    <strong>Attending!</strong></p>
     <% }
     else {%>
-    <strong>Not Registered:</strong> <a class="invite" href="#<%= p.invite_hash() %>">Invite</a>
+    <strong>Not Registered</strong> <br> <a class="invite" href="#<%= p.invite_hash() %>">Invite</a>
     <% } %>
     </span>
     
