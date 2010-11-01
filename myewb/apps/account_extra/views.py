@@ -35,8 +35,6 @@ def login(request, form_class=EmailLoginForm,
         success_url = request.GET.get("url", None)
         
     next = request.GET.get("next", None)
-    if next and next in ('/conference/', '/conference/preview/', '/conference/receipt/', '/conference/cancel/'):
-        template_name="conference/login.html"
     
     return pinaxlogin(request, form_class, template_name, success_url, 
             associate_openid, openid_success_url, url_required)

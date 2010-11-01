@@ -47,7 +47,7 @@ class CompactAddressWidget(forms.Select):
                 self.choices.append((a.id, a.label))
                 
             self.choices.append(('new', '(add new address)'))
-        
+            
         field = super(CompactAddressWidget, self).render(name, value, attrs)
 
         return render_to_string('profiles/address_widget_compact.html',

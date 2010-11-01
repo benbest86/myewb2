@@ -10,18 +10,21 @@ Created on 2009-10-18
 from datetime import date
 from decimal import Decimal
 from django import forms
+from django.contrib.auth.models import User
 from django.contrib.formtools.preview import FormPreview
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
+from emailconfirmation.models import EmailAddress
 
 from conference.constants import *
 from conference.models import ConferenceRegistration, ConferenceCode, InvalidCode
 from conference.utils import needsToRenew
 from creditcard.models import CC_TYPES, Product
 from creditcard.forms import CreditCardNumberField, CreditCardExpiryField, PaymentFormPreview
+from profiles.models import MemberProfile
 from siteutils.forms import CompactAddressField
 from siteutils.models import Address
 
@@ -226,10 +229,12 @@ class ConferenceRegistrationForm(forms.ModelForm):
     _user = None
     def _get_user(self):
         return self._user
+    
     def _set_user(self, value):
         self._user = value
         if self.fields.get('address', None):
             self.fields['address'].user = value
+            
     user = property(_get_user, _set_user)
 
 class ConferenceRegistrationFormPreview(PaymentFormPreview):
@@ -300,3 +305,53 @@ class CodeGenerationForm(forms.Form):
     start = forms.IntegerField(label='Starting at')
     number = forms.IntegerField(label='How many codes')
     
+class ConferenceSignupForm(forms.Form):
+
+    firstname = forms.CharField(label="First name")
+    lastname = forms.CharField(label="Last name")
+    email = forms.EmailField(label = "Email", required = True, widget = forms.TextInput())
+    gender = forms.ChoiceField(choices=MemberProfile.GENDER_CHOICES,
+                               widget=forms.RadioSelect,
+                               required=True)
+    language = forms.ChoiceField(label="Preferred language",
+                                 choices=MemberProfile.LANG_CHOICES,
+                                 widget=forms.RadioSelect,
+                                 required=True)
+    
+    def clean_email(self):
+        other_emails = EmailAddress.objects.filter(email__iexact=self.cleaned_data['email'])
+        verified_emails = other_emails.filter(verified=True)
+        if verified_emails.count() > 0:
+            raise forms.ValidationError("This email address has already been used. Please sign in or use a different email.")
+        
+        # this is probably redundant, but just to be sure...
+        users = User.objects.filter(email=self.cleaned_data['email'], is_bulk=False)
+        if users.count():
+            raise forms.ValidationError("This email address has already been used. Please sign in or use a different email.")
+        
+        return self.cleaned_data['email']
+
+    def save(self):
+        firstname = self.cleaned_data['firstname']
+        lastname = self.cleaned_data['lastname']
+        email = self.cleaned_data["email"]
+        
+        try:
+            new_user = User.objects.get(email=email, is_bulk=1)
+        except User.DoesNotExist:
+            new_user = User.extras.create_bulk_user(email)
+            
+        profile = new_user.get_profile()
+        profile.first_name = firstname
+        profile.last_name = lastname
+        profile.gender = self.cleaned_data['gender']
+        profile.language = self.cleaned_data['language']
+        profile.save()
+        
+        new_user.first_name = firstname
+        new_user.last_name = lastname
+        password = User.objects.make_random_password()
+        new_user.set_password(password)
+        new_user.save()
+        
+        return new_user.username, password # required for authenticate()

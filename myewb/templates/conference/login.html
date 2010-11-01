@@ -7,39 +7,79 @@
 {% block head_title %}{% trans "Login" %}{% endblock %}
 
 {% block body %}
+	<style>
+		label {
+			position: relative;
+			display: block;
+			text-align: left;
+			font-size: 12px;
+			padding-bottom: 5px;
+		}
+		ul {
+			list-style: none;
+			padding: 0px;
+			margin: 0px;
+			margin-top: -20px;
+		}
+		li, li label {
+			padding: 0px;
+			margin: 0px;
+		}
+		ul.errorlist {
+			margin-top: 20px;
+			float: right;
+			list-style: none;
+			margin-left: 0;
+			border: 1px solid #ff0000;
+			padding: 3px;
+			-moz-border-radius: 0.5em;
+			-webkit-border-radius: 0.5em;
+			color: #ff0000;
+			background: #ffdfdf;
+		}
+		
+	</style>
+
     <h1>Sign in to myEWB</h1>
     
-    <p>
-    	Please sign-in to your myEWB account to continue your registration.
-    	If you do not have a myEWB account, <a href="{% url acct_signup %}" target="_new">click here</a>
-    	to create one.
-    </p>
+    <div style="float: left; width: 35%; padding: 5px;">
+    	<p>
+	    	Sign in if you have a myEWB account
+    	</p>
 
-
-    <form class="login uniForm" method="post" action="">
-        <fieldset class="inlineLabels">
-            {{ form.as_p }}
-
-			<p><label for="id_login"></label>
+	    <form class="login" method="post" action="" style="position: relative;">
+	    	{{ signin_form.as_p }}
+	
+			<p>
+				<label for="id_login"></label>
+				<input type="hidden" name="action" value="signin" />
 				<input type="submit" name="login" id="id_login" value="{% trans "Login" %}" />
-
-
-		    </p>
-
-			<p><label for="forgotten_password"></label>
+			</p>
+	
+			<p>
+				<label for="forgotten_password"></label>
 				<a href="{% url acct_passwd_reset %}" target="_new">{% trans "Forgot password?" %}</a>
 			</p>
-
-            <div class="form_block">
-                
-            </div>            
-        </fieldset>
-    </form>
+	    </form>
+    </div>
     
-{% endblock %}
-
-{% block extra_body %}
-<script type='text/javascript' charset="utf-8">
-    $("#id_username").focus();
+    <div style="float: right; width: 55%; border-left: 1px solid; padding-left: 5%;">
+    <p>Or, continue without a myEWB account</p>
+    
+	    <form class="login" method="post" action="" style="position: relative;">
+	    	{{ signup_form.as_p }}
+	
+			<p>
+				<label for="id_login"></label>
+				<input type="hidden" name="action" value="signup" />
+				<input type="submit" name="login" id="id_login" value="{% trans "Continue" %}" />
+			</p>
+	    </form>
+    
+    </div>
+    
+<script type='text/javascript'>
+    $('#id_remember').parent().hide();
+    $('#id_chapter').parent().hide();
 </script>
 {% endblock %}
