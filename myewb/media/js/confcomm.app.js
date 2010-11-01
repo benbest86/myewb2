@@ -598,7 +598,7 @@
                 profiles.add(current_profile);
                 my_profile_view.model = current_profile;
                 my_profile_view.render();
-                if (!current_profile.get('updated')) {
+                if (!current_profile.get('active')) {
                     messages.info('Please take a moment to update your profile.', {sticky: true});
                     location.hash = '/profile/edit/';
                     my_profile_view.edit_profile();

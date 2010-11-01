@@ -4,7 +4,6 @@ from django.core.serializers.json import DateTimeAwareJSONEncoder
 from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
-from django.db.models import Q
 
 from piston.handler import BaseHandler, AnonymousBaseHandler
 from piston.utils import rc
@@ -59,7 +58,7 @@ def conference_profile_read(request, username=None):
 
 class AnonymousConferenceProfileHandler(AnonymousBaseHandler):
     model = ConferenceProfile
-    fields = ('conference_question', 'conference_goals', 'what_now', 'registered', 'avatar_url', ('member_profile', ('name', 'about', 'gender',),), 'username', ('cohorts', ('chapter', 'role', 'year', 'display', 'relevant_properties',),),'updated',)
+    fields = ('conference_question', 'conference_goals', 'what_now', 'registered', 'avatar_url', ('member_profile', ('name', 'about', 'gender',),), 'username', ('cohorts', ('chapter', 'role', 'year', 'display', 'relevant_properties',),),'active',)
 
     @classmethod
     def read(self, request, username=None):
@@ -77,7 +76,7 @@ class ConferenceProfileHandler(BaseHandler):
     anonymous = AnonymousConferenceProfileHandler
     model = ConferenceProfile
     allowed_methods = ('GET', 'PUT',)
-    fields = ('conference_question', 'conference_goals', 'what_now', 'registered', 'avatar_url', ('member_profile', ('name', 'about', 'gender',),), 'username', ('cohorts', ('chapter', 'role', 'year', 'display', 'relevant_properties',),),'updated',)
+    fields = ('conference_question', 'conference_goals', 'what_now', 'registered', 'avatar_url', ('member_profile', ('name', 'about', 'gender',),), 'username', ('cohorts', ('chapter', 'role', 'year', 'display', 'relevant_properties',),),'active',)
 
     @classmethod
     def read(self, request, username=None):
@@ -102,7 +101,7 @@ class ConferenceProfileHandler(BaseHandler):
             form = ConferenceProfileForm(request.data, instance=p)
             if form.is_valid():
                 p = form.save(commit=False)
-                p.updated = True
+                p.active = True
                 p.save()
                 return p
             else:
@@ -126,7 +125,7 @@ class ProfileSummaryHandler(BaseHandler):
         filters = dict([(str(k), str(v)) for (k, v) in request.GET.items()])
         page = int(filters.pop('page', 1))
         try:
-            all_mps = MemberProfile.objects.exclude(Q(name__isnull=True) | Q(user__is_active=False) | Q(user__is_bulk=True)).filter(**filters)
+            all_mps = MemberProfile.objects.exclude(name__isnull=True, user__is_active=False, user__is_bulk=True).filter(**filters)
             mps = all_mps[(page-1)*PAGE_SIZE:page*PAGE_SIZE]
         except Exception, e:
             resp = rc.BAD_REQUEST
