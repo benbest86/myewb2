@@ -1,10 +1,12 @@
 from django.db import models
+from django.db.models.signals import post_save
 
 from django.utils.translation import ugettext_lazy as _
 
 from profiles.models import MemberProfile
 from networks.models import Network
 from avatar.templatetags.avatar_tags import avatar_url
+from conference.models import ConferenceRegistration
 
 # Create your models here.
 
@@ -172,3 +174,18 @@ class ConferenceInvitation(models.Model):
     receiver = models.ForeignKey(MemberProfile, related_name='received_conference_invitations')
     code = models.CharField(max_length=12)
     activated = models.BooleanField()
+
+def update_registered_status(sender, **kwargs):
+    try:
+        cp = ConferenceProfile.objects.get(member_profile__user=instance.user)
+        if instance.user.conference_registrations.filter(cancelled=False).count() > 0:
+            if not cp.registered:
+                cp.registered = True
+                cp.save()
+        else:
+            if cp.registered:
+                cp.registered = False
+                cp.save()
+    except:
+        pass
+post_save.connect(update_registered_status, sender=ConferenceRegistration)
