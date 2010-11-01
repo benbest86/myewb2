@@ -79,6 +79,7 @@ CHAPTER_CHOICES = (
     ('uwaterloo', 'Waterloo',),
     ('uwo', 'Western',),
     ('uwin', 'Windsor',),
+    ('yorku', 'York',),
     ('vancouver', 'Vancouver',),
     ('calgary', 'Calgary',),
     ('edmonton', 'Edmonton',),
