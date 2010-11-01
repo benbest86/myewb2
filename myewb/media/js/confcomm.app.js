@@ -190,12 +190,22 @@
     });
 
     var ProfileView = BaseView.extend({
+        container: '#profile',
         el: $('#profile'),
+        events: {'click a.cohort-link': 'to_cohort'},
         template_name: 'profile.html',
+        to_cohort: function(e) {
+            e.preventDefault();
+            hash_history.push($(e.target).attr('href'));
+            hash_history.push($(e.target).attr('href'));
+            $(document).trigger('close.facebox');
+        },
         render: function() {
             var self = this;
-            $(self.el).html(_.template(self.template(), {model:self.model}));
+            $(self.container).html(_.template(self.template(), {model:self.model}));
             $.facebox({div:'#profile'});
+            self.el = $('#facebox').find('.content').first();
+            self.delegateEvents();
         }
     });
     var ProfileFormView = BaseView.extend({
@@ -259,6 +269,12 @@
     var FiltersView = BaseView.extend({
         el: $('#filters'),
         template_name: 'filters.html',
+        update_from_args: function(args) {
+            var self = this;
+            _.each(args, function(v, k) {
+                self.$(".filter[name='" + k + "']").val(v);
+            });
+        },
         render: function() {
             var self = this;
             $(self.el).html(_.template(self.template(), {filter_lists: filter_lists}));
@@ -485,6 +501,8 @@
         browser: function(args) {
             var self = this;
             var view = self.getView('Browser');
+            // a bit of an ugly hack here
+            filters_view.update_from_args(args);
             // fetch the next page of results
             // and render only if the state has changed
             args['page'] = args['page'] || 1;

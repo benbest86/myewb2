@@ -40,6 +40,9 @@ class ConferenceProfile(models.Model):
     @property
     def username(self):
         return self.member_profile.user.username
+    @property
+    def cohorts(self):
+        return self.member_profile.cohort_set.all()
 
 CHAPTER_CHOICES = []
 chapterlist = Network.objects.filter(chapter_info__isnull=False, is_active=True).order_by('name')
@@ -84,6 +87,7 @@ CHAPTER_CHOICES = (
     ('ottawa', 'Ottawa',),
     ('montreal', 'Montreal',),
     )
+DICT_CHAPTER_CHOICES = dict(CHAPTER_CHOICES)
 ROLE_CHOICES = (
         ('m', 'Member',),
         ('e', 'Executive',),
@@ -103,7 +107,21 @@ class Cohort(models.Model):
     members = models.ManyToManyField(MemberProfile)
 
     def __unicode__(self):
-        return '%s %s %d' % (self.chapter, self.get_role_display(), self.year)
+        if self.role in ['m', 'e', 'p']:
+            return '%s of %s in %d/%d' % (self.get_role_display(), DICT_CHAPTER_CHOICES[self.chapter], self.year, self.year + 1)
+        else:
+            return '%s %d' % (self.get_role_display(), self.year)
+    @property
+    def display(self):
+        return str(self)
+
+    @property
+    def relevant_properties(self):
+        if self.role in ['m', 'e', 'p']:
+            return ['chapter', 'role', 'year']
+        else:
+            return ['role', 'year']
+
 
 
 CANADA_ROLE_CHOICES = (
