@@ -78,7 +78,7 @@ CHAPTER_CHOICES = (
     ('uvic', 'UVic',),
     ('uwaterloo', 'Waterloo',),
     ('uwo', 'Western',),
-    ('uwindsor', 'Windsor',),
+    ('uwin', 'Windsor',),
     ('vancouver', 'Vancouver',),
     ('calgary', 'Calgary',),
     ('edmonton', 'Edmonton',),
