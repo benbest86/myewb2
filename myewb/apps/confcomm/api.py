@@ -4,6 +4,7 @@ from django.core.serializers.json import DateTimeAwareJSONEncoder
 from django.conf import settings
 from django.http import HttpResponseRedirect
 from django.contrib.auth.models import User
+from django.db.models import Q
 
 from piston.handler import BaseHandler, AnonymousBaseHandler
 from piston.utils import rc
@@ -125,7 +126,7 @@ class ProfileSummaryHandler(BaseHandler):
         filters = dict([(str(k), str(v)) for (k, v) in request.GET.items()])
         page = int(filters.pop('page', 1))
         try:
-            all_mps = MemberProfile.objects.exclude(name__isnull=True, user__is_active=False, user__is_bulk=True).filter(**filters)
+            all_mps = MemberProfile.objects.exclude(Q(name__isnull=True) | Q(user__is_active=False) | Q(user__is_bulk=True)).filter(**filters)
             mps = all_mps[(page-1)*PAGE_SIZE:page*PAGE_SIZE]
         except Exception, e:
             resp = rc.BAD_REQUEST
