@@ -42,11 +42,11 @@ class AddressField(forms.IntegerField):
 
 class CompactAddressWidget(forms.Select):
     def render(self, name, value, attrs=None):
-        if not self.choices:
-            for a in self.user.get_profile().addresses.all():
-                self.choices.append((a.id, a.label))
-                
-            self.choices.append(('new', '(add new address)'))
+        self.choices = []
+        for a in self.user.get_profile().addresses.all():
+            self.choices.append((a.id, a.label))
+            
+        self.choices.append(('new', '(add new address)'))
             
         field = super(CompactAddressWidget, self).render(name, value, attrs)
 
