@@ -56,7 +56,7 @@ class ConferenceRegistrationForm(forms.ModelForm):
     
     resume = forms.FileField(label='Resume',
                              required=False,
-                             help_text="(optional) Attach a resume if you would like to participate in the jobs fair")
+                             help_text="(optional) Attach a resume if you would like it shared with our sponsors")
     
     cellphone = forms.CharField(label='Cell phone number',
                                 required=False,
@@ -72,8 +72,9 @@ class ConferenceRegistrationForm(forms.ModelForm):
     
     africaFund = forms.ChoiceField(label='Support an African delegate?',
                                    choices=AFRICA_FUND,
+                                   initial='75',
 								   required=False,
-								   help_text='contribute toward bringing young African leaders to the conference as delegates. This amount is eligible for a charitable tax receipt, and is non-refundable.')
+								   help_text='<a href="/site_media/static/conference/delegateinfo.html" class="delegatelink">more information...</a>')
 
     ccardtype = forms.ChoiceField(label='Credit card type',
 								  choices=CC_TYPES)
@@ -96,7 +97,7 @@ class ConferenceRegistrationForm(forms.ModelForm):
         codestring = self.cleaned_data['code'].strip().lower()
         
         if not codestring:
-            return ""
+            return None
         
         try:
             code = ConferenceCode.objects.get(code=codestring)
