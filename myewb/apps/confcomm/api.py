@@ -122,10 +122,11 @@ class CohortHandler(BaseHandler):
 
     @classmethod
     def read(self, request):
-        allowed_filters = ['chapter', 'year', 'role', 'page', 'last_name']
+        allowed_filters = ['chapter', 'year', 'role', 'page', 'last_name', 'search',]
         filters = dict([(str(k), str(v)) for (k, v) in request.GET.items() if k in allowed_filters])
         page = int(filters.pop('page', 1))
         last_name = filters.pop('last_name', None)
+        search = filters.pop('search', None)
         try:
             if filters:
                 all_cohorts = Cohort.objects.filter(**filters)
@@ -137,6 +138,8 @@ class CohortHandler(BaseHandler):
             cps = all_cps.distinct().order_by('-registered', 'member_profile__name')
             if last_name is not None:
                 cps = cps.filter(member_profile__last_name__istartswith=last_name)
+            if search is not None:
+                cps = cps.filter(member_profile__name__icontains=search)
             paged_cps = cps[(page-1)*PAGE_SIZE:page*PAGE_SIZE]
         except Exception, e:
             resp = rc.BAD_REQUEST

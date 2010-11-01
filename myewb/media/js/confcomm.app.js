@@ -96,7 +96,7 @@
         // takes an object of query args to be serialized
         // and removes illegal args
         set_qs: function(qs_args) {
-            allowed_args = ['page', 'chapter', 'role', 'year', 'last_name',];
+            allowed_args = ['page', 'chapter', 'role', 'year', 'last_name','search'];
             qs_obj = {}
             _.each(allowed_args, function(a) {
                 if (qs_args[a]){
@@ -285,6 +285,19 @@
     var FiltersView = BaseView.extend({
         el: $('#filters'),
         template_name: 'filters.html',
+        events: {'keypress #search': 'trigger_search'},
+        _search_queue: [],
+        trigger_search: function(e) {
+            var self = this;
+            self._search_queue.push('event');
+            setTimeout(function() {
+                self._search_queue.pop();
+                if (self._search_queue.length === 0) {
+                    self.$('#hidden-name').val($(e.target).val());
+                    self.$('#hidden-name').change();
+                }
+            }, 350);
+        },
         update_from_args: function(args) {
             var self = this;
             _.each(args, function(v, k) {
@@ -294,6 +307,7 @@
         render: function() {
             var self = this;
             $(self.el).html(_.template(self.template(), {filter_lists: filter_lists}));
+            self.delegateEvents();
         }});
     var NewsView = BaseView.extend({
         el: $('#news'),
@@ -398,7 +412,7 @@
         },
         _filter_state: function(state) {
             var new_state = {};
-            _.each(['chapter', 'role', 'year', 'last_name', 'page'], function(f) {
+            _.each(['chapter', 'role', 'year', 'last_name', 'page', 'search'], function(f) {
                 if (state[f]) {
                     new_state[f] = state[f];
                 }
