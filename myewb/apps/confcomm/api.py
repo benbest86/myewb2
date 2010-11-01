@@ -164,9 +164,9 @@ class CohortHandler(BaseHandler):
                 all_cohorts = Cohort.objects.filter(**filters)
                 all_mps = MemberProfile.objects.none()
                 for cohort in all_cohorts:
-                    all_mps = all_mps | cohort.members.exclude(name__isnull=True)
+                    all_mps = all_mps | cohort.members.exclude(Q(name__isnull=True) | Q(user__is_active=False) | Q(user__is_bulk=True))
             else:
-                all_mps = MemberProfile.objects.exclude(name__isnull=True)
+                all_mps = MemberProfile.objects.exclude(Q(name__isnull=True) | Q(user__is_active=False) | Q(user__is_bulk=True))
             mps = all_mps.distinct()
             if last_name is not None:
                 mps = mps.filter(last_name__istartswith=last_name)
