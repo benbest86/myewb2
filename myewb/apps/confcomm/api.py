@@ -129,33 +129,33 @@ class CohortHandler(BaseHandler):
         try:
             if filters:
                 all_cohorts = Cohort.objects.filter(**filters)
-                all_mps = MemberProfile.objects.none()
+                all_cps = ConferenceProfile.objects.none()
                 for cohort in all_cohorts:
-                    all_mps = all_mps | cohort.members.exclude(Q(name__isnull=True) | Q(user__is_active=False) | Q(user__is_bulk=True))
+                    all_cps = all_cps | cohort.members.all()
             else:
-                all_mps = MemberProfile.objects.exclude(Q(name__isnull=True) | Q(user__is_active=False) | Q(user__is_bulk=True))
-            mps = all_mps.distinct()
+                all_cps = ConferenceProfile.objects.all()
+            cps = all_cps.distinct().order_by('-registered', 'member_profile__name')
             if last_name is not None:
-                mps = mps.filter(last_name__istartswith=last_name)
-            paged_mps = mps[(page-1)*PAGE_SIZE:page*PAGE_SIZE]
+                cps = cps.filter(member_profile__last_name__istartswith=last_name)
+            paged_cps = cps[(page-1)*PAGE_SIZE:page*PAGE_SIZE]
         except Exception, e:
             resp = rc.BAD_REQUEST
             resp.write('The filters you provided were not valid. %s %s' % (str(filters), e))
             return resp
         results = []
-        for mp in paged_mps:
+        for cp in paged_cps:
+            mp = cp.member_profile
             d = {
                     'name': mp.name,
                     'username': mp.user.username,
                     'avatar_url': avatar_url(mp.user, 160),
-                    'registered': mp.user.conference_registrations.filter(cancelled=False).count() > 0,
-                    'has_profile': mp.conferenceprofile_set.count() > 0,
+                    'registered': cp.registered,
+                    'has_profile': cp.active,
                 }
             results.append(d)
-        last_page = mps.count() / PAGE_SIZE
-        if mps.count() % PAGE_SIZE != 0:
+        last_page = cps.count() / PAGE_SIZE
+        if cps.count() % PAGE_SIZE != 0:
             last_page += 1
         qs = request.META['QUERY_STRING'].split('&')
         qs = "&".join([param for param in qs if param[:5] != 'page='])
         return {'pagination': {'current': page, 'last': last_page, 'qs': qs,}, 'models': results}
-
