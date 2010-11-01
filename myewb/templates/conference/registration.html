@@ -173,6 +173,22 @@
 			</fieldset>
 		</form>
 
+		<script type="text/javascript">
+			$().ready(function() {
+				$('#confoptiontablelink').colorbox({transition: 'elastic',
+													opacity: '0.5',
+													inline: true,
+													href: '#confoptiontable',
+													onLoad: function() {
+															$('#confoptiontable').show();
+														},
+													onCleanup: function() {
+															$('#confoptiontable').hide();
+														},
+				});
+			});
+		</script>
+
 	{% else %}
 		<br />
 		<p align="center" style="font-weight: bold;">

@@ -68,7 +68,7 @@ class ConferenceRegistrationForm(forms.ModelForm):
     type = forms.ChoiceField(label='Registration type',
 							 choices=ROOM_CHOICES,
 							 widget=forms.RadioSelect,
-							 help_text="""<table border='1' class='descform'>
+							 help_text="""<table border='1' class='descform' id='confoptiontable' style='display: none;'>
   <tr>
     <th>&nbsp;</th>
     <th>Shared bed</th>
@@ -99,7 +99,8 @@ class ConferenceRegistrationForm(forms.ModelForm):
     <td>$740</td>    
     <td>$500</td>    
   </tr>
-</table>""")
+</table>
+<a href='#' id='confoptiontablelink'>click here for a rate guide and explanation</a>""")
     
     africaFund = forms.ChoiceField(label='Support an African delegate?',
                                    choices=AFRICA_FUND,
