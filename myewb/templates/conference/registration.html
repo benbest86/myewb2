@@ -110,9 +110,18 @@
 				
 				<div class="ctrlHolder">
 					<label>Gender</label>
-					{{ user.get_profile.gender }}
+					{% ifequal user.get_profile.gender "M" %}
+						Male
+					{% else %}
+						{% ifequal user.get_profile.gender "F" %}
+							Female
+						{% else %}
+							Unknown
+						{% endifequal %}
+					{% endifequal %}
 				</div>
 				
+				{% if not user.is_bulk %}
 				<div class="ctrlHolder">
 					<label>Student status</label>
 					{% if user.get_profile.student %}
@@ -121,13 +130,22 @@
 						No
 					{% endif %}
 				</div>
+				{% endif %}
 				
 				<div class="ctrlHolder">
 					<label>Preferred language</label>
-					{{ user.get_profile.language }}
+					{% ifequal user.get_profile.language "E" %}
+						English
+					{% else %}
+						{% ifequal user.get_profile.language "F" %}
+							French
+						{% else %}
+							Unknown
+						{% endifequal %}
+					{% endifequal %}
 				</div>
 				
-				{% if needsRenewal %}
+				{% if needsRenewal and not user.is_bulk %}
 					<div class="ctrlHolder">
 						<label>EWB membership</label>
 						You are not a paid member of EWB - the membership fee will be automatically added to your registration<br/>
@@ -135,10 +153,12 @@
 					</div>
 				{% endif %}
 
+				{% if not user.is_bulk %}
 				<div class="ctrlHolder" style="text-align: center;">
 					<em>To change your personal details, please
 					<a href="{% url profile_edit %}" target="_new">update your myEWB profile</a>.</em>
 				</div>
+				{% endif %}
 				<hr/>
 
 				<div class="heading">Registration Details</div>

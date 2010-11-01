@@ -56,6 +56,7 @@
 		<td>{{ user.get_profile.gender }}</td>
 	</tr>
 	
+	{% if not user.is_bulk %}
 	<tr>
 		<td class='leftcell'>Student status</td>
 		<td>
@@ -66,6 +67,7 @@
 			{% endif %}
 		</td>
 	</tr>
+	{% endif %}
 
 	<tr>
 		<td class='leftcell'>Preferred language</td>
@@ -100,6 +102,8 @@
 		<td class='leftcell'>Emergency Contact</td>
 		<td>{{ form.emergName.data }}<br/>{{ form.emergPhone.data }}</td>
 	</tr>
+	
+	{% if not user.is_bulk %}
 	<tr>
 		<td class='leftcell'>Past national conferences</td>
 		<td>{{ form.prevConfs.data }}</td>
@@ -108,6 +112,8 @@
 		<td class='leftcell'>Past regional retreats</td>
 		<td>{{ form.prevRetreats.data }}</td>
 	</tr>
+	{% endif %}
+	
 	<tr>
 		<td class='leftcell'>Cell phone</td>
 		<td>{{ form.cellphone.data }}</td>

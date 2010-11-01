@@ -234,6 +234,9 @@ class ConferenceRegistrationForm(forms.ModelForm):
         self._user = value
         if self.fields.get('address', None):
             self.fields['address'].user = value
+        if value.is_bulk:
+            del(self.fields['prevConfs'])
+            del(self.fields['prevRetreats'])
             
     user = property(_get_user, _set_user)
 
