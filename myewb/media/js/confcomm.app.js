@@ -48,6 +48,10 @@
         hash: function() {
             var self = this;
             return '/profile/?id=' + self.id;
+        },
+        profile_active: function() {
+            var self = this;
+            return self.get('registered') || self.get('active');
         }
     });
     var SummaryProfile = Backbone.Model.extend({
@@ -57,11 +61,15 @@
         },
         hash: function() {
             var self = this;
-            return self.get('has_profile') ? '/profile/?id=' + self.id : self.invite_hash();
+            return (self.get('active') || self.get('registered')) ? '/profile/?id=' + self.id : self.invite_hash();
         },
         invite_hash: function() {
             var self = this;
             return '/invitation/?id=' + self.id;
+        },
+        profile_active: function() {
+            var self = this;
+            return self.get('registered') || self.get('active');
         }
     });
     var Paginator = Backbone.Model.extend({
@@ -371,7 +379,7 @@
         el: $('#browser'),
         events: {
             'click a.invitation': 'open_invite',
-            'click .no-profile a.profile-link': 'open_invite',
+            'click .un-registered a.profile-link': 'open_invite'
         },
         // attach some events that are outside of the scope of el
         bind_to_filters: function() {

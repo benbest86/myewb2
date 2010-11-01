@@ -3,6 +3,7 @@
     <img class="facebox-profile-img" src="<%= model.get('avatar_url') %>" />
     
     <div class="profile-container-details">
+        <% if (model.get('active')) { %>
         <p>
             <span class="facebox-profile-question">Conference Question</span>
             <span class="facebox-profile-answer"><%= model.get('conference_question') %></span>
@@ -22,16 +23,18 @@
             <span class="facebox-profile-question">I am registered for conference</span>
             <span class="facebox-profile-answer"><%= model.get('registered') %></span>
         </p>
+        <% } %>
+        <% if (model.get('cohorts')) { %>
         <p>
             <span class="facebox-profile-question">How I've been involved in EWB</span>
             <ul>
-                <% if (model.get('cohorts')) {
-                     _.each(model.get('cohorts'), function(c) { %>
+                     <% _.each(model.get('cohorts'), function(c) { %>
                     <li><span class="facebox-profile-answer"><a class="cohort-link" href="#/?<% for (p in c.relevant_properties) { %><%= c.relevant_properties[p] %>=<%= c[c.relevant_properties[p]] %>&<% } %>"><%= c.display %></a></span></li>
-                    <% });
-            } %>
+                    <% }); %>
         </ul>
         </p>
+        <% } %>
+        <% if (!model.get('cohorts') && !model.get('active')) { %><p>There's nothing here yet! Check back soon!</p><% } %>
     </div>
     
 </div>

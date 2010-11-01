@@ -150,7 +150,7 @@ class CohortHandler(BaseHandler):
                     'username': mp.user.username,
                     'avatar_url': avatar_url(mp.user, 160),
                     'registered': cp.registered,
-                    'has_profile': cp.active,
+                    'active': cp.active,
                 }
             results.append(d)
         last_page = cps.count() / PAGE_SIZE

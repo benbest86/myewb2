@@ -7,14 +7,14 @@
     <a class="profile-thumbnail-pic profile-link" href="#<%= p.hash() %>"><img src="<%= p.get('avatar_url') %>" /></a>
     <p class="profile-details">
     
-    <span class="profile-details-name"><a class-"profile-link" href="#<%= p.hash() %>"><strong><%= p.get('name')%></strong></a></span>
+    <span class="profile-details-name"><a class="<% if (p.profile_active()) { %>profile-link<% } else { %>invitation<% } %>" href="#<%= p.hash() %>"><strong><%= p.get('name')%></strong></a></span>
     
     <span class="profile-details-registration">
     <% if (p.get('registered')) { %>
     <strong>Attending!</strong></p>
     <% }
     else {%>
-    <strong>Not Registered</strong> <br> <a class="invite" href="#<%= p.invite_hash() %>">Invite</a>
+    <strong>Not Registered</strong> <br> <a class="invitation" href="#<%= p.invite_hash() %>">Invite</a>
     <% } %>
     </span>
     
