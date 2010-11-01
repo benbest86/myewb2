@@ -25,9 +25,11 @@
         <p>
             <span class="facebox-profile-question">How I've been involved in EWB</span>
             <ul>
-            <% _.each(model.get('cohorts'), function(c) { %>
-            <li><span class="facebox-profile-answer"><a class="cohort-link" href="#/?<% for (p in c.relevant_properties) { %><%= c.relevant_properties[p] %>=<%= c[c.relevant_properties[p]] %>&<% } %>"><%= c.display %></a></span></li>
-            <% }); %>
+                <% if (model.get('cohorts')) {
+                     _.each(model.get('cohorts'), function(c) { %>
+                    <li><span class="facebox-profile-answer"><a class="cohort-link" href="#/?<% for (p in c.relevant_properties) { %><%= c.relevant_properties[p] %>=<%= c[c.relevant_properties[p]] %>&<% } %>"><%= c.display %></a></span></li>
+                    <% });
+            } %>
         </ul>
         </p>
     </div>
