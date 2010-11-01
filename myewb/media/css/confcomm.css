@@ -194,6 +194,7 @@ border-width: 2px;
 }
 
 
+
 p.profile-details {
 margin:0;
 margin-top:5px;
@@ -203,6 +204,10 @@ p.profile-details span {
 display: block;
 }
 
+.profile-details-actions img {
+    filter:alpha(opacity=100);
+    opacity: 1.0;
+}
 
 .profile-details-name {
 font-size: 16px;

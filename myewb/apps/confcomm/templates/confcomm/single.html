@@ -65,7 +65,8 @@
             login_url: "{% url confcomm_login %}",
             logout_url: "{% url acct_logout %}",
             avatar_url: "{% url confcomm_avatar %}",
-            site_url: "{% url confcomm_app %}"
+            site_url: "{% url confcomm_app %}",
+            media: "{{ STATIC_URL }}"
         },
         username: "{{ username }}",
         anon: {{ anon }},

@@ -194,6 +194,14 @@
             else {
                 self.render();
             }
+        },
+        _default_context: {
+            routes: routes
+        },
+        draw: function(extra_context) {
+            var self = this;
+            var context = _.extend({}, self._default_context, extra_context);
+            $(self.el).html(_.template(self.template(), context));
         }
     });
 
@@ -428,7 +436,7 @@
         },
         render: function() {
             var self = this;
-            $(self.el).html(_.template(self.template(), {collection: self.collection}));
+            self.draw({collection: self.collection});
             self.paginator.render();
             self.delegateEvents();
         }});

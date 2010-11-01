@@ -14,9 +14,12 @@
     <strong>Attending!</strong></p>
     <% }
     else {%>
-    <strong>Not Registered</strong> <br> <a class="invitation" href="#<%= p.invite_hash() %>">Invite</a>
-    <% } %>
+    <strong>Not Registered</strong> 
     </span>
+    <span class="profile-details-actions">
+        <a class="invitation" href="#<%= p.invite_hash() %>"><img src="<%= routes.media %>images/confcomm/invite.png" alt="Invite!" /></a>
+    </span>
+    <% } %>
     
     
     </p>
