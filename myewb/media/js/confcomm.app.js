@@ -275,6 +275,7 @@
                         delete data['avatar'];
                         messages.info('Photo uploaded successfully.', {header: 'Photo uploaded successfully.'});
                         self.model.save(data, {success: function(){
+                            hash_history.push('#/');
                             location.hash='/profile/?id=' + id;
                             messages.info('Your profile information has been successfully updated.', {'header': 'Profile Updated'});
                             my_profile_view.render();
@@ -283,6 +284,7 @@
             }
             else {
                 self.model.save(data, {success: function(){
+                    hash_history.push('#/');
                     location.hash='/profile/?id=' + id;
                     messages.info('Your profile information has been successfully updated.', {'header': 'Profile Updated'});
                 }});
@@ -793,6 +795,7 @@
         // change back to the last hash when we close a facebox
         $(document).bind('close.facebox', function() {
             // get rid of the top most history entry (the facebox url)
+            hash_history.pop();
             // pop the last entry off of the hash_history and set location.hash to it
             // hashchange() will fire and push this value back onto the stack
             location.hash = hash_history.pop();
