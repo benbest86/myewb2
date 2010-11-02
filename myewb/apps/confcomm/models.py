@@ -41,7 +41,7 @@ class ConferenceProfile(models.Model):
 
     @property
     def avatar_url(self):
-        return avatar_url(self.member_profile.user, 160)
+        return avatar_url(self.member_profile.user, 200)
 
     @property
     def username(self):

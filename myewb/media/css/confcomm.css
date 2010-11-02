@@ -105,11 +105,13 @@ img {
     
     }
     #facebox .content {
-        height: 400px;
-        width: 500px;
+        width: 620px;
     }
     #facebox .body {
-        width: 600px;
+        /* width: 800px; */
+    }
+    #facebox .clear {
+        clear: both;
     }
 
 
@@ -284,15 +286,39 @@ div.profile-container-details p {
 font-size: 14px;
 margin-bottom: 10px;
 
-margin-left: 184px;
+/* margin-left: 184px; */
+}
+
+.cohort-info {
+    float: left;
+    width: 230px;
+}
+
+ul.facebox-cohort-list {
+    list-style-type: none;
+    padding-left: 5px;
+}
+
+ul.facebox-cohort-list li {
+    margin-bottom: 4px;
+}
+
+.facebox-cohort-list a {
+    font-size: 15px;
+    line-height: 1.25em;
+    font-family: Georgia, Times, serif;
 }
 
 #facebox div.profile-container img.facebox-profile-img {
 margin-right: 4px;
-float: left;
+/* float: left; */
 
 padding:5px;
 border: 1px solid #ddd;
+}
+
+div.profile-container-details {
+    /* float: left; */
 }
 
 span.facebox-profile-question {
