@@ -2,6 +2,14 @@
     // needs the following globals
     // routes, current_user
     /* SERVER ROUTES */
+    if (!console) {
+        console = {
+            log: function(args) {
+                // do nothing
+            }
+        }
+    }
+
     var DEBUG = false;
     if (!DEBUG) { // leave a bunch of global variables so I can get at them through the console
         var routes;
@@ -197,7 +205,9 @@
                         user_callbacks.success(model, resp);
                     }
                 }
-                callbacks = _.extend({}, user_callbacks, callbacks);
+                if (user_callbacks['error']) {
+                    callbacks.error = user_callbacks.error;
+                }
                 // get our loading function. not appropriate if we're not faceboxing though?
                 // $.facebox(function() {
                 //     model_to_get.fetch(callbacks);
