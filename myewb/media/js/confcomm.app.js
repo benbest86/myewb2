@@ -180,23 +180,30 @@
             }
             $(self.el).html(_.template(self.template('loading.html'), {loading_image: loading_image}));
         },
-        async_render: function(id, collection, callbacks) {
+        async_render: function(id, collection, user_callbacks) {
             var self = this;
             self.model = collection.get(id);
             if (!self.model) {
                 var model_to_get = new collection.model({
                     id: id
                 });
-                // get our nice facebox loading spinner
-                callbacks['success'] = function() {
-                            collection.add(model_to_get);
-                            self.model = model_to_get;
-                            self.render();
+                // set up callbacks
+                callbacks = {};
+                callbacks.success = function(model, resp) {
+                    collection.add(model_to_get);
+                    self.model = model_to_get;
+                    self.render();
+                    if (user_callbacks['success']) {
+                        user_callbacks.success(model, resp);
+                    }
                 }
+                callbacks = _.extend({}, user_callbacks, callbacks);
                 // get our loading function. not appropriate if we're not faceboxing though?
-                $.facebox(function() {
-                    model_to_get.fetch(callbacks);
-                });
+                // $.facebox(function() {
+                //     model_to_get.fetch(callbacks);
+                // });
+                self.loading();
+                model_to_get.fetch(callbacks);
             }
             else {
                 self.render();
@@ -215,10 +222,11 @@
     });
 
     var ProfileView = BaseView.extend({
-        container: '#profile',
-        el: $('#profile'),
-        events: {'click a.cohort-link': 'to_cohort'},
+        el: $('#profile .profile-content'),
         template_name: 'profile.html',
+        loading: function() {
+            $('#loading-widget').show();
+        },
         to_cohort: function(e) {
             e.preventDefault();
             hash_history.push($(e.target).attr('href'));
@@ -226,11 +234,13 @@
             $(document).trigger('close.facebox');
         },
         render: function() {
+            $('#loading-widget').hide();
             var self = this;
-            $(self.container).html(_.template(self.template(), {model:self.model}));
+            $(self.el).html(_.template(self.template(), {model:self.model}));
             $.facebox({div:'#profile'});
-            self.el = $('#facebox').find('.content').first();
-            self.delegateEvents();
+            self.el = $('#facebox').find(self.el_class).first();
+            // set up events inside of facebox instead of delgating and changing el
+            $('#facebox a.cohort-link').click(self.to_cohort);
         }
     });
     var ProfileFormView = BaseView.extend({
@@ -263,12 +273,10 @@
                     }});
             }
             else {
-                $.facebox(function() {
-                    self.model.save(data, {success: function(){
-                        location.hash='/profile/?id=' + id;
-                        messages.info('Your profile information has been successfully updated.', {'header': 'Profile Updated'});
-                    }});
-                });
+                self.model.save(data, {success: function(){
+                    location.hash='/profile/?id=' + id;
+                    messages.info('Your profile information has been successfully updated.', {'header': 'Profile Updated'});
+                }});
                 return false;
             }
         },
@@ -414,7 +422,6 @@
         },
         template_name: 'get_cohort_chapter.html',
         add_to_cohort_with_chapter: function(e) {
-            console.log('in second add to cohort');
             e.preventDefault();
             var self = this;
             var chapter = self.$('#cohort-chapter-input').val();
@@ -423,10 +430,7 @@
                 return;
             }
             var target = $(e.target).attr('href').split('#/')[1];
-            console.log(chapter);
-            console.log($('#cohort-chapter-input').val());
             var data = JSON.stringify({chapter: $('#cohort-chapter-input').val()});
-            console.log(data);
             self.loading();
             $.ajax({
                 url: routes.cohort_members_base + target,
@@ -450,7 +454,6 @@
             messages.info('Cancelled.');
         },
         render: function() {
-            console.log('rendering');
             var self = this;
             self.el = $('#cohort-opt-in');
             self.draw({target: self.target});
@@ -461,7 +464,6 @@
         el: $('#browser-container'),
         events: {
             'click a.invitation': 'open_invite',
-            'click .un-registered a.profile-link': 'open_invite',
             'click a.cohort-add' : 'add_to_cohort',
             'click a.cohort-add-abstract' : 'get_chapter',
             'click a.cohort-remove' : 'remove_from_cohort',
@@ -781,7 +783,9 @@
         // bind some events to facebox to help with nav
         // change back to the last hash when we close a facebox
         $(document).bind('close.facebox', function() {
-            hash_history.pop();
+            // get rid of the top most history entry (the facebox url)
+            // pop the last entry off of the hash_history and set location.hash to it
+            // hashchange() will fire and push this value back onto the stack
             location.hash = hash_history.pop();
         });
         // keep track of the last hash so we can return to it after

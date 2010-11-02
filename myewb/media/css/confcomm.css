@@ -12,6 +12,12 @@ display:none;
 display: none;
 }
 
+#loading-widget {
+    display: none;
+    position: fixed;
+    top: 30px;
+    left: 500px;
+}
 
 h1, h2, h3, h4, h5, h6 {
 font-family:"Lucida Grande",Geneva,Verdana,Arial,Helvetica,sans-serif;
@@ -100,6 +106,7 @@ img {
     }
     #facebox .content {
         height: 400px;
+        width: 500px;
     }
     #facebox .body {
         width: 600px;

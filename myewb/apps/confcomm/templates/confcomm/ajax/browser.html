@@ -6,7 +6,7 @@
 <% }} %>
 <% collection.each(function(p) { %>
 <div id="<%= p.get('username') %>-summary" class="profile-summary<% if (!p.get('registered')) { %> un-registered<% } %>">
-    <a class="profile-thumbnail-pic profile-link" href="#<%= p.hash() %>"><img src="<%= p.get('avatar_url') %>" /></a>
+    <a class="profile-thumbnail-pic <% if (p.profile_active()) { %>profile-link<% } else { %>invitation<% } %>" href="#<%= p.hash() %>"><img src="<%= p.get('avatar_url') %>" /></a>
     <p class="profile-details">
     
     <span class="profile-details-name"><a class="<% if (p.profile_active()) { %>profile-link<% } else { %>invitation<% } %>" href="#<%= p.hash() %>"><strong><%= p.get('name')%></strong></a></span>

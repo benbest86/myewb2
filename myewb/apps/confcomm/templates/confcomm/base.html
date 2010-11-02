@@ -10,10 +10,10 @@
 
 {% block extra_head_base %}
 		<link rel="SHORTCUT ICON" href="{{ STATIC_URL}}favicon.ico" />
-		{% block extra_head %}{% endblock %}
-		<link rel="stylesheet" href="{{ STATIC_URL }}css/confcomm.css?d=20101030" />
+		<link rel="stylesheet" href="{{ STATIC_URL }}css/confcomm.css" />
 		<link rel="stylesheet" href="{{ STATIC_URL }}pinax/css/facebox.css" />
 		<script type="text/javascript" charset="utf-8" src="{{ STATIC_URL }}pinax/js/facebox.js"></script>
+		{% block extra_head %}{% endblock %}
 		<script type="text/javascript">
 		
 //  External links in posts, etc., should open in a new window    

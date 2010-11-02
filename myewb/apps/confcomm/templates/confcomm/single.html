@@ -1,5 +1,8 @@
 {% extends "confcomm/base.html" %}
 
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery.jgrowl.css" />    
+{% endblock %}
 
 {% block body %}
 <div id="all">
@@ -30,9 +33,14 @@
     {# <div id="profile-list"></div> #}
 </div>
 </div>
-<div id="profile" style="display:none;"></div>
+<div id="profile" style="display:none;">
+    <div class="profile-content"></div>
+</div>
 <div id="profile-form-container" style="display:none;"></div>
 <div id="invitation" style="display:none;"></div>
+<div id="loading-widget" style="display:none;">
+    <img src="{{ STATIC_URL }}pinax/images/facebox/loading.gif" />
+</div>
 
 
 {# @@@ SEAN - REMOVED STYLE TAG HERE  #}
@@ -53,7 +61,6 @@
 {# further extensions to backbone for our purposes #}
 <script type="text/javascript" src="{{ STATIC_URL}}js/backbone.ewb.js"></script>
 {# awesome messaging plugin #}
-<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery.jgrowl.css" />    
 <script type="text/javascript" src="{{ STATIC_URL}}js/jquery.jgrowl_google.js"></script>
 {# iframe uploader so we can upload photos #}
 <script type="text/javascript" src="{{ STATIC_URL}}js/jquery.form.js"></script>
