@@ -10,6 +10,7 @@
         var anon;
         // holds the current users' profile
         var current_profile;
+        var show_opt_links;
         // holds the profiles collection
         var profiles;
         // holds the cohort summary collection
@@ -34,6 +35,7 @@
     filter_lists = CONFCOMM_GLOBALS.filter_lists;
     loading_image = CONFCOMM_GLOBALS.loading_image;
     anon = CONFCOMM_GLOBALS.anon;
+    show_opt_links = true;
 
     /* MODELS */
     var ConferenceProfile = Backbone.Model.extend({
@@ -199,7 +201,8 @@
             }
         },
         _default_context: {
-            routes: routes
+            routes: routes,
+            show_opt_links: show_opt_links
         },
         draw: function(extra_context) {
             var self = this;
@@ -401,12 +404,13 @@
             });
         }});
     var BrowserView = BaseView.extend({
-        el: $('#browser'),
+        el: $('#browser-container'),
         events: {
             'click a.invitation': 'open_invite',
             'click .un-registered a.profile-link': 'open_invite',
             'click a.cohort-add' : 'add_to_cohort',
             'click a.cohort-remove' : 'remove_from_cohort',
+            'click a.hide-opt-links' : 'hide_opt_links',
         },
         // attach some events that are outside of the scope of el
         bind_to_filters: function() {
@@ -494,6 +498,12 @@
                     self.render();
                 }
             });
+        },
+        hide_opt_links: function(e) {
+            e.preventDefault();
+            show_opt_links = false;
+            $('.cohort-opt-out').hide();
+            $('.cohort-opt-in').hide();
         },
         render: function() {
             var self = this;
