@@ -30,7 +30,7 @@
         var login_view;
         var my_profile_view;
         var news_view;
-        var stats_view;
+        var quick_cohorts_view;
         var browser_pagination_view;
         var loading_image;
         var name_filter_view;
@@ -414,12 +414,12 @@
             var self = this;
             $(self.el).html(_.template(self.template(), {model: self.model}));
         }});
-    var StatsView = BaseView.extend({
-        el: $('#stats'),
-        template_name: 'stats.html',
+    var QuickCohortsView = BaseView.extend({
+        el: $('#quick-cohorts'),
+        template_name: 'quick_cohorts.html',
         render: function() {
             var self = this;
-            $(self.el).html(_.template(self.template()));
+            $(self.el).html(_.template(self.template(), {model: self.model}));
         }});
     var LoginView = BaseView.extend({
         el: $('#cc-login'),
@@ -779,9 +779,9 @@
         news_view = new NewsView;
         news_view.loading();
         news_view.render();
-        stats_view = new StatsView;
-        stats_view.loading();
-        stats_view.render();
+        quick_cohorts_view = new QuickCohortsView;
+        quick_cohorts_view.loading();
+        // quick_cohorts_view.render();
         filters_view = new FiltersView;
         filters_view.loading();
         filters_view.render();
@@ -804,6 +804,8 @@
                 profiles.add(current_profile);
                 my_profile_view.model = current_profile;
                 my_profile_view.render();
+                quick_cohorts_view.model = current_profile;
+                quick_cohorts_view.render();
                 if (!current_profile.get('active')) {
                     messages.info('Please take a moment to update your profile.', {sticky: true});
                     // location.hash = '/profile/edit/';
