@@ -10,18 +10,21 @@ Created on 2009-10-18
 from datetime import date
 from decimal import Decimal
 from django import forms
+from django.contrib.auth.models import User
 from django.contrib.formtools.preview import FormPreview
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
+from emailconfirmation.models import EmailAddress
 
 from conference.constants import *
 from conference.models import ConferenceRegistration, ConferenceCode, InvalidCode
 from conference.utils import needsToRenew
 from creditcard.models import CC_TYPES, Product
 from creditcard.forms import CreditCardNumberField, CreditCardExpiryField, PaymentFormPreview
+from profiles.models import MemberProfile
 from siteutils.forms import CompactAddressField
 from siteutils.models import Address
 
@@ -53,7 +56,7 @@ class ConferenceRegistrationForm(forms.ModelForm):
     
     resume = forms.FileField(label='Resume',
                              required=False,
-                             help_text="(optional) Attach a resume if you would like to participate in the jobs fair")
+                             help_text="(optional) Attach a resume if you would like it shared with our sponsors")
     
     cellphone = forms.CharField(label='Cell phone number',
                                 required=False,
@@ -65,43 +68,13 @@ class ConferenceRegistrationForm(forms.ModelForm):
     type = forms.ChoiceField(label='Registration type',
 							 choices=ROOM_CHOICES,
 							 widget=forms.RadioSelect,
-							 help_text="""<table border='1' class='descform'>
-  <tr>
-    <th>&nbsp;</th>
-    <th>Shared bed</th>
-    <th>Single bed</th>
-    <th>No room</th>
-  </tr>
-  <tr>
-    <th>Subsidized: BC/AB/NF</th>
-    <td>$100 (student)<br/>$250 (general)</td>    
-    <td>$220 (student)<br/>$370 (general)</td>
-    <td>$80 (student)<br/>$200 (general)</td>    
-  </tr>
-  <tr>
-    <th>Subsidized: SK/MB/NB/NS</th>
-    <td>$200 (student)<br/>$350 (general)</td>    
-    <td>$320 (student)<br/>$470 (general)</td>    
-    <td>$160 (student)<br/>$280 (general)</td>    
-  </tr>
-  <tr>
-    <th>Subsidized: ON/QB</th>
-    <td>$350 (student)<br/>$500 (general)</td>    
-    <td>$470 (student)<br/>$620 (general)</td>    
-    <td>$280 (student)<br/>$400 (general)</td>    
-  </tr>
-  <tr>
-    <th>Standard<br/>(no registration code)</th>
-    <td>$620</td>
-    <td>$740</td>    
-    <td>$500</td>    
-  </tr>
-</table>""")
+							 help_text="""<a href='#' id='confoptiontablelink'>click here for a rate guide and explanation</a>""")
     
     africaFund = forms.ChoiceField(label='Support an African delegate?',
                                    choices=AFRICA_FUND,
+                                   initial='75',
 								   required=False,
-								   help_text='contribute toward bringing young African leaders to the conference as delegates. This amount is eligible for a charitable tax receipt, and is non-refundable.')
+								   help_text='<a href="/site_media/static/conference/delegateinfo.html" class="delegatelink">more information...</a>')
 
     ccardtype = forms.ChoiceField(label='Credit card type',
 								  choices=CC_TYPES)
@@ -124,7 +97,7 @@ class ConferenceRegistrationForm(forms.ModelForm):
         codestring = self.cleaned_data['code'].strip().lower()
         
         if not codestring:
-            return ""
+            return None
         
         try:
             code = ConferenceCode.objects.get(code=codestring)
@@ -226,10 +199,15 @@ class ConferenceRegistrationForm(forms.ModelForm):
     _user = None
     def _get_user(self):
         return self._user
+    
     def _set_user(self, value):
         self._user = value
         if self.fields.get('address', None):
             self.fields['address'].user = value
+        if value.is_bulk:
+            del(self.fields['prevConfs'])
+            del(self.fields['prevRetreats'])
+            
     user = property(_get_user, _set_user)
 
 class ConferenceRegistrationFormPreview(PaymentFormPreview):
@@ -300,3 +278,53 @@ class CodeGenerationForm(forms.Form):
     start = forms.IntegerField(label='Starting at')
     number = forms.IntegerField(label='How many codes')
     
+class ConferenceSignupForm(forms.Form):
+
+    firstname = forms.CharField(label="First name")
+    lastname = forms.CharField(label="Last name")
+    email = forms.EmailField(label = "Email", required = True, widget = forms.TextInput())
+    gender = forms.ChoiceField(choices=MemberProfile.GENDER_CHOICES,
+                               widget=forms.RadioSelect,
+                               required=True)
+    language = forms.ChoiceField(label="Preferred language",
+                                 choices=MemberProfile.LANG_CHOICES,
+                                 widget=forms.RadioSelect,
+                                 required=True)
+    
+    def clean_email(self):
+        other_emails = EmailAddress.objects.filter(email__iexact=self.cleaned_data['email'])
+        verified_emails = other_emails.filter(verified=True)
+        if verified_emails.count() > 0:
+            raise forms.ValidationError("This email address has already been used. Please sign in or use a different email.")
+        
+        # this is probably redundant, but just to be sure...
+        users = User.objects.filter(email=self.cleaned_data['email'], is_bulk=False)
+        if users.count():
+            raise forms.ValidationError("This email address has already been used. Please sign in or use a different email.")
+        
+        return self.cleaned_data['email']
+
+    def save(self):
+        firstname = self.cleaned_data['firstname']
+        lastname = self.cleaned_data['lastname']
+        email = self.cleaned_data["email"]
+        
+        try:
+            new_user = User.objects.get(email=email, is_bulk=1)
+        except User.DoesNotExist:
+            new_user = User.extras.create_bulk_user(email)
+            
+        profile = new_user.get_profile()
+        profile.first_name = firstname
+        profile.last_name = lastname
+        profile.gender = self.cleaned_data['gender']
+        profile.language = self.cleaned_data['language']
+        profile.save()
+        
+        new_user.first_name = firstname
+        new_user.last_name = lastname
+        password = User.objects.make_random_password()
+        new_user.set_password(password)
+        new_user.save()
+        
+        return new_user.username, password # required for authenticate()

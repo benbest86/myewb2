@@ -7,6 +7,7 @@ Created on: 2009-10-18
 @author: Francis Kung
 """
 
+from django.contrib import auth
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
@@ -18,19 +19,53 @@ from django.template import RequestContext
 from django.contrib.contenttypes.models import ContentType
 from attachments.models import Attachment
 
+from account_extra.forms import EmailLoginForm, EmailSignupForm
+
 from base_groups.models import BaseGroup
-from conference.forms import ConferenceRegistrationForm, ConferenceRegistrationFormPreview, CodeGenerationForm
+from conference.forms import ConferenceRegistrationForm, ConferenceRegistrationFormPreview, CodeGenerationForm, ConferenceSignupForm
 from conference.models import ConferenceRegistration, ConferenceCode
 from conference.constants import *
 from conference.utils import needsToRenew
 from networks.models import ChapterInfo
 from profiles.models import MemberProfile
+from profiles.forms import AddressForm
 from siteutils.shortcuts import get_object_or_none
 from siteutils.decorators import owner_required, secure_required
 
 @secure_required
-@login_required
+def login(request):
+    
+    signin_form = EmailLoginForm()
+    signup_form = ConferenceSignupForm()
+    
+    if request.method == "POST" and request.POST.get('action', None):
+        if request.POST['action'] == 'signin':
+            signin_form = EmailLoginForm(request.POST)
+            if signin_form.is_valid():
+                auth.login(request, signin_form.user)
+                return HttpResponseRedirect(reverse('confreg'))
+        else:
+            signup_form = ConferenceSignupForm(request.POST)
+            
+            if signup_form.is_valid():
+                username, password = signup_form.save()
+                user = auth.authenticate(username=username, password=password)
+                auth.login(request, user)
+                
+                return HttpResponseRedirect(reverse('confreg'))
+        
+    return render_to_response('conference/login.html',
+                              {"signin_form": signin_form,
+                               "signup_form": signup_form},
+                              context_instance = RequestContext(request))
+
+@secure_required
+#@login_required
 def view_registration(request):
+    
+    if not request.user.is_authenticated():
+        return HttpResponseRedirect(reverse('conference_login'))
+    
     user = request.user
     
     try:

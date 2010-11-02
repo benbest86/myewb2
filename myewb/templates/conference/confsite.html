@@ -1,6 +1,17 @@
-{% include "conference/header.html" %}
+
+{% include "conference/header1.html" %}
+
+{% block extra_head_base %}
+{% endblock %}
+
+{% include "conference/header2.html" %}
+
+{# {% include "conference/header.html" %} #}
 
 {% block body %}
+{% endblock %}
+
+{% block extra_body %}
 {% endblock %}
 
 {% include "conference/footer.html" %}

@@ -53,6 +53,25 @@
 		    top: -26px;
 		    left: 80px;
 		}
+		
+		#new-address label, .editAddress .inlineLabels label
+		{
+			font-size: 12px;
+			float: none;
+			margin: 0;
+			width: 100%;
+			font-weight: normal;
+			text-align: left;
+			line-height: 2;
+		}
+		#new-address .ctrlholder, .editAddress .ctrlholder
+		{
+			padding: 0 1em 0.5em 1em;
+		}
+		#address_detail div
+		{
+			font-size: 12px;
+		}
 	</style> 
 
 	{% if not registration %}
@@ -110,9 +129,18 @@
 				
 				<div class="ctrlHolder">
 					<label>Gender</label>
-					{{ user.get_profile.gender }}
+					{% ifequal user.get_profile.gender "M" %}
+						Male
+					{% else %}
+						{% ifequal user.get_profile.gender "F" %}
+							Female
+						{% else %}
+							Unknown
+						{% endifequal %}
+					{% endifequal %}
 				</div>
 				
+				{% if not user.is_bulk %}
 				<div class="ctrlHolder">
 					<label>Student status</label>
 					{% if user.get_profile.student %}
@@ -121,13 +149,22 @@
 						No
 					{% endif %}
 				</div>
+				{% endif %}
 				
 				<div class="ctrlHolder">
 					<label>Preferred language</label>
-					{{ user.get_profile.language }}
+					{% ifequal user.get_profile.language "E" %}
+						English
+					{% else %}
+						{% ifequal user.get_profile.language "F" %}
+							French
+						{% else %}
+							Unknown
+						{% endifequal %}
+					{% endifequal %}
 				</div>
 				
-				{% if needsRenewal %}
+				{% if needsRenewal and not user.is_bulk %}
 					<div class="ctrlHolder">
 						<label>EWB membership</label>
 						You are not a paid member of EWB - the membership fee will be automatically added to your registration<br/>
@@ -135,10 +172,12 @@
 					</div>
 				{% endif %}
 
+				{% if not user.is_bulk %}
 				<div class="ctrlHolder" style="text-align: center;">
 					<em>To change your personal details, please
 					<a href="{% url profile_edit %}" target="_new">update your myEWB profile</a>.</em>
 				</div>
+				{% endif %}
 				<hr/>
 
 				<div class="heading">Registration Details</div>
@@ -152,6 +191,55 @@
 				
 			</fieldset>
 		</form>
+
+		<table border='1' class='descform' id='confoptiontable' style='display: none;'>
+		  <tr>
+		    <th>&nbsp;</th>
+		    <th>Shared bed</th>
+		    <th>Single bed</th>
+		    <th>No room</th>
+		  </tr>
+		  <tr>
+		    <th>Subsidized: BC/AB/NF</th>
+		    <td>$100 (student)<br/>$250 (general)</td>    
+		    <td>$220 (student)<br/>$370 (general)</td>
+		    <td>$80 (student)<br/>$200 (general)</td>    
+		  </tr>
+		  <tr>
+		    <th>Subsidized: SK/MB/NB/NS</th>
+		    <td>$200 (student)<br/>$350 (general)</td>    
+		    <td>$320 (student)<br/>$470 (general)</td>    
+		    <td>$160 (student)<br/>$280 (general)</td>    
+		  </tr>
+		  <tr>
+		    <th>Subsidized: ON/QB</th>
+		    <td>$350 (student)<br/>$500 (general)</td>    
+		    <td>$470 (student)<br/>$620 (general)</td>    
+		    <td>$280 (student)<br/>$400 (general)</td>    
+		  </tr>
+		  <tr>
+		    <th>Standard<br/>(no registration code)</th>
+		    <td>$620</td>
+		    <td>$740</td>    
+		    <td>$500</td>    
+		  </tr>
+		</table>
+
+		<script type="text/javascript">
+			$().ready(function() {
+				$('#confoptiontablelink').colorbox({transition: 'elastic',
+													opacity: '0.5',
+													inline: true,
+													href: '#confoptiontable',
+													onLoad: function() {
+															$('#confoptiontable').show();
+														},
+													onCleanup: function() {
+															$('#confoptiontable').hide();
+														},
+				});
+			});
+		</script>
 
 	{% else %}
 		<br />
