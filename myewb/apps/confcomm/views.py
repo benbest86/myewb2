@@ -22,9 +22,12 @@ def single_page(request):
     """
     The single initial page for AJAX version.
     """
+    # permission to modify cohort membership of others
+    kohort_king = False
     if request.user and request.user.is_authenticated():
         username = request.user.username
         anon = 0
+        kohort_king = request.user.has_perm('confcomm.kohort_king')
     else:
         username = ""
         anon = 1
@@ -38,6 +41,7 @@ def single_page(request):
                 'africa_roles_list': json.dumps(AFRICA_ROLE_CHOICES),
                 'years_list': json.dumps([(y, y) for y in range(2001, 2011)]),
                 'roles_list': json.dumps(ROLE_CHOICES),
+                'kohort_king': json.dumps(kohort_king),
             },
             context_instance=RequestContext(request),
             )

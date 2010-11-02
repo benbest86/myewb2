@@ -2,6 +2,11 @@
 <!-- @@@ SEAN -->
 
 
+<% if (collection.user_is_member && collection.id) { %>
+<div class="cohort-opt-out"><p>Part of this group but shouldn't be? <a class="cohort-remove" href="#/<%= collection.id %>/">Click to remove yourself.</a></p></div>
+<% } else if (collection.id) { %>
+<div class="cohort-opt-in"><p>Part of this group but don't see yourself? <a class="cohort-add" href="#/<%= collection.id %>/">Click to add yourself.</a></p></div>
+<% } %>
 <% collection.each(function(p) { %>
 <div id="<%= p.get('username') %>-summary" class="profile-summary<% if (!p.get('registered')) { %> un-registered<% } %>">
     <a class="profile-thumbnail-pic profile-link" href="#<%= p.hash() %>"><img src="<%= p.get('avatar_url') %>" /></a>
@@ -18,6 +23,11 @@
     </span>
     <span class="profile-details-actions">
         <a class="invitation" href="#<%= p.invite_hash() %>"><img src="<%= routes.media %>images/confcomm/invite.png" alt="Invite!" /></a>
+    <% } %>
+    </span>
+    <% if (kohort_king && collection.id) { %>
+    <span class=profile-details-cohort">
+        <a class="cohort-remove" href="#/<%= collection.id %>/<%= p.id %>/">Remove from this group.</a>
     </span>
     <% } %>
     

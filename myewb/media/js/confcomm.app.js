@@ -88,6 +88,9 @@
     var SummaryStore = Backbone.Collection.extend({
         model: SummaryProfile,
         parse: function(resp) {
+            var self = this;
+            this.id = resp.cohort.id;
+            this.user_is_member = resp.cohort.user_is_member;
             return resp.models;
         },
         url: function() {
@@ -401,7 +404,9 @@
         el: $('#browser'),
         events: {
             'click a.invitation': 'open_invite',
-            'click .un-registered a.profile-link': 'open_invite'
+            'click .un-registered a.profile-link': 'open_invite',
+            'click a.cohort-add' : 'add_to_cohort',
+            'click a.cohort-remove' : 'remove_from_cohort',
         },
         // attach some events that are outside of the scope of el
         bind_to_filters: function() {
@@ -448,9 +453,54 @@
                 }
             });
         },
+        add_to_cohort: function(e) {
+            var self = this;
+            e.preventDefault();
+            var target = $(e.target).attr('href').split('#/')[1];
+            self.loading();
+            $.ajax({
+                url: routes.cohort_members_base + target,
+                type: 'post',
+                data: '{}',
+                contentType: 'application/json',
+                success: function(resp, status) {
+                    messages.info('Added to cohort.');
+                    self.collection.fetch({success: function() {
+                        self.render();
+                    }});
+                },
+                error: function(resp, status) {
+                    messages.error('Could not add to cohort.');
+                    self.render();
+                }
+            });
+        },
+        remove_from_cohort: function(e) {
+            var self = this;
+            e.preventDefault();
+            var target = $(e.target).attr('href').split('#/')[1];
+            self.loading();
+            $.ajax({
+                url: routes.cohort_members_base + target,
+                type: 'delete',
+                success: function(resp, status) {
+                    messages.info('Removed from cohort. <a href="#">Undo</a>');
+                    self.collection.fetch({success: function() {
+                        self.render();
+                    }});
+                },
+                error: function(resp, status) {
+                    messages.error('Could not remove from cohort.');
+                    self.render();
+                }
+            });
+        },
         render: function() {
             var self = this;
-            self.draw({collection: self.collection});
+            self.draw({
+                collection: self.collection,
+                kohort_king: CONFCOMM_GLOBALS.kohort_king
+            });
             self.paginator.render();
             self.delegateEvents();
         }});

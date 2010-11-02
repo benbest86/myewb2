@@ -122,12 +122,15 @@ class CohortHandler(BaseHandler):
 
     @classmethod
     def read(self, request):
+        # grab all of the applicable filters
         allowed_filters = ['chapter', 'year', 'role', 'page', 'last_name', 'search',]
         filters = dict([(str(k), str(v)) for (k, v) in request.GET.items() if k in allowed_filters])
+        # pop off the filters that won't be kwargs to our manager function
         page = int(filters.pop('page', 1))
         last_name = filters.pop('last_name', None)
         search = filters.pop('search', None)
         try:
+            # grab all matching cohorts and put their users together
             if filters:
                 all_cohorts = Cohort.objects.filter(**filters)
                 all_cps = ConferenceProfile.objects.none()
@@ -135,16 +138,37 @@ class CohortHandler(BaseHandler):
                     all_cps = all_cps | cohort.members.all()
             else:
                 all_cps = ConferenceProfile.objects.all()
+            # querysets created with | with duplicates
+            # get distinct results and order them
             cps = all_cps.distinct().order_by('-registered', 'member_profile__name')
+            # add last_name filter
             if last_name is not None:
                 cps = cps.filter(member_profile__last_name__istartswith=last_name)
+            # add name search filter
             if search is not None:
                 cps = cps.filter(member_profile__name__icontains=search)
+            # paginate
             paged_cps = cps[(page-1)*PAGE_SIZE:page*PAGE_SIZE]
+
+            # search for a valid cohort with the given params
+            cohort_props = {
+                    'chapter': None,
+                    'year': None,
+                    'role': None,
+            }
+            # update our none values with the filters passed in
+            cohort_props.update(filters)
+            # try to get a valid cohort
+            try:
+                cohort = Cohort.objects.get(**cohort_props)
+            except Cohort.DoesNotExist:
+                cohort = None
         except Exception, e:
             resp = rc.BAD_REQUEST
             resp.write('The filters you provided were not valid. %s %s' % (str(filters), e))
             return resp
+
+        # grab the properties we want and put the results together
         results = []
         for cp in paged_cps:
             mp = cp.member_profile
@@ -156,9 +180,111 @@ class CohortHandler(BaseHandler):
                     'active': cp.active,
                 }
             results.append(d)
+
+        # pagination values
         last_page = cps.count() / PAGE_SIZE
         if cps.count() % PAGE_SIZE != 0:
             last_page += 1
         qs = request.META['QUERY_STRING'].split('&')
         qs = "&".join([param for param in qs if param[:5] != 'page='])
-        return {'pagination': {'current': page, 'last': last_page, 'qs': qs,}, 'models': results}
+
+        # overall cohort values if we found one
+        c = {
+            'user_is_member': False,
+            'id': None,
+            }
+        if cohort is not None:
+            try:
+                c['id'] = cohort.id
+                cp = ConferenceProfile.objects.get(member_profile__user=request.user)
+                c['user_is_member'] = bool(cohort.members.filter(id=cp.id).count())
+            except Exception, e:
+                print e
+
+        # return everything
+        return {'pagination': {
+                    'current': page, 
+                    'last': last_page, 
+                    'qs': qs,}, 
+                'models': results,
+                'cohort': c,}
+
+class CohortMemberHandler(BaseHandler):
+    """
+    API for adding and removing users from cohorts.
+    """
+    allowed_methods = ('GET', 'POST', 'DELETE',)
+
+    @classmethod
+    def create(self, request, id, username=None):
+        try:
+            # get our user and check for permission
+            user = username and User.objects.get(username=username) or request.user
+            if user != request.user and (request.user.has_perm('confcomm.kohort_king') is False):
+                return rc.FORBIDDEN
+            # try and get a cohort and a conference profile
+            c = Cohort.objects.get(id=id)
+            cp = ConferenceProfile.objects.get(member_profile__user=user)
+            # add profile to cohort
+            c.members.add(cp)
+        except Cohort.DoesNotExist:
+            return rc.NOT_FOUND('Not a valid cohort.')
+        except User.DoesNotExist:
+            return rc.NOT_FOUND('Not a valid username')
+        except ConferenceProfile.DoesNotExist:
+            return rc.NOT_FOUND('No profile found for specified user')
+        except Exception, e:
+            return rc.BAD_REQUEST
+        return rc.CREATED
+
+    @classmethod
+    def delete(self, request, id, username=None):
+        try:
+            # get our user and check for permissions
+            user = username and User.objects.get(username=username) or request.user
+            print 'has perm', request.user.has_perm('confcomm.kohort_king')
+            if user != request.user and not request.user.has_perm('confcomm.kohort_king'):
+                return rc.FORBIDDEN
+            # grab our cohort and profile
+            c = Cohort.objects.get(id=id)
+            cp = ConferenceProfile.objects.get(member_profile__user=user)
+            # remove profile from cohort
+            c.members.remove(cp)
+        except Cohort.DoesNotExist:
+            return rc.NOT_FOUND('Not a valid cohort.')
+        except User.DoesNotExist:
+            return rc.NOT_FOUND('Not a valid username')
+        except ConferenceProfile.DoesNotExist:
+            return rc.NOT_FOUND('No profile found for specified user')
+        except Exception, e:
+            return rc.BAD_REQUEST
+        return rc.DELETED
+
+    @classmethod
+    def read(self, request):
+        chapter = request.POST.get('chapter', None)
+        year = request.POST.get('year', None)
+        role = request.POST.get('role', None)
+        user = request.user
+        try:
+            # try to grab cohort and profile
+            c = Cohort.objects.get(chapter=chapter, year=year, role=role)
+            cp = ConferenceProfile.objects.get(member_profile__user=user)
+            # check if user is a member
+            is_member = bool(c.members.filter(id=c.id).count())
+        except Cohort.DoesNotExist:
+            return rc.NOT_FOUND('Not a valid cohort.')
+        except User.DoesNotExist:
+            return rc.NOT_FOUND('Not a valid username')
+        except ConferenceProfile.DoesNotExist:
+            return rc.NOT_FOUND('No profile found for specified user')
+        except Exception, e:
+            return rc.BAD_REQUEST
+        resp = {
+                'username': user.username,
+                'year': year,
+                'chapter': chapter,
+                'role': role,
+                'user_is_member': is_member,
+        }
+        return resp

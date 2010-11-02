@@ -61,6 +61,7 @@
             profile_base: "{% url confcomm_profile_api_base %}",
             templates_base: "{{ STATIC_URL }}templates/confcomm/",
             cohorts_base: "{% url confcomm_cohorts %}",
+            cohort_members_base: "{% url confcomm_cohort_members %}",
             email: "{% url confcomm_email %}",
             login_url: "{% url confcomm_login %}",
             logout_url: "{% url acct_logout %}",
@@ -69,6 +70,7 @@
             media: "{{ STATIC_URL }}"
         },
         username: "{{ username }}",
+        kohort_king: {{ kohort_king }},
         anon: {{ anon }},
         filter_lists: {
             chapters_list: {{ chapters_list|safe }},

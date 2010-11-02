@@ -1,6 +1,8 @@
 from django.db import models
 from django.db.models import Q
 from django.db.models.signals import post_save
+from django.contrib.contenttypes.models import ContentType
+from django.contrib.auth.models import Permission
 
 from django.utils.translation import ugettext_lazy as _
 
@@ -124,6 +126,8 @@ class Cohort(models.Model):
             return ['chapter', 'role', 'year']
         else:
             return ['role', 'year']
+cohort_ct = ContentType.objects.get(app_label='confcomm', model='cohort')
+kohort_kings,created = Permission.objects.get_or_create(name='Kohort King', codename='kohort_king', content_type=cohort_ct)
 
 
 
