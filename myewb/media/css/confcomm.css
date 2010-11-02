@@ -25,6 +25,12 @@ h2 {
 }
 
 
+/* getting rid of annoying firefox borders.
+ * Really we need a reset though. :)
+ */
+img {
+    border: none;
+}
 
 
 /* removed from   single.html */
