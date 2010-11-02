@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import Q
 from django.db.models.signals import post_save
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.models import Permission
+from django.contrib.auth.models import Permission, UserManager
 
 from django.utils.translation import ugettext_lazy as _
 
@@ -182,9 +182,9 @@ class ConferenceInvitation(models.Model):
 
     def save(self, force_insert=False, force_update=False):
         if not self.code:
-            code = generate_random(12)
+            code = UserManager().make_random_password(12)
             while ConferenceInvitation.objects.filter(code=code).count() > 0:
-                code = generate_random(12)
+                code = UserManager().make_random_password(12)
             self.code = code
         return super(ConferenceInvitation, self).save(force_insert, force_update)
 

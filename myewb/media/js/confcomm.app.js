@@ -620,10 +620,16 @@
                 if (i.name) data[i.name] = i.value;
             });
             data['sender'] = current_username;
-            $.ajax({url: routes.email, data:data, type:'post', success:function(resp) {
-                $(document).trigger('close.facebox');
-                messages.info('Your E-mail has been sent.', {header: 'E-mail sent'})
-        I   }});
+            $.ajax({url: routes.email, data:data, type:'post',
+                success:function(resp) {
+                    $(document).trigger('close.facebox');
+                    messages.info('Your invitation has been sent.', {header: 'Invitation sent'})
+                    },
+                error:function(resp) {
+                    $(document).trigger('close.facebox');
+                    messages.error('Your invitation could not be sent.')
+                }
+            });
             return false;
         },
         render: function() {

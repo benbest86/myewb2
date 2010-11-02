@@ -15,7 +15,7 @@ from account_extra.forms import EmailLoginForm
 
 from confcomm.models import ConferenceProfile, AFRICA_ROLE_CHOICES, \
         AFRICA_COUNTRY_CHOICES, CHAPTER_CHOICES, CANADA_ROLE_CHOICES, \
-        ROLE_CHOICES
+        ROLE_CHOICES, ConferenceInvitation
 from confcomm.forms import ConferenceProfileForm, InvitationForm
 
 def single_page(request):
@@ -23,7 +23,7 @@ def single_page(request):
     The single initial page for AJAX version.
     """
     if 'invitation' in request.GET:
-        invitation = Invitation.objects.get(code=request.GET['invitation'])
+        invitation = ConferenceInvitation.objects.get(code=request.GET['invitation'])
         invitation.activated = True
         invitation.save()
         return HttpResponseRedirect(reverse('concomm_app'))
@@ -57,11 +57,11 @@ def send_invitation(request):
         invitation_form = InvitationForm(request.POST)
         if invitation_form.is_valid():
             data = invitation_form.cleaned_data
-            invitation = Invitation(
+            invitation = ConferenceInvitation(
                     sender=ConferenceProfile.objects.get(member_profile__user=invitation_form.sender),
-                    recipient=ConferenceProfile.objects.get(member_profile__user=invitation_form.recipient),
+                    receiver=ConferenceProfile.objects.get(member_profile__user=invitation_form.recipient),
                     )
-            inivitation.save()
+            invitation.save()
             # TODO enable this and test it somehow...
             # use code from invitation
             # send_mail(subject=data['subject'],
