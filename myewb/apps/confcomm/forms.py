@@ -39,6 +39,7 @@ class InvitationForm(forms.Form):
             if not s.email:
                 raise forms.ValidationError(_('No email found for sender with username %s.' % data))
             self.sender_email = s.email
+            self.sender = s
         except forms.ValidationError, e:
             raise e
         except Exception, e:

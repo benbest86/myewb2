@@ -178,6 +178,15 @@ class ConferenceInvitation(models.Model):
     receiver = models.ForeignKey(ConferenceProfile, related_name='received_conference_invitations')
     code = models.CharField(max_length=12)
     activated = models.BooleanField()
+    sent = models.DateTimeField(auto_now_add=True)
+
+    def save(self, force_insert=False, force_update=False):
+        if not self.code:
+            code = generate_random(12)
+            while ConferenceInvitation.objects.filter(code=code).count() > 0:
+                code = generate_random(12)
+            self.code = code
+        return super(ConferenceInvitation, self).save(force_insert, force_update)
 
 def update_registered_status(sender, **kwargs):
     try:

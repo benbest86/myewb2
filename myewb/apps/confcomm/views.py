@@ -22,6 +22,11 @@ def single_page(request):
     """
     The single initial page for AJAX version.
     """
+    if 'invitation' in request.GET:
+        invitation = Invitation.objects.get(code=request.GET['invitation'])
+        invitation.activated = True
+        invitation.save()
+        return HttpResponseRedirect(reverse('concomm_app'))
     # permission to modify cohort membership of others
     kohort_king = False
     if request.user and request.user.is_authenticated():
@@ -49,18 +54,24 @@ def single_page(request):
 @login_required
 def send_invitation(request):
     if request.method == 'POST':
-        invitation = InvitationForm(request.POST)
-        if invitation.is_valid():
-            data = invitation.cleaned_data
+        invitation_form = InvitationForm(request.POST)
+        if invitation_form.is_valid():
+            data = invitation_form.cleaned_data
+            invitation = Invitation(
+                    sender=ConferenceProfile.objects.get(member_profile__user=invitation_form.sender),
+                    recipient=ConferenceProfile.objects.get(member_profile__user=invitation_form.recipient),
+                    )
+            inivitation.save()
             # TODO enable this and test it somehow...
+            # use code from invitation
             # send_mail(subject=data['subject'],
             #           txtMessage=data['body'],
-            #           fromemail=invitation.sender_email,
-            #           recipients=[invitation.recipient.email,]
+            #           fromemail=invitation_form.sender_email,
+            #           recipients=[invitation_form.recipient.email,]
             #           )
-            return HttpResponse('Invitation sent to %s.' % invitation.recipient.get_profile().name)
+            return HttpResponse('Invitation sent to %s.' % invitation_form.recipient.get_profile().name)
         else:
-            return HttpResponseBadRequest('Sending mail failed: %s' % " ".join(["%s: %s." % (k, v) for k, v in invitation.errors.items()]))
+            return HttpResponseBadRequest('Sending mail failed: %s' % " ".join(["%s: %s." % (k, v) for k, v in invitation_form.errors.items()]))
     else:
         return HttpResponseBadRequest('Sending email requires a POST method')
 
