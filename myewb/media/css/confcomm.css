@@ -73,9 +73,12 @@ img {
     }
 /*
     #browser {
-        height: 820px;
+        min-height: 720px;
     }
 */
+    #browser-container {
+        min-height: 500px;
+    }
 
 
     .paginator {
