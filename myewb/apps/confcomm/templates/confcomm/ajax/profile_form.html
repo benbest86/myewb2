@@ -1,10 +1,14 @@
 <div class="profile-container">
 <h2>Edit your profile below</h2>
 <form method="POST" action="<%= avatar_url %>" enctype="multipart/form-data">
-<p><strong>Conference Question:</strong> <textarea class="profile-input" name="conference_question"><%= model.get('conference_question') %></textarea></p>
-<p><strong>Conference Goals:</strong> <textarea class="profile-input" name="conference_goals"><%= model.get('conference_goals') %></textarea></p>
-<p><strong>What Now:</strong> <textarea class="profile-input" name="what_now"><%= model.get('what_now') %></textarea></p>
-<p><img src="<%= model.get('avatar_url') %>" alt="Avatar for <%= model.get('member_profile').name %>" /><strong>Upload a picture:</strong> <input type="file" name="avatar" class="profile-input"></p>
+    <p><strong>Conference Question:</strong></p> 
+    <textarea class="profile-input" rows="5" name="conference_question"><%= model.get('conference_question') %></textarea>
+    <p><strong>Conference Goals:</strong> </p>
+    <textarea class="profile-input" rows="5" name="conference_goals"><%= model.get('conference_goals') %></textarea>
+    <p><strong>What Now:</strong></p>
+    <textarea class="profile-input" rows="5" name="what_now"><%= model.get('what_now') %></textarea>
+    <p><img src="<%= model.get('avatar_url') %>" alt="Avatar for <%= model.get('member_profile').name %>" /></p>
+    <p><strong>Upload a picture:</strong> <input type="file" name="avatar" class="profile-input"></p>
     <input id="update-profile" value="Update" type="submit" />
 </form>
 </div>

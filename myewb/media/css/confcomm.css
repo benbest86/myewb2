@@ -274,7 +274,10 @@ margin:4px 6px;
 
 div.profile-container {
 
+}
 
+.profile-container textarea {
+    width: 550px;
 }
 
 div.profile-container h2 {
