@@ -329,7 +329,7 @@
         el: $('#my-profile'),
         events: {
             'click a.edit-profile':'edit_profile',
-            'click a#logout': 'logout',
+            'click a#logout': 'logout'
         },
         edit_profile: function () {
             if (anon) {
