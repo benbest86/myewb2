@@ -18,6 +18,7 @@
         /* VIEW VARIABLES */
         var filters_view;
         var browser_view;
+        var get_chapter_view;
         var login_view;
         var my_profile_view;
         var news_view;
@@ -93,6 +94,7 @@
             var self = this;
             this.id = resp.cohort.id;
             this.user_is_member = resp.cohort.user_is_member;
+            this.abstract = resp.cohort.abstract;
             return resp.models;
         },
         url: function() {
@@ -201,6 +203,7 @@
             }
         },
         _default_context: {
+            globals: CONFCOMM_GLOBALS,
             routes: routes,
             show_opt_links: show_opt_links
         },
@@ -403,12 +406,64 @@
                 return false;
             });
         }});
+    var GetChapterView = BaseView.extend({
+        el: $('#cohort-opt-in'),
+        events: {
+            'click a.cohort-add-with-chapter': 'add_to_cohort_with_chapter',
+            'click a.cancel': 'cancel_add'
+        },
+        template_name: 'get_cohort_chapter.html',
+        add_to_cohort_with_chapter: function(e) {
+            console.log('in second add to cohort');
+            e.preventDefault();
+            var self = this;
+            var chapter = self.$('#cohort-chapter-input').val();
+            if (!chapter) {
+                messages.info("Please select a chapter.");
+                return;
+            }
+            var target = $(e.target).attr('href').split('#/')[1];
+            console.log(chapter);
+            console.log($('#cohort-chapter-input').val());
+            var data = JSON.stringify({chapter: $('#cohort-chapter-input').val()});
+            console.log(data);
+            self.loading();
+            $.ajax({
+                url: routes.cohort_members_base + target,
+                type: 'post',
+                data: data,
+                contentType: 'application/json',
+                success: function(resp, status) {
+                    messages.info('Added to cohort.');
+                    browser_view.collection.fetch({success: function() {
+                        browser_view.render();
+                    }});
+                },
+                error: function(resp, status) {
+                    messages.error('Could not add to cohort.');
+                    self.render();
+                }
+            });
+        },
+        cancel_add: function(e) {
+            $(self.el).remove();
+            messages.info('Cancelled.');
+        },
+        render: function() {
+            console.log('rendering');
+            var self = this;
+            self.el = $('#cohort-opt-in');
+            self.draw({target: self.target});
+            self.delegateEvents();
+        }
+    });
     var BrowserView = BaseView.extend({
         el: $('#browser-container'),
         events: {
             'click a.invitation': 'open_invite',
             'click .un-registered a.profile-link': 'open_invite',
             'click a.cohort-add' : 'add_to_cohort',
+            'click a.cohort-add-abstract' : 'get_chapter',
             'click a.cohort-remove' : 'remove_from_cohort',
             'click a.hide-opt-links' : 'hide_opt_links',
         },
@@ -478,6 +533,12 @@
                     self.render();
                 }
             });
+        },
+        get_chapter: function(e) {
+            e.preventDefault();
+            var target = $(e.target).attr('href').split('#/')[1];
+            get_chapter_view.target = target;
+            get_chapter_view.render();
         },
         remove_from_cohort: function(e) {
             var self = this;
@@ -660,6 +721,7 @@
         browser_view = new BrowserView;
         browser_view.collection = cohort_summaries;
         /* Load all the default templates */
+        get_chapter_view = new GetChapterView;
         news_view = new NewsView;
         news_view.loading();
         news_view.render();

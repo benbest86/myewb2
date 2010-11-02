@@ -192,12 +192,22 @@ class CohortHandler(BaseHandler):
         c = {
             'user_is_member': False,
             'id': None,
+            'abstract': False,
             }
         if cohort is not None:
             try:
+                # abstract flag indicates we can't post directly to this
+                # cohort - we need to add the chapter before posting.
+                if cohort.role in ['p', 'j', 'f'] and cohort.chapter is None:
+                    c['abstract'] = True
                 c['id'] = cohort.id
                 cp = ConferenceProfile.objects.get(member_profile__user=request.user)
-                c['user_is_member'] = bool(cohort.members.filter(id=cp.id).count())
+                # if we have an abstract cohort, we need to check the user for a 
+                # concrete instance in their cohort_set
+                if c['abstract'] == True:
+                    c['user_is_member'] = bool(cp.cohort_set.filter(role=cohort.role, year=cohort.year))
+                else:
+                    c['user_is_member'] = bool(cohort.members.filter(id=cp.id).count())
             except Exception, e:
                 print e
 
@@ -216,25 +226,43 @@ class CohortMemberHandler(BaseHandler):
     allowed_methods = ('GET', 'POST', 'DELETE',)
 
     @classmethod
-    def create(self, request, id, username=None):
+    def create(self, request, id, username=None, chapter=None):
         try:
             # get our user and check for permission
             user = username and User.objects.get(username=username) or request.user
             if user != request.user and (request.user.has_perm('confcomm.kohort_king') is False):
                 return rc.FORBIDDEN
             # try and get a cohort and a conference profile
-            c = Cohort.objects.get(id=id)
+            base_c = Cohort.objects.get(id=id)
+            if base_c.chapter is None:
+                chapter = request.data['chapter']
+                c = Cohort.objects.get(role=base_c.role, year=base_c.year, chapter=chapter)
+            else:
+                c = base_c
             cp = ConferenceProfile.objects.get(member_profile__user=user)
             # add profile to cohort
             c.members.add(cp)
+        # no chapter in POST
+        except KeyError:
+            resp = rc.BAD_REQUEST
+            resp.write('Please include a chapter in the POST data.')
+            return resp
         except Cohort.DoesNotExist:
-            return rc.NOT_FOUND('Not a valid cohort.')
+            resp = rc.NOT_FOUND
+            resp.write('Not a valid cohort.')
+            return resp
         except User.DoesNotExist:
-            return rc.NOT_FOUND('Not a valid username')
+            resp = rc.NOT_FOUND
+            resp.write('Not a valid username')
+            return resp
         except ConferenceProfile.DoesNotExist:
-            return rc.NOT_FOUND('No profile found for specified user')
+            resp = rc.NOT_FOUND
+            resp.write('No profile found for specified user')
+            return resp
         except Exception, e:
-            return rc.BAD_REQUEST
+            resp = rc.BAD_REQUEST
+            resp.write('%s' % e)
+            return resp
         return rc.CREATED
 
     @classmethod
@@ -246,18 +274,30 @@ class CohortMemberHandler(BaseHandler):
             if user != request.user and not request.user.has_perm('confcomm.kohort_king'):
                 return rc.FORBIDDEN
             # grab our cohort and profile
-            c = Cohort.objects.get(id=id)
+            base_c = Cohort.objects.get(id=id)
             cp = ConferenceProfile.objects.get(member_profile__user=user)
+            # grab the matching cohort from the cp set, since
+            # the passed id could be from the generic
+            cs = cp.cohort_set.filter(role=base_c.role, year=base_c.year)
             # remove profile from cohort
-            c.members.remove(cp)
+            for c in cs:
+                c.members.remove(cp)
         except Cohort.DoesNotExist:
-            return rc.NOT_FOUND('Not a valid cohort.')
+            resp = rc.NOT_FOUND
+            resp.write('Not a valid cohort.')
+            return resp
         except User.DoesNotExist:
-            return rc.NOT_FOUND('Not a valid username')
+            resp = rc.NOT_FOUND
+            resp.write('Not a valid username')
+            return resp
         except ConferenceProfile.DoesNotExist:
-            return rc.NOT_FOUND('No profile found for specified user')
+            resp = rc.NOT_FOUND
+            resp.write('No profile found for specified user')
+            return resp
         except Exception, e:
-            return rc.BAD_REQUEST
+            resp = rc.BAD_REQUEST
+            resp.write('%s' % e)
+            return resp
         return rc.DELETED
 
     @classmethod
@@ -273,13 +313,21 @@ class CohortMemberHandler(BaseHandler):
             # check if user is a member
             is_member = bool(c.members.filter(id=c.id).count())
         except Cohort.DoesNotExist:
-            return rc.NOT_FOUND('Not a valid cohort.')
+            resp = rc.NOT_FOUND
+            resp.write('Not a valid cohort.')
+            return resp
         except User.DoesNotExist:
-            return rc.NOT_FOUND('Not a valid username')
+            resp = rc.NOT_FOUND
+            resp.write('Not a valid username')
+            return resp
         except ConferenceProfile.DoesNotExist:
-            return rc.NOT_FOUND('No profile found for specified user')
+            resp = rc.NOT_FOUND
+            resp.write('No profile found for specified user')
+            return resp
         except Exception, e:
-            return rc.BAD_REQUEST
+            resp = rc.BAD_REQUEST
+            resp.write('%s' % e)
+            return resp
         resp = {
                 'username': user.username,
                 'year': year,

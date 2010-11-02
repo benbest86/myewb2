@@ -2,7 +2,7 @@
       if (collection.user_is_member && collection.id) { %>
 <div class="cohort-opt-out"><p>Part of this group but shouldn't be? <a class="cohort-remove" href="#/<%= collection.id %>/">Click to remove yourself.</a> <a class="hide-opt-links" href="#">Hide these links</a></p></div>
 <% } else { %>
-<div class="cohort-opt-in"><p>Part of this group but don't see yourself? <a class="cohort-add" href="#/<%= collection.id %>/">Click to add yourself.</a> <a class="hide-opt-links" href="#">Hide these links</a></p></div>
+<div id="cohort-opt-in" class="cohort-opt-in"><p>Part of this group but don't see yourself? <a class="cohort-add<% if (collection.abstract) { %>-abstract<% } %>" href="#/<%= collection.id %>/">Click to add yourself.</a> <a class="hide-opt-links" href="#">Hide these links</a></p></div>
 <% }} %>
 <% collection.each(function(p) { %>
 <div id="<%= p.get('username') %>-summary" class="profile-summary<% if (!p.get('registered')) { %> un-registered<% } %>">

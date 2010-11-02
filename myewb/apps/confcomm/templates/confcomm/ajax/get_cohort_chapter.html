@@ -1,0 +1,8 @@
+<select name="chapter" id="cohort-chapter-input" value="">
+    <option value="">All Chapters</option>
+    <% _.each(globals.filter_lists.chapters_list, function(c) { %>
+    <option value="<%= c[0] %>"><%= c[1] %></option>
+    <% }); %>
+</select>
+<a href="#/<%= target %>" class="cohort-add-with-chapter">Add</a>
+<a href="#" class="cancel">Cancel</a>
