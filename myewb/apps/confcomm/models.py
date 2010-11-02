@@ -46,9 +46,16 @@ class ConferenceProfile(models.Model):
     @property
     def username(self):
         return self.member_profile.user.username
+
     @property
     def cohorts(self):
-        return self.member_profile.cohort_set.all()
+        if self.cohort_set.count() == 0:
+            # return 5 random cohorts
+            return Cohort.objects.all().order_by('?')[:5]
+        cohorts = self.cohort_set.exclude(role__in=['p', 'j', 'f'])
+        for c in self.cohort_set.filter(role__in=['p', 'j', 'f']):
+            cohorts = cohorts | Cohort.objects.filter(role=c.role, year=c.year, chapter=None).order_by('year')
+        return cohorts.distinct()
 
     def __unicode__(self):
         return '%s - %s' % (self.member_profile.name, (self.registered and 'registered' or 'not registered'))
@@ -112,10 +119,21 @@ class Cohort(models.Model):
     members = models.ManyToManyField(ConferenceProfile)
 
     def __unicode__(self):
-        if self.role in ['m', 'e', 'p']:
-            return '%s of %s in %d/%d' % (self.get_role_display(), DICT_CHAPTER_CHOICES[self.chapter], self.year, self.year + 1)
-        else:
-            return '%s %d' % (self.get_role_display(), self.year)
+        if self.role == 'm':
+            return '%s %d/%d' % (DICT_CHAPTER_CHOICES[self.chapter], self.year, self.year + 1)
+        elif self.role == 'e':
+            return '%s Executive %d/%d' % (DICT_CHAPTER_CHOICES[self.chapter], self.year, self.year + 1)
+        elif self.role == 'p':
+            return 'Chapter President %d/%d' % (self.year, self.year + 1)
+        elif self.role == 'j':
+            r = (self.year < 2006) and 'Op 21' or 'JF'
+            return '%s %d' % (r, self.year)
+        elif self.role == 's':
+            r = (self.year < 2009) and 'OVS' or 'APS'
+            return '%s %d' % (r, self.year)
+        elif self.role == 'f':
+            return 'ProF %d' % self.year
+
     @property
     def display(self):
         return str(self)

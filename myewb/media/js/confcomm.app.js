@@ -52,6 +52,33 @@
             var self = this;
             if (!self.id) self.id = self.get('username');
         },
+        quick_cohorts: function() {
+            var self = this;
+            if (self['_quick_cohorts']) {
+                return self._quick_cohorts;
+            }
+            // sort the cohorts into quick_cohorts and
+            // slice to 5 items
+            var cohorts = self.get('cohorts');
+            if (cohorts && cohorts.length) {
+                var sorted_cohorts = _.sortBy(cohorts, function(c) {
+                    if (_.include(['j', 's', 'f'], c.role)) {
+                        return 1;
+                    }
+                    else if (c.role === 'p') {
+                        return 2;
+                    }
+                    else if (c.role === 'e') {
+                        return 3
+                    }
+                    else {
+                        return 4;
+                    }
+                });
+                self._quick_cohorts = sorted_cohorts.slice(0, 6);
+                return self._quick_cohorts;
+            }
+        },
         url: function() {
             var self = this;
             return routes.profile_base + self.id + '/';
