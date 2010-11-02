@@ -305,59 +305,62 @@ class PaymentFormPreview(FormPreview):
         
         param['trnAmount'] = total_cost
             
-        #param = [fix_encoding(p) for p in param]
-        fixed_param = {}
-        for x, y in param.items():
-            fixed_param[x] = fix_encoding(y)
-        encoded = urllib.urlencode(fixed_param)
-        
-        # push the transaction to the bank
-        handle = urllib.urlopen(settings.TD_MERCHANT_URL,
-                                encoded)
-        result = handle.read().split('&')
-        
-        # parse the result string back into a dictionary
-        results = {}
-        for r in result:
-            r2 = r.split('=')
-            r2[0] = urllib.unquote_plus(r2[0])
-            r2[1] = urllib.unquote_plus(r2[1])
-            results[r2[0]] = r2[1]
-        
-        # TODO: any other processing/recordkeeping we want to do?
-        # do I want to save this into the db?
-        p = Payment()
-        p.billing_name=cleaned_data['billing_name']
-        p.phone=cleaned_data['phone']
-        p.email=cleaned_data['email']
-        p.approved=results['trnApproved']
-        p.response="\n".join(result)
-        p.amount = total_cost
-        p.save()
-        for prod in product_list:
-            p.products.add(prod)
-        p.save()
-        
-        # return based on value
-        if results['trnApproved'] == '1':
+        if total_cost > 0:
+            #param = [fix_encoding(p) for p in param]
+            fixed_param = {}
+            for x, y in param.items():
+                fixed_param[x] = fix_encoding(y)
+            encoded = urllib.urlencode(fixed_param)
             
-            # send receipt
-            message = loader.get_template("creditcard/receipt.html")
-            c = Context({'name': cleaned_data['billing_name'],
-                         'date': datetime.today(),
-                         'txid': results['trnOrderNumber'],
-                         'product': product_list,
-                         'amount': total_cost})
-            body = message.render(c)
-
-            send_mail(subject='Credit Card Receipt',
-                      txtMessage=body,
-                      htmlMessage=None,
-                      fromemail='Engineers Without Borders Canada <system@my.ewb.ca>',
-                      recipients=[cleaned_data['email']],
-                      use_template=False)
-        
-            # return success
-            return (True, results['trnId'], results['trnOrderNumber'])
+            # push the transaction to the bank
+            handle = urllib.urlopen(settings.TD_MERCHANT_URL,
+                                    encoded)
+            result = handle.read().split('&')
+            
+            # parse the result string back into a dictionary
+            results = {}
+            for r in result:
+                r2 = r.split('=')
+                r2[0] = urllib.unquote_plus(r2[0])
+                r2[1] = urllib.unquote_plus(r2[1])
+                results[r2[0]] = r2[1]
+            
+            # TODO: any other processing/recordkeeping we want to do?
+            # do I want to save this into the db?
+            p = Payment()
+            p.billing_name=cleaned_data['billing_name']
+            p.phone=cleaned_data['phone']
+            p.email=cleaned_data['email']
+            p.approved=results['trnApproved']
+            p.response="\n".join(result)
+            p.amount = total_cost
+            p.save()
+            for prod in product_list:
+                p.products.add(prod)
+            p.save()
+            
+            # return based on value
+            if results['trnApproved'] == '1':
+                
+                # send receipt
+                message = loader.get_template("creditcard/receipt.html")
+                c = Context({'name': cleaned_data['billing_name'],
+                             'date': datetime.today(),
+                             'txid': results['trnOrderNumber'],
+                             'product': product_list,
+                             'amount': total_cost})
+                body = message.render(c)
+    
+                send_mail(subject='Credit Card Receipt',
+                          txtMessage=body,
+                          htmlMessage=None,
+                          fromemail='Engineers Without Borders Canada <system@my.ewb.ca>',
+                          recipients=[cleaned_data['email']],
+                          use_template=False)
+            
+                # return success
+                return (True, results['trnId'], results['trnOrderNumber'])
+            else:
+                return (False, results['messageText'])
         else:
-            return (False, results['messageText'])
+            return (True, '00000', '00000')
