@@ -248,7 +248,6 @@
             var self = this;
             $(self.el).html(_.template(self.template(), {model:self.model}));
             $.facebox({div:'#profile'});
-            self.el = $('#facebox').find(self.el_class).first();
             // set up events inside of facebox instead of delgating and changing el
             $('#facebox a.cohort-link').click(self.to_cohort);
         }
