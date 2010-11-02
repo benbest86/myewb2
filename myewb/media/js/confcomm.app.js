@@ -350,10 +350,16 @@
             'click a.edit-profile':'edit_profile',
             'click a#logout': 'logout'
         },
-        edit_profile: function () {
+        edit_profile: function (e) {
+            if (e) {
+                e.preventDefault();
+            }
             if (anon) {
                 return
             }
+            // push a dummy value onto the history 
+            // since we will be opening a facebox
+            hash_history.push('#/');
             var self = this;
             profile_form_view.model = profiles.get(current_username);
             profile_form_view.render();
@@ -503,14 +509,14 @@
         },
         open_invite: function(e) {
             var self = this;
+            e.preventDefault();
             if (anon) {
                 // have to prevent the default and then set the 
                 // location.hash manually so we don't get the hashchange
                 // after the fact
-                e.preventDefault();
-                location.hash = $(e.target).attr('href');
+                // location.hash = $(e.target).attr('href');
                 messages.info("Please login to send an invite.", {header: 'Please login.'});
-                location.hash = hash_history.pop();
+                // location.hash = hash_history.pop();
                 $("#id_login_name").focus();
                 return;
             }
@@ -518,6 +524,8 @@
             if (!id) {
                 return;
             }
+            // push a dummy value onto the hash_history since we'll be opening a facebox
+            hash_history.push('#/');
             var view = invitation_view;
             view.async_render(id, cohort_summaries, {
                 error: function () {
@@ -771,7 +779,7 @@
                 my_profile_view.render();
                 if (!current_profile.get('active')) {
                     messages.info('Please take a moment to update your profile.', {sticky: true});
-                    location.hash = '/profile/edit/';
+                    // location.hash = '/profile/edit/';
                     my_profile_view.edit_profile();
                 }
             }});
@@ -786,7 +794,7 @@
             login_view.render();
         }
         if (!location.hash) {
-            location.hash = '/';
+            location.hash = '#/';
         }
         else {
             $(window).hashchange();
@@ -804,7 +812,9 @@
         // closing a facebox
         $(window).hashchange(function() {
             hash_history.push(location.hash);
-            hash_history = hash_history.slice(0, 4);
+            while( hash_history.length > 4) {
+                hash_history.shift();
+            }
         });
     });
 })();
