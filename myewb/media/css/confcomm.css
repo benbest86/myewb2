@@ -408,3 +408,38 @@ span.name-filters {
 span.filter-letter.selected {
     font-weight: bold;
 }
+
+/* cohort-name for search results */
+div.cohort-name {
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+/* cohort opt in and out styling */
+.cohort-opt-in a {
+    background-color: green;
+    border: 1px solid black;
+    color: white;
+    -moz-border-radius: 3px;
+    padding: 3px;
+    opacity: 0.5;
+}
+
+.cohort-opt-out a {
+    background-color: red;
+    border: 1px solid black;
+    color: white;
+    -moz-border-radius: 3px;
+    padding: 3px;
+    opacity: 0.5;
+}
+
+a.hide-opt-links {
+    background-color: white;
+    border: none;
+    color: blue;
+    font-size: 0.8em;
+    margin: 0;
+    -moz-border-radius: 0;
+    opacity: 1;
+}
