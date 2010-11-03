@@ -125,7 +125,7 @@ class CohortHandler(BaseHandler):
         # grab all of the applicable filters
         allowed_filters = ['chapter', 'year', 'role', 'page', 'last_name', 'search', 'registered',]
         filters = dict([(str(k), str(v)) for (k, v) in request.GET.items() if k in allowed_filters])
-        if filters['role'] == 'm':
+        if filters.get('role', None) == 'm':
             del filters['role']
         # pop off the filters that won't be kwargs to our manager function
         page = int(filters.pop('page', 1))
@@ -169,7 +169,7 @@ class CohortHandler(BaseHandler):
             }
             # update our none values with the filters passed in
             cohort_props.update(filters)
-            if cohort_props['role'] is None and cohort_props['chapter'] is not None and cohort_prop['year'] is not None:
+            if cohort_props['role'] is None and cohort_props['chapter'] is not None and cohort_props['year'] is not None:
                 # use member role for cohort opt-ing in reasons
                 cohort_props['role'] = 'm'
             # try to get a valid cohort
