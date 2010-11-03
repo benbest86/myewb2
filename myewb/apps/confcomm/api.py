@@ -140,13 +140,18 @@ class CohortHandler(BaseHandler):
                 all_cps = ConferenceProfile.objects.all()
             # querysets created with | with duplicates
             # get distinct results and order them
-            cps = all_cps.distinct().order_by('-registered', 'member_profile__name')
+            cps = all_cps.distinct()
             # add last_name filter
             if last_name is not None:
                 cps = cps.filter(member_profile__last_name__istartswith=last_name)
             # add name search filter
             if search is not None:
-                cps = cps.filter(member_profile__name__icontains=search)
+                terms = search.split('+')
+                print terms
+                for search_term in terms:
+                    cps = cps.filter(member_profile__name__icontains=search_term)
+            # order
+            cps = cps.order_by('-registered', 'member_profile__name')
             # paginate
             paged_cps = cps[(page-1)*PAGE_SIZE:page*PAGE_SIZE]
 
