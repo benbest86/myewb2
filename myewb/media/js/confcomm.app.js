@@ -1,4 +1,4 @@
-;(function() {
+;(function(GLOBALS) {
     // needs the following globals
     // routes, current_user
     /* SERVER ROUTES */
@@ -39,11 +39,11 @@
         var invitation_view;
         var messages;
     }
-    routes = CONFCOMM_GLOBALS.routes;
-    current_username = CONFCOMM_GLOBALS.username;
-    filter_lists = CONFCOMM_GLOBALS.filter_lists;
-    loading_image = CONFCOMM_GLOBALS.loading_image;
-    anon = CONFCOMM_GLOBALS.anon;
+    routes = GLOBALS.routes;
+    current_username = GLOBALS.username;
+    filter_lists = GLOBALS.filter_lists;
+    loading_image = GLOBALS.loading_image;
+    anon = GLOBALS.anon;
     show_opt_links = true;
 
     /* MODELS */
@@ -247,7 +247,7 @@
             }
         },
         _default_context: {
-            globals: CONFCOMM_GLOBALS,
+            globals: GLOBALS,
             routes: routes,
             show_opt_links: show_opt_links
         },
@@ -647,7 +647,7 @@
             var self = this;
             self.draw({
                 collection: self.collection,
-                kohort_king: CONFCOMM_GLOBALS.kohort_king
+                kohort_king: GLOBALS.kohort_king
             });
             self.paginator.render();
             self.delegateEvents();
@@ -891,4 +891,4 @@
             }
         });
     });
-})();
+})(CONFCOMM_GLOBALS);
