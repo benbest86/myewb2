@@ -762,9 +762,16 @@
             $.jGrowl(m, o);
         }
     }
+    // set up a global error message
+    $.ajaxSetup({
+        error: function(obj, status, ex) {
+            messages.error('Whoops! An error occurred. We\'re looking into it :)', {header: 'Error: ' + status})
+        }
+    });
 
     /* GO TIME */
     $(function() {
+
         hash_history = ['/'];
         profiles = new ProfileStore();
         cohort_summaries = new SummaryStore();
