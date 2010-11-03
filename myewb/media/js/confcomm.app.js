@@ -767,9 +767,9 @@
                 // set our querystring
                 cohort_summaries.set_qs(args);
                 cohort_summaries.fetch({
-                    success:function(self, resp) {
+                    success:function(collection, resp) {
                         browser_pagination_view.model = new Paginator(resp.pagination);
-                        view.collection = self;
+                        view.collection = collection;
                         view.paginator = browser_pagination_view;
                         view.render();
                         view.set_state(args);
