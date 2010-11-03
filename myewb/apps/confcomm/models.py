@@ -119,7 +119,7 @@ class Cohort(models.Model):
     members = models.ManyToManyField(ConferenceProfile)
 
     def __unicode__(self):
-        year_range = "%s/%s" % (str(self.year)[:2], str(self.year+1)[:2])
+        year_range = "%s/%s" % (str(self.year)[2:4], str(self.year+1)[2:4])
         if self.role == 'm':
             return '%s %s' % (DICT_CHAPTER_CHOICES[self.chapter], year_range)
         elif self.role == 'e':
