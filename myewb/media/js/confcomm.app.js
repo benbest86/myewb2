@@ -861,7 +861,16 @@
             hash_history.pop();
             // pop the last entry off of the hash_history and set location.hash to it
             // hashchange() will fire and push this value back onto the stack
-            location.hash = hash_history.pop();
+            var next_hash = hash_history.pop();
+            // sometimes close.facebox fires twice - causing weird behaviour
+            // like undefined hashes. if there is no hash on the stack then
+            // set location.hash to home
+            if (next_hash) {
+                location.hash = next_hash;
+            }
+            else {
+                location.hash = '#/'
+            }
         });
         // keep track of the last hash so we can return to it after
         // closing a facebox
