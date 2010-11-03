@@ -351,3 +351,19 @@ line-height:1.25em;
 img.register-hook {
     margin: 10px 6px;
 }
+
+
+/* custom jgrowl themes */
+
+div#jGrowl div.error {
+    background-color: #E32727;
+	color: black;
+}
+
+div#jGrowl div.confcomm-theme {
+    background: #8EA1b3;
+    color: black;
+    border: none;
+    border-right:1px solid #D7D8D9;
+    border-bottom:2px solid #D7D8D9;
+}

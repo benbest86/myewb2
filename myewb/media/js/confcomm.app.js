@@ -753,12 +753,12 @@
     messages = {
         info: function(m, o) {
             o = o || {};
-            o = _.extend({header: 'Info'}, o);
+            o = _.extend({header: 'Info', theme:'confcomm-theme'}, o);
             $.jGrowl(m, o);
         },
         error: function(m, o) {
             o = o || {};
-            o = _.extend({header: 'Error'}, o);
+            o = _.extend({header: 'Error', theme:'error'}, o);
             $.jGrowl(m, o);
         }
     }
