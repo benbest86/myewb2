@@ -125,6 +125,8 @@ class CohortHandler(BaseHandler):
         # grab all of the applicable filters
         allowed_filters = ['chapter', 'year', 'role', 'page', 'last_name', 'search', 'registered',]
         filters = dict([(str(k), str(v)) for (k, v) in request.GET.items() if k in allowed_filters])
+        if filters['role'] == 'm':
+            del filters['role']
         # pop off the filters that won't be kwargs to our manager function
         page = int(filters.pop('page', 1))
         last_name = filters.pop('last_name', None)
