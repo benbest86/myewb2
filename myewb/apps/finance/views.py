@@ -1052,14 +1052,14 @@ def monthlyreports_dashboard(request, year=None, month=None):
 #        attach chapter monthly report
         mr = mr_chap.filter(group = n.id, date__year = year, date__month = month).order_by('-enter_date')
         if mr:
-            table[count].append(mr[1])
+            table[count].append(mr[0])
         else:
             table[count].append("")
         
 #        attach no monthly report
         mr = mr_no.filter(group = n.id, date__year = year, date__month = month).order_by('-enter_date') 
         if mr:
-            table[count].append(mr[1])
+            table[count].append(mr[0])
         else:
             table[count].append("")
         
