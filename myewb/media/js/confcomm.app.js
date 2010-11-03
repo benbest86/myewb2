@@ -483,6 +483,13 @@
                 contentType: 'application/json',
                 success: function(resp, status) {
                     messages.info('Added to cohort.');
+                    // if no username in the target
+                    // fetch the current_profile
+                    // since it is being updated
+                    var no_username = /^\d+\/$/
+                    if (target.match(no_username)) {
+                        current_profile.fetch();
+                    }
                     browser_view.collection.fetch({success: function() {
                         browser_view.render();
                     }});
@@ -572,6 +579,12 @@
                 contentType: 'application/json',
                 success: function(resp, status) {
                     messages.info('Added to cohort.');
+                    // if no username is provided
+                    // reset the currrent profile
+                    var no_username = /^\d+\/$/
+                    if (target.match(no_username)) {
+                        current_profile.fetch();
+                    }
                     self.collection.fetch({success: function() {
                         self.render();
                     }});
@@ -597,6 +610,12 @@
                 url: routes.cohort_members_base + target,
                 type: 'delete',
                 success: function(resp, status) {
+                    // update the current_profile if no username
+                    // given when removing
+                    var no_username = /^\d+\/$/
+                    if (target.match(no_username)) {
+                        current_profile.fetch();
+                    }
                     messages.info('Removed from cohort. <a href="#">Undo</a>');
                     self.collection.fetch({success: function() {
                         self.render();
