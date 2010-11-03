@@ -352,6 +352,20 @@ img.register-hook {
     margin: 10px 6px;
 }
 
+/* filter section styling */
+
+.name-filters {
+    color: #FF2700;
+}
+.name-filters a:link {
+    color: #8BA6C0;
+}
+.name-filters a:visited {
+    color: #8BA6C0;
+}
+.name-filters a:hover {
+    color: #FF2700;
+}
 
 /* custom jgrowl themes */
 
