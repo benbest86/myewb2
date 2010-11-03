@@ -340,7 +340,7 @@
     var FiltersView = BaseView.extend({
         el: $('#filters'),
         template_name: 'filters.html',
-        events: {'keypress #search': 'trigger_search'},
+        events: {'keyup #search': 'trigger_search'},
         _search_queue: [],
         trigger_search: function(e) {
             var self = this;
