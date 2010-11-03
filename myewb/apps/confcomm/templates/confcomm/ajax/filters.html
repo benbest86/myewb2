@@ -8,7 +8,6 @@
     <% }); %>
 </select>
 <select class="filter" name="role">
-    <option value="">All Roles</option>
     <% _.each(filter_lists.roles_list, function(r) { %>
     <option value="<%= r[0] %>"><%= r[1] %></option>
     <% }); %>

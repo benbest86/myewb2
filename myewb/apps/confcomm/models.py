@@ -101,7 +101,7 @@ CHAPTER_CHOICES = (
     )
 DICT_CHAPTER_CHOICES = dict(CHAPTER_CHOICES)
 ROLE_CHOICES = (
-        ('m', 'Member',),
+        ('m', 'All Roles',),
         ('e', 'Executive',),
         ('p', 'President',),
         ('j', 'JF/Op 21',),

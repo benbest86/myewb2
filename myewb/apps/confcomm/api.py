@@ -167,6 +167,9 @@ class CohortHandler(BaseHandler):
             }
             # update our none values with the filters passed in
             cohort_props.update(filters)
+            if cohort_props['role'] is None and cohort_props['chapter'] is not None and cohort_prop['year'] is not None:
+                # use member role for cohort opt-ing in reasons
+                cohort_props['role'] = 'm'
             # try to get a valid cohort
             try:
                 cohort = Cohort.objects.get(**cohort_props)
@@ -215,6 +218,14 @@ class CohortHandler(BaseHandler):
                 # concrete instance in their cohort_set
                 if c['abstract'] == True:
                     c['user_is_member'] = bool(cp.cohort_set.filter(role=cohort.role, year=cohort.year))
+                elif cohort.role == 'm':
+                    c['user_is_member'] = bool(cohort.members.filter(id=cp.id).count())
+                    if not c['user_is_member']:
+                        # try looking for exec and pres roles - get rid of id so this doesn't
+                        # show as a cohort to opt-in opt-out for that person
+                        if cp.cohort_set.filter(chapter=cohort.chapter, year=cohort.year).count():
+                            c['id'] = None
+                            c['user_is_member'] = False
                 else:
                     c['user_is_member'] = bool(cohort.members.filter(id=cp.id).count())
             except Exception, e:
