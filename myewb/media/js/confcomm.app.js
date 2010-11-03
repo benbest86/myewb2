@@ -365,9 +365,25 @@
         },
         update_from_args: function(args) {
             var self = this;
-            _.each(args, function(v, k) {
-                self.$(".filter[name='" + k + "']").val(v);
+            _.each(self.$('.filter'), function(elem) {
+                elem = $(elem);
+                var val = args[elem.attr('name')];
+                if (val) {
+                    elem.val(val);
+                }
+                else {
+                    elem.val('');
+                }
             });
+            // need to reset the visible counterparts to the
+            // hidden controls too
+            self.$('#search').val(self.$('#hidden-name').val());
+            if (self.$('#hidden-registered').val() == 'true')  {
+                self.$('#registered-filter').attr('checked', 'checked');
+            }
+            else {
+                self.$('#registered-filter').removeAttr('checked');
+            }
         },
         render: function() {
             var self = this;
