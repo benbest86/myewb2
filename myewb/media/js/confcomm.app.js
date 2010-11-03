@@ -138,7 +138,7 @@
         // takes an object of query args to be serialized
         // and removes illegal args
         set_qs: function(qs_args) {
-            allowed_args = ['page', 'chapter', 'role', 'year', 'last_name','search'];
+            allowed_args = ['page', 'chapter', 'role', 'year', 'last_name','search', 'registered'];
             qs_obj = {}
             _.each(allowed_args, function(a) {
                 if (qs_args[a]){
@@ -340,7 +340,10 @@
     var FiltersView = BaseView.extend({
         el: $('#filters'),
         template_name: 'filters.html',
-        events: {'keyup #search': 'trigger_search'},
+        events: {
+            'keyup #search': 'trigger_search',
+            'click #registered-filter': 'refresh_hidden'
+        },
         _search_queue: [],
         trigger_search: function(e) {
             var self = this;
@@ -348,10 +351,17 @@
             setTimeout(function() {
                 self._search_queue.pop();
                 if (self._search_queue.length === 0) {
-                    self.$('#hidden-name').val($(e.target).val());
-                    self.$('#hidden-name').change();
+                    self.refresh_hidden(e);
                 }
             }, 350);
+        },
+        refresh_hidden: function(e) {
+            var self = this;
+            // update hidden form vals
+            self.$('#hidden-name').val(self.$('#search').val());
+            self.$('#hidden-registered').val(self.$('#registered-filter').attr('checked'));
+            // call change on hidden-name to refresh the search url
+            self.$('#hidden-name').change();
         },
         update_from_args: function(args) {
             var self = this;
@@ -529,7 +539,7 @@
         },
         _filter_state: function(state) {
             var new_state = {};
-            _.each(['chapter', 'role', 'year', 'last_name', 'page', 'search'], function(f) {
+            _.each(['chapter', 'role', 'year', 'last_name', 'page', 'search', 'registered'], function(f) {
                 if (state[f]) {
                     new_state[f] = state[f];
                 }

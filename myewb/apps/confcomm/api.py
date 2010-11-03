@@ -123,12 +123,13 @@ class CohortHandler(BaseHandler):
     @classmethod
     def read(self, request):
         # grab all of the applicable filters
-        allowed_filters = ['chapter', 'year', 'role', 'page', 'last_name', 'search',]
+        allowed_filters = ['chapter', 'year', 'role', 'page', 'last_name', 'search', 'registered',]
         filters = dict([(str(k), str(v)) for (k, v) in request.GET.items() if k in allowed_filters])
         # pop off the filters that won't be kwargs to our manager function
         page = int(filters.pop('page', 1))
         last_name = filters.pop('last_name', None)
         search = filters.pop('search', None)
+        registered = filters.pop('registered', None)
         try:
             # grab all matching cohorts and put their users together
             if filters:
@@ -150,6 +151,9 @@ class CohortHandler(BaseHandler):
                 print terms
                 for search_term in terms:
                     cps = cps.filter(member_profile__name__icontains=search_term)
+            # add the registered_filter
+            if registered == 'true':
+                cps = cps.filter(registered=True)
             # order
             cps = cps.order_by('-registered', 'member_profile__name')
             # paginate
