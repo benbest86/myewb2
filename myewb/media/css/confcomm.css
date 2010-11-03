@@ -382,3 +382,12 @@ div#jGrowl div.confcomm-theme {
     border-right:1px solid #D7D8D9;
     border-bottom:2px solid #D7D8D9;
 }
+
+/* name filters */
+span.name-filters {
+    color: #FF9743;
+}
+
+span.filter-letter.selected {
+    font-weight: bold;
+}

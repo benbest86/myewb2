@@ -114,26 +114,29 @@ class Cohort(models.Model):
     A definition of a Cohort of people we are looking at.
     """
     chapter = models.CharField(max_length=20, choices=CHAPTER_CHOICES, null=True, blank=True)
-    role = models.CharField(max_length=1, choices=ROLE_CHOICES, default='m')
-    year = models.PositiveIntegerField(default=2005)
+    role = models.CharField(max_length=1, choices=ROLE_CHOICES)
+    year = models.PositiveIntegerField()
     members = models.ManyToManyField(ConferenceProfile)
 
     def __unicode__(self):
-        year_range = "%s/%s" % (str(self.year)[2:4], str(self.year+1)[2:4])
+        s = []
+        if self.chapter:
+            s.append(DICT_CHAPTER_CHOICES[self.chapter])
         if self.role == 'm':
-            return '%s %s' % (DICT_CHAPTER_CHOICES[self.chapter], year_range)
+            pass
         elif self.role == 'e':
-            return '%s Executive %s' % (DICT_CHAPTER_CHOICES[self.chapter], year_range)
+            s.append('Executive')
         elif self.role == 'p':
-            return 'Chapter President %s' % (year_range)
+            s.append('Chapter President')
         elif self.role == 'j':
-            r = (self.year < 2006) and 'Op 21' or 'JF'
-            return '%s %d' % (r, self.year)
+            s.append((self.year < 2006 and 'Op 21' or 'JF'))
         elif self.role == 's':
-            r = (self.year < 2009) and 'OVS' or 'APS'
-            return '%s %d' % (r, self.year)
+            s.append((self.year < 2009 and 'OVS' or 'APS'))
         elif self.role == 'f':
-            return 'ProF %d' % self.year
+            s.append('ProF')
+        if self.year:
+            s.append("%s/%s" % (str(self.year)[2:4], str(self.year+1)[2:4]))
+        return " ".join(s)
 
     @property
     def display(self):

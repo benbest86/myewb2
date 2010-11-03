@@ -127,6 +127,8 @@ class CohortHandler(BaseHandler):
         filters = dict([(str(k), str(v)) for (k, v) in request.GET.items() if k in allowed_filters])
         if filters.get('role', None) == 'm':
             del filters['role']
+        if filters.get('year', None):
+            filters['year'] = int(filters['year'])
         # pop off the filters that won't be kwargs to our manager function
         page = int(filters.pop('page', 1))
         last_name = filters.pop('last_name', None)
@@ -203,10 +205,12 @@ class CohortHandler(BaseHandler):
         qs = "&".join([param for param in qs if param[:5] != 'page='])
 
         # overall cohort values if we found one
+        # get name of cohort even if it doesn't exist in reality
         c = {
             'user_is_member': False,
             'id': None,
             'abstract': False,
+            'display': Cohort(**cohort_props).display,
             }
         if cohort is not None:
             try:

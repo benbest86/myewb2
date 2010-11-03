@@ -129,6 +129,7 @@
             var self = this;
             this.id = resp.cohort.id;
             this.user_is_member = resp.cohort.user_is_member;
+            this.display = resp.cohort.display;
             this.abstract = resp.cohort.abstract;
             return resp.models;
         },
