@@ -15,7 +15,7 @@ from account_extra.forms import EmailLoginForm
 
 from confcomm.models import ConferenceProfile, AFRICA_ROLE_CHOICES, \
         AFRICA_COUNTRY_CHOICES, CHAPTER_CHOICES, CANADA_ROLE_CHOICES, \
-        ROLE_CHOICES, ConferenceInvitation
+        ROLE_CHOICES, ConferenceInvitation, RegistrationHit
 from confcomm.forms import ConferenceProfileForm, InvitationForm
 
 def single_page(request):
@@ -86,12 +86,17 @@ def index(request):
 
 def register(request):
     """
-    Direct user to register for conference.
+    Record hit and direct user to register for conference.
     """
-    return render_to_response(
-            'confcomm/register.html',
-            {},
-            context_instance=RequestContext(request),)
+    hit = RegistrationHit()
+    if request.user.is_authenticated():
+        hit.user = request.user
+    ip = request.META.get('REMOTE_ADDR', None)
+    if ip:
+        hit.ip_address = ip
+    hit.save()
+    return HttpResponseRedirect(reverse('confreg'))
+
 
 def profile(request, username=None):
     """

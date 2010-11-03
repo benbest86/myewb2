@@ -346,3 +346,8 @@ font-size: 18px;
 line-height:1.25em;
 
 }
+
+/* register button */
+img.register-hook {
+    margin: 10px 6px;
+}

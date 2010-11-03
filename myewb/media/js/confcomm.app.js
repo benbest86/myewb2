@@ -412,7 +412,7 @@
         template_name: 'my_profile.html',
         render: function() {
             var self = this;
-            $(self.el).html(_.template(self.template(), {model: self.model}));
+            self.draw({model:self.model});
         }});
     var QuickCohortsView = BaseView.extend({
         el: $('#quick-cohorts'),

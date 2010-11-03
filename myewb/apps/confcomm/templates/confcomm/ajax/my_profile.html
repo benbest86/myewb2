@@ -4,4 +4,7 @@
     <p><%= model.get('member_profile').name %></p>
     <a href="#/edit/profile/" class="edit-profile">Edit</a>
     <a id="logout" href="#/logout/">Logout</a>
+    <% if (!model.get('registered')) { %>
+    <a id="register" href="<%= routes.register %>"><img class="register-hook" src="<%= routes.media %>images/confcomm/register.png" alt="Register!" /></a>
+    <% } %>
 </div>

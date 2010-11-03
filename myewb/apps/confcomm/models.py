@@ -2,7 +2,7 @@ from django.db import models
 from django.db.models import Q
 from django.db.models.signals import post_save
 from django.contrib.contenttypes.models import ContentType
-from django.contrib.auth.models import Permission, UserManager
+from django.contrib.auth.models import Permission, UserManager, User
 
 from django.utils.translation import ugettext_lazy as _
 
@@ -205,6 +205,14 @@ class ConferenceInvitation(models.Model):
                 code = UserManager().make_random_password(12)
             self.code = code
         return super(ConferenceInvitation, self).save(force_insert, force_update)
+
+class RegistrationHit(models.Model):
+    """
+    Keep track of how many people move to the registration screen from this system.
+    """
+    user = models.ForeignKey(User, null=True, blank=True)
+    datetime = models.DateTimeField(auto_now_add=True)
+    ip_address = models.IPAddressField(null=True, blank=True)
 
 def update_registered_status(sender, **kwargs):
     try:
