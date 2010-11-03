@@ -370,6 +370,23 @@ img.register-hook {
 
 /* custom jgrowl themes */
 
+div#jGrowl .jGrowl-notification {
+    height: 95px;
+    width: 315px;
+}
+
+div#jGrowl .jGrowl-closer {
+    width: 315px;
+}
+
+div#jGrowl .jGrowl-notification .jGrowl-header {
+    font-size: 1.5em;
+}
+
+div#jGrowl .jGrowl-notification .jGrowl-message {
+    font-size: 1.2em;
+}
+
 div#jGrowl div.error {
     background-color: #E32727;
 	color: black;
