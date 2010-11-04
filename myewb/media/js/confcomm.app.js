@@ -209,12 +209,18 @@
             // everything has passed so state is the same
             return true;
         },
-        loading: function() {
+        loading: function(extra_content) {
             var self = this;
             if (!self.el) {
                 return false;
             }
-            $(self.el).html(_.template(self.template('loading.html'), {loading_image: loading_image}));
+            $(self.el).html(_.template(
+                self.template('loading.html'), 
+                {
+                    loading_image: loading_image,
+                    extra_content: extra_content
+                }
+            ));
         },
         async_render: function(id, collection, user_callbacks) {
             var self = this;
