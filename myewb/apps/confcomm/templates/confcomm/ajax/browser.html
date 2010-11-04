@@ -1,7 +1,7 @@
 <div class="cohort-name"><%= collection.display %></div>
 <% if (collection.id && show_opt_links) {
       if (collection.user_is_member && collection.id) { %>
-<div class="cohort-opt-out"><p>Not part of this group? <a class="add-button cohort-remove" href="#/<%= collection.id %>/">Remove yourself</a> <a class="hide-opt-links" href="#">Hide these links</a></p></div>
+<div class="cohort-opt-out"><p>Not part of this group? <a class="remove-button cohort-remove" href="#/<%= collection.id %>/">Remove yourself</a> <a class="hide-opt-links" href="#">Hide these links</a></p></div>
 <% } else { %>
 <div id="cohort-opt-in" class="cohort-opt-in"><p>Part of this group? <a class="add-button cohort-add<% if (collection.abstract) { %>-abstract<% } %>" href="#/<%= collection.id %>/">Add yourself</a> <a class="hide-opt-links" href="#">Hide these links</a></p></div>
 <% }} %>
