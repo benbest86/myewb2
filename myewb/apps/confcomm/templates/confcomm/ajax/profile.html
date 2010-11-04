@@ -1,0 +1,42 @@
+<div class="profile-container">
+    <h2>Profile for <%= model.get('member_profile').name %></h2>
+    <div class="cohort-info">
+    <img class="facebox-profile-img" src="<%= model.get('avatar_url') %>" />
+        <% if (model.get('cohorts')) { %>
+        <p>
+            <ul class="facebox-cohort-list">
+                     <% _.each(model.get('cohorts'), function(c) { %>
+                     <li><a class="cohort-link" href="#/?<% for (p in c.relevant_properties) { %><%= c.relevant_properties[p] %>=<%= c[c.relevant_properties[p]] %>&<% } %>"><%= c.display %></a></li>
+                    <% }); %>
+        </ul>
+        </p>
+        <% } %>
+    </div>
+    
+    <% if (!model.get('active')) { %><p>There's nothing here yet! Check back soon!</p><% } %>
+    <div class="profile-container-details">
+        <% if (model.get('active')) { %>
+        <p>
+            <span class="facebox-profile-question">Conference Question</span>
+            <span class="facebox-profile-answer"><%= model.get('conference_question') %></span>
+        </p>
+        
+        <p>
+            <span class="facebox-profile-question">Conference Goals</span>
+            <span class="facebox-profile-answer"><%= model.get('conference_goals') %></span>
+        </p>
+        
+        <p>
+            <span class="facebox-profile-question">What I am Doing Now</span>
+            <span class="facebox-profile-answer"><%= model.get('what_now') %></span>
+        </p>
+        
+        <p>
+            <span class="facebox-profile-question">I am registered for conference</span>
+            <span class="facebox-profile-answer"><%= model.get('registered') %></span>
+        </p>
+        <% } %>
+    </div>
+    <div class="clear"></div>
+    
+</div>

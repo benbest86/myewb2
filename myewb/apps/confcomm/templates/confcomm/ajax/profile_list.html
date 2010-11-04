@@ -1,0 +1,6 @@
+<h2>Profiles</h2>
+<ul>
+<% collection.each(function(p){ %>
+    <li><a href="<%= p.hash() %>"><%= p.get('member_profile').name %></a></li>
+<% }); %>
+</ul>

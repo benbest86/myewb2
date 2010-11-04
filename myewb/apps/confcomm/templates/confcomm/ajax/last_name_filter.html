@@ -1,0 +1,10 @@
+<p><strong>Filter By Last Name: </strong>
+<span class='name-filters'><% _.each(['All', 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'], function(l) {
+    if (l !== current_letter) { %>
+    <span class="filter-letter"><a href="#"><%= l %></a> </span>
+    <% }
+    else { %>
+    <span class="filter-letter selected"><%= l %></span>
+    <% } %>
+    <% }); %></span>
+</p>

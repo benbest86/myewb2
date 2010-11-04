@@ -1,0 +1,121 @@
+{% extends "confcomm/base.html" %}
+
+{% block extra_head %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery.jgrowl.css" />    
+{% endblock %}
+
+{% block body %}
+<div id="all">
+<div id="left">
+    <div class="section" id="filters"></div>
+    <div class="section" id="browser">
+        <div class="paginator"></div>
+        <div id="browser-container">Loading profiles...</div>
+        <div class="paginator"></div>
+    </div>
+</div>
+<div id="right">
+    <div id="cc-login" class="sidebar-section" style="display: none;"></div>
+    <div id="my-profile" class="sidebar-section round" style="display: none;">Loading your profile...</div>
+    
+
+    <div class="sidebar-section round">
+        <div class="sidebar-section-heading"><h3>Groups</h3></div>
+        <div id="quick-cohorts" class="sidebar-section-contents">
+            <ul class="cohort-list">
+                <li><span><a class="cohort-link" href="#/?role=p">Chapter Presidents</a></span></li>
+                <li><span><a class="cohort-link" href="#/?role=e">Chapter Executives</a></span></li>
+                <li><span><a class="cohort-link" href="#/?role=s">African Programs Staff</a></span></li>
+                <li><span><a class="cohort-link" href="#/?role=j">Junior Fellows</a></span></li>
+                <li><span><a class="cohort-link" href="#/?role=f">Professional Fellows</a></span></li>
+            </ul>
+        </div>
+    </div>
+    
+    
+    <div class="sidebar-section round">
+        <div class="sidebar-section-heading"><h3>News here</h3></div>
+        <div id="news" class="sidebar-section-contents">Loading conference news...</div>
+    </div>
+    
+    {# <div id="profile-list"></div> #}
+</div>
+</div>
+<div id="profile" style="display:none;">
+    <div class="profile-content"></div>
+</div>
+<div id="profile-form-container" style="display:none;"></div>
+<div id="invitation" style="display:none;"></div>
+<div id="loading-widget" style="display:none;">
+    <img src="{{ STATIC_URL }}pinax/images/facebox/loading.gif" />
+</div>
+
+
+{# @@@ SEAN - REMOVED STYLE TAG HERE  #}
+
+{% endblock body %}
+
+{% block extra_body %}
+{# serialization #}
+<script type="text/javascript" src="{{ STATIC_URL }}js/json2.js"></script>
+{# for hashchange event (ajax history) #}
+<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.ba-hashchange.min.js"></script>
+{# underscore library required for backbone #}
+<script type="text/javascript" src="{{ STATIC_URL }}js/underscore-min.js"></script>
+{# backbone #}
+<script type="text/javascript" src="{{ STATIC_URL }}js/backbone-min.js"></script>
+{# backbone single page web application - controller functionality #}
+<script type="text/javascript" src="{{ STATIC_URL }}js/backbone.spwa.js"></script>
+{# further extensions to backbone for our purposes #}
+<script type="text/javascript" src="{{ STATIC_URL}}js/backbone.ewb.js"></script>
+{# awesome messaging plugin #}
+<script type="text/javascript" src="{{ STATIC_URL}}js/jquery.jgrowl_google.js"></script>
+{# iframe uploader so we can upload photos #}
+<script type="text/javascript" src="{{ STATIC_URL}}js/jquery.form.js"></script>
+
+{# globals we need from the server #}
+<script type="text/javascript">
+    var CONFCOMM_GLOBALS = {
+        routes: {
+            profile_base: "{% url confcomm_profile_api_base %}",
+            templates_base: "{{ STATIC_URL }}templates/confcomm/",
+            cohorts_base: "{% url confcomm_cohorts %}",
+            cohort_members_base: "{% url confcomm_cohort_members %}",
+            email: "{% url confcomm_email %}",
+            login_url: "{% url confcomm_login %}",
+            logout_url: "{% url acct_logout %}",
+            avatar_url: "{% url confcomm_avatar %}",
+            site_url: "{% url confcomm_app %}",
+            register: "{% url confcomm_register %}",
+            media: "{{ STATIC_URL }}"
+        },
+        username: "{{ username }}",
+        kohort_king: {{ kohort_king }},
+        anon: {{ anon }},
+        filter_lists: {
+            chapters_list: {{ chapters_list|safe }},
+            canada_roles_list: {{ canada_roles_list|safe }},
+            africa_roles_list: {{ africa_roles_list|safe }},
+            roles_list: {{ roles_list|safe }},
+            countries_list: {{ countries_list|safe }},
+            years_list: {{ years_list|safe }}
+        },
+        loading_image: "{{ STATIC_URL }}pinax/images/facebox/loading.gif"
+    }
+    // facebox settings
+    $.facebox.settings.closeImage = "{{ STATIC_URL }}pinax/images/facebox/closelabel.gif"
+    $.facebox.settings.loadingImage = "{{ STATIC_URL }}pinax/images/facebox/loading.gif"
+    $.facebox.settings.opacity = 0.5;
+</script>
+{# all of our app's js is here #}
+<script type="text/javascript" src="{{ STATIC_URL}}js/confcomm.app.js"></script>
+{# preload some images so the facebox comes up quickly #}
+<div style="display:none;">
+    <img src="{{ STATIC_URL }}pinax/images/facebox/loading.gif" />
+    <img src="{{ STATIC_URL }}pinax/images/facebox/tl.gif" />
+    <img src="{{ STATIC_URL }}pinax/images/facebox/tr.gif" />
+    <img src="{{ STATIC_URL }}pinax/images/facebox/bl.gif" />
+    <img src="{{ STATIC_URL }}pinax/images/facebox/br.gif" />
+    <img src="{{ STATIC_URL }}pinax/images/facebox/b.gif" />
+</div>
+{% endblock extra_body %}

@@ -1,0 +1,29 @@
+<h3>Who's coming to conference?</h3>
+<p>
+<form id="filter-controls">
+<strong>Filter by:</strong> <select class="filter" name="chapter">
+    <option value="">All Chapters</option>
+    <% _.each(filter_lists.chapters_list, function(c) { %>
+    <option value="<%= c[0] %>"><%= c[1] %></option>
+    <% }); %>
+</select>
+<select class="filter" name="role">
+    <% _.each(filter_lists.roles_list, function(r) { %>
+    <option value="<%= r[0] %>"><%= r[1] %></option>
+    <% }); %>
+</select>
+<select class="filter" name="year">
+    <option value="">All Years</option>
+    <% _.each(filter_lists.years_list, function(y) { %>
+    <option value="<%= y[0] %>"><%= y[1] %></option>
+    <% }); %>
+</select>
+<a href="#/">Clear all filters</a>
+<input id="hidden-last-name" type="hidden" class="filter" value ="" name="last_name" />
+<input id="hidden-name" type="hidden" class="filter" value ="" name="search" />
+<input id="hidden-registered" type="hidden" class="filter" value ="" name="registered" />
+</form>
+</p>
+<div id="name-filter"></div>
+<strong>Search By Name:</strong> <input id="search" type="text" value="" />
+<strong>Hide Registered: </strong> <input id="registered-filter" type="checkbox" value="" />

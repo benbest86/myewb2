@@ -1,0 +1,18 @@
+<h2>Send an Invitation to <%= model.get('name') %></h2>
+<p>You're invited!</p>
+<form>
+    <p><input name="subject" class="invitation-input" value="Come to EWB National Conference 2011" type="text" size="50" style="width: 425px;" /></p>
+    <p><textarea name="body" class="invitation-input" rows="10" cols="50" style="width: 425px;">
+Hey <%= model.get('name').split(' ')[0] %>!
+
+I noticed that you aren't registered for EWB National Conference 2011 yet. I want to see you there!
+
+Check out the new conference site at {{site_link}} to see who else is coming! You can also register online now at {{registration_link}}.
+
+Hope to see you in Toronto in January!
+
+<%= sender_name %></textarea></p>
+<p>Note: Any {{site_link}} and {{registration_link}} tags will be replaced with links to this site and the registration site respectively</p>
+    <input type="hidden" class="invitation-input" name="recipient" value="<%= model.get('username') %>" />
+    <input type="submit" value="Send" />
+</form>

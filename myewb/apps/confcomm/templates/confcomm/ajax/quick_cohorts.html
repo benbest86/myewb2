@@ -1,0 +1,8 @@
+<ul class="cohort-list">
+    <% if (model.quick_cohorts()) {
+        _.each(model.quick_cohorts(), function(c) { %>
+    <li><span><a class="cohort-link" href="#/?<% for (p in c.relevant_properties) { %><%= c.relevant_properties[p] %>=<%= c[c.relevant_properties[p]] %>&<% } %>"><%= c.display %></a></span></li>
+    <% }); 
+        }
+    %>
+</ul>

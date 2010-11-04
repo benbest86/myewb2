@@ -1,0 +1,37 @@
+<div class="pagination-prev-next">
+    <% if (model.get('current') !== 1) { %>
+        <span><a href="#/?page=<%= model.get('current')-1 %>&<%= model.get('qs') %>">&laquo; prev</a></span>
+    <% } %>
+    <% if (model.get('current') < model.get('last')) { %>
+        <span><a href="#/?page=<%= model.get('current')+1 %>&<%= model.get('qs') %>">next &raquo;</a></span>
+    <% } %>
+</div>
+
+<ul class='pagination'>
+    <% if (model.get('current') !== 1) { %>
+    <li><a href="#/?page=1&<%= model.get('qs') %>">1</a></li>
+    <% } %>
+    <% if (model.get('current') - 3 > 1) { %>
+    <li>...</li>
+    <% } %>
+    <% for (var i = (model.get('current') - 2); i < model.get('current'); i++) { %>
+        <% if (i > 1) { %>
+        <li><a href="#/?page=<%= i %>&<%= model.get('qs') %>"><%= i %></a></li>
+        <% } %>
+    <% } %>
+    <li class="currentpage">Page <%= model.get('current') %></li>
+    <% for (var i = (model.get('current') + 1); i < model.get('current') + 4; i++) { %>
+        <% if (i < model.get('last')) { %>
+        <li><a href="#/?page=<%= i %>&<%= model.get('qs') %>"><%= i %></a></li>
+        <% } %>
+    <% } %>
+    <% if (model.get('last') - 3 > model.get('current')) { %>
+    <li>...</li>
+    <% } %>
+    <% if (model.get('current') < model.get('last')) { %>
+    <li><a href="#/?page=<%= model.get('last') %>&<%= model.get('qs') %>"><%= model.get('last') %></a></li>
+    <% } %>
+</ul>
+<!-- SEAN @@@ -->
+
+
