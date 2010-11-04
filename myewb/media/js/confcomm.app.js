@@ -468,7 +468,6 @@
                 success: function(data) {
                     if (data.success) {
                         self.hide();
-                        messages.info('Welcome ' + data.username + '!', {header: 'Logged in.'});
                         current_username = data.username;
                         anon = false;
                         show_my_profile();
@@ -865,6 +864,7 @@
             $(my_profile_view.el).show();
             my_profile_view.loading();
             current_profile.fetch({success: function(){
+                messages.info('Welcome ' + current_profile.get('member_profile').name + '!', {header: 'Logged in.'});
                 profiles.add(current_profile);
                 my_profile_view.model = current_profile;
                 my_profile_view.render();
