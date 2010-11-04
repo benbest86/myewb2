@@ -49,9 +49,6 @@ class ConferenceProfile(models.Model):
 
     @property
     def cohorts(self):
-        if self.cohort_set.count() == 0:
-            # return 5 random cohorts
-            return Cohort.objects.all().order_by('?')[:5]
         cohorts = self.cohort_set.exclude(role__in=['p', 'j', 'f'])
         for c in self.cohort_set.filter(role__in=['p', 'j', 'f']):
             cohorts = cohorts | Cohort.objects.filter(role=c.role, year=c.year, chapter=None).order_by('year')
