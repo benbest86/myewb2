@@ -155,8 +155,11 @@ class Cohort(models.Model):
             return ['chapter', 'role', 'year']
         else:
             return ['role', 'year']
-cohort_ct = ContentType.objects.get(app_label='confcomm', model='cohort')
-kohort_kings,created = Permission.objects.get_or_create(name='Kohort King', codename='kohort_king', content_type=cohort_ct)
+try:
+    cohort_ct = ContentType.objects.get(app_label='confcomm', model='cohort')
+    kohort_kings,created = Permission.objects.get_or_create(name='Kohort King', codename='kohort_king', content_type=cohort_ct)
+except:
+    pass
 
 
 
