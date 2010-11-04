@@ -129,9 +129,16 @@ class Cohort(models.Model):
         elif self.role == 'p':
             s.append('Chapter President')
         elif self.role == 'j':
-            s.append((self.year < 2006 and 'Op 21' or 'JF'))
+            if self.year is None or self.year >= 2006:
+                s.append('JF')
+            else:
+                s.append('Op 21')
+
         elif self.role == 's':
-            s.append((self.year < 2009 and 'OVS' or 'APS'))
+            if self.year is None or self.year >= 2009:
+                s.append('APS')
+            else:
+                s.append('OVS')
         elif self.role == 'f':
             s.append('ProF')
         if self.year:

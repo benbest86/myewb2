@@ -839,7 +839,9 @@
         news_view.loading();
         news_view.render();
         quick_cohorts_view = new QuickCohortsView;
-        quick_cohorts_view.loading();
+        if (!anon) {
+            quick_cohorts_view.loading();
+        }
         // quick_cohorts_view.render();
         filters_view = new FiltersView;
         filters_view.loading();
