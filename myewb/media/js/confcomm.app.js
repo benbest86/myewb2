@@ -427,10 +427,13 @@
                 url: routes.logout_url,
                 success: function() {
                     self.hide();
+                    messages.info('You are now logged out. Hope you come back soon!', {header: 'Logged out.'});
                     anon = true;
                     current_username = null;
                     login_view.error_message = "";
                     login_view.show();
+                    // go back to the home page
+                    location.hash = '#/';
                 },
                 error: function() {
                     self.render();
@@ -465,9 +468,12 @@
                 success: function(data) {
                     if (data.success) {
                         self.hide();
+                        messages.info('Welcome ' + data.username + '!', {header: 'Logged in.'});
                         current_username = data.username;
                         anon = false;
                         show_my_profile();
+                        // bit of a hack... oh the last minute shortcuts
+                        app.getView('Browser').render();
                     }
                     else {
                         self.error_message = data.message;
