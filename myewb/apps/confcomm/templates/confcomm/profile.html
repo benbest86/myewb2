@@ -3,8 +3,9 @@
 {% block body %}
 <h1>Profile</h1>
 <p>{{ profile.member_profile.name }}</p>
-<p><strong>A question I want to answer:</strong> {{ profile.conference_question }}</p>
-<p><strong>My goals for conference are:</strong> {{ profile.conference_goals }}</p>
+<p><strong>What I'm excited to do at the conference:</strong> {{ profile.conference_goals }}</p>
+<p><strong>What I'm hoping to learn at the conference:</strong> {{ profile.conference_question }}</p>
+<p><strong>What I'm doing now:</strong> {{ profile.what_now }}</p>
 <p>
 <strong>Interests:</strong>
 <ul>

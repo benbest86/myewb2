@@ -2,19 +2,19 @@
 <h2>Edit your profile below</h2>
 <form method="POST" action="<%= avatar_url %>" enctype="multipart/form-data">
     <p>
-                <span class="facebox-profile-question">Conference Question</span>
-    </p> 
-    <textarea class="profile-input" rows="5" name="conference_question"><%= model.get('conference_question') %></textarea>
-    
-    <p>
-                <span class="facebox-profile-question">Conference Goals</span>
+                <span class="facebox-profile-question">What are you excited about doing at conference?</span>
     </p> 
     
     
     <textarea class="profile-input" rows="5" name="conference_goals"><%= model.get('conference_goals') %></textarea>
 
     <p>
-                <span class="facebox-profile-question">What Now</span>
+                <span class="facebox-profile-question">What are you hoping to learn at conference?</span>
+    </p> 
+    <textarea class="profile-input" rows="5" name="conference_question"><%= model.get('conference_question') %></textarea>
+    
+    <p>
+                <span class="facebox-profile-question">What are you doing now?</span>
     </p> 
 
     <textarea class="profile-input" rows="5" name="what_now"><%= model.get('what_now') %></textarea>

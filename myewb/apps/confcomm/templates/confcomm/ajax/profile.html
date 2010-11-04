@@ -15,26 +15,32 @@
     
     <% if (!model.get('active')) { %><p>There's nothing here yet! Check back soon!</p><% } %>
     <div class="profile-container-details">
+        <p>
+        <% if (model.get('registered') { %>
+            <span class="facebox-profile-question">I am registered for conference!</span>
+        <% } 
+        else { %>
+            <span class="facebox-profile-question">I am not yet registered for conference.</span>
+        <% } %>
+
+        </p>
+
         <% if (model.get('active')) { %>
         <p>
-            <span class="facebox-profile-question">Conference Question</span>
+            <span class="facebox-profile-question">What I'm hoping to learn at conference</span>
             <span class="facebox-profile-answer"><%= model.get('conference_question') %></span>
         </p>
         
         <p>
-            <span class="facebox-profile-question">Conference Goals</span>
+            <span class="facebox-profile-question">What I'm excited to do at conference</span>
             <span class="facebox-profile-answer"><%= model.get('conference_goals') %></span>
         </p>
         
         <p>
-            <span class="facebox-profile-question">What I am Doing Now</span>
+            <span class="facebox-profile-question">What I'm doing now</span>
             <span class="facebox-profile-answer"><%= model.get('what_now') %></span>
         </p>
         
-        <p>
-            <span class="facebox-profile-question">I am registered for conference</span>
-            <span class="facebox-profile-answer"><%= model.get('registered') %></span>
-        </p>
         <% } %>
     </div>
     <div class="clear"></div>
