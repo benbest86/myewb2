@@ -249,7 +249,8 @@
         _default_context: {
             globals: GLOBALS,
             routes: routes,
-            show_opt_links: show_opt_links
+            show_opt_links: show_opt_links,
+            anon: anon
         },
         draw: function(extra_context) {
             var self = this;
