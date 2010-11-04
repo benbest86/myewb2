@@ -246,15 +246,17 @@
                 self.render();
             }
         },
-        _default_context: {
-            globals: GLOBALS,
-            routes: routes,
-            show_opt_links: show_opt_links,
-            anon: anon
+        _default_context: function() {
+            return {
+                globals: GLOBALS,
+                routes: routes,
+                show_opt_links: show_opt_links,
+                anon: anon
+            }
         },
         draw: function(extra_context) {
             var self = this;
-            var context = _.extend({}, self._default_context, extra_context);
+            var context = _.extend(self._default_context(), extra_context);
             $(self.el).html(_.template(self.template(), context));
         }
     });
