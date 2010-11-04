@@ -69,7 +69,7 @@ def send_invitation(request):
                     receiver=ConferenceProfile.objects.get(member_profile__user=invitation_form.recipient),
                     )
             invitation.save()
-            body = data['body'].replace('{{ registration_link }}', '%s?i=%s' % (reverse('confcomm_register'), invitation.code)).replace('{{ site_link }}', '%s?i=%s' % (reverse('confcomm_app'), invitation.code))
+            body = data['body'].replace('{{registration_link}}', '%s?i=%s' % (reverse('confcomm_register'), invitation.code)).replace('{{site_link}}', '%s?i=%s' % (reverse('confcomm_app'), invitation.code))
             send_mail(subject=data['subject'],
                       txtMessage=body,
                       htmlMessage=None,
