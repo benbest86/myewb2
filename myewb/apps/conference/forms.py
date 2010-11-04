@@ -20,7 +20,7 @@ from django.template import RequestContext
 from emailconfirmation.models import EmailAddress
 
 from conference.constants import *
-from conference.models import ConferenceRegistration, ConferenceCode, InvalidCode
+from conference.models import ConferenceRegistration, ConferenceCode, AlumniConferenceCode, InvalidCode
 from conference.utils import needsToRenew
 from creditcard.models import CC_TYPES, Product
 from creditcard.forms import CreditCardNumberField, CreditCardExpiryField, PaymentFormPreview
@@ -107,7 +107,10 @@ class ConferenceRegistrationForm(forms.ModelForm):
             return None
         
         try:
-            code = ConferenceCode.objects.get(code=codestring)
+            if (codestring == 'ewbalumni'):
+                code = AlumniConferenceCode()
+            else:
+                code = ConferenceCode.objects.get(code=codestring)
                 
             if code.isAvailable():
                 self.cleaned_data['code'] = code
@@ -214,7 +217,6 @@ class ConferenceRegistrationForm(forms.ModelForm):
 
         return self.cleaned_data
     
-
     _user = None
     def _get_user(self):
         return self._user

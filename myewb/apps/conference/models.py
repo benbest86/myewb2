@@ -113,3 +113,12 @@ class ConferenceCode(models.Model):
         m = hashlib.md5()
         m.update("%s%s%s" % (type, number, CONF_HASH))
         return codehash == m.hexdigest()[:4]
+
+class AlumniConferenceCode(ConferenceCode):
+    def getShortname(self):
+        return 'alumni'
+    
+    def isAvailable(self):
+        return True
+    
+        
