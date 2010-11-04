@@ -24,7 +24,14 @@ display:none;
 }
 
 #header_sp .textsub {
-display: none;
+/* display: none; */
+margin:0;
+}
+
+#header_sp .textsub h1 {
+font-family:"Lucida Grande",Geneva,Verdana,Arial,Helvetica,sans-serif;
+text-transform: none;
+font-weight: bold;
 }
 
 #loading-widget {
@@ -32,6 +39,16 @@ display: none;
     position: fixed;
     top: 30px;
     left: 500px;
+}
+
+p.loading {
+background: no-repeat left center;
+
+padding:10px;
+padding-left: 40px;
+
+margin:10px auto;
+width:60px;  /* will this fit everywhere it's used??  @@@ */  /* also removed 40px because of existing 50px padding */
 }
 
 h1, h2, h3, h4, h5, h6 {
@@ -54,6 +71,10 @@ img {
 }
 
 
+div.cleardiv {
+clear:both; height:1px;
+}
+
 /* removed from   single.html */
 
     .section {
@@ -62,7 +83,7 @@ img {
     }
     .sidebar-section {
         border: 1px solid black;
-        height: 180px;
+/*         height: 180px; */
         margin: 9px 4px;
     }
     .sidebar-section img {
@@ -135,6 +156,66 @@ img {
 
 
 
+/*  login form
+    needs to reset some crazy stuff from those original templates. yikes. :) 
+ */
+label {
+
+text-align: left;
+display:block;
+position:static;
+
+top:auto;
+width:inherit;
+font-size:14px;
+}
+
+.loginform label {
+margin-bottom: 3px;
+}
+.loginform label.leftalign {
+/* text-align: left; */
+}
+
+.loginform label input[type="text"], .loginform label input[type="password"] {
+padding:3px;
+width: 170px;
+}
+
+.loginform span.left {
+width: 80px;
+display:block;
+float:left;
+
+padding:5px 5px;
+
+text-align:right;
+}
+.loginform span.rightlabel {
+padding:6px 3px;
+text-align: left;
+display: block;
+padding-left: 8px;
+float: left;
+}
+.loginform p.submitbutton {
+clear:both;
+}
+.loginform  input[type="submit"] {
+font-size:13px;
+}
+
+
+p.error-message {
+clear:both;
+}
+
+/* end of loginform */
+
+
+
+
+
 
 ul.pagination {
 
@@ -163,6 +244,8 @@ font-size:14px;
 
 div#browser {
 margin-left: 0;
+
+clear:both;
 }
 
 
@@ -212,7 +295,7 @@ border:1px solid purple;
 
 
 a.profile-thumbnail-pic:hover {
-/* border:1px solid #eee; */
+border:1px solid #FF9743; 
 /* background-color: #eee; */
 
 /*
@@ -221,12 +304,15 @@ border-width: 2px;
 */
 }
 
-.un-registered img {
-    filter:alpha(opacity=30);
-    opacity: 0.3;
+.un-registered a.profile-thumbnail-pic img {
+    filter:alpha(opacity=50);
+    opacity: 0.5;
 }
 
-
+div.profile-summary.un-registered:hover a.profile-thumbnail-pic img {
+    filter:alpha(opacity=80);
+    opacity: 0.8;
+}
 
 p.profile-details {
 margin:0;
@@ -292,7 +378,12 @@ div.profile-container {
 }
 
 .profile-container textarea {
-    width: 550px;
+    width: 540px;
+    
+    
+    padding:10px;
+    
+    font-family: Georgia, Times, serif;   /* @@@ yes/no? */
 }
 
 div.profile-container h2 {
@@ -300,7 +391,7 @@ div.profile-container h2 {
 margin:0.1em 0 0.7em;
 }
 
-div.profile-container-details p {
+div.profile-container p {
 font-size: 14px;
 margin-bottom: 10px;
 
@@ -410,9 +501,10 @@ span.filter-letter.selected {
 }
 
 /* cohort-name for search results */
-div.cohort-name {
+#all div.cohort-name {
     font-size: 1.5em;
     font-weight: bold;
+    margin-bottom: 0.5em;
 }
 
 /* cohort opt in and out styling */
@@ -452,4 +544,37 @@ div.cohort-name {
 
 #browser-container .profile-details-cohort {
     margin: 6px 0px;
+}
+
+
+#filter-controls a.clearallfilters {
+float:right;
+}
+
+div.searchnameregistered {
+width: 290px;
+float:left
+}
+
+
+
+
+
+
+
+/* the "Your profile" box on the left */
+
+a.your-thumb-img img {
+padding:2px;
+border:1px solid #ccc;
+margin-right: 4px;
+}
+
+div#my-profile div.sidebar-section-contents { 
+/* margin-top: 0; */
+}
+
+div#my-profile h4 {
+margin:0;
+font-size:16px;
 }

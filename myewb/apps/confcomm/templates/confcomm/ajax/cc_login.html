@@ -1,13 +1,15 @@
 <div class="sidebar-section-heading"><h3>Login</h3></div>
 <div class="sidebar-section-contents">
-<form>
-    <p>Email: <input type="text" maxlength="75" name="login_name" id="id_login_name" <% if (login_name) { %> value="<%= login_name %>" <% } %>></p>
-    <p>Password: <input type="password" id="id_password" name="password"></p>
-    <% if (error_message) { %>
+<form class="loginform">
+    <label><span class="left">Email </span><input type="text" maxlength="75" name="login_name" id="id_login_name" <% if (login_name) { %> value="<%= login_name %>" <% } %>></label>
+    <label><span class="left">Password </span><input type="password" id="id_password" name="password"></label>
+    
+    <label class="leftalign"><span class="left"><input type="checkbox" id="id_remember" name="remember"/></span><span class="rightlabel">Remember Me</span></label>
+
+<% if (error_message) { %>
         <p class="error-message"><%= error_message %></p>
     <% } %>
-    Remember Me: <input type="checkbox" id="id_remember" name="remember">
-    <br>
-    <input type="submit" value="sign in »"><br>
+
+    <p class="submitbutton"><span class="left">&nbsp;</span><input type="submit" value="Sign in &raquo;"/></p>
 </form>
 </div>

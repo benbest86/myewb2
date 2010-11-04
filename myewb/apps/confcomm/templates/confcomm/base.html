@@ -15,12 +15,14 @@
 		<script type="text/javascript" charset="utf-8" src="{{ STATIC_URL }}pinax/js/facebox.js"></script>
 		{% block extra_head %}{% endblock %}
 		<script type="text/javascript">
+
 		
 //  External links in posts, etc., should open in a new window    
 $(document).ready(function(){
 	$(".textbody a[ href^='http']").attr('target','_blank');
 	
 	$(".openlinks a").attr('target','_blank');
+	
 });
 		
 		
