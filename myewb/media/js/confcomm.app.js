@@ -544,7 +544,7 @@
             'click a.cohort-add' : 'add_to_cohort',
             'click a.cohort-add-abstract' : 'get_chapter',
             'click a.cohort-remove' : 'remove_from_cohort',
-            'click a.hide-opt-links' : 'hide_opt_links',
+            'click a.hide-opt-links' : 'hide_opt_links'
         },
         // attach some events that are outside of the scope of el
         bind_to_filters: function() {
@@ -751,7 +751,7 @@
         },
         views: {
             'Profile': ProfileView,
-            'Browser': BrowserView,
+            'Browser': BrowserView
         },
         browser: function(args) {
             var self = this;
