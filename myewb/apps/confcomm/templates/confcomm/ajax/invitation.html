@@ -7,11 +7,12 @@ Hey <%= model.get('name').split(' ')[0] %>!
 
 I noticed that you aren't registered for EWB National Conference 2011 yet. I want to see you there!
 
-Check out the new conference social site at http://my.ewb.ca<%= site_url %> to see who else is coming!
+Check out the new conference site at {{ site_url }} to see who else is coming! You can also register online now at {{ register_url }}.
 
 Hope to see you in Toronto in January!
 
 <%= sender_name %></textarea></p>
+<p>Note: The {{ site_link }} and {{ registration_link }} tags will be replaced with links to this site and the registration site respectively</p>
     <input type="hidden" class="invitation-input" name="recipient" value="<%= model.get('username') %>" />
     <input type="submit" value="Send" />
 </form>

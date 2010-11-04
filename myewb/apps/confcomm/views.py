@@ -18,15 +18,22 @@ from confcomm.models import ConferenceProfile, AFRICA_ROLE_CHOICES, \
         ROLE_CHOICES, ConferenceInvitation, RegistrationHit
 from confcomm.forms import ConferenceProfileForm, InvitationForm
 
+def activate_invitation(code):
+    try:
+        invitation = ConferenceInvitation.objects.get(code=code)
+        invitation.activated = True
+        invitation.save()
+    except:
+        pass
+
+
 def single_page(request):
     """
     The single initial page for AJAX version.
     """
-    if 'invitation' in request.GET:
-        invitation = ConferenceInvitation.objects.get(code=request.GET['invitation'])
-        invitation.activated = True
-        invitation.save()
-        return HttpResponseRedirect(reverse('concomm_app'))
+    if 'i' in request.GET:
+        activate_invitation(request.GET['i'])
+        return HttpResponseRedirect(reverse('confcomm_app'))
     # permission to modify cohort membership of others
     kohort_king = False
     if request.user and request.user.is_authenticated():
@@ -62,13 +69,13 @@ def send_invitation(request):
                     receiver=ConferenceProfile.objects.get(member_profile__user=invitation_form.recipient),
                     )
             invitation.save()
-            # TODO enable this and test it somehow...
-            # use code from invitation
-            # send_mail(subject=data['subject'],
-            #           txtMessage=data['body'],
-            #           fromemail=invitation_form.sender_email,
-            #           recipients=[invitation_form.recipient.email,]
-            #           )
+            body = data['body'].replace('{{ registration_link }}', '%s?i=%s' % (reverse('confcomm_register'), invitation.code)).replace('{{ site_link }}', '%s?i=%s' % (reverse('confcomm_app'), invitation.code))
+            send_mail(subject=data['subject'],
+                      txtMessage=body,
+                      htmlMessage=None,
+                      fromemail=invitation_form.sender_email,
+                      recipients=[invitation_form.recipient.email,]
+                      )
             return HttpResponse('Invitation sent to %s.' % invitation_form.recipient.get_profile().name)
         else:
             return HttpResponseBadRequest('Sending mail failed: %s' % " ".join(["%s: %s." % (k, v) for k, v in invitation_form.errors.items()]))
@@ -88,6 +95,8 @@ def register(request):
     """
     Record hit and direct user to register for conference.
     """
+    if 'i' in request.GET:
+        activate_invitation(request.GET['i'])
     hit = RegistrationHit()
     if request.user.is_authenticated():
         hit.user = request.user
