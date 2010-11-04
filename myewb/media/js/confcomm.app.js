@@ -650,7 +650,7 @@
                     if (target.match(no_username)) {
                         current_profile.fetch();
                     }
-                    messages.info('Removed from cohort. <a class="undo-removal" href="#/' + target + '">Undo</a>');
+                    messages.info('Removed from cohort.'); // <a class="undo-removal" href="#/' + target + '">Undo</a>', {sticky: true});
                     $('.undo-removal').click(self.add_to_cohort);
                     self.collection.fetch({success: function() {
                         self.render();
