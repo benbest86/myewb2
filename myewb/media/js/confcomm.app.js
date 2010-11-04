@@ -714,13 +714,13 @@
         el: $('#invitation'),
         send_invitation: function() {
             var self = this;
-            self.loading();
             var inputs = self.$('form').find('.invitation-input');
             var data = {};
             _.each(inputs, function(i) {
                 if (i.name) data[i.name] = i.value;
             });
             data['sender'] = current_username;
+            self.loading();
             $.ajax({url: routes.email, data:data, type:'post',
                 success:function(resp) {
                     $(document).trigger('close.facebox');
