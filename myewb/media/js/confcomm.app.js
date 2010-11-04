@@ -863,7 +863,7 @@
                 quick_cohorts_view.model = current_profile;
                 quick_cohorts_view.render();
                 if (!current_profile.get('active')) {
-                    messages.info('Please take a moment to update your profile.', {sticky: true});
+                    messages.info('Please take a moment to update your profile.', {life: 3000});
                     // location.hash = '/profile/edit/';
                     my_profile_view.edit_profile();
                 }
