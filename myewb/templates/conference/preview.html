@@ -118,10 +118,12 @@
 		<td class='leftcell'>Cell phone</td>
 		<td>{{ form.cellphone.data }}</td>
 	</tr>
+	{% if not user.is_bulk %}
 	<tr>
 		<td class='leftcell'>Registration code</td>
 		<td>{{ form.code.data }}</td>
 	</tr>
+	{% endif %}
 	<tr>
 		<td class='leftcell'>Registration type</td>
 		<td>{{ form.type.data }}</td>

@@ -192,6 +192,7 @@
 			</fieldset>
 		</form>
 
+		{% if not user.is_bulk %}
 		<table border='1' class='descform' id='confoptiontable' style='display: none;'>
 		  <tr>
 		    <th>&nbsp;</th>
@@ -224,6 +225,31 @@
 		    <td>$500</td>    
 		  </tr>
 		</table>
+
+		{% else %}
+		
+		<table border='1' class='descform' id='confoptiontable' style='display: none;'>
+		  <tr>
+		    <th>&nbsp;</th>
+		    <th>Friday only</th>
+		    <th>Saturday only</th>
+		    <th>Friday and Saturday</th>
+		  </tr>
+		  <tr>
+		    <th>General registration</th>
+		    <td>$120</td>    
+		    <td>$120</td>
+		    <td>$220</td>    
+		  </tr>
+		  <tr>
+		    <th>Students</th>
+		    <td>$60</td>    
+		    <td>$60</td>    
+		    <td>$110</td>    
+		  </tr>
+		</table>
+		
+		{% endif %}
 
 		<script type="text/javascript">
 			$().ready(function() {

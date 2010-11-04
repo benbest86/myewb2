@@ -7,6 +7,9 @@ def needsToRenew(profile):
     if profile.user.is_staff:
         return False
     
+    if profile.user2.is_bulk:
+        return False
+    
     if profile.membership_expiry == None:
         return True
     

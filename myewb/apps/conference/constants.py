@@ -33,6 +33,19 @@ CONF_OPTIONS = {'confreg-2011-double-test': {'cost': 175,
                 'confreg-2011-nohotel-open': {'cost': 500,
                                                'name': "Open registration (unsubsidized) - no room"},
 
+                'confreg-2011-friday-open': {'cost': 120,
+                                               'name': "Friday attendance"},
+                'confreg-2011-saturday-open': {'cost': 120,
+                                               'name': "Saturday attendance"},
+                'confreg-2011-twoday-open': {'cost': 220,
+                                               'name': "Friday/Saturday attendance"},
+                'confreg-2011-fridaystudent-open': {'cost': 60,
+                                               'name': "Friday attendance (student)"},
+                'confreg-2011-saturdaystudent-open': {'cost': 60,
+                                               'name': "Saturday attendance (student)"},
+                'confreg-2011-twodaystudent-open': {'cost': 110,
+                                               'name': "Friday/Saturday attendance (student)"},
+
                 'confreg-2011-double-unifar': {'cost': 100,
                                                'name': "University chapter (BC/AB/NF) - shared bed"},
                 'confreg-2011-single-unifar': {'cost': 220,
@@ -87,6 +100,14 @@ ROOM_CHOICES = (('nohotel', _('Conference only (no hotel)')),
                 ('double', _('double registration (shared bed)')),
                 ('single', _('single registration (own bed)'))
                ) 
+                
+EXTERNAL_CHOICES = (('fridaystudent', _('Friday attendance (student)')),
+                    ('saturdaystudent', _('Saturday attendance (student)')),
+                    ('twodaystudent', _('Friday and Saturday attendance (student)')),
+                    ('friday', _('Friday attendance')),
+                    ('saturday', _('Saturday attendance')),
+                    ('twoday', _('Friday and Saturday attendance'))
+                   ) 
                 
 
 PASTEVENTS = (('0', '0'),

@@ -132,6 +132,13 @@ class ConferenceRegistrationForm(forms.ModelForm):
         cleaned_data['products'] = []
         total_cost = 0
         
+        if not cleaned_data.get('prevConfs', None):
+            cleaned_data['prevConfs'] = 0
+        if not cleaned_data.get('prevRetreats', None):
+            cleaned_data['prevRetreats'] = 0
+        if not cleaned_data.get('code', None):
+            cleaned_data['code'] = None 
+            
         if cleaned_data['code']:
             codename = cleaned_data['code'].getShortname()
         else:
@@ -207,6 +214,8 @@ class ConferenceRegistrationForm(forms.ModelForm):
         if value.is_bulk:
             del(self.fields['prevConfs'])
             del(self.fields['prevRetreats'])
+            del(self.fields['code'])
+            self.fields['type'].choices=EXTERNAL_CHOICES
             
     user = property(_get_user, _set_user)
 
