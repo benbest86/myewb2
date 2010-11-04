@@ -27,6 +27,7 @@ class ConferenceRegistration(models.Model):
     prevConfs = models.SmallIntegerField()
     prevRetreats = models.SmallIntegerField()
     cellphone = models.CharField(max_length=50, blank=True, null=True)
+    grouping = models.CharField(max_length=50, blank=True, null=True)
     
     txid = models.CharField(max_length=255)
     receiptNum = models.CharField(max_length=255)

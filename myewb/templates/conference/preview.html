@@ -118,6 +118,19 @@
 		<td class='leftcell'>Cell phone</td>
 		<td>{{ form.cellphone.data }}</td>
 	</tr>
+	
+	{% if user.is_bulk %}
+	<tr>
+		<td class='leftcell'>Industry</td>
+		<td>
+			{{ form.grouping.data }}
+			{% if form.grouping2.data %}
+				({{ form.grouping2.data }})
+			{% endif %}
+		</td>
+	</tr>
+	{% endif %}
+	
 	{% if not user.is_bulk %}
 	<tr>
 		<td class='leftcell'>Registration code</td>

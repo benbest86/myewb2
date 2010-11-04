@@ -128,3 +128,10 @@ AFRICA_FUND = (('75', 'Yes - $75'),
                ('20', 'Yes - $20'),
                ('', 'No thank you'))
 
+EXTERNAL_GROUPS = (('NGO member', 'NGO member'),
+                   ('Engineering professional', 'Engineering professional'),
+                   ('University student', 'University student'),
+                   ('High school student', 'High school student'),
+                   ('University professor / academia', 'University professor / academia'),
+                   ('Government', 'Government'),
+                   ('Other', 'Other'))

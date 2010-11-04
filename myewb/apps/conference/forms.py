@@ -61,6 +61,13 @@ class ConferenceRegistrationForm(forms.ModelForm):
     cellphone = forms.CharField(label='Cell phone number',
                                 required=False,
                                 help_text="(optional) If you wish to receive logistical updates and reminders by text message during the conference")
+
+    grouping = forms.ChoiceField(label='Which group do you belong to?',
+                                 choices=EXTERNAL_GROUPS,
+                                 required=False)
+    grouping2 = forms.CharField(label='&nbsp;',
+                                required=False,
+                                help_text='(if other)')
     
     code = forms.CharField(label='Registraton code',
                            help_text='if you have a registration code, enter it here for a discounted rate.',
@@ -137,7 +144,12 @@ class ConferenceRegistrationForm(forms.ModelForm):
         if not cleaned_data.get('prevRetreats', None):
             cleaned_data['prevRetreats'] = 0
         if not cleaned_data.get('code', None):
-            cleaned_data['code'] = None 
+            cleaned_data['code'] = None
+            
+        if not cleaned_data.get('grouping', None):
+            cleaned_data['grouping'] = None
+        if cleaned_data['grouping'] == 'Other' and cleaned_data.get('grouping2', None):
+            cleaned_data['grouping'] = cleaned_data['grouping2'] 
             
         if cleaned_data['code']:
             codename = cleaned_data['code'].getShortname()
@@ -216,6 +228,9 @@ class ConferenceRegistrationForm(forms.ModelForm):
             del(self.fields['prevRetreats'])
             del(self.fields['code'])
             self.fields['type'].choices=EXTERNAL_CHOICES
+        else:
+            del(self.fields['grouping'])
+            del(self.fields['grouping2'])
             
     user = property(_get_user, _set_user)
 
@@ -259,6 +274,9 @@ class ConferenceRegistrationFormPreview(PaymentFormPreview):
                 registration.code = None
             registration.receiptNum = response[2]
             registration.txid = response[1]
+            
+            if cleaned_data.get('grouping', None):
+                registration.grouping = cleaned_data['grouping']
             
             registration.save()
             
