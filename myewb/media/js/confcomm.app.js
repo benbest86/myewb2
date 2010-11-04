@@ -2,13 +2,6 @@
     // needs the following globals
     // routes, current_user
     /* SERVER ROUTES */
-    if (!console) {
-        console = {
-            log: function(args) {
-                // do nothing
-            }
-        }
-    }
 
     var DEBUG = false;
     if (!DEBUG) { // leave a bunch of global variables so I can get at them through the console
