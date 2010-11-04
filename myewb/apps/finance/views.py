@@ -785,7 +785,7 @@ def edit_id(request, id, group_slug):
     if t.type == "IN":
         t = get_object_or_404(Income, pk=id)
         if request.method == 'POST': # If the form has been submitted...       
-            if t.category.name == "donation":
+            if t.category.slug == "donation":
                 t = get_object_or_404(Donation, pk=id)
 #                if the user is staff, they should always be able to change all fields
                 if user.is_staff:
@@ -816,7 +816,7 @@ def edit_id(request, id, group_slug):
         
                 return HttpResponseRedirect(reverse('view', kwargs={'group_slug': group.slug}) ) # Redirect after POST
         else:
-            if t.category.name == "donation":
+            if t.category.slug == "donation":
                 t = get_object_or_404(Donation, pk=id)
                 if user.is_staff:
                     form = DonationStaffForm(instance=t)
