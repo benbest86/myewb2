@@ -157,7 +157,7 @@ class CohortHandler(BaseHandler):
                     cps = cps.filter(member_profile__name__icontains=search_term)
             # add the registered_filter
             if registered == 'true':
-                cps = cps.filter(registered=True)
+                cps = cps.filter(registered=False)
             # order
             cps = cps.order_by('-registered', 'member_profile__name')
             # paginate
