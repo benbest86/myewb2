@@ -23,7 +23,7 @@
         <a class="invitation" href="#<%= p.invite_hash() %>"><img src="<%= routes.media %>images/confcomm/invite.png" alt="Invite!" /></a>
     <% } %>
     </span>
-    <% if (kohort_king && collection.id) { %>
+    <% if (kohort_king && collection.id && show_opt_links) { %>
     <span class="profile-details-cohort">
         <a class="remove-button cohort-remove" href="#/<%= collection.id %>/<%= p.id %>/">Remove from group.</a>
     </span>
