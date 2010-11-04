@@ -714,6 +714,7 @@
         el: $('#invitation'),
         send_invitation: function() {
             var self = this;
+            self.loading();
             var inputs = self.$('form').find('.invitation-input');
             var data = {};
             _.each(inputs, function(i) {
