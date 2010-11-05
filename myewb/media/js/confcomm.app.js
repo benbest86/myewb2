@@ -580,6 +580,9 @@
         template_name: 'browser.html',
         update_filters: function() {
             var qs = $('#filter-controls').serialize();
+            // serialize turns spaces into +
+            // we don't want that
+            qs = qs.replace(/\+/g, '%20');
             location.hash = '/?' + qs;
         },
         open_invite: function(e) {

@@ -151,7 +151,7 @@ class CohortHandler(BaseHandler):
                 cps = cps.filter(member_profile__last_name__istartswith=last_name)
             # add name search filter
             if search is not None:
-                terms = search.split('+')
+                terms = search.split(' ')
                 print terms
                 for search_term in terms:
                     cps = cps.filter(member_profile__name__icontains=search_term)
