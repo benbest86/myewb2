@@ -52,8 +52,8 @@ class DjangoAuthentication(object):
 def conference_profile_read(request, username=None):
     allowed_filters = ['registered', 'username', 'active',]
     if username is None:
-        random = bool(request.GET.pop('random', False))
-        count = int(request.GET.pop('count', 6))
+        random = bool(request.GET.get('random', False))
+        count = int(request.GET.get('count', 6))
         kwargs = dict([(str(k),str(v)) for (k, v) in request.GET.items() if k in allowed_filters])
         cps = ConferenceProfile.objects.filter(**kwargs)
         if random:
