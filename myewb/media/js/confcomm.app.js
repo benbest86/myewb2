@@ -398,7 +398,7 @@
         template_name: 'news.html',
         render: function() {
             var self = this;
-            $(self.el).html(_.template(self.template()));
+            self.draw({current_profile: current_profile});
         }});
     var MyProfileView = BaseView.extend({
         el: $('#my-profile'),
@@ -429,6 +429,7 @@
                     self.hide();
                     messages.info('You are now logged out. Hope you come back soon!', {header: 'Logged out.'});
                     anon = true;
+                    news_view.render();
                     current_username = null;
                     login_view.error_message = "";
                     login_view.show();
@@ -840,7 +841,6 @@
         get_chapter_view = new GetChapterView;
         news_view = new NewsView;
         news_view.loading();
-        news_view.render();
         quick_cohorts_view = new QuickCohortsView;
         if (!anon) {
             quick_cohorts_view.loading();
@@ -869,6 +869,7 @@
                 profiles.add(current_profile);
                 my_profile_view.model = current_profile;
                 my_profile_view.render();
+                news_view.render();
                 quick_cohorts_view.model = current_profile;
                 quick_cohorts_view.render();
                 if (!current_profile.get('active')) {
@@ -886,6 +887,7 @@
             $(login_view.el).show();
             login_view.loading();
             login_view.render();
+            news_view.render();
         }
         if (!location.hash) {
             location.hash = '#/';
