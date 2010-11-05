@@ -139,7 +139,12 @@ class Cohort(models.Model):
         elif self.role == 'f':
             s.append('ProF')
         if self.year:
-            s.append("%s/%s" % (str(self.year)[2:4], str(self.year+1)[2:4]))
+            # if a chapter role, use YY/YY format for school year
+            if self.role in ['m', 'e', 'p',]:
+                s.append("%s/%s" % (str(self.year)[2:4], str(self.year+1)[2:4]))
+            # if an africa role, use YYYY format
+            else:
+                s.append(str(self.year))
         return " ".join(s)
 
     @property
