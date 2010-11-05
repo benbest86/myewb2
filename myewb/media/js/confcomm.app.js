@@ -375,7 +375,13 @@
                     elem.val(val);
                 }
                 else {
-                    elem.val('');
+                    // except roles:
+                    if (elem.attr('name') === 'role') {
+                        elem.val('m');
+                    }
+                    else {
+                        elem.val('');
+                    }
                 }
             });
             // need to reset the visible counterparts to the
