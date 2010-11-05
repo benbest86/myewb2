@@ -50,7 +50,7 @@ class DjangoAuthentication(object):
         return HttpResponseRedirect('%s?%s=%s' %tup)
 
 def conference_profile_read(request, username=None):
-    allowed_filters = ['registered', 'username', 'active', 'random',]
+    allowed_filters = ['registered', 'username', 'active',]
     if username is None:
         random = bool(request.GET.pop('random', False))
         count = int(request.GET.pop('count', 6))
