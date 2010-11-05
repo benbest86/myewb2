@@ -1,37 +1,37 @@
 ;(function(GLOBALS) {
+
+    // variable definitions so we don't grab
+    // global scope.
+    var routes;
+    var current_username;
+    var filter_lists;
+    var anon;
+    // holds the current users' profile
+    var current_profile;
+    var show_opt_links;
+    // holds the profiles collection
+    var profiles;
+    // holds the cohort summary collection
+    var cohort_summaries;
+    /* VIEW VARIABLES */
+    var filters_view;
+    var browser_view;
+    var get_chapter_view;
+    var login_view;
+    var my_profile_view;
+    var news_view;
+    var quick_cohorts_view;
+    var browser_pagination_view;
+    var loading_image;
+    var name_filter_view;
+    var hash_history;
+    var show_my_profile;
+    var invitation_view;
+    var messages;
+
     // needs the following globals
     // routes, current_user
     /* SERVER ROUTES */
-
-    var DEBUG = false;
-    if (!DEBUG) { // leave a bunch of global variables so I can get at them through the console
-        var routes;
-        var current_username;
-        var filter_lists;
-        var anon;
-        // holds the current users' profile
-        var current_profile;
-        var show_opt_links;
-        // holds the profiles collection
-        var profiles;
-        // holds the cohort summary collection
-        var cohort_summaries;
-        /* VIEW VARIABLES */
-        var filters_view;
-        var browser_view;
-        var get_chapter_view;
-        var login_view;
-        var my_profile_view;
-        var news_view;
-        var quick_cohorts_view;
-        var browser_pagination_view;
-        var loading_image;
-        var name_filter_view;
-        var hash_history;
-        var show_my_profile;
-        var invitation_view;
-        var messages;
-    }
     routes = GLOBALS.routes;
     current_username = GLOBALS.username;
     filter_lists = GLOBALS.filter_lists;
