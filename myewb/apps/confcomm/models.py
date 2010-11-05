@@ -240,6 +240,23 @@ def update_registered_status(sender, **kwargs):
         pass
 post_save.connect(update_registered_status, sender=ConferenceRegistration)
 
+def create_conference_profile_on_save(sender, **kwargs):
+    try:
+        if isinstance(instance, User):
+            user = instance
+            member_profile = instance.get_profile()
+        elif isinstance(instance, MemberProfile):
+            user = instance.user
+            member_profile = instance
+        else:
+            return
+        if user.is_active and not user.is_bulk and member_profile.name:
+            ConferenceProfile.objects.get_or_create(member_profile=member_profile)
+    except:
+        pass
+post_save.connect(create_conference_profile_on_save, sender=MemberProfile)
+post_save.connect(create_conference_profile_on_save, sender=User)
+
 def create_conference_profiles(do=False):
     all_mps = MemberProfile.objects.exclude(Q(name__isnull=True) | Q(user__is_active=False) | Q(user__is_bulk=True))
     created = 0
