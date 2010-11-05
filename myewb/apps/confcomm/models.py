@@ -32,11 +32,11 @@ class ConferenceProfile(models.Model):
     member_profile = models.OneToOneField(MemberProfile, unique=True, verbose_name=_('member profile this profile is linked to.'))
     registered = models.BooleanField(_('registered for conference 2011'), default=False)
     # additional personal information
-    what_now = models.TextField(_("What you are doing now."), default="Edit me! What are you doing? Where are you living?")
+    what_now = models.TextField(_("What you are doing now."),)
     # additional information we want for conference.
     interests = models.ManyToManyField(ConferenceInterest, related_name='interested_users', verbose_name=_('List of interests.'), blank=True)
-    conference_question = models.TextField(_("One question you want to answer at conference."), default="Add your question here!")
-    conference_goals = models.TextField(_("Your goals for conference."), default="My goals for conference are...")
+    conference_question = models.TextField(_("One question you want to answer at conference."),);
+    conference_goals = models.TextField(_("Your goals for conference."),)
     active = models.BooleanField(default=False)
 
     @property
@@ -49,9 +49,6 @@ class ConferenceProfile(models.Model):
 
     @property
     def cohorts(self):
-        if self.cohort_set.count() == 0:
-            # return 5 random cohorts
-            return Cohort.objects.all().order_by('?')[:5]
         cohorts = self.cohort_set.exclude(role__in=['p', 'j', 'f'])
         for c in self.cohort_set.filter(role__in=['p', 'j', 'f']):
             cohorts = cohorts | Cohort.objects.filter(role=c.role, year=c.year, chapter=None).order_by('year')
@@ -142,7 +139,12 @@ class Cohort(models.Model):
         elif self.role == 'f':
             s.append('ProF')
         if self.year:
-            s.append("%s/%s" % (str(self.year)[2:4], str(self.year+1)[2:4]))
+            # if a chapter role, use YY/YY format for school year
+            if self.role in ['m', 'e', 'p',]:
+                s.append("%s/%s" % (str(self.year)[2:4], str(self.year+1)[2:4]))
+            # if an africa role, use YYYY format
+            else:
+                s.append(str(self.year))
         return " ".join(s)
 
     @property
@@ -155,8 +157,11 @@ class Cohort(models.Model):
             return ['chapter', 'role', 'year']
         else:
             return ['role', 'year']
-cohort_ct = ContentType.objects.get(app_label='confcomm', model='cohort')
-kohort_kings,created = Permission.objects.get_or_create(name='Kohort King', codename='kohort_king', content_type=cohort_ct)
+try:
+    cohort_ct = ContentType.objects.get(app_label='confcomm', model='cohort')
+    kohort_kings,created = Permission.objects.get_or_create(name='Kohort King', codename='kohort_king', content_type=cohort_ct)
+except:
+    pass
 
 
 
@@ -239,6 +244,23 @@ def update_registered_status(sender, **kwargs):
     except:
         pass
 post_save.connect(update_registered_status, sender=ConferenceRegistration)
+
+def create_conference_profile_on_save(sender, **kwargs):
+    try:
+        if isinstance(instance, User):
+            user = instance
+            member_profile = instance.get_profile()
+        elif isinstance(instance, MemberProfile):
+            user = instance.user
+            member_profile = instance
+        else:
+            return
+        if user.is_active and not user.is_bulk and member_profile.name:
+            ConferenceProfile.objects.get_or_create(member_profile=member_profile)
+    except:
+        pass
+post_save.connect(create_conference_profile_on_save, sender=MemberProfile)
+post_save.connect(create_conference_profile_on_save, sender=User)
 
 def create_conference_profiles(do=False):
     all_mps = MemberProfile.objects.exclude(Q(name__isnull=True) | Q(user__is_active=False) | Q(user__is_bulk=True))

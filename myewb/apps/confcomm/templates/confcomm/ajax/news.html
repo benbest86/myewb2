@@ -1,1 +1,11 @@
-News news news...
+<ul class="quicklinks">
+    <% if (anon || !current_profile.get('registered')) { %>
+    <li><a href="#/">Register Now!</a></li>
+    <% } %>
+    <li><a href="#/">What's New With Conference?</a></li>
+    <li><a href="#/">Conference Home</a></li>
+    <% if (!anon && current_profile.get('registered')) { %>
+    <li><a href="#/">Download Receipt</a></li>
+    <li><a href="#/">Cancel My Registration</a></li>
+    <% } %>
+</ul>

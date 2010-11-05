@@ -1,44 +1,37 @@
 ;(function(GLOBALS) {
+
+    // variable definitions so we don't grab
+    // global scope.
+    var routes;
+    var current_username;
+    var filter_lists;
+    var anon;
+    // holds the current users' profile
+    var current_profile;
+    var show_opt_links;
+    // holds the profiles collection
+    var profiles;
+    // holds the cohort summary collection
+    var cohort_summaries;
+    /* VIEW VARIABLES */
+    var filters_view;
+    var browser_view;
+    var get_chapter_view;
+    var login_view;
+    var my_profile_view;
+    var news_view;
+    var quick_cohorts_view;
+    var browser_pagination_view;
+    var loading_image;
+    var name_filter_view;
+    var hash_history;
+    var show_my_profile;
+    var invitation_view;
+    var messages;
+
     // needs the following globals
     // routes, current_user
     /* SERVER ROUTES */
-    if (!console) {
-        console = {
-            log: function(args) {
-                // do nothing
-            }
-        }
-    }
-
-    var DEBUG = false;
-    if (!DEBUG) { // leave a bunch of global variables so I can get at them through the console
-        var routes;
-        var current_username;
-        var filter_lists;
-        var anon;
-        // holds the current users' profile
-        var current_profile;
-        var show_opt_links;
-        // holds the profiles collection
-        var profiles;
-        // holds the cohort summary collection
-        var cohort_summaries;
-        /* VIEW VARIABLES */
-        var filters_view;
-        var browser_view;
-        var get_chapter_view;
-        var login_view;
-        var my_profile_view;
-        var news_view;
-        var quick_cohorts_view;
-        var browser_pagination_view;
-        var loading_image;
-        var name_filter_view;
-        var hash_history;
-        var show_my_profile;
-        var invitation_view;
-        var messages;
-    }
     routes = GLOBALS.routes;
     current_username = GLOBALS.username;
     filter_lists = GLOBALS.filter_lists;
@@ -253,14 +246,17 @@
                 self.render();
             }
         },
-        _default_context: {
-            globals: GLOBALS,
-            routes: routes,
-            show_opt_links: show_opt_links
+        _default_context: function() {
+            return {
+                globals: GLOBALS,
+                routes: routes,
+                show_opt_links: show_opt_links,
+                anon: anon
+            }
         },
         draw: function(extra_context) {
             var self = this;
-            var context = _.extend({}, self._default_context, extra_context);
+            var context = _.extend(self._default_context(), extra_context);
             $(self.el).html(_.template(self.template(), context));
         }
     });
@@ -379,7 +375,13 @@
                     elem.val(val);
                 }
                 else {
-                    elem.val('');
+                    // except roles:
+                    if (elem.attr('name') === 'role') {
+                        elem.val('m');
+                    }
+                    else {
+                        elem.val('');
+                    }
                 }
             });
             // need to reset the visible counterparts to the
@@ -402,7 +404,7 @@
         template_name: 'news.html',
         render: function() {
             var self = this;
-            $(self.el).html(_.template(self.template()));
+            self.draw({current_profile: current_profile});
         }});
     var MyProfileView = BaseView.extend({
         el: $('#my-profile'),
@@ -431,10 +433,14 @@
                 url: routes.logout_url,
                 success: function() {
                     self.hide();
+                    messages.info('You are now logged out. Hope you come back soon!', {header: 'Logged out.'});
                     anon = true;
+                    news_view.render();
                     current_username = null;
                     login_view.error_message = "";
                     login_view.show();
+                    // go back to the home page
+                    location.hash = '#/';
                 },
                 error: function() {
                     self.render();
@@ -472,6 +478,8 @@
                         current_username = data.username;
                         anon = false;
                         show_my_profile();
+                        // bit of a hack... oh the last minute shortcuts
+                        app.getView('Browser').render();
                     }
                     else {
                         self.error_message = data.message;
@@ -551,7 +559,7 @@
             'click a.cohort-add' : 'add_to_cohort',
             'click a.cohort-add-abstract' : 'get_chapter',
             'click a.cohort-remove' : 'remove_from_cohort',
-            'click a.hide-opt-links' : 'hide_opt_links',
+            'click a.hide-opt-links' : 'hide_opt_links'
         },
         // attach some events that are outside of the scope of el
         bind_to_filters: function() {
@@ -572,6 +580,9 @@
         template_name: 'browser.html',
         update_filters: function() {
             var qs = $('#filter-controls').serialize();
+            // serialize turns spaces into +
+            // we don't want that
+            qs = qs.replace(/\+/g, '%20');
             location.hash = '/?' + qs;
         },
         open_invite: function(e) {
@@ -649,7 +660,8 @@
                     if (target.match(no_username)) {
                         current_profile.fetch();
                     }
-                    messages.info('Removed from cohort. <a href="#">Undo</a>');
+                    messages.info('Removed from cohort.'); // <a class="undo-removal" href="#/' + target + '">Undo</a>', {sticky: true});
+                    $('.undo-removal').click(self.add_to_cohort);
                     self.collection.fetch({success: function() {
                         self.render();
                     }});
@@ -758,7 +770,7 @@
         },
         views: {
             'Profile': ProfileView,
-            'Browser': BrowserView,
+            'Browser': BrowserView
         },
         browser: function(args) {
             var self = this;
@@ -838,7 +850,6 @@
         get_chapter_view = new GetChapterView;
         news_view = new NewsView;
         news_view.loading();
-        news_view.render();
         quick_cohorts_view = new QuickCohortsView;
         if (!anon) {
             quick_cohorts_view.loading();
@@ -863,13 +874,15 @@
             $(my_profile_view.el).show();
             my_profile_view.loading();
             current_profile.fetch({success: function(){
+                messages.info('Welcome ' + current_profile.get('member_profile').name + '!', {header: 'Logged in.'});
                 profiles.add(current_profile);
                 my_profile_view.model = current_profile;
                 my_profile_view.render();
+                news_view.render();
                 quick_cohorts_view.model = current_profile;
                 quick_cohorts_view.render();
                 if (!current_profile.get('active')) {
-                    messages.info('Please take a moment to update your profile.', {sticky: true});
+                    messages.info('Please take a moment to update your profile.', {life: 3000});
                     // location.hash = '/profile/edit/';
                     my_profile_view.edit_profile();
                 }
@@ -883,6 +896,7 @@
             $(login_view.el).show();
             login_view.loading();
             login_view.render();
+            news_view.render();
         }
         if (!location.hash) {
             location.hash = '#/';

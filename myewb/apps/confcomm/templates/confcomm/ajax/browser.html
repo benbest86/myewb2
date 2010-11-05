@@ -1,5 +1,5 @@
 <div class="cohort-name"><%= collection.display %></div>
-<% if (collection.id && show_opt_links) {
+<% if (collection.id && show_opt_links && !anon) {
       if (collection.user_is_member && collection.id) { %>
 <div class="cohort-opt-out"><p>Not part of this group? <a class="remove-button cohort-remove" href="#/<%= collection.id %>/">Remove yourself</a> <a class="hide-opt-links" href="#">Hide these links</a></p></div>
 <% } else { %>
@@ -23,7 +23,7 @@
         <a class="invitation" href="#<%= p.invite_hash() %>"><img src="<%= routes.media %>images/confcomm/invite.png" alt="Invite!" /></a>
     <% } %>
     </span>
-    <% if (kohort_king && collection.id) { %>
+    <% if (kohort_king && collection.id && show_opt_links) { %>
     <span class="profile-details-cohort">
         <a class="remove-button cohort-remove" href="#/<%= collection.id %>/<%= p.id %>/">Remove from group.</a>
     </span>

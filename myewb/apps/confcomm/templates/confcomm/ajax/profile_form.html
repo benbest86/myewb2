@@ -1,14 +1,33 @@
 <div class="profile-container">
 <h2>Edit your profile below</h2>
 <form method="POST" action="<%= avatar_url %>" enctype="multipart/form-data">
-    <p><strong>Conference Question:</strong></p> 
-    <textarea class="profile-input" rows="5" name="conference_question"><%= model.get('conference_question') %></textarea>
-    <p><strong>Conference Goals:</strong> </p>
+    <p>
+                <span class="facebox-profile-question">What are you excited about doing at conference?</span>
+    </p> 
+    
+    
     <textarea class="profile-input" rows="5" name="conference_goals"><%= model.get('conference_goals') %></textarea>
-    <p><strong>What Now:</strong></p>
+
+    <p>
+                <span class="facebox-profile-question">What are you hoping to learn at conference?</span>
+    </p> 
+    <textarea class="profile-input" rows="5" name="conference_question"><%= model.get('conference_question') %></textarea>
+    
+    <p>
+                <span class="facebox-profile-question">What are you doing now?</span>
+    </p> 
+
     <textarea class="profile-input" rows="5" name="what_now"><%= model.get('what_now') %></textarea>
-    <p><img src="<%= model.get('avatar_url') %>" alt="Avatar for <%= model.get('member_profile').name %>" /></p>
-    <p><strong>Upload a picture:</strong> <input type="file" name="avatar" class="profile-input"></p>
-    <input id="update-profile" value="Update" type="submit" />
+    
+    <p>
+                <span class="facebox-profile-question">Your Photo</span>
+    </p> 
+    
+    <img src="<%= model.get('avatar_url') %>" alt="Avatar for <%= model.get('member_profile').name %>" style="float:left; margin-right:10px;" />
+    <div>
+        <p><strong>Upload a new picture:</strong><br/><input type="file" name="avatar" class="profile-input"></p>
+    </div>
+    <div class="cleardiv">&nbsp;</div>
+    <p><input id="update-profile" value="Update" type="submit" style="font-size:13px;" /></p>
 </form>
 </div>

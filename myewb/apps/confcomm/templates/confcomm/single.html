@@ -10,7 +10,11 @@
     <div class="section" id="filters"></div>
     <div class="section" id="browser">
         <div class="paginator"></div>
-        <div id="browser-container">Loading profiles...</div>
+        <div id="browser-container">
+        
+            Loading profiles...<br/>
+            <a href="{% url confcomm_app %}">(Click to refresh)</a>
+        </div>
         <div class="paginator"></div>
     </div>
 </div>
@@ -34,7 +38,7 @@
     
     
     <div class="sidebar-section round">
-        <div class="sidebar-section-heading"><h3>News here</h3></div>
+        <div class="sidebar-section-heading"><h3>Quick Links</h3></div>
         <div id="news" class="sidebar-section-contents">Loading conference news...</div>
     </div>
     
@@ -106,16 +110,26 @@
     $.facebox.settings.closeImage = "{{ STATIC_URL }}pinax/images/facebox/closelabel.gif"
     $.facebox.settings.loadingImage = "{{ STATIC_URL }}pinax/images/facebox/loading.gif"
     $.facebox.settings.opacity = 0.5;
+    
+    
+        // Kind of weird to put these exactly here, but it's important so the h1 text is changed
+        // *after* the h1 is loaded, but not have it wait for .ready() a few seconds later.
+    	$('.textsub h1').text("Who's coming to Conference?");
+    	// And then pretty much just this.  :)
+    	document.title = "Who's Coming - EWB Conference 2011";
+        // @@@ sean.
+    
 </script>
 {# all of our app's js is here #}
 <script type="text/javascript" src="{{ STATIC_URL}}js/confcomm.app.js"></script>
 {# preload some images so the facebox comes up quickly #}
 <div style="display:none;">
     <img src="{{ STATIC_URL }}pinax/images/facebox/loading.gif" />
-    <img src="{{ STATIC_URL }}pinax/images/facebox/tl.gif" />
-    <img src="{{ STATIC_URL }}pinax/images/facebox/tr.gif" />
-    <img src="{{ STATIC_URL }}pinax/images/facebox/bl.gif" />
-    <img src="{{ STATIC_URL }}pinax/images/facebox/br.gif" />
-    <img src="{{ STATIC_URL }}pinax/images/facebox/b.gif" />
+    <img src="{{ STATIC_URL }}pinax/images/facebox/closelabel.gif" />
+    <img src="{{ STATIC_URL }}pinax/images/facebox/tl.png" />
+    <img src="{{ STATIC_URL }}pinax/images/facebox/tr.png" />
+    <img src="{{ STATIC_URL }}pinax/images/facebox/bl.png" />
+    <img src="{{ STATIC_URL }}pinax/images/facebox/br.png" />
+    <img src="{{ STATIC_URL }}pinax/images/facebox/b.png" />
 </div>
 {% endblock extra_body %}

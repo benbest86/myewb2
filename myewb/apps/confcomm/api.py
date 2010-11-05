@@ -50,9 +50,15 @@ class DjangoAuthentication(object):
         return HttpResponseRedirect('%s?%s=%s' %tup)
 
 def conference_profile_read(request, username=None):
+    allowed_filters = ['registered', 'username', 'active',]
     if username is None:
-        kwargs = dict([(str(k),str(v)) for (k, v) in request.GET.items()])
-        return ConferenceProfile.objects.filter(**kwargs)[:6]
+        random = bool(request.GET.get('random', False))
+        count = int(request.GET.get('count', 6))
+        kwargs = dict([(str(k),str(v)) for (k, v) in request.GET.items() if k in allowed_filters])
+        cps = ConferenceProfile.objects.filter(**kwargs)
+        if random:
+            cps = cps.order_by('?')
+        return cps[:count]
     p = ConferenceProfile.objects.get(member_profile__user__username=username)
     return p
 
@@ -151,7 +157,7 @@ class CohortHandler(BaseHandler):
                 cps = cps.filter(member_profile__last_name__istartswith=last_name)
             # add name search filter
             if search is not None:
-                terms = search.split('+')
+                terms = search.split(' ')
                 print terms
                 for search_term in terms:
                     cps = cps.filter(member_profile__name__icontains=search_term)
