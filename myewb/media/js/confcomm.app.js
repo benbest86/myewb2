@@ -766,7 +766,8 @@
         template_name: 'invitation.html',
         content_holder: '#invitation',
         el: $('#invitation'),
-        send_invitation: function() {
+        send_invitation: function(e) {
+            e.preventDefault();
             var self = this;
             var inputs = self.$('form').find('.invitation-input');
             var data = {};
@@ -785,7 +786,6 @@
                     messages.error('Your invitation could not be sent.')
                 }
             });
-            return false;
         },
         render: function() {
             var self = this;
@@ -803,7 +803,7 @@
             // form
             // XXX: Might not work in IE with submit event so have to manually go
             //self.delegateEvents();
-            self.$('form').bind('submit', function() { self.send_invitation(); return false;});
+            self.$('form').bind('submit', function(e){self.send_invitation(e)});
         }
     });
     /* CONTROLLER */
