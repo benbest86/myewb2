@@ -280,6 +280,9 @@
             $('#loading-widget').show();
         },
         to_cohort: function(e) {
+            // pop one off the facebox stack since we don't want
+            // to go back when closing the facebox
+            facebox_history.pop();
             $(document).trigger('close.facebox');
         },
         render: function() {
