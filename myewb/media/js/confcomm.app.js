@@ -321,7 +321,7 @@
                         delete data['avatar'];
                         messages.info('Photo uploaded successfully.', {header: 'Photo uploaded successfully.'});
                         self.model.save(data, {success: function(){
-                            location.hash='/profile/?id=' + id;
+                            location.hash=self.model.hash();
                             messages.info('Your profile information has been successfully updated.', {'header': 'Profile Updated'});
                             my_profile_view.render();
                             }});
@@ -483,7 +483,6 @@
                 quick_cohorts_view.render();
                 if (!current_profile.get('active')) {
                     messages.info('Please take a moment to update your profile.', {life: 3000});
-                    // location.hash = '/profile/edit/';
                     self.edit_profile();
                 }
             }});
@@ -629,12 +628,7 @@
             var self = this;
             e.preventDefault();
             if (anon) {
-                // have to prevent the default and then set the 
-                // location.hash manually so we don't get the hashchange
-                // after the fact
-                // location.hash = $(e.target).attr('href');
                 messages.info("Please login to send an invite.", {header: 'Please login.'});
-                // location.hash = hash_history.pop();
                 $("#id_login_name").focus();
                 return;
             }
