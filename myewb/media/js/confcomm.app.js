@@ -946,14 +946,10 @@
         // keep track of the last hash so we can return to it after
         // closing a facebox
         $(window).hashchange(function() {
-            console.log('location.hash', location.hash);
-            console.log('hash_history before push', hash_history);
             hash_history.push(location.hash);
-            console.log('hash_history after push', hash_history);
             while( hash_history.length > 4) {
                 hash_history.shift();
             }
-            console.log('hash_history after push and slice', hash_history);
         });
     });
 })(CONFCOMM_GLOBALS);
