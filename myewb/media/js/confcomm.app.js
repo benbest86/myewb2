@@ -358,8 +358,6 @@
             self.el = $('#facebox').find('.content').first();
             // re-delegate the events so they are attached to the facebox copy of the
             // form
-            // XXX: Might not work in IE with submit event so have to manually go
-            //self.delegateEvents();
             self.$('form').bind('submit', function() { self.update_profile(); return false;});
         }});
     var FiltersView = BaseView.extend({
@@ -793,8 +791,6 @@
             self.el = $('#facebox').find('.content').first();
             // re-delegate the events so they are attached to the facebox copy of the
             // form
-            // XXX: Might not work in IE with submit event so have to manually go
-            //self.delegateEvents();
             self.$('form').bind('submit', function(e){self.send_invitation(e)});
         }
     });
