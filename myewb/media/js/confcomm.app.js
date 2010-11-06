@@ -290,8 +290,7 @@
         render: function() {
             $('#loading-widget').hide();
             var self = this;
-            // XXX should change to self.draw({model:self.model})
-            $(self.el).html(_.template(self.template(), {model:self.model}));
+            self.draw({model: self.model});
             // put contents of #profile into a facebox
             $.facebox({div:'#profile'});
             // set up events inside of facebox
@@ -352,8 +351,7 @@
             }
             // since our form is in the facebox we have to do some monkey business here
             // use content_holder to render the template
-            // XXX move to self.draw()
-            $(self.content_holder).html(_.template(self.template(), {model:self.model, avatar_url:routes.avatar_url}));
+            self.draw({model: self.model});
             $.facebox({div:self.content_holder});
             // after facebox copies the html to its own div, reset self.el to the 
             // content in the facebox. We need this to grab the form contents on submit.
@@ -420,8 +418,7 @@
         },
         render: function() {
             var self = this;
-            // XXX should change to self.draw()
-            $(self.el).html(_.template(self.template(), {filter_lists: filter_lists}));
+            self.draw();
             self.delegateEvents();
         }});
 
@@ -523,8 +520,7 @@
         },
         render: function() {
             var self = this;
-            // XXX should change to self.draw()
-            $(self.el).html(_.template(self.template(), {error_message: self.error_message, login_name: self.login_name}));
+            self.draw({error_message: self.error_message, login_name: self.login_name});
 
             self.$('form').unbind('submit').bind('submit', function() {
                 self.login();
@@ -732,8 +728,7 @@
         render: function() {
             var self = this;
             self.el = $('.paginator');    // @@@ SEAN
-            // XXX change to draw
-            $(self.el).html(_.template(self.template(), {model: self.model}));
+            self.draw({model: self.model});
         }});
     // separate view for filter by last name
     var NameFilterView = BaseView.extend({
@@ -757,8 +752,7 @@
         render: function() {
             var self = this;
             self.el = $('#name-filter');
-            // XXX change to draw()
-            $(self.el).html(_.template(self.template(), {current_letter: self.current_letter}));
+            self.draw({current_letter: self.current_letter});
             self.delegateEvents();
         }
     });
@@ -793,7 +787,6 @@
             // use content_holder to render the template
             // grab the first name
             var sender_name = current_profile.get('member_profile').name.split(' ')[0];
-            // XXX move to self.draw
             $(self.content_holder).html(_.template(self.template(), {model: self.model, site_url: routes.site_url, sender_name:sender_name}));
             $.facebox({div:self.content_holder});
             // after facebox copies the html to its own div, reset self.el to the
