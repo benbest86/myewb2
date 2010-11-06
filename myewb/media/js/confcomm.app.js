@@ -41,10 +41,12 @@
 
     /* MODELS */
     var ConferenceProfile = Backbone.Model.extend({
+        // set id to the username provided
         initialize: function() {
             var self = this;
             if (!self.id) self.id = self.get('username');
         },
+        // grab what might be the top most important cohorts
         quick_cohorts: function() {
             var self = this;
             if (self['_quick_cohorts']) {
@@ -55,15 +57,19 @@
             var cohorts = self.get('cohorts');
             if (cohorts && cohorts.length) {
                 var sorted_cohorts = _.sortBy(cohorts, function(c) {
+                    // jf, aps and prof are top priority
                     if (_.include(['j', 's', 'f'], c.role)) {
                         return 1;
                     }
+                    // then president
                     else if (c.role === 'p') {
                         return 2;
                     }
+                    // then exec
                     else if (c.role === 'e') {
                         return 3
                     }
+                    // then other
                     else {
                         return 4;
                     }
@@ -76,6 +82,7 @@
             var self = this;
             return routes.profile_base + self.id + '/';
         },
+        // internal to the app hash function
         hash: function() {
             var self = this;
             return '/profile/?id=' + self.id;
@@ -173,7 +180,9 @@
             }
             return t;
         },
+        // private state variable
         _state: {},
+        // private function that filters state when setting state
         _filter_state: function(state) {
             // override this to filter state values
             return state;
@@ -202,6 +211,7 @@
             // everything has passed so state is the same
             return true;
         },
+        // default loading function when view is loading
         loading: function(extra_content) {
             var self = this;
             if (!self.el) {
@@ -215,6 +225,7 @@
                 }
             ));
         },
+        // render function when the view needs to asynchronously fetch data
         async_render: function(id, collection, user_callbacks) {
             var self = this;
             self.model = collection.get(id);
@@ -235,10 +246,6 @@
                 if (user_callbacks['error']) {
                     callbacks.error = user_callbacks.error;
                 }
-                // get our loading function. not appropriate if we're not faceboxing though?
-                // $.facebox(function() {
-                //     model_to_get.fetch(callbacks);
-                // });
                 self.loading();
                 model_to_get.fetch(callbacks);
             }
@@ -246,6 +253,9 @@
                 self.render();
             }
         },
+        // default context to use when using draw function to render
+        // this is a function so literals (i.e. anon) are always their
+        // current value
         _default_context: function() {
             return {
                 globals: GLOBALS,
@@ -254,6 +264,7 @@
                 anon: anon
             }
         },
+        // replace self.el with the template including the default context
         draw: function(extra_context) {
             var self = this;
             var context = _.extend(self._default_context(), extra_context);
@@ -261,6 +272,7 @@
         }
     });
 
+    // view for an individual profile
     var ProfileView = BaseView.extend({
         el: $('#profile .profile-content'),
         template_name: 'profile.html',
@@ -269,6 +281,8 @@
         },
         to_cohort: function(e) {
             e.preventDefault();
+            // XXX this is a hack to cause view to change to the cohort
+            // url when the facebox closes
             hash_history.push($(e.target).attr('href'));
             hash_history.push($(e.target).attr('href'));
             $(document).trigger('close.facebox');
@@ -276,13 +290,19 @@
         render: function() {
             $('#loading-widget').hide();
             var self = this;
+            // XXX should change to self.draw({model:self.model})
             $(self.el).html(_.template(self.template(), {model:self.model}));
+            // put contents of #profile into a facebox
             $.facebox({div:'#profile'});
-            // set up events inside of facebox instead of delgating and changing el
+            // set up events inside of facebox
             $('#facebox a.cohort-link').click(self.to_cohort);
         }
     });
+    // view for a user to update their profile
+    // renders profile form in a facebox
     var ProfileFormView = BaseView.extend({
+        // require a content holder since our view will
+        // be rendered in the facebox
         content_holder: '#profile-form-container',
         el: $('#profile-form-container'),
         template_name: 'profile_form.html',
@@ -314,7 +334,10 @@
             }
             else {
                 self.model.save(data, {success: function(){
+                    // history hack XXX
                     hash_history.push('#/');
+                    // XXX need to find a better way for this someday
+                    // maybe self.model.hash()
                     location.hash='/profile/?id=' + id;
                     messages.info('Your profile information has been successfully updated.', {'header': 'Profile Updated'});
                 }});
@@ -329,10 +352,11 @@
             }
             // since our form is in the facebox we have to do some monkey business here
             // use content_holder to render the template
+            // XXX move to self.draw()
             $(self.content_holder).html(_.template(self.template(), {model:self.model, avatar_url:routes.avatar_url}));
             $.facebox({div:self.content_holder});
             // after facebox copies the html to its own div, reset self.el to the 
-            // content in the facebox
+            // content in the facebox. We need this to grab the form contents on submit.
             self.el = $('#facebox').find('.content').first();
             // re-delegate the events so they are attached to the facebox copy of the
             // form
@@ -375,7 +399,7 @@
                     elem.val(val);
                 }
                 else {
-                    // except roles:
+                    // except roles since the default is 'm' instead of ''
                     if (elem.attr('name') === 'role') {
                         elem.val('m');
                     }
@@ -396,9 +420,11 @@
         },
         render: function() {
             var self = this;
+            // XXX should change to self.draw()
             $(self.el).html(_.template(self.template(), {filter_lists: filter_lists}));
             self.delegateEvents();
         }});
+
     var NewsView = BaseView.extend({
         el: $('#news'),
         template_name: 'news.html',
@@ -406,6 +432,7 @@
             var self = this;
             self.draw({current_profile: current_profile});
         }});
+
     var MyProfileView = BaseView.extend({
         el: $('#my-profile'),
         events: {
@@ -421,6 +448,7 @@
             }
             // push a dummy value onto the history 
             // since we will be opening a facebox
+            // XXX another hack - should try to find a way to remove this
             hash_history.push('#/');
             var self = this;
             profile_form_view.model = profiles.get(current_username);
@@ -438,6 +466,7 @@
                     news_view.render();
                     current_username = null;
                     login_view.error_message = "";
+                    // XXX this should be tied to an event someday probably
                     login_view.show();
                     // go back to the home page
                     location.hash = '#/';
@@ -477,8 +506,10 @@
                         self.hide();
                         current_username = data.username;
                         anon = false;
+                        // XXX hack - should be event driven
                         show_my_profile();
-                        // bit of a hack... oh the last minute shortcuts
+                        // XXX bit of a hack... oh the last minute shortcuts
+                        // should be event driven
                         app.getView('Browser').render();
                     }
                     else {
@@ -492,6 +523,7 @@
         },
         render: function() {
             var self = this;
+            // XXX should change to self.draw()
             $(self.el).html(_.template(self.template(), {error_message: self.error_message, login_name: self.login_name}));
 
             self.$('form').unbind('submit').bind('submit', function() {
@@ -531,6 +563,7 @@
                     if (target.match(no_username)) {
                         current_profile.fetch();
                     }
+                    // XXX hack - should be event driven
                     browser_view.collection.fetch({success: function() {
                         browser_view.render();
                     }});
@@ -568,6 +601,7 @@
                 self.update_filters();
             });
         },
+        // XXX should be event driven some day to some thing like filter_change
         _filter_state: function(state) {
             var new_state = {};
             _.each(['chapter', 'role', 'year', 'last_name', 'page', 'search', 'registered'], function(f) {
@@ -598,12 +632,14 @@
                 $("#id_login_name").focus();
                 return;
             }
+            // dependent on having a .profile-summary div with an id of <id>-summary
             var id = $(e.target).parents('div.profile-summary').first().attr('id').split('-')[0];
             if (!id) {
                 return;
             }
             // push a dummy value onto the hash_history since we'll be opening a facebox
             hash_history.push('#/');
+            // XXX hack - should be event driven
             var view = invitation_view;
             view.async_render(id, cohort_summaries, {
                 error: function () {
@@ -642,6 +678,7 @@
         get_chapter: function(e) {
             e.preventDefault();
             var target = $(e.target).attr('href').split('#/')[1];
+            // XXX minor hack - should probably be event driven but maybe not
             get_chapter_view.target = target;
             get_chapter_view.render();
         },
@@ -680,6 +717,7 @@
         },
         render: function() {
             var self = this;
+            // XXX shouldn't need GLOBALS anymore
             self.draw({
                 collection: self.collection,
                 kohort_king: GLOBALS.kohort_king
@@ -693,8 +731,10 @@
         render: function() {
             var self = this;
             self.el = $('.paginator');    // @@@ SEAN
+            // XXX change to draw
             $(self.el).html(_.template(self.template(), {model: self.model}));
         }});
+    // separate view for filter by last name
     var NameFilterView = BaseView.extend({
         template_name: 'last_name_filter.html',
         current_letter: 'All',
@@ -716,6 +756,7 @@
         render: function() {
             var self = this;
             self.el = $('#name-filter');
+            // XXX change to draw()
             $(self.el).html(_.template(self.template(), {current_letter: self.current_letter}));
             self.delegateEvents();
         }
@@ -749,11 +790,13 @@
             var self = this;
             // since our form is in the facebox we have to do some monkey business here
             // use content_holder to render the template
+            // grab the first name
             var sender_name = current_profile.get('member_profile').name.split(' ')[0];
+            // XXX move to self.draw
             $(self.content_holder).html(_.template(self.template(), {model: self.model, site_url: routes.site_url, sender_name:sender_name}));
             $.facebox({div:self.content_holder});
             // after facebox copies the html to its own div, reset self.el to the
-            // content in the facebox
+            // content in the facebox - required to grab the form elements later
             self.el = $('#facebox').find('.content').first();
             // re-delegate the events so they are attached to the facebox copy of the
             // form
@@ -775,7 +818,7 @@
         browser: function(args) {
             var self = this;
             var view = self.getView('Browser');
-            // a bit of an ugly hack here
+            // XXX a bit of an ugly hack here
             filters_view.update_from_args(args);
             // fetch the next page of results
             // and render only if the state has changed
@@ -851,6 +894,7 @@
         news_view = new NewsView;
         news_view.loading();
         quick_cohorts_view = new QuickCohortsView;
+        // anon gets the default hard-coded html
         if (!anon) {
             quick_cohorts_view.loading();
         }
@@ -860,13 +904,14 @@
         filters_view.render();
         name_filter_view = new NameFilterView;
         name_filter_view.render();
-        // TODO: fix this - a bit of an ugly hack.
+        // XXX: fix this - a bit of an ugly hack.
         browser_view.bind_to_filters();
         invitation_view = new InvitationView;
         // show the my_profile view if the user is logged in
         profile_form_view = new ProfileFormView;
         login_view = new LoginView;
         my_profile_view = new MyProfileView();
+        // XXX move this to MyProfileView
         show_my_profile = function() {
             current_profile = new ConferenceProfile({
                 id: current_username
@@ -906,6 +951,8 @@
         }
         // bind some events to facebox to help with nav
         // change back to the last hash when we close a facebox
+        // XXX fix this so we don't always pop. Only when another
+        // stack of variables is set to pop
         $(document).bind('close.facebox', function() {
             // get rid of the top most history entry (the facebox url)
             hash_history.pop();
