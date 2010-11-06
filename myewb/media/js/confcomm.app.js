@@ -25,6 +25,7 @@
     var loading_image;
     var name_filter_view;
     var hash_history;
+    var facebox_history;
     var show_my_profile;
     var invitation_view;
     var messages;
@@ -283,8 +284,6 @@
             e.preventDefault();
             // XXX this is a hack to cause view to change to the cohort
             // url when the facebox closes
-            hash_history.push($(e.target).attr('href'));
-            hash_history.push($(e.target).attr('href'));
             $(document).trigger('close.facebox');
         },
         render: function() {
@@ -292,6 +291,7 @@
             var self = this;
             self.draw({model: self.model});
             // put contents of #profile into a facebox
+            facebox_history.push(location.hash);
             $.facebox({div:'#profile'});
             // set up events inside of facebox
             $('#facebox a.cohort-link').click(self.to_cohort);
@@ -324,7 +324,6 @@
                         delete data['avatar'];
                         messages.info('Photo uploaded successfully.', {header: 'Photo uploaded successfully.'});
                         self.model.save(data, {success: function(){
-                            hash_history.push('#/');
                             location.hash='/profile/?id=' + id;
                             messages.info('Your profile information has been successfully updated.', {'header': 'Profile Updated'});
                             my_profile_view.render();
@@ -333,8 +332,6 @@
             }
             else {
                 self.model.save(data, {success: function(){
-                    // history hack XXX
-                    hash_history.push('#/');
                     // XXX need to find a better way for this someday
                     // maybe self.model.hash()
                     location.hash='/profile/?id=' + id;
@@ -441,10 +438,6 @@
             if (anon) {
                 return
             }
-            // push a dummy value onto the history 
-            // since we will be opening a facebox
-            // XXX another hack - should try to find a way to remove this
-            hash_history.push('#/');
             var self = this;
             profile_form_view.model = profiles.get(current_username);
             profile_form_view.render();
@@ -631,8 +624,6 @@
             if (!id) {
                 return;
             }
-            // push a dummy value onto the hash_history since we'll be opening a facebox
-            hash_history.push('#/');
             // XXX hack - should be event driven
             var view = invitation_view;
             view.async_render(id, cohort_summaries, {
@@ -805,6 +796,9 @@
             'Browser': BrowserView
         },
         browser: function(args) {
+            // when using the back or forward button we
+            // might have an open facebox - close it
+            $(document).trigger('close.facebox');
             var self = this;
             var view = self.getView('Browser');
             // XXX a bit of an ugly hack here
@@ -869,7 +863,8 @@
     /* GO TIME */
     $(function() {
 
-        hash_history = ['/'];
+        hash_history = ['#/'];
+        facebox_history = [];
         profiles = new ProfileStore();
         cohort_summaries = new SummaryStore();
         cohort_summaries.base_url = routes.cohorts_base;
@@ -944,27 +939,33 @@
         // stack of variables is set to pop
         $(document).bind('close.facebox', function() {
             // get rid of the top most history entry (the facebox url)
-            hash_history.pop();
-            // pop the last entry off of the hash_history and set location.hash to it
-            // hashchange() will fire and push this value back onto the stack
-            var next_hash = hash_history.pop();
-            // sometimes close.facebox fires twice - causing weird behaviour
-            // like undefined hashes. if there is no hash on the stack then
-            // set location.hash to home
-            if (next_hash) {
-                location.hash = next_hash;
-            }
-            else {
-                location.hash = '#/'
+            if (facebox_history.pop() !== undefined) {
+                hash_history.pop();
+                // pop the last entry off of the hash_history and set location.hash to it
+                // hashchange() will fire and push this value back onto the stack
+                var next_hash = hash_history.pop();
+                // sometimes close.facebox fires twice - causing weird behaviour
+                // like undefined hashes. if there is no hash on the stack then
+                // set location.hash to home
+                if (next_hash) {
+                    location.hash = next_hash;
+                }
+                else {
+                    location.hash = '#/'
+                }
             }
         });
         // keep track of the last hash so we can return to it after
         // closing a facebox
         $(window).hashchange(function() {
+            console.log('location.hash', location.hash);
+            console.log('hash_history before push', hash_history);
             hash_history.push(location.hash);
+            console.log('hash_history after push', hash_history);
             while( hash_history.length > 4) {
                 hash_history.shift();
             }
+            console.log('hash_history after push and slice', hash_history);
         });
     });
 })(CONFCOMM_GLOBALS);
