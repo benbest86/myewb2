@@ -280,7 +280,6 @@
             $('#loading-widget').show();
         },
         to_cohort: function(e) {
-            e.preventDefault();
             $(document).trigger('close.facebox');
         },
         render: function() {
