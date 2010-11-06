@@ -716,8 +716,7 @@
             var self = this;
             // XXX shouldn't need GLOBALS anymore
             self.draw({
-                collection: self.collection,
-                kohort_king: GLOBALS.kohort_king
+                collection: self.collection
             });
             self.paginator.render();
             self.delegateEvents();
