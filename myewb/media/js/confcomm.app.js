@@ -281,8 +281,6 @@
         },
         to_cohort: function(e) {
             e.preventDefault();
-            // XXX this is a hack to cause view to change to the cohort
-            // url when the facebox closes
             $(document).trigger('close.facebox');
         },
         render: function() {
@@ -726,7 +724,6 @@
         },
         render: function() {
             var self = this;
-            // XXX shouldn't need GLOBALS anymore
             self.draw({
                 collection: self.collection
             });
@@ -936,8 +933,7 @@
         }
         // bind some events to facebox to help with nav
         // change back to the last hash when we close a facebox
-        // XXX fix this so we don't always pop. Only when another
-        // stack of variables is set to pop
+        // if appropriate
         $(document).bind('close.facebox', function() {
             // get rid of the top most history entry (the facebox url)
             if (facebox_history.pop() !== undefined) {
