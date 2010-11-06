@@ -329,9 +329,7 @@
             }
             else {
                 self.model.save(data, {success: function(){
-                    // XXX need to find a better way for this someday
-                    // maybe self.model.hash()
-                    location.hash='/profile/?id=' + id;
+                    location.hash=self.model.hash();
                     messages.info('Your profile information has been successfully updated.', {'header': 'Profile Updated'});
                 }});
                 return false;
