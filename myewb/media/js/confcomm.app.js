@@ -26,7 +26,6 @@
     var name_filter_view;
     var hash_history;
     var facebox_history;
-    var show_my_profile;
     var invitation_view;
     var messages;
 
@@ -469,7 +468,31 @@
         render: function() {
             var self = this;
             self.draw({model:self.model});
-        }});
+        },
+        show: function() {
+            var self = this;
+            current_profile = new ConferenceProfile({
+                id: current_username
+            });
+            $(self.el).show();
+            self.loading();
+            current_profile.fetch({success: function(){
+                messages.info('Welcome ' + current_profile.get('member_profile').name + '!', {header: 'Logged in.'});
+                profiles.add(current_profile);
+                self.model = current_profile;
+                self.render();
+                // XXX bit of a hack here
+                news_view.render();
+                quick_cohorts_view.model = current_profile;
+                quick_cohorts_view.render();
+                if (!current_profile.get('active')) {
+                    messages.info('Please take a moment to update your profile.', {life: 3000});
+                    // location.hash = '/profile/edit/';
+                    self.edit_profile();
+                }
+            }});
+        }
+        });
     var QuickCohortsView = BaseView.extend({
         el: $('#quick-cohorts'),
         template_name: 'quick_cohorts.html',
@@ -495,7 +518,7 @@
                         current_username = data.username;
                         anon = false;
                         // XXX hack - should be event driven
-                        show_my_profile();
+                        my_profile_view.show();
                         // XXX bit of a hack... oh the last minute shortcuts
                         // should be event driven
                         app.getView('Browser').render();
@@ -895,30 +918,8 @@
         profile_form_view = new ProfileFormView;
         login_view = new LoginView;
         my_profile_view = new MyProfileView();
-        // XXX move this to MyProfileView
-        show_my_profile = function() {
-            current_profile = new ConferenceProfile({
-                id: current_username
-            });
-            $(my_profile_view.el).show();
-            my_profile_view.loading();
-            current_profile.fetch({success: function(){
-                messages.info('Welcome ' + current_profile.get('member_profile').name + '!', {header: 'Logged in.'});
-                profiles.add(current_profile);
-                my_profile_view.model = current_profile;
-                my_profile_view.render();
-                news_view.render();
-                quick_cohorts_view.model = current_profile;
-                quick_cohorts_view.render();
-                if (!current_profile.get('active')) {
-                    messages.info('Please take a moment to update your profile.', {life: 3000});
-                    // location.hash = '/profile/edit/';
-                    my_profile_view.edit_profile();
-                }
-            }});
-        }
         if (!anon) {
-            show_my_profile();
+            my_profile_view.show();
         }
         // show the login view if the user is not logged in
         else {
