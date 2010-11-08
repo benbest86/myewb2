@@ -36,6 +36,7 @@ class ConferenceProfile(models.Model):
     what_now = models.TextField(_("What you are doing now."),)
     # additional information we want for conference.
     interests = models.ManyToManyField(ConferenceInterest, related_name='interested_users', verbose_name=_('List of interests.'), blank=True)
+    text_interests = models.TextField(_('Your current interests'),default="",)
     conference_question = models.TextField(_("One question you want to answer at conference."),)
     conference_goals = models.TextField(_("Your goals for conference."),)
     active = models.BooleanField(default=False)
