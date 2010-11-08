@@ -8,6 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from profiles.models import MemberProfile
 from networks.models import Network
+from communities.models import ExecList
 from avatar.templatetags.avatar_tags import avatar_url
 from conference.models import ConferenceRegistration
 
@@ -56,6 +57,28 @@ class ConferenceProfile(models.Model):
 
     def __unicode__(self):
         return '%s - %s' % (self.member_profile.name, (self.registered and 'registered' or 'not registered'))
+
+    def add_to_default_cohorts(self):
+        """
+        Add a conference profile to its default cohorts based on chapter
+        status.
+        """
+        #XXX this is a bad hack that probably should go somewhere
+        # else. In fact this whole thing should probably be a manager
+        # function :)
+        chapter = self.member_profile.get_chapter()
+        if chapter is not None:
+            print 'chapter is there!'
+            Cohort.objects.get(chapter=chapter.slug, role='m', year=2010).members.add(self)
+            execlist = ExecList.objects.get(parent=chapter)
+            if execlist.members.filter(user__id=self.member_profile.user.id).count():
+                Cohort.objects.get(chapter=chapter.slug, role='e', year=2010).members.add(self)
+        if self.member_profile.name is None:
+            mp = self.member_profile
+            if mp.user.visible_name():
+                mp.name = mp.user.visible_name()
+                mp.save()
+
 
 CHAPTER_CHOICES = (
     ('carleton', 'Carleton',),
@@ -256,7 +279,12 @@ def create_conference_profile_on_save(sender, **kwargs):
         else:
             return
         if user.is_active and not user.is_bulk and member_profile.name:
-            ConferenceProfile.objects.get_or_create(member_profile=member_profile)
+            cp, created = ConferenceProfile.objects.get_or_create(member_profile=member_profile)
+            if created:
+                cp.add_to_default_cohorts()
+                if user.conference_registrations.filter(cancelled=False).count():
+                    cp.registered = True
+                    cp.save()
     except:
         pass
 post_save.connect(create_conference_profile_on_save, sender=MemberProfile)

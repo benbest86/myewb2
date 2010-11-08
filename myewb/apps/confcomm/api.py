@@ -95,6 +95,7 @@ class ConferenceProfileHandler(BaseHandler):
                 member_profile = user.memberprofile_set.get()
                 registered = user.conference_registrations.filter(cancelled=False).count() > 0
                 p = ConferenceProfile.objects.create(member_profile=member_profile, registered=registered)
+                p.add_to_default_cohorts()
                 return p
             resp = rc.NOT_FOUND
             resp.write('No profile found for %s.' % username)
