@@ -810,8 +810,10 @@
             'Browser': BrowserView
         },
         browser: function(args) {
-            // when using the back or forward button we
-            // might have an open facebox - close it
+            // when using the back or forward button we might have an open
+            // facebox - pop one off the top of facebox_history since we don't
+            // want to change the url and close it
+            facebox_history.pop();
             $(document).trigger('close.facebox');
             var self = this;
             var view = self.getView('Browser');
