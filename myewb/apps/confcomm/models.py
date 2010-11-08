@@ -38,6 +38,7 @@ class ConferenceProfile(models.Model):
     interests = models.TextField(_("Your current interests"),)
     conference_question = models.TextField(_("One question you want to answer at conference."),)
     conference_goals = models.TextField(_("Your goals for conference."),)
+    connections = models.TextField(_("Connections you want to make with others."),)
     active = models.BooleanField(default=False)
 
     @property

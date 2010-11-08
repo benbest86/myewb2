@@ -64,7 +64,7 @@ def conference_profile_read(request, username=None):
 
 class AnonymousConferenceProfileHandler(AnonymousBaseHandler):
     model = ConferenceProfile
-    fields = ('conference_question', 'conference_goals', 'what_now', 'interests', 'registered', 'avatar_url', ('member_profile', ('name', 'about', 'gender',),), 'username', ('cohorts', ('chapter', 'role', 'year', 'display', 'relevant_properties',),),'active',)
+    fields = ('conference_question', 'conference_goals', 'what_now', 'interests', 'connections', 'registered', 'avatar_url', ('member_profile', ('name', 'about', 'gender',),), 'username', ('cohorts', ('chapter', 'role', 'year', 'display', 'relevant_properties',),),'active',)
 
     @classmethod
     def read(self, request, username=None):
@@ -82,7 +82,7 @@ class ConferenceProfileHandler(BaseHandler):
     anonymous = AnonymousConferenceProfileHandler
     model = ConferenceProfile
     allowed_methods = ('GET', 'PUT',)
-    fields = ('conference_question', 'conference_goals', 'what_now', 'interests', 'registered', 'avatar_url', ('member_profile', ('name', 'about', 'gender',),), 'username', ('cohorts', ('chapter', 'role', 'year', 'display', 'relevant_properties',),),'active',)
+    fields = ('conference_question', 'conference_goals', 'what_now', 'interests', 'connections', 'registered', 'avatar_url', ('member_profile', ('name', 'about', 'gender',),), 'username', ('cohorts', ('chapter', 'role', 'year', 'display', 'relevant_properties',),),'active',)
 
     @classmethod
     def read(self, request, username=None):
