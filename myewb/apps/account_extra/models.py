@@ -15,7 +15,7 @@ import settings
 def clean_up_email_addresses(sender, instance, created, **kwargs):
     """
     Cleans up unverified emails with the same email and deletes any users who
-    have no remaining emails.
+    have no remaining emails. Sets the verified user to not bulk.
     """
     if instance.verified:
         others = EmailAddress.objects.filter(email__iexact=instance.email, verified=False)
@@ -30,6 +30,10 @@ def clean_up_email_addresses(sender, instance, created, **kwargs):
                     # so do this as a fallback
                     u.is_active = False
                     u.save()
+        u = instance.user
+        if u.is_bulk:
+            u.is_bulk = False
+            u.save()
 post_save.connect(clean_up_email_addresses, sender=EmailAddress)
 
 # some duck punches to the User class and extras Manager
