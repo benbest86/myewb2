@@ -443,6 +443,10 @@ padding-left: 230px;
 color: #333;
 }
 
+form span.facebox-profile-question {
+padding-left: 0px;
+}
+
 span.facebox-profile-answer {
 display: block;
 
