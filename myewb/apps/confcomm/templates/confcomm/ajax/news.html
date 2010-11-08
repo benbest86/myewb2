@@ -1,6 +1,6 @@
 <ul class="quicklinks">
     <% if (anon || !current_profile.get('registered')) { %>
-    <li><a href="#/">Register Now!</a></li>
+    <li><a href="<%= routes.register %>">Register Now!</a></li>
     <% } %>
     <li><a href="#/">What's New With Conference?</a></li>
     <li><a href="#/">Conference Home</a></li>
