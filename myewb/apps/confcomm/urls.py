@@ -13,8 +13,8 @@ cohort_member_handler = Resource(CohortMemberHandler, authentication=auth)
 # place app url patterns here
 
 urlpatterns = patterns('confcomm.views',
-        url('^$', 'index', name='confcomm_index'),
-        url('^app/$', 'single_page', name='confcomm_app'),
+        url('^$', 'single_page', name='confcomm_app'),
+        url('^app/$', 'single_page', name='confcomm_app_full'),
         url('^register/$', 'register', name='confcomm_register'),
         url('^login/$', 'login', name='confcomm_login'),
 
