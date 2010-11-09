@@ -557,7 +557,7 @@ span.filter-letter.selected {
     border: 1px solid black;
     color: white;
     -moz-border-radius: 3px;
-    padding: 3px;
+    padding: 1px 3px;
     opacity: 0.5;
     filter:alpha(opacity=50);
 }

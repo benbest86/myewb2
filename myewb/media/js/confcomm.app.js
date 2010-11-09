@@ -687,6 +687,9 @@
         remove_from_cohort: function(e) {
             var self = this;
             e.preventDefault();
+            if (!confirm('Are you sure?')) {
+                return;
+            }
             var target = $(e.target).attr('href').split('#/')[1];
             self.loading();
             $.ajax({
