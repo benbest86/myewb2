@@ -1,20 +1,39 @@
 <h2>Send an Invitation to <%= model.get('name') %></h2>
-<p>You're invited!</p>
+
+<div class="no-question-offset">
+
+<!-- <p>You're invited!</p> -->
 <form>
-    <p><input name="subject" class="invitation-input" value="See you at the EWB conference?" type="text" size="50" style="width: 425px;" /></p>
-    <p><textarea name="body" class="invitation-input" rows="10" cols="50" style="width: 425px;">
+
+    <p>
+                <span class="facebox-profile-question">Subject</span>
+    </p> 
+
+    <p><input name="subject" class="invitation-input" value="See you at the EWB conference?" type="text" size="50" /></p>
+    
+    <p>
+                <span class="facebox-profile-question">Your message</span>
+    </p> 
+    
+    <p><textarea name="body" class="invitation-input" rows="14">
 Hey <%= model.get('name').split(' ')[0] %>!
 
 Hope you are doing very well.
 
-I just noticed that you aren't registered yet for the 10th Anniversary 2011 EWB National Conference . I'd love to see you there and hang out. Any chance you can make it?
+I just noticed that you aren't registered yet for the 10th Anniversary 2011 EWB National Conference. I'd love to see you there and hang out. Any chance you can make it?
 
 You should check out the new conference networking site at {{site_link}} to see who else is coming. It's a bit addictive so be careful!
 
 Hope to see you in Toronto in January!
 
 <%= sender_name %></textarea></p>
-<p>Note: Any {{site_link}} and {{registration_link}} tags will be replaced with links to this site and the registration site respectively</p>
+
+<!-- <p>Note: Any {{site_link}} and {{registration_link}} tags will be replaced with links to this site and the registration site respectively</p> -->
+
+
     <input type="hidden" class="invitation-input" name="recipient" value="<%= model.get('username') %>" />
-    <input type="submit" value="Send" />
+    <input type="submit" value="Send"  class="updater-button" />
 </form>
+
+
+</div>

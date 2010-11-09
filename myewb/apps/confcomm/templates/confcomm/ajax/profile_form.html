@@ -1,4 +1,7 @@
 <div class="profile-container">
+
+<div class="no-question-offset">
+
 <h2>Edit your profile below</h2>
 <form method="POST" action="<%= routes.avatar_url %>" enctype="multipart/form-data">
     <p>
@@ -34,6 +37,8 @@
         <p><strong>Upload a new picture:</strong><br/><input type="file" name="avatar" class="profile-input"></p>
     </div>
     <div class="cleardiv">&nbsp;</div>
-    <p><input id="update-profile" value="Update" type="submit" style="font-size:13px;" /></p>
+    <p><input id="update-profile" value="Update" type="submit"  class="updater-button" /></p>
 </form>
+
+</div>
 </div>

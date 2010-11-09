@@ -13,6 +13,12 @@ a:hover {
     color: #FF9743;
 }
 
+#nav a {
+color:#999;
+}
+
+
+
 #content {
 margin-left:0;
 
@@ -130,6 +136,8 @@ clear:both; height:1px;
         display: inline;
         list-style-type: none;
         
+        margin:0;
+        
         /* todo - fix the paginator so the current page isn't as thin */
         
     }
@@ -179,7 +187,8 @@ margin-bottom: 3px;
 
 .loginform label input[type="text"], .loginform label input[type="password"] {
 padding:3px;
-width: 170px;
+width: 150px;
+margin:0;
 }
 
 .loginform span.left {
@@ -222,6 +231,10 @@ ul.pagination {
 background-color: #D7D8D9;
 
             padding:4px;
+            
+        margin:0;
+        
+        margin-bottom: 10px;
 
 }
 
@@ -377,7 +390,7 @@ div.profile-container {
 
 }
 
-.profile-container textarea {
+.profile-container textarea,  textarea.invitation-input {
     width: 540px;
     
     
@@ -386,12 +399,23 @@ div.profile-container {
     font-family: Georgia, Times, serif;   /* @@@ yes/no? */
 }
 
-div.profile-container h2 {
+input.invitation-input {
+    width: 542px;
+    padding:6px;
+    font-size: 13px;
+}
+
+input.updater-button {
+font-size:13px;
+padding:4px;
+}
+
+div#facebox h2 {
 
 margin:0.1em 0 0.7em;
 }
 
-div.profile-container p {
+div#facebox p {
 font-size: 14px;
 margin-bottom: 10px;
 
@@ -406,6 +430,7 @@ margin-bottom: 10px;
 ul.facebox-cohort-list {
     list-style-type: none;
     padding-left: 5px;
+    margin:0;
 }
 
 ul.facebox-cohort-list li {
@@ -443,7 +468,7 @@ padding-left: 230px;
 color: #333;
 }
 
-form span.facebox-profile-question {
+div.no-question-offset span.facebox-profile-question {
 padding-left: 0px;
 }
 
