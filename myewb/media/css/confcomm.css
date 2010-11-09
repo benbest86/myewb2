@@ -317,6 +317,10 @@ border-width: 2px;
 */
 }
 
+span.yes-text {
+color: green;
+}
+
 .un-registered a.profile-thumbnail-pic img {
     filter:alpha(opacity=50);
     opacity: 0.5;
@@ -334,6 +338,11 @@ margin-top:5px;
 
 p.profile-details span {
 display: block;
+}
+
+
+p.profile-details span.yes-text {
+display: inline;
 }
 
 .profile-details-actions img {

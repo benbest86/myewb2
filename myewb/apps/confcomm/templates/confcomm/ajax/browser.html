@@ -13,12 +13,23 @@
     <span class="profile-details-name"><a class="<% if (p.profile_active()) { %>profile-link<% } else { %>invitation<% } %>" href="#<%= p.hash() %>"><strong><%= p.get('name')%></strong></a></span>
     
     <span class="profile-details-registration">
+    <strong>Registered: </strong>
     <% if (p.get('registered')) { %>
-    <strong>Attending!</strong></p>
+    <span class="yes-text"><strong>Yes</strong></span>
     <% }
     else {%>
-    <strong>Not Registered</strong> 
-    </span>
+    Not yet
+    <% } %>
+
+    <strong>Profile: </strong>
+    <% if (p.get('active')) { %>
+    <span class="yes-text"><strong>Yes</strong></span>
+    <% }
+    else { %>
+    Not yet
+    <% } %>
+
+    <% if (!p.get('registered')) { %>
     <span class="profile-details-actions">
         <a class="invitation" href="#<%= p.invite_hash() %>"><img src="<%= routes.media %>images/confcomm/invite.png" alt="Invite!" /></a>
     <% } %>

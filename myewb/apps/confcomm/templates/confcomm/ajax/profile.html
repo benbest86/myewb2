@@ -2,6 +2,15 @@
     <h2>Profile for <%= model.get('member_profile').name %></h2>
     <div class="cohort-info">
     <img class="facebox-profile-img" src="<%= model.get('avatar_url') %>" />
+    <p><strong>Registered: </strong>
+        <% if (model.get('registered')) { %>
+        <span class="yes-text"><strong>Yes</strong></span>
+        <% } 
+        else { %>
+            Not Yet
+        <% } %>
+
+    </p>
         <% if (model.get('cohorts')) { %>
         <p>
             <ul class="facebox-cohort-list">
@@ -15,15 +24,6 @@
     
     <% if (!model.get('active')) { %><p>There's nothing here yet! Check back soon!</p><% } %>
     <div class="profile-container-details">
-        <p>
-        <% if (model.get('registered')) { %>
-            <span class="facebox-profile-question">I am registered for conference!</span>
-        <% } 
-        else { %>
-            <span class="facebox-profile-question">I am not yet registered for conference.</span>
-        <% } %>
-
-        </p>
 
         <% if (model.get('active')) { %>
         <p>
