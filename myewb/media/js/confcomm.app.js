@@ -334,6 +334,7 @@
                 return;
             }
             var id = self.model.username || self.model.id;
+            self.loading();
             if (data['avatar']) {
                 // submit form through iframe
                 self.$('form').ajaxSubmit({
@@ -351,6 +352,7 @@
                     }});
             }
             else {
+                messages.info('Updating profile...');
                 self.model.save(data, {success: function(){
                     location.hash=self.model.hash();
                     messages.info('Your profile information has been successfully updated.', {'header': 'Profile Updated'});
