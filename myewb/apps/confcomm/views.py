@@ -185,3 +185,6 @@ def login(request):
 def update_avatar(request):
     change_avatar(request, next_override='/')
     return HttpResponse("<textarea>{success: true}</textarea>")
+
+def legacy(request):
+    return HttpResponseRedirect(reverse('confcomm_app'))
