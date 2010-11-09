@@ -702,9 +702,9 @@
                     // XXX undo - someday...
                     messages.info('Removed from cohort.'); // <a class="undo-removal" href="#/' + target + '">Undo</a>', {sticky: true});
                     // $('.undo-removal').click(self.add_to_cohort);
-                    // self.collection.fetch({success: function() {
-                    //     self.render();
-                    // }});
+                    self.collection.fetch({success: function() {
+                        self.render();
+                    }});
                 },
                 error: function(resp, status) {
                     messages.error('Could not remove from cohort.');
