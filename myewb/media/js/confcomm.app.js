@@ -700,14 +700,14 @@
                         current_profile.fetch();
                     }
                     // XXX undo - someday...
-                    messages.info('Removed from cohort.'); // <a class="undo-removal" href="#/' + target + '">Undo</a>', {sticky: true});
+                    messages.info('Removed from group.'); // <a class="undo-removal" href="#/' + target + '">Undo</a>', {sticky: true});
                     // $('.undo-removal').click(self.add_to_cohort);
                     self.collection.fetch({success: function() {
                         self.render();
                     }});
                 },
                 error: function(resp, status) {
-                    messages.error('Could not remove from cohort.');
+                    messages.error('Could not remove from group.');
                     self.render();
                 }
             });
