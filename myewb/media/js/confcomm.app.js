@@ -345,6 +345,8 @@
             }
             // since our form is in the facebox we have to do some monkey business here
             // use content_holder to render the template
+            // reset el to the content_holder for draw
+            self.el = $(self.content_holder);
             self.draw({model: self.model});
             $.facebox({div:self.content_holder});
             // after facebox copies the html to its own div, reset self.el to the 
