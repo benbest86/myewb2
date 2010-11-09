@@ -1,11 +1,11 @@
 <ul class="quicklinks">
     <% if (anon || !current_profile.get('registered')) { %>
-    <li><a href="<%= routes.register %>">Register Now!</a></li>
+    <li><a href="<%= routes.register %>" target="_blank">Register Now!</a></li>
     <% } %>
     <li><a href="#/">What's New With Conference?</a></li>
-    <li><a href="#/">Conference Home</a></li>
+    <li><a href="http://conference2011.ewb.ca/" target="_blank">Conference Home</a></li>
     <% if (!anon && current_profile.get('registered')) { %>
-    <li><a href="#/">Download Receipt</a></li>
-    <li><a href="#/">Cancel My Registration</a></li>
+    <li><a href="<%= routes.conf_receipt %>" target="_blank">Download Receipt</a></li>
+    <li><a href="<%= routes.cancel_reg %>" target="_blank">Cancel My Registration</a></li>
     <% } %>
 </ul>

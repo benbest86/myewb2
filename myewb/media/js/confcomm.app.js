@@ -345,6 +345,8 @@
             }
             // since our form is in the facebox we have to do some monkey business here
             // use content_holder to render the template
+            // reset el to the content_holder for draw
+            self.el = $(self.content_holder);
             self.draw({model: self.model});
             $.facebox({div:self.content_holder});
             // after facebox copies the html to its own div, reset self.el to the 
@@ -562,7 +564,7 @@
                 data: data,
                 contentType: 'application/json',
                 success: function(resp, status) {
-                    messages.info('Added to cohort.');
+                    messages.info('Added to group.');
                     // if no username in the target
                     // fetch the current_profile
                     // since it is being updated
@@ -576,7 +578,7 @@
                     }});
                 },
                 error: function(resp, status) {
-                    messages.error('Could not add to cohort.');
+                    messages.error('Could not add to group.');
                     self.render();
                 }
             });
@@ -685,6 +687,9 @@
         remove_from_cohort: function(e) {
             var self = this;
             e.preventDefault();
+            if (!confirm('Are you sure?')) {
+                return;
+            }
             var target = $(e.target).attr('href').split('#/')[1];
             self.loading();
             $.ajax({
@@ -698,14 +703,14 @@
                         current_profile.fetch();
                     }
                     // XXX undo - someday...
-                    messages.info('Removed from cohort.'); // <a class="undo-removal" href="#/' + target + '">Undo</a>', {sticky: true});
+                    messages.info('Removed from group.'); // <a class="undo-removal" href="#/' + target + '">Undo</a>', {sticky: true});
                     // $('.undo-removal').click(self.add_to_cohort);
-                    // self.collection.fetch({success: function() {
-                    //     self.render();
-                    // }});
+                    self.collection.fetch({success: function() {
+                        self.render();
+                    }});
                 },
                 error: function(resp, status) {
-                    messages.error('Could not remove from cohort.');
+                    messages.error('Could not remove from group.');
                     self.render();
                 }
             });
@@ -789,7 +794,7 @@
             // use content_holder to render the template
             // grab the first name
             var sender_name = current_profile.get('member_profile').name.split(' ')[0];
-            $(self.content_holder).html(_.template(self.template(), {model: self.model, site_url: routes.site_url, sender_name:sender_name}));
+            $(self.content_holder).html(_.template(self.template(), {model: self.model, site_url: routes.site_url, sender_name:sender_name, routes:GLOBALS.routes}));
             $.facebox({div:self.content_holder});
             // after facebox copies the html to its own div, reset self.el to the
             // content in the facebox - required to grab the form elements later

@@ -5,29 +5,42 @@
 <% } else { %>
 <div id="cohort-opt-in" class="cohort-opt-in"><p>Part of this group? <a class="add-button cohort-add<% if (collection.abstract) { %>-abstract<% } %>" href="#/<%= collection.id %>/">Add yourself</a> <a class="hide-opt-links" href="#">Hide these links</a></p></div>
 <% }} %>
+<% if (globals.kohort_king && collection.id && show_opt_links) { %>
+<div class="cohort-opt-out"><p>Remove others from this group with the <a class="remove-button">X</a> buttons.</p></div>
+<% } %>
 <% collection.each(function(p) { %>
 <div id="<%= p.get('username') %>-summary" class="profile-summary<% if (!p.get('registered')) { %> un-registered<% } %>">
     <a class="profile-thumbnail-pic <% if (p.profile_active()) { %>profile-link<% } else { %>invitation<% } %>" href="#<%= p.hash() %>"><img src="<%= p.get('avatar_url') %>" /></a>
     <p class="profile-details">
     
-    <span class="profile-details-name"><a class="<% if (p.profile_active()) { %>profile-link<% } else { %>invitation<% } %>" href="#<%= p.hash() %>"><strong><%= p.get('name')%></strong></a></span>
+    <span class="profile-details-name"><a class="<% if (p.profile_active()) { %>profile-link<% } else { %>invitation<% } %>" href="#<%= p.hash() %>"><strong><%= p.get('name')%></strong></a>
+    <% if (globals.kohort_king && collection.id && show_opt_links) { %>
+        <a class="remove-button cohort-remove cohort-opt-out" href="#/<%= collection.id %>/<%= p.id %>/">X</a>
+    <% } %>
+    </span>
     
     <span class="profile-details-registration">
+    <strong>Registered: </strong>
     <% if (p.get('registered')) { %>
-    <strong>Attending!</strong></p>
+    <span class="yes-text"><strong>Yes</strong></span>
     <% }
     else {%>
-    <strong>Not Registered</strong> 
-    </span>
+    Not yet
+    <% } %>
+
+    <strong>Profile: </strong>
+    <% if (p.get('active')) { %>
+    <span class="yes-text"><strong>Yes</strong></span>
+    <% }
+    else { %>
+    Not yet
+    <% } %>
+
+    <% if (!p.get('registered')) { %>
     <span class="profile-details-actions">
         <a class="invitation" href="#<%= p.invite_hash() %>"><img src="<%= routes.media %>images/confcomm/invite.png" alt="Invite!" /></a>
     <% } %>
     </span>
-    <% if (globals.kohort_king && collection.id && show_opt_links) { %>
-    <span class="profile-details-cohort">
-        <a class="remove-button cohort-remove" href="#/<%= collection.id %>/<%= p.id %>/">Remove from group.</a>
-    </span>
-    <% } %>
     
     
     </p>
