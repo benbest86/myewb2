@@ -316,6 +316,23 @@
             _.each(inputs, function(i) {
                 if (i.name) data[i.name] = i.value;
             });
+            // validate input - make sure there are no errors
+            var reqd = {
+                'conference_goals': 'What you are excited about', 
+                'conference_question': 'What you want to discuss',
+                'text_interests': 'Your current interests',
+                'what_now': 'What you are doing now'
+            }
+            var errors = [];
+            for (f in reqd) {
+                if (!data[f]) {
+                    errors.push(reqd[f]);
+                }
+            }
+            if (errors.length > 0) {
+                messages.error('Please fill out all of the questions in the form before submitting. The following fields are missing: ' + errors.join(', '));
+                return;
+            }
             var id = self.model.username || self.model.id;
             if (data['avatar']) {
                 // submit form through iframe
@@ -832,6 +849,10 @@
             $(document).trigger('close.facebox');
             var self = this;
             var view = self.getView('Browser');
+            // unescape all of our arguments since some have spaces
+            for (arg in args) {
+                args[arg] = unescape(args[arg]);
+            }
             // XXX a bit of an ugly hack here
             filters_view.update_from_args(args);
             // fetch the next page of results
