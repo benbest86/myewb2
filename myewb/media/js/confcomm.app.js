@@ -564,7 +564,7 @@
                 data: data,
                 contentType: 'application/json',
                 success: function(resp, status) {
-                    messages.info('Added to cohort.');
+                    messages.info('Added to group.');
                     // if no username in the target
                     // fetch the current_profile
                     // since it is being updated
@@ -578,7 +578,7 @@
                     }});
                 },
                 error: function(resp, status) {
-                    messages.error('Could not add to cohort.');
+                    messages.error('Could not add to group.');
                     self.render();
                 }
             });
