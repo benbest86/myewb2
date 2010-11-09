@@ -29,6 +29,9 @@
     var invitation_view;
     var messages;
 
+    // keeps track of whether the twitter script has been loaded yet
+    var twitter_loaded;
+
     // needs the following globals
     // routes, current_user
     /* SERVER ROUTES */
@@ -38,6 +41,7 @@
     loading_image = GLOBALS.loading_image;
     anon = GLOBALS.anon;
     show_opt_links = true;
+    twitter_loaded = false;
 
     /* MODELS */
     var ConferenceProfile = Backbone.Model.extend({
@@ -312,6 +316,23 @@
             _.each(inputs, function(i) {
                 if (i.name) data[i.name] = i.value;
             });
+            // validate input - make sure there are no errors
+            var reqd = {
+                'conference_goals': 'What you are excited about', 
+                'conference_question': 'What you want to discuss',
+                'text_interests': 'Your current interests',
+                'what_now': 'What you are doing now'
+            }
+            var errors = [];
+            for (f in reqd) {
+                if (!data[f]) {
+                    errors.push(reqd[f]);
+                }
+            }
+            if (errors.length > 0) {
+                messages.error('Please fill out all of the questions in the form before submitting. The following fields are missing: ' + errors.join(', '));
+                return;
+            }
             var id = self.model.username || self.model.id;
             if (data['avatar']) {
                 // submit form through iframe
@@ -422,6 +443,12 @@
         render: function() {
             var self = this;
             self.draw({current_profile: current_profile});
+            // load tweet this widget
+            if (twitter_loaded === false) {
+                $.getScript('http://platform.twitter.com/widgets.js', function() {
+                    twitter_loaded = true;
+                });
+            }
         }});
 
     var MyProfileView = BaseView.extend({
@@ -822,6 +849,10 @@
             $(document).trigger('close.facebox');
             var self = this;
             var view = self.getView('Browser');
+            // unescape all of our arguments since some have spaces
+            for (arg in args) {
+                args[arg] = unescape(args[arg]);
+            }
             // XXX a bit of an ugly hack here
             filters_view.update_from_args(args);
             // fetch the next page of results

@@ -28,17 +28,14 @@
     Not yet
     <% } %>
 
-    <strong>Profile: </strong>
-    <% if (p.get('active')) { %>
-    <span class="yes-text"><strong>Yes</strong></span>
-    <% }
-    else { %>
-    Not yet
-    <% } %>
 
     <% if (!p.get('registered')) { %>
     <span class="profile-details-actions">
         <a class="invitation" href="#<%= p.invite_hash() %>"><img src="<%= routes.media %>images/confcomm/invite.png" alt="Invite!" /></a>
+    <% }
+
+       if (p.get('active')) { %>
+    <p class="profile-blurb">&quot;<%= p.get('blurb') %>...&quot;</p>
     <% } %>
     </span>
     
