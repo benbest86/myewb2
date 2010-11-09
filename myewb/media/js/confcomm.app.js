@@ -789,7 +789,7 @@
             // use content_holder to render the template
             // grab the first name
             var sender_name = current_profile.get('member_profile').name.split(' ')[0];
-            $(self.content_holder).html(_.template(self.template(), {model: self.model, site_url: routes.site_url, sender_name:sender_name}));
+            $(self.content_holder).html(_.template(self.template(), {model: self.model, site_url: routes.site_url, sender_name:sender_name, routes:GLOBALS.routes}));
             $.facebox({div:self.content_holder});
             // after facebox copies the html to its own div, reset self.el to the
             // content in the facebox - required to grab the form elements later

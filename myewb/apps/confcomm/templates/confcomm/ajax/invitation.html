@@ -22,15 +22,11 @@ Hope you are doing very well.
 
 I just noticed that you aren't registered yet for the 10th Anniversary 2011 EWB National Conference. I'd love to see you there and hang out. Any chance you can make it?
 
-You should check out the new conference networking site at {{site_link}} to see who else is coming. It's a bit addictive so be careful!
+You should check out the new conference networking site at http://my.ewb.ca<%= routes.site_url %> to see who else is coming. It's a bit addictive so be careful!
 
 Hope to see you in Toronto in January!
 
 <%= sender_name %></textarea></p>
-
-<!-- <p>Note: Any {{site_link}} and {{registration_link}} tags will be replaced with links to this site and the registration site respectively</p> -->
-
-
     <input type="hidden" class="invitation-input" name="recipient" value="<%= model.get('username') %>" />
     <input type="submit" value="Send"  class="updater-button" />
 </form>

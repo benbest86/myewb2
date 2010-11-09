@@ -1,5 +1,7 @@
 # Create your views here.
 
+import re
+
 from django.shortcuts import get_object_or_404, render_to_response
 from django.template import RequestContext
 from django.http import HttpResponseRedirect, Http404, HttpResponse, \
@@ -17,6 +19,8 @@ from confcomm.models import ConferenceProfile, AFRICA_ROLE_CHOICES, \
         AFRICA_COUNTRY_CHOICES, CHAPTER_CHOICES, CANADA_ROLE_CHOICES, \
         ROLE_CHOICES, ConferenceInvitation, RegistrationHit
 from confcomm.forms import ConferenceProfileForm, InvitationForm
+
+URL_RE = re.compile('https?://my.ewb.ca/\S*')
 
 def activate_invitation(code):
     try:
@@ -69,10 +73,21 @@ def send_invitation(request):
                     receiver=ConferenceProfile.objects.get(member_profile__user=invitation_form.recipient),
                     )
             invitation.save()
-            body = data['body'].replace('{{registration_link}}', 'http://my.ewb.ca%s?i=%s' % (reverse('confcomm_register'), invitation.code)).replace('{{site_link}}', 'http://my.ewb.ca%s?i=%s' % (reverse('confcomm_app'), invitation.code))
+            body = data['body']
+            matches = URL_RE.findall(body)
+            for m in matches:
+                url = m.split('?') # split on querystring
+                # apologies for the cryptic list comprehension below. it basically splits
+                # the qs on &'s and then removes any blank values from trailing &'s or a
+                # trailing ? on the url with no other qs components.
+                qs = len(url) > 1 and [p for p in url[1].split('&') if p] or [] # split up the querystring into its parts
+                qs.append('i=%s' % invitation.code) # add the invitation to the qs
+                url = '%s?%s' % (url[0], '&'.join(qs)) # remake the url
+                body = body.replace(m, url) # make the replacement in the body
+                
             send_mail(subject=data['subject'],
                       txtMessage=body,
-                      htmlMessage=None,
+                      htmlMessage=body,
                       fromemail=invitation_form.sender_email,
                       recipients=[invitation_form.recipient.email,],
                       use_template=False,
