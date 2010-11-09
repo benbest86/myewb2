@@ -166,7 +166,7 @@ class CohortHandler(BaseHandler):
             if registered == 'true':
                 cps = cps.filter(registered=False)
             # order
-            cps = cps.order_by('-registered', '-active', 'member_profile__name')
+            cps = cps.order_by('-registered', 'member_profile__name')
             # paginate
             paged_cps = cps[(page-1)*PAGE_SIZE:page*PAGE_SIZE]
 
@@ -202,6 +202,8 @@ class CohortHandler(BaseHandler):
                     'registered': cp.registered,
                     'active': cp.active,
                 }
+            if cp.active:
+                d['blurb'] = cp.blurb
             results.append(d)
 
         # pagination values

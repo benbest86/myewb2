@@ -55,6 +55,14 @@ class ConferenceProfile(models.Model):
         for c in self.cohort_set.filter(role__in=['p', 'j', 'f']):
             cohorts = cohorts | Cohort.objects.filter(role=c.role, year=c.year, chapter=None).order_by('year')
         return cohorts.distinct()
+    @property
+    def blurb(self):
+        if self.registered:
+            length = 45
+        else:
+            length = 15
+        blurb = ' '.join(self.conference_goals[:length].split()[:-1])
+        return blurb
 
     def __unicode__(self):
         return '%s - %s' % (self.member_profile.name, (self.registered and 'registered' or 'not registered'))
