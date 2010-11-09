@@ -38,8 +38,8 @@
     
     
     <div class="sidebar-section round">
-        <div class="sidebar-section-heading"><h3>Quick Links</h3></div>
-        <div id="news" class="sidebar-section-contents">Loading conference news...</div>
+        <div class="sidebar-section-heading"><h3>Links</h3></div>
+        <div id="news" class="sidebar-section-contents">Loading conference quick links...</div>
     </div>
     
     {# <div id="profile-list"></div> #}
@@ -91,7 +91,9 @@
             avatar_url: "{% url confcomm_avatar %}",
             site_url: "{% url confcomm_app %}",
             register: "{% url confcomm_register %}",
-            media: "{{ STATIC_URL }}"
+            media: "{{ STATIC_URL }}",
+            conf_receipt: "{% url conference_receipt %}",
+            cancel_reg: "{% url conference_cancel %}"
         },
         username: "{{ username }}",
         kohort_king: {{ kohort_king }},
