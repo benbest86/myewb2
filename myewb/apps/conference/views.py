@@ -74,6 +74,8 @@ def view_registration(request):
         registration = ConferenceRegistration.objects.get(user=user, cancelled=False)
         form = None
 
+        return HttpResponseRedirect(reverse('confcomm_app'))
+
     except ObjectDoesNotExist:
         # if not registered, we display the registration form
         registration = None
@@ -170,7 +172,7 @@ def cancel(request):
         # tell the user and redirect them back out
         request.user.message_set.create(message="Your registration has been cancelled.")
         
-        return HttpResponseRedirect(reverse('confreg'))
+        return HttpResponseRedirect(reverse('confcomm_app'))
 
     else:
         # this template will show a confirm page.
