@@ -33,10 +33,10 @@ if(!(-e "$path/running.txt"))
 
 	# get emails that need sending
 	$result = $dbh->query("SELECT id, recipients, shortname,
-		sender, subject, textMessage, htmlMessage, lang
+		sender, subject, textMessage, htmlMessage, lang, cc, bcc
 		FROM mailer_email WHERE progress='waiting'");
 #	$result = $dbh->query('SELECT id, recipients, shortname,
-#		sender, subject, textMessage, htmlMessage, cc, bcc
+#		sender, subject, textMessage, htmlMessage
 #		FROM mailer_email WHERE recipients=\'feedback@my.ewb.ca\'');
 
 	# Process each email individually
