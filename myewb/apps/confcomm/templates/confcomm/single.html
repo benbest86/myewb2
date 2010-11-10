@@ -112,8 +112,14 @@
     $.facebox.settings.closeImage = "{{ STATIC_URL }}pinax/images/facebox/closelabel.gif"
     $.facebox.settings.loadingImage = "{{ STATIC_URL }}pinax/images/facebox/loading.gif"
     $.facebox.settings.opacity = 0.5;
-    
-    
+
+    $(document).ready(function() {
+        $(document).bind('reveal.facebox', function() {
+            $('#facebox .content').height($(window).height() * 0.7);
+            $('#facebox .content').css('overflow-y', 'auto').scrollTop(0);
+        });
+    });
+
         // Kind of weird to put these exactly here, but it's important so the h1 text is changed
         // *after* the h1 is loaded, but not have it wait for .ready() a few seconds later.
     	$('.textsub h1').text("Who's coming to Conference?");
