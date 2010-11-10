@@ -449,9 +449,15 @@
             self.draw({current_profile: current_profile});
             // load tweet this widget
             if (twitter_loaded === false) {
-                $.getScript('http://platform.twitter.com/widgets.js', function() {
-                    twitter_loaded = true;
-                });
+                var l = location.href;
+                if (l.match(/^https/)) {
+                    // no ssl compliant twitter button unfortunately
+                    $('#twitter-share').hide();
+                }
+                else {
+                    $.getScript('http://platform.twitter.com/widgets.js');
+                }
+                twitter_loaded = true;
             }
         }});
 
