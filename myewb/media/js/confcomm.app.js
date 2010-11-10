@@ -375,7 +375,7 @@
             self.el = $('#facebox').find('.content').first();
             // re-delegate the events so they are attached to the facebox copy of the
             // form
-            self.$('form').bind('submit', function() { self.update_profile(); return false;});
+            self.$('.updater-button').click(function() { self.update_profile(); return false;});
         }});
     var FiltersView = BaseView.extend({
         el: $('#filters'),
