@@ -29,6 +29,9 @@
     var invitation_view;
     var messages;
 
+    // keeps track of whether the twitter script has been loaded yet
+    var twitter_loaded;
+
     // needs the following globals
     // routes, current_user
     /* SERVER ROUTES */
@@ -38,6 +41,7 @@
     loading_image = GLOBALS.loading_image;
     anon = GLOBALS.anon;
     show_opt_links = true;
+    twitter_loaded = false;
 
     /* MODELS */
     var ConferenceProfile = Backbone.Model.extend({
@@ -443,6 +447,12 @@
         render: function() {
             var self = this;
             self.draw({current_profile: current_profile});
+            // load tweet this widget
+            if (twitter_loaded === false) {
+                $.getScript('http://platform.twitter.com/widgets.js', function() {
+                    twitter_loaded = true;
+                });
+            }
         }});
 
     var MyProfileView = BaseView.extend({
