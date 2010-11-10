@@ -19,7 +19,6 @@
 			list-style: none;
 			padding: 0px;
 			margin: 0px;
-			margin-top: -20px;
 		}
 		li, li label {
 			padding: 0px;
@@ -58,11 +57,15 @@
 				<label for="forgotten_password"></label>
 				<a href="{% url acct_passwd_reset %}" target="_new">{% trans "Forgot password?" %}</a>
 			</p>
+
+			<p>
+				<strong><em>EWB members must sign in with your myEWB account here to obtain special member rates and registration options</em></strong>
+			</p>
 	    </form>
     </div>
     
-    <div style="margin-left: 45%; border-left: 1px solid; padding-left: 5%;">
-    <p>Or, continue without a myEWB account</p>
+    <div style="margin-left: 45%; border-left: 1px solid; padding: 5px 5px 5px 5%;">
+    <p>Guests and external delegates, continue here</p>
     
 	    <form class="login" method="post" action="" style="position: relative;">
 	    	{{ signup_form.as_p }}
