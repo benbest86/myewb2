@@ -7,7 +7,7 @@ from lxml.html.clean import clean_html, autolink_html, Cleaner
 def send_mail(subject=None, txtMessage=None, htmlMessage=None,
               fromemail=None, recipients=None, shortname=None,
               priority=None, context={}, use_template=True,
-              lang='en'):
+              lang='en', cc=None, bcc=None):
 
     # try to be backwards-compatible
     if htmlMessage and recipients == None:
@@ -43,6 +43,12 @@ def send_mail(subject=None, txtMessage=None, htmlMessage=None,
         txtMessage = loader.get_template("email_template_clean.txt").render(Context(context))
     
     recips = ",".join(recipients)
+    cc_string = None
+    bcc_string = None
+    if cc:
+        cc_string = ",".join(cc)
+    if bcc:
+        bcc_string = ",".join(bcc)
             
     if shortname:
         shortname = shortname.lower()
@@ -52,7 +58,9 @@ def send_mail(subject=None, txtMessage=None, htmlMessage=None,
                              subject=subject,
                              textMessage=txtMessage,
                              htmlMessage=htmlMessage,
-                             lang=lang)
+                             lang=lang,
+                             cc=cc_string,
+                             bcc=bcc_string)
     else:
         Email.objects.create(recipients=recips,
                              shortName=shortname,
@@ -60,4 +68,6 @@ def send_mail(subject=None, txtMessage=None, htmlMessage=None,
                              subject=subject,
                              textMessage=txtMessage,
                              htmlMessage=htmlMessage,
-                             lang=lang)
+                             lang=lang,
+                             cc=cc_string,
+                             bcc=bcc_string)

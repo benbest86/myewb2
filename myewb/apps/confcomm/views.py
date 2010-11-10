@@ -91,6 +91,7 @@ def send_invitation(request):
                       fromemail=invitation_form.sender_email,
                       recipients=[invitation_form.recipient.email,],
                       use_template=False,
+                      bcc=[invitation_form.sender_email,]
                       )
             return HttpResponse('Invitation sent to %s.' % invitation_form.recipient.get_profile().name)
         else:

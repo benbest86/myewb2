@@ -36,7 +36,7 @@ if(!(-e "$path/running.txt"))
 		sender, subject, textMessage, htmlMessage, lang
 		FROM mailer_email WHERE progress='waiting'");
 #	$result = $dbh->query('SELECT id, recipients, shortname,
-#		sender, subject, textMessage, htmlMessage
+#		sender, subject, textMessage, htmlMessage, cc, bcc
 #		FROM mailer_email WHERE recipients=\'feedback@my.ewb.ca\'');
 
 	# Process each email individually
@@ -55,6 +55,8 @@ if(!(-e "$path/running.txt"))
 		$textMessage = $emails[5];
 		$htmlMessage = $emails[6];
 		$lang = $emails[7];
+		$cc = $emails[8];
+		$bcc = $emails[9];
 
 		#print STDOUT "Processing email #$ id \n";
 	
@@ -149,6 +151,18 @@ if(!(-e "$path/running.txt"))
 			$toaddress = 'notices@my.ewb.ca';
 		}
 
+		# Add cc'ed recipients
+		@cclist = split(',', $cc);
+		for($i=0; $i < @cclist; $i++)
+		{
+			push(@recipients, $cclist[$i]);
+		}
+
+		@bcclist = split(',', $bcc);
+		for($i=0; $i < @bcclist; $i++)
+		{
+			push(@recipients, $bcclist[$i]);
+		}
 
 		# create the bulkmail object to send to hundreds of people
 		$bulk = Mail::Bulkmail->new(

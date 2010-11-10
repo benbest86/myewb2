@@ -19,3 +19,6 @@ class Email(models.Model):
     lang = models.CharField(max_length=2)
     numSentTo = models.IntegerField(blank=True, null=True)
     date = models.CharField(max_length=255)
+
+    cc = models.TextField(blank=True, null=True)
+    bcc = models.TextField(blank=True, null=True)
