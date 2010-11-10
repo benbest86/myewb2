@@ -3,7 +3,8 @@
 <div class="no-question-offset">
 
 <h2>Edit your profile below</h2>
-<form method="POST" action="<%= routes.avatar_url %>" enctype="multipart/form-data">
+<!-- <form method="POST" action="<%= routes.avatar_url %>" enctype="multipart/form-data"> -->
+<form method="POST" action="">
     <p>
                 <span class="facebox-profile-question">What are you excited about doing at conference?</span>
     </p> 
@@ -26,11 +27,10 @@
     </p> 
 
     <textarea class="profile-input" rows="5" name="text_interests"><%= model.get('text_interests') %></textarea>
-    
+
     <p>
                 <span class="facebox-profile-question">Your Photo</span>
     </p> 
-    
 <!--
     <img src="<%= model.get('avatar_url') %>" alt="Avatar for <%= model.get('member_profile').name %>" style="float:left; margin-right:10px;" />
     <div>

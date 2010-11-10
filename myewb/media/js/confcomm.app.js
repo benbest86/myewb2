@@ -334,6 +334,7 @@
                 return;
             }
             var id = self.model.username || self.model.id;
+            self.loading();
             if (data['avatar']) {
                 // submit form through iframe
                 self.$('form').ajaxSubmit({
@@ -351,6 +352,7 @@
                     }});
             }
             else {
+                messages.info('Updating profile...');
                 self.model.save(data, {success: function(){
                     location.hash=self.model.hash();
                     messages.info('Your profile information has been successfully updated.', {'header': 'Profile Updated'});
@@ -420,6 +422,15 @@
                         elem.val('');
                     }
                 }
+                if (elem.attr('name') === 'last_name') {
+                    if (elem.val()) {
+                        name_filter_view.current_letter = elem.val();
+                    }
+                    else {
+                        name_filter_view.current_letter = 'All';
+                    }
+                    name_filter_view.render();
+                }
             });
             // need to reset the visible counterparts to the
             // hidden controls too
@@ -445,9 +456,15 @@
             self.draw({current_profile: current_profile});
             // load tweet this widget
             if (twitter_loaded === false) {
-                $.getScript('http://platform.twitter.com/widgets.js', function() {
-                    twitter_loaded = true;
-                });
+                var l = location.href;
+                if (l.match(/^https/)) {
+                    // no ssl compliant twitter button unfortunately
+                    $('#twitter-share').hide();
+                }
+                else {
+                    $.getScript('http://platform.twitter.com/widgets.js');
+                }
+                twitter_loaded = true;
             }
         }});
 

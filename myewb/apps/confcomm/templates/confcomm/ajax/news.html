@@ -2,11 +2,10 @@
     <% if (anon || !current_profile.get('registered')) { %>
     <li><a href="<%= routes.register %>" target="_blank">Register Now!</a></li>
     <% } %>
-    <li><a href="#/">What's New With Conference?</a></li>
     <li><a href="http://conference2011.ewb.ca/" target="_blank">Conference Home</a></li>
     <% if (!anon && current_profile.get('registered')) { %>
     <li><a href="<%= routes.conf_receipt %>" target="_blank">Download Receipt</a></li>
     <li><a href="<%= routes.cancel_reg %>" target="_blank">Cancel My Registration</a></li>
     <% } %>
 </ul>
-    <a href="http://twitter.com/share" class="twitter-share-button" data-text="Who's coming to #EWB NC2011? Are you? Come find out!" data-url="http://my.ewb.ca/conference/who/" data-count="horizontal">Tweet</a>
+    <a id="twitter-share" href="http://twitter.com/share" class="twitter-share-button" data-text="Who's coming to #EWB NC2011? Are you? Come find out!" data-url="http://my.ewb.ca/conference/who/" data-count="horizontal">Tweet</a>
