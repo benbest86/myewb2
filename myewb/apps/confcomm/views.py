@@ -87,7 +87,7 @@ def send_invitation(request):
                 
             send_mail(subject=data['subject'],
                       txtMessage=body,
-                      htmlMessage=body,
+                      htmlMessage=None,
                       fromemail=invitation_form.sender_email,
                       recipients=[invitation_form.recipient.email,],
                       use_template=False,
