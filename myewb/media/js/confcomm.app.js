@@ -424,6 +424,15 @@
                         elem.val('');
                     }
                 }
+                if (elem.attr('name') === 'last_name') {
+                    if (elem.val()) {
+                        name_filter_view.current_letter = elem.val();
+                    }
+                    else {
+                        name_filter_view.current_letter = 'All';
+                    }
+                    name_filter_view.render();
+                }
             });
             // need to reset the visible counterparts to the
             // hidden controls too
