@@ -664,7 +664,8 @@
                 return;
             }
             // dependent on having a .profile-summary div with an id of <id>-summary
-            var id = $(e.target).parents('div.profile-summary').first().attr('id').split('-')[0];
+            var idx = $(e.target).parents('div.profile-summary').first().attr('id').lastIndexOf('-');
+            var id = $(e.target).parents('div.profile-summary').first().attr('id').substring(0, idx);
             if (!id) {
                 return;
             }
