@@ -32,6 +32,9 @@
     // keeps track of whether the twitter script has been loaded yet
     var twitter_loaded;
 
+    // keeps track of whether or not there are unsaved changes
+    var unsaved_changes = false;
+
     // needs the following globals
     // routes, current_user
     /* SERVER ROUTES */
@@ -346,6 +349,9 @@
                 return;
             }
             var id = self.model.username || self.model.id;
+            // set unsaved_changes to false because even if we error after this
+            // we can't get our form values back for now
+            unsaved_changes = false;
             self.loading();
             if (data['avatar']) {
                 // submit form through iframe
@@ -392,6 +398,7 @@
             // From Francis to fix IE bug...
             // self.$('form').bind('submit', function() { self.update_profile(); return false;});
             self.$('.updater-button').click(function() { self.update_profile(); return false;});
+            unsaved_changes = true;
         }});
     var FiltersView = BaseView.extend({
         el: $('#filters'),
@@ -834,6 +841,9 @@
                 if (i.name) data[i.name] = i.value;
             });
             data['sender'] = current_username;
+            // we no longer have unsaved changes on the form
+            // even if it errors below we can't get it back for now
+            unsaved_changes = false;
             self.loading();
             $.ajax({url: routes.email, data:data, type:'post',
                 success:function(resp) {
@@ -860,6 +870,8 @@
             // re-delegate the events so they are attached to the facebox copy of the
             // form
             self.$('form').bind('submit', function(e){self.send_invitation(e)});
+            // set unsaved_changes so we get a message on close.facebox if we haven't saved
+            unsaved_changes = true;
         }
     });
     /* CONTROLLER */
@@ -923,6 +935,37 @@
     });
 
     app = new Controller();
+    // set up an alert if users exit a box with unsaved changes
+    //
+    $(document).unbind('close.facebox').bind('close.facebox', function(e) {
+        // check for unsaved changes and show confirm box
+        if (unsaved_changes) {
+            if (!confirm('You have unsaved changes on this page. Are you sure you want to exit?')) {
+                return;
+            }
+            else {
+                unsaved_changes = false;
+            }
+        }
+        // the original close.facebox
+        $(document).unbind('keydown.facebox');
+        $('#facebox').fadeOut(function() {
+          $('#facebox .content').removeClass().addClass('content');
+          // substituting raw code
+          // hideOverlay();
+          // and again for skipOverlay
+          // if (!skipOverlay()) {
+          if (!($.facebox.settings.overlay == false || $.facebox.settings.opacity === null )) {
+              $('#facebox_overlay').fadeOut(200, function(){
+                  $("#facebox_overlay").removeClass("facebox_overlayBG");
+                  $("#facebox_overlay").addClass("facebox_hide");
+                  $("#facebox_overlay").remove();
+              });
+          }
+          $('#facebox .loading').remove()
+        })
+    });
+    
     // abstract away our messaging to jGrowl
     messages = {
         info: function(m, o) {
