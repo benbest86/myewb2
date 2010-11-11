@@ -1,5 +1,7 @@
 from django import forms
 
+from cgi import escape
+
 from confcomm.models import ConferenceProfile
 from django.utils.translation import ugettext_lazy as _
 
@@ -11,6 +13,12 @@ class ConferenceProfileForm(forms.ModelForm):
     class Meta:
         model = ConferenceProfile
         exclude = ('member_profile', 'updated',)
+
+    def clean(self):
+        data = self.cleaned_data
+        for f in ['what_now', 'text_interests', 'conference_goals', 'conference_question',]:
+            data[f] = escape(data[f])
+        return data
 
 class InvitationForm(forms.Form):
     recipient = forms.CharField()
@@ -44,4 +52,10 @@ class InvitationForm(forms.Form):
             raise e
         except Exception, e:
             raise forms.ValidationError(_('Could not find sender with username %s.' % data))
+        return data
+
+    def clean(self):
+        data = self.cleaned_data
+        for f in ['body', 'subject']:
+            data[f] = escape(data[f])
         return data
