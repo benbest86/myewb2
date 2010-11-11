@@ -19,6 +19,7 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from emailconfirmation.models import EmailAddress
 
+from communities.models import Community
 from conference.constants import *
 from conference.models import ConferenceRegistration, ConferenceCode, AlumniConferenceCode, InvalidCode
 from conference.utils import needsToRenew
@@ -285,6 +286,17 @@ class ConferenceRegistrationFormPreview(PaymentFormPreview):
             # and update their membership if they paid it
             if needsToRenew(request.user.get_profile()):
                 request.user.get_profile().pay_membership()
+                
+            # lastly, add them to the group
+            grp, created = Community.objects.get_or_create(slug='conference2011',
+                                                           defaults={'invite_only': True,
+                                                                     'name': 'National Conference 2011 delegates',
+                                                                     'creator': request.user,
+                                                                     'description': 'National Conference 2011 delegates',
+                                                                     'mailchimp_name': 'National Conference 2011',
+                                                                     'mailchimp_category': 'Conference'})
+            grp.add_member(request.user)
+            
             
             # don't do the standard render_to_response; instead, do a redirect
             # so that someone can't double-submit by hitting refresh

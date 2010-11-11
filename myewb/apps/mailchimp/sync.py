@@ -124,8 +124,13 @@ if settings.MAILCHIMP_KEY and settings.MAILCHIMP_LISTID:
         category = group.mailchimp_category.replace(',', '\,')
         groupname = group.mailchimp_name.replace(',', '\,')
         
-        past_category = group.mailchimp_past_category.replace(',', '\,')
-        past_groupname = group.mailchimp_past_name.replace(',', '\,')
+        past_category = group.mailchimp_past_category
+        past_groupname = group.mailchimp_past_name
+        if past_category:
+            past_category = past_category.replace(',', '\,')
+        if past_groupname:
+            past_groupname = past_groupname.replace(',', '\,')
+
         found = False
         
         for g in grouplist:
