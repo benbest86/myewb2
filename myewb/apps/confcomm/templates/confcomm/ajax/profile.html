@@ -28,21 +28,21 @@
         <% if (model.get('active')) { %>
         <p>
             <span class="facebox-profile-question">What I'm excited to do at conference</span>
-            <span class="facebox-profile-answer"><%= model.get('conference_goals') %></span>
+            <span class="facebox-profile-answer"><%= model.get('conference_goals').replace(/\n/g, "<br/>") %></span>
         </p>
 
         <p>
             <span class="facebox-profile-question">Topics I'd like to discuss</span>
-            <span class="facebox-profile-answer"><%= model.get('conference_question') %></span>
+            <span class="facebox-profile-answer"><%= model.get('conference_question').replace(/\n/g, "<br/>") %></span>
         </p>
         
         <p>
             <span class="facebox-profile-question">What I'm doing now</span>
-            <span class="facebox-profile-answer"><%= model.get('what_now') %></span>
+            <span class="facebox-profile-answer"><%= model.get('what_now').replace(/\n/g, "<br/>") %></span>
         </p>
         <p>
             <span class="facebox-profile-question">My current interests</span>
-            <span class="facebox-profile-answer"><%= model.get('text_interests') %></span>
+            <span class="facebox-profile-answer"><%= model.get('text_interests').replace(/\n/g, "<br/>") %></span>
         </p>
         
         <% } %>
