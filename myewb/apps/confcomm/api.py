@@ -15,6 +15,8 @@ from confcomm.forms import ConferenceProfileForm
  
 from avatar.templatetags.avatar_tags import avatar_url
 
+from siteutils.helpers import fix_encoding
+
 class DjangoAuthentication(object):
     """
     Django authentication. 
@@ -131,7 +133,7 @@ class CohortHandler(BaseHandler):
     def read(self, request):
         # grab all of the applicable filters
         allowed_filters = ['chapter', 'year', 'role', 'page', 'last_name', 'search', 'registered',]
-        filters = dict([(str(k), str(v)) for (k, v) in request.GET.items() if k in allowed_filters])
+        filters = dict([(str(fix_encoding(k)), str(fix_encoding(v))) for (k, v) in request.GET.items() if k in allowed_filters])
         if filters.get('role', None) == 'm':
             del filters['role']
         if filters.get('year', None):
