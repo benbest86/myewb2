@@ -142,7 +142,6 @@ def profile(request, username=None):
             is_owner = True
     profile = get_object_or_404(ConferenceProfile, member_profile__user__username=username)
 
-
     return render_to_response('confcomm/profile.html',
             {
                 'profile': profile,

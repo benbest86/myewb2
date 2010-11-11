@@ -474,7 +474,7 @@ letter-spacing: 0.2em;
 margin-bottom: 0.25em;
 padding-left: 230px;
 
-color: #333;
+color: #707070;
 }
 
 div.no-question-offset span.facebox-profile-question {
@@ -489,7 +489,8 @@ font-family: Georgia, Times, serif;
 font-size: 18px;
 
 line-height:1.25em;
-padding-left: 230px;
+padding-left: 250px;
+padding-bottom: 10px;
 
 }
 

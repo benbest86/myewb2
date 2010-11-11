@@ -60,6 +60,13 @@ def conference_profile_read(request, username=None):
             cps = cps.order_by('?')
         return cps[:count]
     p = ConferenceProfile.objects.get(member_profile__user__username=username)
+
+    # can't use django template filters to do this since the ajax doesn't go through django templates...
+    p.conference_goals = p.conference_goals.replace("\n", "<br/>")
+    p.conference_question = p.conference_question.replace("\n", "<br/>")
+    p.conference_what_now = p.what_now.replace("\n", "<br/>")
+    p.text_interests = p.text_interests.replace("\n", "<br/>")
+    
     return p
 
 class AnonymousConferenceProfileHandler(AnonymousBaseHandler):
