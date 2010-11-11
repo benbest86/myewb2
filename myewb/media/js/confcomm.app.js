@@ -396,7 +396,6 @@
             // re-delegate the events so they are attached to the facebox copy of the
             // form
             self.$('form').submit(function() { self.update_profile(); return false;});
-            self.$('form').data('changed', false);
             self.$('form textarea').each(function() {
             	$(this).focus(function() {
             		if (!$(this).data('original'))
@@ -405,7 +404,7 @@
             	$(this).blur(function() {
             		var orig = $(this).data('original');
             		if (orig != $(this).val())
-            			$(this).closest('form').data('changed', true);
+            			unsaved_changes = true;
             	});
             });
         }});
@@ -880,7 +879,6 @@
             // re-delegate the events so they are attached to the facebox copy of the
             // form
             self.$('form').bind('submit', function(e){self.send_invitation(e)});
-            self.$('form').data('changed', false);
             self.$('form textarea').each(function() {
             	$(this).focus(function() {
             		if (!$(this).data('original'))
@@ -889,7 +887,7 @@
             	$(this).blur(function() {
             		var orig = $(this).data('original');
             		if (orig != $(this).val())
-            			$(this).closest('form').data('changed', true);
+            			unsaved_changes = true;
             	});
             });
         }

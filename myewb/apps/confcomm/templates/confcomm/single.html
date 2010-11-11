@@ -112,18 +112,6 @@
     $.facebox.settings.closeImage = "{{ STATIC_URL }}pinax/images/facebox/closelabel.gif"
     $.facebox.settings.loadingImage = "{{ STATIC_URL }}pinax/images/facebox/loading.gif"
     $.facebox.settings.opacity = 0.5;
-    $.facebox.close = function() {
-        var form = $('#facebox form');
-        if (form)
-            if (form.data('changed'))
-            {
-                var confirmed = confirm("You have unsaved changes. Close the window anyway?");
-                if (!confirmed)
-                    return false;
-            }
-        $(document).trigger('close.facebox')
-        return false;
-    }
 
     $(document).ready(function() {
         $(document).bind('reveal.facebox', function() {
