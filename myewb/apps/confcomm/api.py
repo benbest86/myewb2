@@ -58,6 +58,7 @@ def conference_profile_read(request, username=None):
         count = int(request.GET.get('count', 6))
         kwargs = dict([(str(k),str(v)) for (k, v) in request.GET.items() if k in allowed_filters])
         cps = ConferenceProfile.objects.filter(**kwargs)
+        cps.filter(member_profile__user__avatar__isnull=False)
         if random:
             cps = cps.order_by('?')
         return cps[:count]
