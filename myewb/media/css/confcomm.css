@@ -17,6 +17,41 @@ a:hover {
 color:#999;
 }
 
+.submenu {
+z-index:1000;  /* the profile image covers it up otherwise in firefox/mac */
+}
+
+
+
+p {
+
+padding:0;   /* @@@ this could break things; just resetting it so previous layout tweaks line up. */
+
+margin: 5px 0;
+
+}
+
+/* fixing things broken by that CSS in header1 */
+
+#nav p {
+padding: 0px;
+margin:0;
+color:#999999;
+
+font-size:10px;
+}
+
+
+#nav {
+font-weight:bold;
+text-align:right;
+}
+
+body {
+margin-top:0px;
+}
+
+
 
 
 #content {
@@ -57,10 +92,14 @@ margin:10px auto;
 width:60px;  /* will this fit everywhere it's used??  @@@ */  /* also removed 40px because of existing 50px padding */
 }
 
-h1, h2, h3, h4, h5, h6 {
+#all h1,#all h2, #all h3, #all h4, #all h5, #all h6 {
 font-family:"Lucida Grande",Geneva,Verdana,Arial,Helvetica,sans-serif;
 
+/* font-weight: bold; */
+
+
 }
+
 
 h2 {
   font-size: 20px;
@@ -141,7 +180,7 @@ clear:both; height:1px;
         /* todo - fix the paginator so the current page isn't as thin */
         
     }
-    ul.pagination li a, ul.pagination li.currentpage, div.pagination-prev-next a  {
+    div#all ul.pagination li a, div#all ul.pagination li.currentpage, div#all div.pagination-prev-next a  {
 
             padding:4px 6px;
 
@@ -230,7 +269,7 @@ ul.pagination {
 
 background-color: #D7D8D9;
 
-            padding:4px;
+            padding:8px;
             
         margin:0;
         
@@ -240,18 +279,25 @@ background-color: #D7D8D9;
 
 div.pagination-prev-next {
 float:right;
-            padding:4px;
+            padding:8px;  /* should be same as above */
 
 }
 
 
 
-h3 {
+#filters h3 {
 font-size:24px;
+margin-bottom:0.8em;
+margin-top:0.6em;
+
+font-weight:bold;
 }
 
 #all div, #all p {
 font-size:14px;
+
+
+
 }
 
 
@@ -422,11 +468,15 @@ padding:4px;
 div#facebox h2 {
 
 margin:0.1em 0 0.7em;
+
+
+font-family:"Lucida Grande",Geneva,Verdana,Arial,Helvetica,sans-serif;
+
 }
 
 div#facebox p {
 font-size: 14px;
-margin-bottom: 10px;
+margin: 10px 0;
 
 /* margin-left: 184px; */
 }
@@ -474,7 +524,7 @@ letter-spacing: 0.2em;
 margin-bottom: 0.25em;
 padding-left: 230px;
 
-color: #707070;
+color: #333;
 }
 
 div.no-question-offset span.facebox-profile-question {
@@ -489,8 +539,7 @@ font-family: Georgia, Times, serif;
 font-size: 18px;
 
 line-height:1.25em;
-padding-left: 250px;
-padding-bottom: 10px;
+padding-left: 230px;
 
 }
 
@@ -608,7 +657,7 @@ float:left
 a.your-thumb-img img {
 padding:2px;
 border:1px solid #ccc;
-margin-right: 4px;
+margin-right: 7px;
 }
 
 div#my-profile div.sidebar-section-contents { 
@@ -618,6 +667,10 @@ div#my-profile div.sidebar-section-contents {
 div#my-profile h4 {
 margin:0;
 font-size:16px;
+clear:none;
+
+font-weight: bold;
+padding:0.4em 0;
 }
 
 p.profile-blurb {
