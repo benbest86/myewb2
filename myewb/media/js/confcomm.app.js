@@ -49,6 +49,12 @@
         initialize: function() {
             var self = this;
             if (!self.id) self.id = self.get('username');
+            var props = ['conference_question', 'conference_goals', 'text_interests', 'what_now'];
+            _.each(props, function(p) {
+                if (!self.get(p)) {
+                    self.set({p:""});
+                }
+            });
         },
         // grab what might be the top most important cohorts
         quick_cohorts: function() {
@@ -100,6 +106,12 @@
         initialize: function() {
             var self = this;
             if (!self.id) self.id = self.get('username');
+            if (!self.get('blurb')) {
+                self.set({blurb:''});
+            }
+            if (!self.get('name')) {
+                self.set({name:''});
+            }
         },
         hash: function() {
             var self = this;
