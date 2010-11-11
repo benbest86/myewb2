@@ -264,15 +264,9 @@ class RegistrationHit(models.Model):
 
 def update_registered_status(sender, **kwargs):
     try:
-        cp = ConferenceProfile.objects.get(member_profile__user=instance.user)
-        if instance.user.conference_registrations.filter(cancelled=False).count() > 0:
-            if not cp.registered:
-                cp.registered = True
-                cp.save()
-        else:
-            if cp.registered:
-                cp.registered = False
-                cp.save()
+        cp, created = ConferenceProfile.objects.get_or_create(member_profile__user=instance.user)
+        cp.registered = not instance.cancelled
+        cp.save()
     except:
         pass
 post_save.connect(update_registered_status, sender=ConferenceRegistration)
