@@ -16,7 +16,7 @@
     </p> 
     
     <p><textarea name="body" class="invitation-input" rows="14">
-Hey <%= model.get('name').split(' ')[0] %>!
+Hey <%= $.trim(model.get('name')).split(' ')[0] %>!
 
 Hope you are doing very well.
 
