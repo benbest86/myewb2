@@ -378,6 +378,18 @@
             // re-delegate the events so they are attached to the facebox copy of the
             // form
             self.$('form').submit(function() { self.update_profile(); return false;});
+            self.$('form').data('changed', false);
+            self.$('form textarea').each(function() {
+            	$(this).focus(function() {
+            		if (!$(this).data('original'))
+            			$(this).data('original', $(this).val());
+            	});
+            	$(this).blur(function() {
+            		var orig = $(this).data('original');
+            		if (orig != $(this).val())
+            			$(this).closest('form').data('changed', true);
+            	});
+            });
         }});
     var FiltersView = BaseView.extend({
         el: $('#filters'),
