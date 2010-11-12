@@ -39,6 +39,7 @@ class ConferenceRegistration(models.Model):
     def cancel(self):
         self.cancelled = True
         self.chapter = None
+        self.save()
 
         # remove from delegates group
         grp, created = Community.objects.get_or_create(slug='conference2011',
@@ -49,6 +50,11 @@ class ConferenceRegistration(models.Model):
                                                                  'mailchimp_name': 'National Conference 2011',
                                                                  'mailchimp_category': 'Conference'})
         grp.remove_member(self.user)
+        
+        # re-enable code
+        if self.code and self.code.expired:
+            self.code.expired = False
+            self.code.save()
         
     def getRefundAmount(self):
         return self.amountPaid - 20

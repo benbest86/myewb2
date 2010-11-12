@@ -8,21 +8,37 @@
 <br/><br/>
 
 <h1>National Conference 2011</h1>
+
+{% if cancelled %}
+	<h2>Your registration has been cancelled.</h2>
 	
-<h2>Cancel your registration?</h2>
-
-Are you sure you want to cancel your registration?
-A $20 processing fee will be charged, and the rest of your registration will be refunded.<br/><br/>
-
-Note that membership payments and the contributions to the "Support an African delegate" program 
-are non-refundable.<br/><br/>
-
-<form action="{% url conference_cancel %}" method="post">
-<input type="submit" value="Cancel my registration" />
-</form>
-<br/>
-
+	{% if reg.code %}
+		<p>
+			Your registration code <strong>{{reg.code.code}}</strong>
+			has been released, and can be re-used.
+		</p>
+	{% endif %}
 	
+	<p>
+		Your conference registration cost (minus a $20 processing fee)
+		will be refunded to your credit card. 
+	</p>
+
+{% else %}
+	<h2>Cancel your registration?</h2>
+	
+	Are you sure you want to cancel your registration?
+	A $20 processing fee will be charged, and the rest of your registration will be refunded.<br/><br/>
+	
+	Note that membership payments and the contributions to the "Support an African delegate" program 
+	are non-refundable.<br/><br/>
+	
+	<form action="{% url conference_cancel %}" method="post">
+	<input type="submit" value="Cancel my registration" />
+	</form>
+	<br/>
+
+{% endif %}	
 
 
 {% endblock %}
