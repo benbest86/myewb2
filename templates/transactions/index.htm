@@ -1,0 +1,12 @@
+{% extends "base.htm" %}
+{% block body %}
+<h1> EngSoc Finance Tool</h1>
+
+<ul>
+<li><a href = "{% url create_expenditure %}">Enter in Expenditure </a></li>
+<li><a href = "{% url create_income %}">Enter in Income </a></li>
+<li><a href = "{% url view_all %}">View All Transactions</a></li>
+
+</ul>
+
+{% endblock body %}
