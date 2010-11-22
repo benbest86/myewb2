@@ -42,7 +42,7 @@ CC_PATTERNS = {
 
 def ValidateCharacters(number):
     """ Checks to make sure string only contains valid characters """
-    return re.compile('^[0-9]*$').match(number) != None
+    return re.compile('^[0-9 ]*$').match(number) != None
         
 def StripToNumbers(number):
     """ remove spaces from the number """
