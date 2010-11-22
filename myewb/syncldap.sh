@@ -24,7 +24,8 @@ while (list($userid, $fname, $lname, $email) = mysql_fetch_array($result))
 
 	$values["ewbMyewbID"] = $userid;
 	$values["ewbMailInbox"] = $email;
-	$values["cn"] = $fname . " " . $lname;
+	$values["cn"] = $fname;
+	$values["sn"] = $lname;
 	$values["objectClass"] = array("top", "ewbMailForward", "ewbPerson");
 	$values["ewbMailAddress"] = $forwards;
 
@@ -34,12 +35,13 @@ while (list($userid, $fname, $lname, $email) = mysql_fetch_array($result))
 		ldap_delete($ds, "ewbMyewbID=$userid,ou=people,dc=ewb,dc=ca");
 
 	if ($num_fwds)
+	{
 		ldap_add($ds, "ewbMyewbID=$userid,ou=people,dc=ewb,dc=ca", $values);
+	}
 
 	$qry = "UPDATE profiles_memberprofile SET ldap_sync=0 WHERE user2_id=$userid";
 	mysql_query($qry);
 
-#	echo "Updated $uid - $fname $lname ($email)\n";
+	echo "Updated $uid - $fname $lname ($email)\n";
 }
 ?>
-
