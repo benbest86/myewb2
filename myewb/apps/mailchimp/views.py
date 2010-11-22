@@ -24,21 +24,25 @@ def callback(request):
             user = e.user
             
         else:
-            # retrieve the user in question
-            user = User.objects.get(email=email)
-        
-        # clear out any pending mailchimp sync requests
-        for e in ListEvent.objects.filter(user=user):
-            e.delete()
-        for e in GroupEvent.objects.filter(user=user):
-            e.delete()
-        for e in ProfileEvent.objects.filter(user=user):
-            e.delete()
+            try:
+                # retrieve the user in question
+                user = User.objects.get(email=email)
+            except:
+                user = None
+
+        if user:
+            # clear out any pending mailchimp sync requests
+            for e in ListEvent.objects.filter(user=user):
+                e.delete()
+            for e in GroupEvent.objects.filter(user=user):
+                e.delete()
+            for e in ProfileEvent.objects.filter(user=user):
+                e.delete()
             
-        # set the nomail flag for this user
-        user.nomail = True
-        if type == 'cleaned':
-            user.bouncing = True
-        user.save()
+            # set the nomail flag for this user
+            user.nomail = True
+            if type == 'cleaned':
+                user.bouncing = True
+            user.save()
     
     return HttpResponse('success')
