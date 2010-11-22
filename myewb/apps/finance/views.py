@@ -18,6 +18,7 @@ from pygooglechart import SimpleLineChart, Axis, PieChart3D, PieChart2D, Stacked
 #import your needed models here
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
+from base_groups.models import BaseGroup
 from base_groups.decorators import group_admin_required
 from networks.decorators import chapter_president_required
 from networks.models import Network
@@ -1750,78 +1751,118 @@ def upload_noreport(request):
                 diskfile.write(chunk)
 
 #            list of all the inputted transactions
-            transactions = []    
+            transactions = []
+            errors = []
 #            open reader to read csv file
 #            reader = csv.reader(open(directory,"rb"))
             diskfile.seek(0)
             reader = csv.reader(diskfile)
 
+            rownumber = 0
             for r in reader:
+                rownumber = rownumber + 1
                 print "row was read"
 #                determine what type of transaction
                 if r[0] == "EX":
-                    exp = Expenditure()
-                    exp.type = "EX"
-                    exp.bank_date = datetime.date(year=int(r[11]), month=int(r[12]), day=int(r[13]))
-                    exp.amount = r[2]
-#                    this is sketchy - should get the actual category
-                    exp.category_id = r[3]
-                    exp.description = r[4]
-                    exp.payee = r[5]
-                    if r[8]:
-                        exp.cheque_num = r[8]
-                    if r[9]:
-                        exp.cheque_date = r[9]
-                    exp.group_id = r[10]
-                    exp.account = "NO"
-                    exp.submitted = "N"
-                    exp.creator = request.user
-                    exp.editor = request.user
-                    exp.save()
-                    transactions.append(exp)
-                    submit_notransaction(exp)
+                    try:
+                        c = Category.objects.get(id=r[3])
+                        g = BaseGroup.objects.get(id=r[10])
+
+                        exp = Expenditure()
+                        exp.type = "EX"
+                        exp.bank_date = datetime.date(year=int(r[11]), month=int(r[12]), day=int(r[13]))
+                        exp.amount = r[2]
+#                        this is sketchy - should get the actual category
+                        exp.category = c
+                        exp.description = r[4]
+                        exp.payee = r[5]
+                        if r[8]:
+                            exp.cheque_num = r[8]
+                        if r[9]:
+                            exp.cheque_date = r[9]
+                        exp.group = g
+                        exp.account = "NO"
+                        exp.submitted = "N"
+                        exp.creator = request.user
+                        exp.editor = request.user
+                        #exp.save()
+                        transactions.append(exp)
+                        #submit_notransaction(exp)
+                    except Category.DoesNotExist:
+                        errors.append("Error with row " + str(rownumber) + " (" + r[4] + "), category does not exist")
+                    except BaseGroup.DoesNotExist:
+                        errors.append("Error with row " + str(rownumber) + " (" + r[4] + "), group does not exist")
+                    except:
+                        errors.append("Error with row " + str(rownumber) + " (" + r[4] + ")")
                 elif r[0] == "IN":
-                    income = Income()
-                    income.type = "IN"
-                    income.bank_date = datetime.date(year=int(r[11]), month=int(r[12]), day=int(r[13]))
-                    income.amount = r[2]
-#                    this is sketchy - should get the actual category
-                    income.category_id = r[3]
-                    income.description = r[4]
-                    income.group_id = r[10]
-                    income.account = "NO"
-                    income.submitted = "N"
-                    income.creator = request.user
-                    income.editor = request.user
-                    income.save()
-                    transactions.append(income)
-                    current = income
-                    submit_notransaction(income)
+                    try:
+                        c = Category.objects.get(id=r[3])
+                        g = BaseGroup.objects.get(id=r[10])
+
+                        income = Income()
+                        income.type = "IN"
+                        income.bank_date = datetime.date(year=int(r[11]), month=int(r[12]), day=int(r[13]))
+                        income.amount = r[2]
+#                        this is sketchy - should get the actual category
+                        income.category = c
+                        income.description = r[4]
+                        income.group = g
+                        income.account = "NO"
+                        income.submitted = "N"
+                        income.creator = request.user
+                        income.editor = request.user
+                        #income.save()
+                        transactions.append(income)
+                        #current = income
+                        #submit_notransaction(income)
+                    except Category.DoesNotExist:
+                        errors.append("Error with row " + str(rownumber) + " (" + r[4] + "), category does not exist")
+                    except BaseGroup.DoesNotExist:
+                        errors.append("Error with row " + str(rownumber) + " (" + r[4] + "), group does not exist")
+                    except BaseGroup.DoesNotExist:
+                        errors.append("Error with row " + str(rownumber) + " (" + r[4] + ")")
                 elif r[0] == "DN":
-                    donation = Donation()
-                    donation.type = "IN"
-                    donation.bank_date = datetime.date(year=int(r[11]), month=int(r[12]), day=int(r[13]))
-                    donation.amount = r[2]
-#                    this is sketchy - should get the actual category
-                    donation.category_id = r[3]
-                    donation.description = r[4]
-                    donation.donor = r[5]
-                    donation.donation_category = r[6]
-                    donation.address = r[7]
-                    if r[8]:
-                        exp.cheque_num = r[8]
-                    if r[9]:
-                        exp.cheque_date = r[9]
-                    donation.group_id = r[10]
-                    donation.account = "NO"
-                    donation.submitted = "N"
-                    donation.creator = request.user
-                    donation.editor = request.user
-                    donation.save()
-                    transactions.append(donation)
-                    current = donation
-                    submit_notransaction(donation)
-            
+                    try:
+                        c = Category.objects.get(id=r[3])
+                        g = BaseGroup.objects.get(id=r[10])
+
+                        donation = Donation()
+                        donation.type = "IN"
+                        donation.bank_date = datetime.date(year=int(r[11]), month=int(r[12]), day=int(r[13]))
+                        donation.amount = r[2]
+#                        this is sketchy - should get the actual category
+                        donation.category = c
+                        donation.description = r[4]
+                        donation.donor = r[5]
+                        donation.donation_category = r[6]
+                        donation.address = r[7]
+                        if r[8]:
+                            exp.cheque_num = r[8]
+                        if r[9]:
+                            exp.cheque_date = r[9]
+                        donation.group = g
+                        donation.account = "NO"
+                        donation.submitted = "N"
+                        donation.creator = request.user
+                        donation.editor = request.user
+                        #donation.save()
+                        transactions.append(donation)
+                        #current = donation
+                        #submit_notransaction(donation)
+                    except Category.DoesNotExist:
+                        errors.append("Error with row " + str(rownumber) + " (" + r[4] + "), category does not exist")
+                    except BaseGroup.DoesNotExist:
+                        errors.append("Error with row " + str(rownumber) + " (" + r[4] + "), group does not exist")
+                    except BaseGroup.DoesNotExist:
+                        errors.append("Error with row " + str(rownumber) + " (" + r[4] + ")")
+
+            if errors:
+                for e in errors:
+                 request.user.message_set.create(message="Error: " + e)
+            else:
+                for t in transactions:
+                    t.save()
+                    submit_notransaction(t)
             return HttpResponseRedirect(reverse('view_allnoreports'))
     else:
         form = UploadCommitmentForm()
