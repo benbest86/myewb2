@@ -161,7 +161,7 @@
 			</td>
     		</tr>
 
-			{% cache CACHE_TIMEOUT "posttagswbreplies" topic.id topic.last_reply topic.whiteboard.last_update user.is_authenticated current_timezone LANGUAGE_CODE %}
+			{% cache CACHE_TIMEOUT "posttagswbreplies" topic.id topic.last_reply topic.whiteboard.last_update user.is_authenticated current_timezone LANGUAGE_CODE request.page %}
             <tr>
 			<td align="left" valign="top" colspan="2" style="font-size: 10px; padding-right: 10px;">
                 {% show_tags_for topic %}
