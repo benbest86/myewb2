@@ -74,7 +74,7 @@ def application_edit(request, app_id):
     # application no longer valid?
     if not application.session.active:
         request.user.message_set.create(message='The application session has ended; you cannot edit your application any more.')
-        return HttpResponseRedirect(reverse('application_detail', kwargs={'app_id': application.id}))
+        return HttpResponseRedirect(reverse('applications_detail', kwargs={'app_id': application.id}))
 
     form = ApplicationForm(instance=application)
     
@@ -92,7 +92,7 @@ def application_reopen(request, app_id):
     # application no longer valid?
     if not application.session.active:
         request.user.message_set.create(message='The application session has ended; you cannot edit your application any more.')
-        return HttpResponseRedirect(reverse('application_detail', kwargs={'app_id': application.id}))
+        return HttpResponseRedirect(reverse('applications_detail', kwargs={'app_id': application.id}))
 
     if application.complete:
         application.complete = False

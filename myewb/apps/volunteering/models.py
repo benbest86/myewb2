@@ -59,7 +59,8 @@ class Session(models.Model):
     emails = []
     for app in self.complete_applications():
         emails.append(app.profile.user2.email)
-        eval = app.evaluation
+        eval, created = Evaluation.objects.get_or_create(application=app)
+        #eval = app.evaluation
         eval.last_email = datetime.now()
         eval.save()
     
