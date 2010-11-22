@@ -42,7 +42,10 @@ def login(request):
         if request.POST['action'] == 'signin':
             signin_form = EmailLoginForm(request.POST)
             if signin_form.is_valid():
-                auth.login(request, signin_form.user)
+                user = signin_form.user
+                user.is_bulk = False
+                user.save()
+                auth.login(request, user)
                 return HttpResponseRedirect(reverse('confreg'))
         else:
             signup_form = ConferenceSignupForm(request.POST)
