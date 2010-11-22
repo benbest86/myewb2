@@ -85,6 +85,21 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 <table class="standard standard-right search-form">
     <tbody>
 
+        {% if other_user.get_profile.get_chapter %}
+                <tr>
+                        <th>&nbsp;</th>
+                        <td>
+                                {% get_membership other_user.get_profile.get_chapter other_user as title %}
+                                {% if title.is_admin %}
+                                        <strong>{{title.admin_title}}, {{ other_user.get_profile.get_chapter.name }}</strong>
+                                {% else %}
+                                        {{ other_user.get_profile.get_chapter.name }}
+                                {% endif %}
+                        </td>
+                </tr>
+        {% endif %}
+
+
 <tr>
             <th>Profile Info</th>
             <td>

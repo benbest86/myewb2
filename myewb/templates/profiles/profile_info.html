@@ -6,6 +6,7 @@
 <table class="standard standard-right search-form">
     <tbody>
 
+	{% comment %}
         {% for c in other_user.get_profile.chapters %}
             {% get_membership c other_user as title %}
             {% if title.is_admin %}
@@ -18,8 +19,23 @@
 	                </tr>
 	            {% endif %}
             {% endif %}
-        {% endfor %}	
-	
+        {% endfor %}
+	{% endcomment %}
+
+	{% if other_user.get_profile.get_chapter %}
+		<tr>
+			<th>&nbsp;</th>
+			<td>
+				{% get_membership other_user.get_profile.get_chapter other_user as title %}
+				{% if title.is_admin %}
+					<strong>{{title.admin_title}}, {{ other_user.get_profile.get_chapter.name }}</strong>
+				{% else %}
+					{{ other_user.get_profile.get_chapter.name }}
+				{% endif %}
+			</td>
+		</tr>
+	{% endif %}
+
         <tr>
             <th>Profile Info</th>
             <td>
