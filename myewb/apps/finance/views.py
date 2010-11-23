@@ -416,7 +416,7 @@ def summary(request, group_slug, year=None, month=None):
     
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)
+#    template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/summary.htm', template_data, context_instance=RequestContext(request))
 
@@ -592,7 +592,7 @@ def view(request, group_slug, year=None, month=None):
     
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)
+#    template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/view.htm', template_data, context_instance=RequestContext(request))
 
@@ -623,7 +623,7 @@ def view_donations(request, group_slug, year=None, month=None):
     
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)
+#    template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/view_donation.htm', template_data, context_instance=RequestContext(request))
 
@@ -646,7 +646,7 @@ def view_commitments(request, group_slug):
     
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)
+#    template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/view_commitment.htm', template_data, context_instance=RequestContext(request))
 
@@ -1582,47 +1582,109 @@ def csv_accountingreport(request):
     return response
 
 @staff_member_required
-def upload_commitments(request, group_slug):
+def noview_commitments(request):
+    template_data = dict()
+    
+#    income information
+    commitments = Expenditure.objects.filter(type = 'CM')
+    total_cm = commitments.aggregate(total=Sum('amount'))
+
+#    if either of the totals is None, switch to 0    
+    if not total_cm["total"]: 
+        total_cm["total"] = 0
+
+#    information to pass to template
+    template_data["commitments"] = commitments
+    template_data["total_cm"] = total_cm
+
+    return render_to_response('finance/view_commitment.htm', template_data, context_instance=RequestContext(request))
+
+@staff_member_required
+def upload_commitments(request):
 #======================================================
 # upload commitments file
 #======================================================
-    #    get chapter
-    group = get_object_or_404(Network, slug=group_slug)
-    
+
     template_data = dict()
-    
+
     if request.method == 'POST':
-        form = UploadCommitmentForm(request.POST)
+        form = UploadCommitmentForm(request.POST, request.FILES)
         if form.is_valid(): 
-            directory = request.POST["dir"]    
-            reader = csv.reader(open(directory,"rb"))
+#            create_noreports(request)
+#            directory for file
+#            directory = request.POST["dir"]
+
+            # open file
+            diskfile = tempfile.TemporaryFile(mode='w+')
+            uploadedfile = request.FILES['dir']
+            # write file to disk
+            for chunk in uploadedfile.chunks():
+                diskfile.write(chunk)
+
+#            list of all the inputted transactions
+            transactions = []
+            errors = []
+#            open reader to read csv file
+#            reader = csv.reader(open(directory,"rb"))
+            diskfile.seek(0)
+            reader = csv.reader(diskfile)
+
+            rownumber = 0
             for r in reader:
-                print r[0]
+                rownumber = rownumber + 1
+                print "row was read"
+#                determine what type of transaction
                 if r[0] == "CM":
-                    commitment = Expenditure()
-                    commitment.type = "CM"
-                    commitment.chapter = r[1]
-                    commitment.bank_date = r[2]
-                    commitment.category = r[3]
-                    commitment.description = r[4]
-                    commitment.amount = r[5]
-                    commitment.account = "NO"
-                    commitment.payee = "National Office"
-                    commitment.submitted = "N"
-                    commitment.account = "NO"
-                    commitment.save()
-                    print "saved"
-#            return HttpResponseRedirect('upload_file')
+                    try:
+                        
+                        c = Category.objects.get(id=r[3])
+                        g = BaseGroup.objects.get(id=r[10])
+                        
+                        exp = Expenditure()
+                        exp.type = "CM"
+                        exp.bank_date = datetime.date(year=int(r[11]), month=int(r[12]), day=int(r[13]))
+                        exp.amount = r[2]
+#                        this is sketchy - should get the actual category
+                        exp.category = c
+                        exp.description = r[4]
+                        exp.payee = r[5]
+                        if r[8]:
+                            exp.cheque_num = r[8]
+                        if r[9]:
+                            exp.cheque_date = r[9]
+                        exp.group = g
+                        exp.account = "NO"
+                        exp.payee = "National Office"
+                        exp.submitted = "N"
+                        exp.account = "NO"
+                        
+                        exp.creator = request.user
+                        exp.editor = request.user
+                        transactions.append(exp)
+                    
+                        
+                    except Category.DoesNotExist:
+                        errors.append("Error with row " + str(rownumber) + " (" + r[4] + "), category does not exist")
+                    except BaseGroup.DoesNotExist:
+                        errors.append("Error with row " + str(rownumber) + " (" + r[4] + "), group does not exist")
+                    except BaseGroup.DoesNotExist:
+                        errors.append("Error with row " + str(rownumber) + " (" + r[4] + ")")
+            
+            if errors:
+                for e in errors:
+                 request.user.message_set.create(message="Error: " + e)
+            else:
+                for t in transactions:
+                    t.save()
+                    
+            return HttpResponseRedirect(reverse('noview_commitments'))
     else:
         form = UploadCommitmentForm()
     
-    template_data['group'] = group
-    template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)
     template_data['form'] = form
     template_data['type'] = "commitments"
     
-    return render_to_response('finance/import.htm', template_data)
+    return render_to_response('finance/import_commitments.htm', template_data, context_instance=RequestContext(request))
 
 @staff_member_required
 def upload_testdata(request, group_slug):
@@ -1794,6 +1856,7 @@ def upload_noreport(request):
                         errors.append("Error with row " + str(rownumber) + " (" + r[4] + "), group does not exist")
                     except:
                         errors.append("Error with row " + str(rownumber) + " (" + r[4] + ")")
+                
                 elif r[0] == "IN":
                     try:
                         c = Category.objects.get(id=r[3])

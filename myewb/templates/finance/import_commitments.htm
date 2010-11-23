@@ -1,5 +1,21 @@
+{% extends "finance/base.htm" %}
+{% block finance_body %}
+<h2> Upload Commitments</h2>
 
-{% extends "finance/import.htm" %}
-Testing
+    {% if form.errors %}
+        <p style="color: red;">
+            Please correct the error{{ form.errors|pluralize }} below.
+        </p>
+    {% endif %}
+	
+	<form action=""  method="post" enctype="multipart/form-data" > 
+		<table>
+			{{ form.as_table }}
+		</table>
+		<br />
+		<br />
+		<input type="submit" value="Upload" />
+	</form>
+	
 
-<form action="{% url upload_commitments group_slug=group.slug %}" method="post" > 
+{% endblock finance_body %}

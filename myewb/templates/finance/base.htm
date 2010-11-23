@@ -48,7 +48,8 @@
 					<a href="{% url summary_no %}">national summary</a><br />
 					<a href="{% url monthlyreports_dashboard %}">monthly reports</a><br />
 					<a href="{% url account_balances %}">account balances</a><br />
-					<a href="{% url no_budgets %}">chapter budgets</a>
+					<a href="{% url no_budgets %}">chapter budgets</a></br>
+					<a href="{% url noview_commitments %}">view commitments</a>
 				</p>
 				<p>
 					Download:<br />
@@ -59,6 +60,7 @@
 				<p>
 					Upload:<br />
 					<a href="{% url upload_noreport %}">upload no report</a><br />
+					<a href="{% url upload_commitments %}">upload commitments</a><br />
 				</p>
 				{% else %}
 					Choose a chapter
