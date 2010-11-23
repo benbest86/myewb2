@@ -5,23 +5,28 @@
 {% block finance_body %}
 	
 	<h2>Commitments</h2>
-	<table class="cellpadding8 standard" width="700" style="margin: 0 auto;">
+	<table class="cellpadding8 standard" width="900" style="margin: 0 auto;">
 		<tr>
-		<th>Account</th>
 		<th>Payment Date</th>
 		<th>Category</th>
 		<th>Description</th>
 		<th>Amount</th>
-		<th>View Detail</th>
+		{% if group %}<th>View Detail</th>
+		{% else %}<th>Chapter</th>
+		<th>Delete</th>
+		<th>Delete</th>{% endif %}
 		</tr>
 	{% for t in commitments %}
 		<tr>
-		<td>{{t.account}}</td>
 		<td>{{t.bank_date}}</td>
 		<td>{{t.category}}</td>
 		<td>{{t.description}}</td>
 		<td>{{ t.amount|floatformat:2 }}</td>
-		<td><a href="{% url view_id id=t.id group_slug=group.slug %}">View Detail</a></td>
+		{% if group %}<td><a href="{% url view_id id=t.id group_slug=group.slug %}">View Detail</a></td>
+		{% else %} <td>{{t.group.name}}</td>
+		<td><a href="{% url edit_id id=t.id group_slug=t.group.slug %}">Edit</a></td>
+		<td><a href="{% url confirm_delete_id id=t.id group_slug=t.group.slug %}">Delete </a></td>
+		{% endif %}
 		</tr>
 	{% endfor %}
 
