@@ -162,7 +162,16 @@ class ConferenceRegistrationForm(forms.ModelForm):
         else:
             codename = "open"
         
-        sku = "confreg-2011-" + cleaned_data['type'] + "-" + codename 
+        sku = "confreg-2011-" + cleaned_data['type'] + "-" + codename
+        
+        if not CONF_OPTIONS.get(sku, None):
+            errormsg = "The registration code you've entered is not valid for the registration type you selected."
+            self._errors['type'] = self.error_class([errormsg])
+            self._errors['code'] = self.error_class([errormsg])
+            del cleaned_data['type']
+            del cleaned_data['code']
+            raise forms.ValidationError("Unable to complete registration (see errors below)")
+         
         cost = CONF_OPTIONS[sku]['cost']
         name = CONF_OPTIONS[sku]['name']
         product, created = Product.objects.get_or_create(sku=sku)
