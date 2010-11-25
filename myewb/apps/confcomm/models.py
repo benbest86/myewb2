@@ -262,13 +262,10 @@ class RegistrationHit(models.Model):
     datetime = models.DateTimeField(auto_now_add=True)
     ip_address = models.IPAddressField(null=True, blank=True)
 
-def update_registered_status(sender, **kwargs):
-    try:
-        cp, created = ConferenceProfile.objects.get_or_create(member_profile__user=instance.user)
-        cp.registered = not instance.cancelled
-        cp.save()
-    except:
-        pass
+def update_registered_status(sender, instance, **kwargs):
+    cp, created = ConferenceProfile.objects.get_or_create(member_profile__user=instance.user)
+    cp.registered = not instance.cancelled
+    cp.save()
 post_save.connect(update_registered_status, sender=ConferenceRegistration)
 
 def create_conference_profile_on_save(sender, **kwargs):
