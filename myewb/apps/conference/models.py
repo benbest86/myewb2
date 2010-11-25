@@ -138,4 +138,9 @@ class AlumniConferenceCode(ConferenceCode):
     def isAvailable(self):
         return True
     
-        
+class QuasiVIPCode(ConferenceCode):
+    def getShortname(self):
+        return 'discounted'
+    
+    def isAvailable(self):
+        return True

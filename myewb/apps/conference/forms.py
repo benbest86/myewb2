@@ -21,7 +21,7 @@ from emailconfirmation.models import EmailAddress
 
 from communities.models import Community
 from conference.constants import *
-from conference.models import ConferenceRegistration, ConferenceCode, AlumniConferenceCode, InvalidCode
+from conference.models import ConferenceRegistration, ConferenceCode, AlumniConferenceCode, QuasiVIPCode, InvalidCode
 from conference.utils import needsToRenew
 from creditcard.models import CC_TYPES, Product
 from creditcard.forms import CreditCardNumberField, CreditCardExpiryField, PaymentFormPreview
@@ -110,6 +110,8 @@ class ConferenceRegistrationForm(forms.ModelForm):
         try:
             if (codestring == 'ewbalumni'):
                 code = AlumniConferenceCode()
+            elif (codestring == 'ewbconfspecial'):
+                code = QuasiVIPCode()
             else:
                 code = ConferenceCode.objects.get(code=codestring)
                 
@@ -229,7 +231,7 @@ class ConferenceRegistrationForm(forms.ModelForm):
         if value.is_bulk:
             del(self.fields['prevConfs'])
             del(self.fields['prevRetreats'])
-            del(self.fields['code'])
+            #del(self.fields['code'])
             self.fields['type'].choices=EXTERNAL_CHOICES
         else:
             del(self.fields['grouping'])
