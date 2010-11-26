@@ -86,6 +86,7 @@ def view_all(request):
     #save variables to be passed into the template for use there
     template['expenditures'] = expenditures
     template['incomes'] = incomes
+    template['ugh'] = "this is sooo frustrating"
     
     
     return render_to_response('transactions/view_all.htm',template, context_instance=RequestContext(request))
