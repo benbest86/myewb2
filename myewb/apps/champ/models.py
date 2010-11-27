@@ -113,6 +113,7 @@ class Metrics(models.Model):
                                  editable=False)
     metric_type = models.CharField(max_length=255, null=True,
                                    editable=False)
+    required_fields = 'all'
     
     def __init__(self, *args, **kwargs):
         super(Metrics, self).__init__(*args, **kwargs)
@@ -123,10 +124,13 @@ class Metrics(models.Model):
         if self.metric_type is None:
             self.metric_type = self.__class__.__name__.lower()
     
-    def get_values(self):
+    def get_values(self, use_verbosename=True):
         """
         Returns a subset of this metric's fields as a dict
         (removes all non-data fields)
+        
+        If use_verbosename=True, it'll use the verbose field name as a key instead
+        of the django internal field name 
         """
         # so awesome.
         # http://yuji.wordpress.com/2008/05/14/django-list-all-fields-in-an-object/
@@ -145,7 +149,10 @@ class Metrics(models.Model):
             elif f.name == 'name':
                 pass
             else:
-                fields[f.verbose_name] = getattr(self, f.name)
+                if use_verbosename:
+                    fields[f.verbose_name] = getattr(self, f.name)
+                else:
+                    fields[f.name] = getattr(self, f.name)
             
         return fields
         
@@ -153,14 +160,19 @@ class Metrics(models.Model):
         """
         An activity can be confirmed if the metrics are all filled out...
         """
-        fields = self.get_values()
+        fields = self.get_values(use_verbosename=False)
+        required = self.required_fields
+        
+        print required
         for f, value in fields.items():
-            if value == None or value == "":
+            if (value == None or value == "") and (required == 'all' or f in required):
                 return False
         return True
 
 class ImpactMetrics(Metrics):
     metricname = "all"
+    required_fields = ['description', 'goals']
+    
     description = models.TextField(verbose_name="Description",
                                    null=True, blank=True)
     goals = models.TextField(verbose_name="Goals",
@@ -175,6 +187,7 @@ class ImpactMetrics(Metrics):
     
 class MemberLearningMetrics(Metrics):
     metricname = "ml"
+    
     type = models.CharField(verbose_name="Activity Type",
                             max_length=255, null=True, blank=True)
     learning_partner = models.NullBooleanField(verbose_name="LP related?", blank=True)
