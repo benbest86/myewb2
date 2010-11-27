@@ -4,6 +4,29 @@
 
 {% block champ_body %}
 
+<style>
+	table {
+		border: 1px solid #a0a0a0;
+		width: 100%;
+	}
+	th, td {
+		border: 1px solid #a0a0a0;
+		padding: 5px 25px 5px 10px;
+		vertical-align: top;
+	}
+	th {
+		background: #d0d0d0;
+		text-align: left;
+		padding-left: 50px;
+		font-size: 14px;
+	}
+	.edit {
+		font-size: 12px;
+		font-weight: normal;
+		margin-left: 15px;
+	}
+</style>
+
 <h2>{{ group.name }}</h2>
 <h3>{{ activity.name }}</h3>
 
@@ -13,7 +36,7 @@
 {% else %}
 	{% if activity.can_be_confirmed %}
 		<a href="{% url champ_confirm_activity group.slug activity.pk %}">
-			<span style="font-size: 16px; background-color: yellow; color: green;">This activity can be confirmed</span>
+			<span style="font-size: 16px; background-color: yellow; color: green;">Click here to confirm this activity</span>
 		</a>
 	{% else %}
 		<span style="color: red;">Some values are missing - cannot confirm this activity yet</span>
@@ -23,11 +46,18 @@
 
 <table>
 	<tr>
-		<th colspan="2">Basic Info</th>
+		<th colspan="2">
+			Basic Info
+			{% if not activity.confirmed %}
+				<span class="edit">
+						(<a href="{% url champ_edit_activity group.slug activity.pk %}">edit</a>)
+				</span>
+			{% endif %}
+		</th>
 	</tr>
 	
 	<tr>
-		<td><strong>Chapter</strong></td>
+		<td style="width: 25%;"><strong>Chapter</strong></td>
 		<td>{{ activity.group.name }}</td>
 	</tr>
 	<tr>
@@ -65,14 +95,6 @@
 		<td>{{ activity.execHours }}</td>
 	</tr>
 	
-	{% if not activity.confirmed %}
-		<tr>
-			<td colspan="2">
-				(<a href="{% url champ_edit_activity group.slug activity.pk %}">edit</a>)
-			</td>
-		</tr>
-	{% endif %}
-
 	<tr>
 		<td colspan="2">&nbsp;</td>
 	</tr>

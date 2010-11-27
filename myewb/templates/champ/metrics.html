@@ -1,21 +1,22 @@
 {% load helpers %}
 
 	<tr>
-		<th colspan="2">{% lookup metric_names metric.metricname %}</th>
+		<th colspan="2">
+			{% lookup metric_names metric.metricname %}
+			
+			{% if not activity.confirmed %}
+				<span class="edit">
+					(<a href="{% url champ_edit_activity group.slug activity.pk %}">edit</a>)
+				</span>
+			{% endif %}
+		</th>
 	</tr>
 	
-	{% if not activity.confirmed %}
-		<tr>
-			<td colspan="2">
-				(<a href="{% url champ_edit_activity group.slug activity.pk %}">edit</a>)
-			</td>
-		</tr>
-	{% endif %}
 
 	{% for name, value in metric.get_values.items %}
 		<tr>
 			<td><strong>{{ name }}</strong></td>
-			<td>{{ value|default_if_none:"<span style='color: red'>unknown</span>" }}</td>
+			<td>{{ value|default_if_none:"<span style='color: red'>unknown</span>"|linebreaksbr }}</td>
 		</tr>
 	{% endfor %}
 

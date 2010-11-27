@@ -3,24 +3,34 @@
 {% load i18n %}
 
 {% block champ_body %}
+<style>
+	th, td {
+		padding: 5px 25px 5px 10px;
+		border: 1px solid #a0a0a0;
+		text-align: left;
+	}
+	table {
+		border: 1px solid #a0a0a0;
+	}
+</style>
 
-<h2>{{ group.name }}</h2>
+<h2>{{ group.name }}: 
 {% if confirmed %}
-	<h3>Confirmed Activities</h3>
+	Confirmed Activities</h2>
 	Switch to <a href="{% url champ_unconfirmed_activities group.slug %}">unconfirmed activities</a>
 {% else %}
-	<h3>Unconfirmed Activities</h3>
+	Unconfirmed Activities</h2>
 	Switch to <a href="{% url champ_confirmed_activities group.slug %}">confirmed activities</a>
 {% endif %}
 <br/><br/><br/>
 
 <table>
 	<tr>
-		<th>Activity name</th>
-		<th>Activity date</th>
+		<th style="width: 25%;">Activity name</th>
+		<th style="width: 75%;">Activity date</th>
 	</tr>
 	{% for a in activities %}
-		<tr>
+		<tr style="background-color: {% cycle '#ffffff' '#e0e0e0' %};">
 			<td><a href="{% url champ_activity group.slug a.pk %}">{{a.name}}</a></td>
 			<td>{{a.date|date}}</td>
 		</tr>
