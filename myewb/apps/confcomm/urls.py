@@ -25,11 +25,11 @@ urlpatterns = patterns('confcomm.views',
         # ajaxified
         url('^send_invitation/$', 'send_invitation', name='confcomm_email'),
         url('^update_avatar/$', 'update_avatar', name='confcomm_avatar'),
-        url('^piston/profile/(?P<username>\.?\w+)/$', confprof_handler, {'emitter_format': 'json'}, name="confcomm_profile_api"),
+        url('^piston/profile/(?P<username>\.?[\w\._-]+)/$', confprof_handler, {'emitter_format': 'json'}, name="confcomm_profile_api"),
         url('^piston/profile/$', confprof_handler, {'emitter_format': 'json'}, name="confcomm_profile_api_base"),
         url('^piston/profiles/$', confprof_handler, {'emitter_format': 'json'}, name="confcomm_profile_api_profiles"),
         url('^piston/cohorts/$', cohort_handler, {'emitter_format': 'json'}, name='confcomm_cohorts'),
         url('^piston/cohort_members/$', cohort_member_handler, {'emitter_format': 'json'}, name='confcomm_cohort_members'),
         url('^piston/cohort_members/(?P<id>\d+)/$', cohort_member_handler, {'emitter_format': 'json'}, name='confcomm_cohort_members'),
-        url('^piston/cohort_members/(?P<id>\d+)/(?P<username>\.?\w+)/$', cohort_member_handler, {'emitter_format': 'json'}, name='confcomm_cohort_members'),
+        url('^piston/cohort_members/(?P<id>\d+)/(?P<username>\.?[\w\._-]+)/$', cohort_member_handler, {'emitter_format': 'json'}, name='confcomm_cohort_members'),
 )

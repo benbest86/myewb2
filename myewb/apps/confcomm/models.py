@@ -263,7 +263,7 @@ class RegistrationHit(models.Model):
     ip_address = models.IPAddressField(null=True, blank=True)
 
 def update_registered_status(sender, instance, **kwargs):
-    cp, created = ConferenceProfile.objects.get_or_create(member_profile__user=instance.user)
+    cp, created = ConferenceProfile.objects.get_or_create(member_profile=instance.user.get_profile())
     cp.registered = not instance.cancelled
     cp.save()
 post_save.connect(update_registered_status, sender=ConferenceRegistration)
