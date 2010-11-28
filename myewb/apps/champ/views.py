@@ -12,7 +12,6 @@ define a different template segment for each, then build a list and include/pars
 
 import csv
 from datetime import date
-from copy import copy
 
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
@@ -29,7 +28,7 @@ from networks.models import Network
 from champ.models import *
 from champ.forms import *
 from siteutils import schoolyear
-from siteutils.helpers import fix_encoding
+from siteutils.helpers import fix_encoding, copy_model_instance
 
 def run_query(query, filters):
     for f in filters:
@@ -493,7 +492,7 @@ def activity_copy(request, group_slug, activity_id):
     activity.save()
     
     for old_metric in old_activity.get_metrics():
-        metric = copy(old_metric)
+        metric = copy_model_instance(old_metric)
         metric.pk = None
         metric.activity = activity
         metric.save()
