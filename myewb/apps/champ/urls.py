@@ -31,6 +31,7 @@ urlpatterns = patterns('champ.views',
 
     url(r'^(?P<group_slug>[-\w]+)/metric/(?P<activity_id>\d+)/addmetric/', 'metric_add', name="champ_add_metric"),
     url(r'^(?P<group_slug>[-\w]+)/metric/(?P<activity_id>\d+)/(?P<metric_id>\d+)/edit/', 'metric_edit', name="champ_edit_metric"),
+    url(r'^(?P<group_slug>[-\w]+)/metric/(?P<activity_id>\d+)/(?P<metric_id>\d+)/remove/', 'metric_remove', name="champ_remove_metric"),
 
     url(r'^(?P<group_slug>[-\w]+)/journal/browse/', 'journal_list', name="champ_journal_list"),
     url(r'^(?P<group_slug>[-\w]+)/journal/new/', 'journal_new', name="champ_journal_new"),

@@ -7,6 +7,8 @@
 			{% if not activity.confirmed and is_group_admin %}
 				<span class="edit">
 					(<a href="{% url champ_edit_metric group.slug activity.pk metric.pk %}" class="edit2" id="metric-edit-{{metric.id}}">edit</a>)
+					&nbsp;&nbsp;
+					(<a href="{% url champ_remove_metric group.slug activity.pk metric.pk %}" class="removemetric" id="metric-remove-{{metric.id}}">remove</a>)
 				</span>
 			{% endif %}
 		</th>

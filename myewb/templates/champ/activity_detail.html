@@ -208,6 +208,24 @@
 											 }
 										 }
 							 });
+
+		 $('.removemetric').unbind('click');
+		 $('.removemetric').click(function() {
+			 if (confirm("Are you sure?\n\nAll data associated with this metric will be permanently deleted!"))
+			 {
+				 $.post($(this).attr('href'),
+						 {},
+						 function(data) {
+							 if (data.status == 'success')
+							 {
+							 	$('.metric-' + data.metricname).remove();
+								$('select[name=metrictype]').append('<option value="' + data.metricname + '">' + data.metriclabel + '</option>');
+							 }
+						 }); 
+			 }
+			 
+			 return false;
+		 });
 	}
 </script>
 {% endblock %}

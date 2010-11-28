@@ -660,6 +660,36 @@ def metric_edit(request, group_slug, activity_id, metric_id):
                                'form': form},
                               context_instance=RequestContext(request))
 
+@group_admin_required()
+def metric_remove(request, group_slug, activity_id, metric_id):
+    group = get_object_or_404(Network, slug=group_slug)
+    activity = get_object_or_404(Activity, pk=activity_id)
+    metric = get_object_or_404(Metrics, id=metric_id)
+
+    if not activity.group.pk == group.pk:
+        return HttpResponse("Forbidden")
+    
+    if activity.visible == False:
+        return HttpResponse("That activity has been deleted.")
+    
+    if activity.confirmed:
+        return HttpResponse("This activity is already confirmed - you can't edit it any more")
+
+    metric = getattr(metric, metric.metric_type)    # fix subclassing...
+    
+    if request.method == 'POST':
+        metric.delete()
+        
+        label = ''
+        for m, mname in ALLMETRICS:
+            if m == metric.metricname:
+                label = mname
+        
+        return JsonResponse({'status': 'success',
+                             'metricname': metric.metricname,
+                             'metriclabel': label})
+    else:
+        return JsonResponse({'status': 'error'})
 
 @chapter_president_required()
 def journal_list(request, group_slug):
