@@ -574,6 +574,7 @@ def metric_edit(request, group_slug, activity_id, metric_id):
                               {'group': group,
                                'activity': activity,
                                'metric': metric,
+                               'metric_names': ALLMETRICS,
                                'form': form},
                               context_instance=RequestContext(request))
 

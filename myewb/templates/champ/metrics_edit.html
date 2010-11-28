@@ -1,13 +1,17 @@
 {% load uni_form_tags %}
+{% load helpers %}
 
-
-<h2>Edit Metric</h2>
+<h2 class="metricdetail">{{ activity.name }}</h2>
+<h3 class="metricdetail">{% lookup metric_names metric.metricname %}</h3>
 
 <form action="{% url champ_edit_metric group.slug activity.pk metric.pk  %}" method="POST" class="uniForm" id="metricform">
 	<fieldset class="inlineLabels">
 		{{ form|as_uni_form }}
 		
+		<div class="ctrlHolder">
+			<label>&nbsp;</label>
+			<input type="submit" value="Save" class="submit"/>
+		</div>
 	</fieldset>
 	
-	<input type="submit"/>
 </form>

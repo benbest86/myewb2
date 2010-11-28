@@ -25,6 +25,19 @@
 		font-weight: normal;
 		margin-left: 15px;
 	}
+	#metricform label {
+		font-size: 12px;
+	}
+	#metricform textarea {
+		height: 50px;
+	}
+	#metricform .submit {
+		padding: 5px;
+		font-size: 14px;
+	}
+	h2.metricdetail, h3.metricdetail {
+		text-align: center;
+	} 
 </style>
 
 <h2>{{ group.name }}</h2>
@@ -162,7 +175,7 @@
 	{
 		var closing = false;
 		$('.edit2').unbind('click');
-		$('.edit2').colorbox({height: '75%',
+		$('.edit2').colorbox({height: '80%',
 							  width: '75%',
 							  opacity: '0.5',
 							  onComplete: function() {
