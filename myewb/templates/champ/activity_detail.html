@@ -133,6 +133,13 @@
 			{% endif %}
 			<br/><br/>
 			
+			<a href="{% url champ_activity_copy group.slug activity.pk %}">
+				Copy this activity
+			</a><br/>
+			(useful for repeating or similar events)
+			
+			<br/><br/>
+			
         	<a href="{% url champ_activity_delete group.slug activity.pk %}">Delete this activity</a>
         </div>
     {% endif %}

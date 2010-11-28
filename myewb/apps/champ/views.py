@@ -12,6 +12,7 @@ define a different template segment for each, then build a list and include/pars
 
 import csv
 from datetime import date
+from copy import copy
 
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
@@ -469,6 +470,36 @@ def activity_unconfirm(request, group_slug, activity_id):
         request.user.message_set.create(message="Activity un-confirmed.  Don't forget to confirm it again when you're done editing!")
         
     return HttpResponseRedirect(reverse('champ_activity', kwargs={'group_slug': group_slug, 'activity_id': activity_id}))
+
+@group_admin_required()
+def activity_copy(request, group_slug, activity_id):
+    group = get_object_or_404(Network, slug=group_slug)
+    old_activity = get_object_or_404(Activity, pk=activity_id)
+
+    if not old_activity.group.pk == group.pk:
+        return HttpResponseForbidden()
+    
+    if old_activity.visible == False:
+        request.user.message_set.create(message="That activity has been deleted.")
+        return HttpResponseRedirect(redirect('champ_dashboard', kwargs={'group_slug': group.slug}))
+
+    activity = Activity(name=old_activity.name + " (copy)",
+                        creator=request.user,
+                        editor=request.user,
+                        group=group,
+                        prepHours=old_activity.prepHours,
+                        execHours=old_activity.execHours,
+                        numVolunteers=old_activity.numVolunteers)
+    activity.save()
+    
+    for old_metric in old_activity.get_metrics():
+        metric = copy(old_metric)
+        metric.pk = None
+        metric.activity = activity
+        metric.save()
+        
+    request.user.message_set.create(message="Activity copied (be sure to update the name and date)")
+    return HttpResponseRedirect(reverse('champ_activity', kwargs={'group_slug': group_slug, 'activity_id': activity.id}))
 
 @group_admin_required()
 def activity_delete(request, group_slug, activity_id):
