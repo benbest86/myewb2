@@ -335,6 +335,51 @@ def activity_detail(request, group_slug, activity_id):
 def activity_edit(request, group_slug, activity_id):
     group = get_object_or_404(Network, slug=group_slug)
     activity = get_object_or_404(Activity, pk=activity_id)
+
+    if not activity.group.pk == group.pk:
+        return HttpResponse("Forbidden")
+    
+    if activity.visible == False:
+        return HttpResponse("That activity has been deleted.")
+    
+    if activity.confirmed:
+        return HttpResponse("This activity is already confirmed - you can't edit it any more")
+
+    if request.method == 'POST':
+        form = ChampForm(request.POST, instance=activity)
+        
+        if form.is_valid():
+            activity = form.save()
+            status = 'success'
+            template = "champ/activity_basic.html"
+        else:
+            status = 'error'
+            template = "champ/activity_edit.html"
+            
+        html = render_to_string(template,
+                                {'group': group,
+                                 'activity': activity,
+                                 'is_group_admin': True,
+                                 'form': form})
+        return JsonResponse({'status': status,
+                             'html': html,
+                             'metricname': 'basic'})
+    else:
+        form = ChampForm(instance=activity)
+        
+    return render_to_response("champ/activity_edit.html",
+                              {'group': group,
+                               'activity': activity,
+                               'is_group"admin': True,
+                               'form': form},
+                              context_instance=RequestContext(request))
+
+
+    
+@group_admin_required()
+def activity_edit2(request, group_slug, activity_id):
+    group = get_object_or_404(Network, slug=group_slug)
+    activity = get_object_or_404(Activity, pk=activity_id)
     
     if not activity.group.pk == group.pk:
         return HttpResponseForbidden()

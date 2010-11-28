@@ -1,0 +1,53 @@
+	<tr class="metric-basic">
+		<th colspan="2">
+			Basic Info
+			{% if not activity.confirmed and is_group_admin %}
+				<span class="edit">
+						(<a href="{% url champ_edit_activity group.slug activity.pk %}" class="edit2">edit</a>)
+				</span>
+			{% endif %}
+		</th>
+	</tr>
+	
+	<tr class="metric-basic">
+		<td style="width: 25%;"><strong>Chapter</strong></td>
+		<td>{{ activity.group.name }}</td>
+	</tr>
+	<tr class="metric-basic">
+		<td><strong>Activity name</strong></td>
+		<td>{{ activity.name }}</td>
+	</tr>
+	<tr class="metric-basic">
+		<td><strong>Activity date</strong></td>
+		<td>{{ activity.date|date }}</td>
+	</tr>
+	<tr class="metric-basic">
+		<td><strong>Record Created</strong></td>
+		<td>
+			by <a href="{% url profile_detail activity.creator.username %}">{{ activity.creator.visible_name }}</a><br/>
+			on {{ activity.created_date|date }}
+		</td>
+	</tr>
+	<tr class="metric-basic">
+		<td><strong>Record last edited</strong></td>
+		<td>
+			by <a href="{% url profile_detail activity.editor.username %}">{{ activity.editor.visible_name }}</a><br/>
+			on {{ activity.modified_date|date }}
+		</td>
+	</tr>
+	<tr class="metric-basic">
+		<td><strong># of Volunteers</strong></td>
+		<td>{{ activity.numVolunteers|default_if_none:"" }}</td>
+	</tr>
+	<tr class="metric-basic">
+		<td><strong>Person-hours of prep</strong></td>
+		<td>{{ activity.prepHours|default_if_none:"" }}</td>
+	</tr>
+	<tr class="metric-basic">
+		<td><strong>Person-hours of execution</strong></td>
+		<td>{{ activity.execHours|default_if_none:"" }}</td>
+	</tr>
+	
+	<tr class="metricspace-basic">
+		<td colspan="2">&nbsp;</td>
+	</tr>

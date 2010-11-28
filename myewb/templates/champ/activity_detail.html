@@ -35,9 +35,16 @@
 		padding: 5px;
 		font-size: 14px;
 	}
+	#metricform .formHint {
+		font-size: 10px;
+	}
+	#metricform .errorField {
+		font-size: 10px;
+		color: #ff0000;
+	}
 	h2.metricdetail, h3.metricdetail {
 		text-align: center;
-	} 
+	}
 </style>
 
 <h2>{{ group.name }}</h2>
@@ -62,60 +69,8 @@
 </p>
 
 <table>
-	<tr>
-		<th colspan="2">
-			Basic Info
-			{% if not activity.confirmed and is_group_admin %}
-				<span class="edit">
-						(<a href="{% url champ_edit_activity group.slug activity.pk %}">edit</a>)
-				</span>
-			{% endif %}
-		</th>
-	</tr>
-	
-	<tr>
-		<td style="width: 25%;"><strong>Chapter</strong></td>
-		<td>{{ activity.group.name }}</td>
-	</tr>
-	<tr>
-		<td><strong>Activity name</strong></td>
-		<td>{{ activity.name }}</td>
-	</tr>
-	<tr>
-		<td><strong>Activity date</strong></td>
-		<td>{{ activity.date|date }}</td>
-	</tr>
-	<tr>
-		<td><strong>Record Created</strong></td>
-		<td>
-			by <a href="{% url profile_detail activity.creator.username %}">{{ activity.creator.visible_name }}</a><br/>
-			on {{ activity.created_date|date }}
-		</td>
-	</tr>
-	<tr>
-		<td><strong>Record last edited</strong></td>
-		<td>
-			by <a href="{% url profile_detail activity.editor.username %}">{{ activity.editor.visible_name }}</a><br/>
-			on {{ activity.modified_date|date }}
-		</td>
-	</tr>
-	<tr>
-		<td><strong># of Volunteers</strong></td>
-		<td>{{ activity.numVolunteers|default_if_none:"" }}</td>
-	</tr>
-	<tr>
-		<td><strong>Person-hours of prep</strong></td>
-		<td>{{ activity.prepHours|default_if_none:"" }}</td>
-	</tr>
-	<tr>
-		<td><strong>Person-hours of execution</strong></td>
-		<td>{{ activity.execHours|default_if_none:"" }}</td>
-	</tr>
-	
-	<tr>
-		<td colspan="2">&nbsp;</td>
-	</tr>
-	
+	{% include "champ/activity_basic.html" %}
+
 	{% for metric in activity.get_metrics %}
 		{% include "champ/metrics.html" %}
 	{% endfor %}
@@ -170,36 +125,42 @@
 	$().ready(function() {
 		bind_editors();
 	});
+
+	var closing = false;
+	function bind_form_save()
+	{
+		closing = false;
+		$('#metricform').submit(function() {
+			closing = true;
+			$.post($(this).attr('action'),
+				   $(this).serialize(),
+				   function(data) {
+					 	//data = $.parseJSON(data);
+					 	if (data.status == 'success')
+					 	{
+						 	$('.metric-' + data.metricname).remove();
+						 	$('.metricspace-' + data.metricname).replaceWith(data.html);
+						 	//$.colorbox.close();
+						 	$('#cboxClose').click();
+						 	bind_editors();
+					 	}
+					 	else
+					 	{
+						 	$('#cboxLoadedContent').html(data.html);
+						 	bind_form_save();
+					 	}
+			  	   });
+			return false;
+		});
+	}
 	
 	function bind_editors()
 	{
-		var closing = false;
 		$('.edit2').unbind('click');
 		$('.edit2').colorbox({height: '80%',
 							  width: '75%',
 							  opacity: '0.5',
-							  onComplete: function() {
-			  								  closing = false;
-			  								  $('#metricform').submit(function() {
-				  								  closing = true;
-				  								  $.post($(this).attr('action'),
-						  								 $(this).serialize(),
-						  								 function(data) {
-						  								 	//data = $.parseJSON(data);
-						  								 	if (data.status == 'success')
-						  								 	{
-							  								 	$('.metric-' + data.metricname).remove();
-							  								 	$('.metricspace-' + data.metricname).replaceWith(data.html);
-							  								 	//$.colorbox.close();
-							  								 	$('#cboxClose').click();
-							  								 	bind_editors();
-						  								 	}
-						  								 	else
-							  								 	$('#cboxLoadedContent').html(data.html);
-				  								  		 });
-				  								  return false;
-			  								  });
-										   },
+							  onComplete: bind_form_save,
 							  onCleanup: function() {
 											 if (!closing)
 											 {

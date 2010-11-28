@@ -1,0 +1,33 @@
+{% load i18n %}
+{% load uni_form_tags %}
+{% load helpers %}
+
+<h2>Edit CHAMP activity</h2>
+<h3>{{ group.name }}</h3>
+
+<form action="{% url champ_edit_activity group.slug activity.pk %}" method="POST" class="uniForm" id="metricform">
+	<fieldset class="inlineLabels">
+		{{ form|as_uni_form }}
+		
+		<div class="ctrlHolder">
+			<label>&nbsp;</label>
+			<input type="submit" value="Save" class="submit"/>
+		</div>
+	</fieldset>
+</form>
+
+<script type="text/javascript" src="{{STATIC_URL}}js/ui.datepicker.js"></script>
+<style>
+	div.ui-datepicker {z-index:10000000;}
+</style>
+<script type="text/javascript">
+	var datepicker123 = $("input#id_date").datepicker({});
+
+	/*
+    $(document).ready(function() {
+      	{# set up javascript widgets... #}
+        var datepicker123 = $("input#id_date").datepicker({});
+
+    });
+    */
+</script>
