@@ -4,7 +4,7 @@
 		<th colspan="2">
 			{% lookup metric_names metric.metricname %}
 			
-			{% if not activity.confirmed %}
+			{% if not activity.confirmed and is_group_admin %}
 				<span class="edit">
 					(<a href="{% url champ_edit_activity group.slug activity.pk %}">edit</a>)
 				</span>
@@ -16,7 +16,9 @@
 	{% for name, value in metric.get_values.items %}
 		<tr>
 			<td><strong>{{ name }}</strong></td>
-			<td>{{ value|default_if_none:"<span style='color: red'>unknown</span>"|linebreaksbr }}</td>
+			{# TODO : write a tag that will display "unknown" only for required fields #}
+			{#<td>{{ value|default:"<span style='color: red'>unknown</span>"|linebreaksbr }}</td>#}
+			<td>{{ value|linebreaksbr }}</td>
 		</tr>
 	{% endfor %}
 

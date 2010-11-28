@@ -23,7 +23,7 @@ from django.db.models import Q
 from django.template import RequestContext
 
 from base_groups.decorators import group_admin_required
-from networks.decorators import chapter_president_required
+from networks.decorators import chapter_president_required, chapter_exec_required
 from networks.models import Network
 from champ.models import *
 from champ.forms import *
@@ -271,7 +271,7 @@ def new_activity(request, group_slug):
                                },
                               context_instance=RequestContext(request))
     
-@group_admin_required()
+@chapter_exec_required()
 def confirmed(request, group_slug):
     group = get_object_or_404(Network, slug=group_slug)
     activities = Activity.objects.filter(confirmed=True,
@@ -283,12 +283,12 @@ def confirmed(request, group_slug):
                               {'confirmed': True,
                                'activities': activities,
                                'group': group,
-                               'is_group_admin': True,
+                               'is_group_admin': group.user_is_admin(request.user),
                                'is_president': group.user_is_president(request.user),
                                },
                                context_instance=RequestContext(request))
     
-@group_admin_required()
+@chapter_exec_required()
 def unconfirmed(request, group_slug):
     group = get_object_or_404(Network, slug=group_slug)
     activities = Activity.objects.filter(confirmed=False,
@@ -300,12 +300,12 @@ def unconfirmed(request, group_slug):
                               {'confirmed': False,
                                'activities': activities,
                                'group': group,
-                               'is_group_admin': True,
+                               'is_group_admin': group.user_is_admin(request.user),
                                'is_president': group.user_is_president(request.user)
                                },
                                context_instance=RequestContext(request))
     
-@group_admin_required()
+@chapter_exec_required()
 def activity_detail(request, group_slug, activity_id):
     group = get_object_or_404(Network, slug=group_slug)
     activity = get_object_or_404(Activity, pk=activity_id)
@@ -324,7 +324,7 @@ def activity_detail(request, group_slug, activity_id):
                                'group': group,
                                'metric_names': ALLMETRICS,
                                'is_admin': group.user_is_admin(request.user),
-                               'is_group_admin': True,
+                               'is_group_admin': group.user_is_admin(request.user),
                                'is_president': group.user_is_president(request.user)
                                },
                                context_instance=RequestContext(request))

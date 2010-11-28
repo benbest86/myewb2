@@ -35,3 +35,27 @@ class chapter_president_required(object):
                 
             return render_to_response('denied.html', context_instance=RequestContext(request))
         return newf
+
+class chapter_exec_required(object):
+    """
+    Checks to see whether the user is an exec of any chapter 
+    """
+    def __call__(self, f):
+        def newf(request, *args, **kwargs):            
+            user = request.user
+                        
+            if user.has_module_perms("base_groups"):
+                return f(request, *args, **kwargs)
+
+            if not user.is_authenticated():
+                # deny access - would set this to redirect
+                # to a custom template eventually
+                return render_to_response('denied.html', context_instance=RequestContext(request))
+            
+            execlist = get_object_or_none(Community, slug='exec')
+            if execlist and execlist.user_is_member(user):
+                return f(request, *args, **kwargs)
+                
+            return render_to_response('denied.html', context_instance=RequestContext(request))
+        return newf
+   

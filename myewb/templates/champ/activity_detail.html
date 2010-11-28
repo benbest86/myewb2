@@ -34,12 +34,16 @@
 {% if activity.confirmed %}
 	This activity has been confirmed.
 {% else %}
-	{% if activity.can_be_confirmed %}
-		<a href="{% url champ_confirm_activity group.slug activity.pk %}">
-			<span style="font-size: 16px; background-color: yellow; color: green;">Click here to confirm this activity</span>
-		</a>
+	{% if is_group_admin %}
+		{% if activity.can_be_confirmed %}
+			<a href="{% url champ_confirm_activity group.slug activity.pk %}">
+				<span style="font-size: 16px; background-color: yellow; color: green;">Click here to confirm this activity</span>
+			</a>
+		{% else %}
+			<span style="color: red;">Some values are missing - cannot confirm this activity yet</span>
+		{% endif %}
 	{% else %}
-		<span style="color: red;">Some values are missing - cannot confirm this activity yet</span>
+		This activity has not been confirmed.
 	{% endif %}
 {% endif %}
 </p>
@@ -48,7 +52,7 @@
 	<tr>
 		<th colspan="2">
 			Basic Info
-			{% if not activity.confirmed %}
+			{% if not activity.confirmed and is_group_admin %}
 				<span class="edit">
 						(<a href="{% url champ_edit_activity group.slug activity.pk %}">edit</a>)
 				</span>
