@@ -69,6 +69,24 @@ class Activity(models.Model):
             
         return results2
     
+    # the inverse of get_metrics: return list of all metrics that are NOT
+    # associated with this activity
+    def get_available_metrics(self):
+        results = []
+        metrics = Metrics.objects.filter(activity=self.pk)
+        print "hello??"
+        
+        for m in metrics:
+            m = getattr(m, m.metric_type)
+            results.append(m.metricname)
+            
+        available = {}
+        for m, mname in ALLMETRICS:
+            if m not in results:
+                available[m] = mname
+                
+        return available
+    
     def can_be_confirmed(self):
         metrics = self.get_metrics()
         for m in metrics:

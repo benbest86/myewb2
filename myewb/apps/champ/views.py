@@ -571,6 +571,43 @@ def activity_delete(request, group_slug, activity_id):
                                    'is_president': group.user_is_president(request.user)},
                                   context_instance=RequestContext(request))
 
+@group_admin_required()
+def metric_add(request, group_slug, activity_id):
+    group = get_object_or_404(Network, slug=group_slug)
+    activity = get_object_or_404(Activity, pk=activity_id)
+
+    if not activity.group.pk == group.pk:
+        return HttpResponse("Forbidden")
+    
+    if activity.visible == False:
+        return HttpResponse("That activity has been deleted.")
+    
+    if activity.confirmed:
+        return HttpResponse("This activity is already confirmed - you can't edit it any more")
+
+    if request.method == 'POST' and request.POST.get('metrictype', None):
+        metrictype = request.POST['metrictype']
+        
+        form = METRICFORMS[metrictype]()
+        metric = form.Meta.model()
+        metric.activity = activity
+        metric.save()
+        
+        html = render_to_string("champ/metrics.html",
+                                {'group': group,
+                                 'activity': activity,
+                                 'metric': metric,
+                                 'metric_names': ALLMETRICS,
+                                 'is_group_admin': True})
+        return JsonResponse({'status': 'success',
+                             'html': html,
+                             'metricname': metric.metricname,
+                             'metricid': metric.id})
+    
+    else:
+        return HttpResponse("Error: unknown metric type")
+
+    
 # This should always be an ajax call...!
 @group_admin_required()
 def metric_edit(request, group_slug, activity_id, metric_id):

@@ -29,6 +29,7 @@ urlpatterns = patterns('champ.views',
     url(r'^(?P<group_slug>[-\w]+)/activity/(?P<activity_id>\d+)/copy/', 'activity_copy', name="champ_activity_copy"),
     url(r'^(?P<group_slug>[-\w]+)/activity/(?P<activity_id>\d+)/', 'activity_detail', name="champ_activity"),
 
+    url(r'^(?P<group_slug>[-\w]+)/metric/(?P<activity_id>\d+)/addmetric/', 'metric_add', name="champ_add_metric"),
     url(r'^(?P<group_slug>[-\w]+)/metric/(?P<activity_id>\d+)/(?P<metric_id>\d+)/edit/', 'metric_edit', name="champ_edit_metric"),
 
     url(r'^(?P<group_slug>[-\w]+)/journal/browse/', 'journal_list', name="champ_journal_list"),

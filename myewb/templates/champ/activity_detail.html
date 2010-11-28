@@ -74,9 +74,26 @@
 	{% for metric in activity.get_metrics %}
 		{% include "champ/metrics.html" %}
 	{% endfor %}
-	
-</table>
 
+	<tr id="addmetricrow">
+		<th colspan="2">
+			<form action="{% url champ_add_metric group.slug activity.id %}" method="post" id="addmetric">
+				<span style="font-size: 14px; font-weight: bold;">Add a metric:</span>
+				
+				<select name="metrictype">
+					{% for type, name in activity.get_available_metrics.items %}
+						<option value="{{ type }}">{{ name }}</option>
+					{% endfor %}
+				</select>
+				
+				<input type="submit" value="add"/>
+			</form>
+		</th>
+	</tr>
+
+</table>
+<br/><br/><br/>
+<br/><br/><br/>
 
 {% endblock %}
 
@@ -124,6 +141,25 @@
 <script type="text/javascript">
 	$().ready(function() {
 		bind_editors();
+
+		$('#addmetric').submit(function() {
+			var select = $('select[name=metrictype]', $(this));
+			
+			$.post($(this).attr('action'),
+				   $(this).serialize(),
+				   function(data) {
+				   		if (data.status == 'success')
+				   		{
+					   		$('#addmetricrow').before(data.html);
+					   		bind_editors();
+
+							$('option[value=' + select.val() + ']', select).remove();
+							
+					   		$('#metric-edit-' + data.metricid).click();
+				   		}
+				   });
+			return false;
+		});
 	});
 
 	var closing = false;
