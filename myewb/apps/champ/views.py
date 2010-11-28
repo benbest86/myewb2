@@ -21,6 +21,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 from django.db.models import Q
 from django.template import RequestContext
+from django.template.loader import render_to_string
 
 from base_groups.decorators import group_admin_required
 from networks.decorators import chapter_president_required, chapter_exec_required
@@ -29,6 +30,7 @@ from champ.models import *
 from champ.forms import *
 from siteutils import schoolyear
 from siteutils.helpers import fix_encoding, copy_model_instance
+from siteutils.http import JsonResponse
 
 def run_query(query, filters):
     for f in filters:
@@ -523,6 +525,58 @@ def activity_delete(request, group_slug, activity_id):
                                    'is_group_admin': True,
                                    'is_president': group.user_is_president(request.user)},
                                   context_instance=RequestContext(request))
+
+# This should always be an ajax call...!
+@group_admin_required()
+def metric_edit(request, group_slug, activity_id, metric_id):
+    group = get_object_or_404(Network, slug=group_slug)
+    activity = get_object_or_404(Activity, pk=activity_id)
+    metric = get_object_or_404(Metrics, id=metric_id)
+
+    if not activity.group.pk == group.pk:
+        return HttpResponse("Forbidden")
+    
+    if activity.visible == False:
+        return HttpResponse("That activity has been deleted.")
+    
+    if activity.confirmed:
+        return HttpResponse("This activity is already confirmed - you can't edit it any more")
+
+    metric = getattr(metric, metric.metric_type)    # fix subclassing...
+    
+    if request.method == 'POST':
+        form = METRICFORMS[metric.metricname](request.POST,
+                                              instance=metric,
+                                              prefix=metric.metricname)
+        if form.is_valid():
+            metric = form.save()
+            status = 'success'
+            template = "champ/metrics.html"
+        else:
+            status = 'error'
+            template = "champ/metrics_edit.html"
+            
+        html = render_to_string(template,
+                                {'group': group,
+                                 'activity': activity,
+                                 'metric': metric,
+                                 'metric_names': ALLMETRICS,
+                                 'is_group_admin': True,
+                                 'form': form})
+        return JsonResponse({'status': status,
+                             'html': html,
+                             'metricname': metric.metricname})
+    else:
+        form = METRICFORMS[metric.metricname](instance=metric,
+                                              prefix=metric.metricname)
+        
+    return render_to_response("champ/metrics_edit.html",
+                              {'group': group,
+                               'activity': activity,
+                               'metric': metric,
+                               'form': form},
+                              context_instance=RequestContext(request))
+
 
 @chapter_president_required()
 def journal_list(request, group_slug):

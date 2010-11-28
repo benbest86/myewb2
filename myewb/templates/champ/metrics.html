@@ -1,12 +1,12 @@
 {% load helpers %}
 
-	<tr>
+	<tr class="metric-{{metric.metricname}}">
 		<th colspan="2">
 			{% lookup metric_names metric.metricname %}
 			
 			{% if not activity.confirmed and is_group_admin %}
 				<span class="edit">
-					(<a href="{% url champ_edit_activity group.slug activity.pk %}">edit</a>)
+					(<a href="{% url champ_edit_metric group.slug activity.pk metric.pk %}" class="edit2">edit</a>)
 				</span>
 			{% endif %}
 		</th>
@@ -14,7 +14,7 @@
 	
 
 	{% for name, value in metric.get_values.items %}
-		<tr>
+		<tr class="metric-{{metric.metricname}}">
 			<td><strong>{{ name }}</strong></td>
 			{# TODO : write a tag that will display "unknown" only for required fields #}
 			{#<td>{{ value|default:"<span style='color: red'>unknown</span>"|linebreaksbr }}</td>#}
@@ -22,6 +22,6 @@
 		</tr>
 	{% endfor %}
 
-	<tr>
+	<tr class="metricspace-{{metric.metricname}}">
 		<td colspan="2">&nbsp;</td>
 	</tr>

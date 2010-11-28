@@ -143,6 +143,61 @@
         	<a href="{% url champ_activity_delete group.slug activity.pk %}">Delete this activity</a>
         </div>
     {% endif %}
+    
+    <div id="hiddendiv" style="display: none;">
+    </div>
         
     {{ block.super }}
+{% endblock %}
+
+{% block extra_body %}
+<link type="text/css" href="{{STATIC_URL}}css/colorbox.css" rel="stylesheet" />
+<script type="text/javascript" src="{{STATIC_URL}}js/colorbox.js"></script>
+<script type="text/javascript">
+	$().ready(function() {
+		bind_editors();
+	});
+	
+	function bind_editors()
+	{
+		var closing = false;
+		$('.edit2').unbind('click');
+		$('.edit2').colorbox({height: '75%',
+							  width: '75%',
+							  opacity: '0.5',
+							  onComplete: function() {
+			  								  closing = false;
+			  								  $('#metricform').submit(function() {
+				  								  closing = true;
+				  								  $.post($(this).attr('action'),
+						  								 $(this).serialize(),
+						  								 function(data) {
+						  								 	//data = $.parseJSON(data);
+						  								 	if (data.status == 'success')
+						  								 	{
+							  								 	$('.metric-' + data.metricname).remove();
+							  								 	$('.metricspace-' + data.metricname).replaceWith(data.html);
+							  								 	//$.colorbox.close();
+							  								 	$('#cboxClose').click();
+							  								 	bind_editors();
+						  								 	}
+						  								 	else
+							  								 	$('#cboxLoadedContent').html(data.html);
+				  								  		 });
+				  								  return false;
+			  								  });
+										   },
+							  onCleanup: function() {
+											 if (!closing)
+											 {
+												 closing = true;
+												 if (confirm("Do you want to save your changes before closing the window?"))
+												 {
+													 $('#metricform').submit();
+												 }
+											 }
+										 }
+							 });
+	}
+</script>
 {% endblock %}

@@ -1,0 +1,13 @@
+{% load uni_form_tags %}
+
+
+<h2>Edit Metric</h2>
+
+<form action="{% url champ_edit_metric group.slug activity.pk metric.pk  %}" method="POST" class="uniForm" id="metricform">
+	<fieldset class="inlineLabels">
+		{{ form|as_uni_form }}
+		
+	</fieldset>
+	
+	<input type="submit"/>
+</form>
