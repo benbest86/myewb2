@@ -41,13 +41,14 @@
 </tr>
 
 <tr><th colspan="3" align="left">CHAMP Usage</th></tr>
-{# #if($user.isPresident()) #}
+{% comment %}
 {% if is_group_admin %}
 <tr>
 	<td class="labelcell">Reflection Journal Entries:</td>
 	<td colspan="2"> {{ journals }} <a href="{% url champ_journal_list group.slug %}" class="more">list &raquo;</a></td>
 </tr>
 {% endif %}
+{% endcomment %}
 <tr>
 	<td  class="labelcell">Unconfirmed Activities:</td>
 	<td colspan="2"> {{ unconfirmed }} <a href="{% url champ_unconfirmed_activities group.slug %}" class="more">list &raquo;</a></td>

@@ -5,6 +5,12 @@
 {% block head_title %}CHAMP{% endblock %}
 
 {% block body %}
+<style>
+	#box-champ-content {
+		line-height: 1.5em;
+	}
+</style>
+
 <h1>CHAMP</h1>
 
 {% block champ_body %}
@@ -14,7 +20,7 @@
 
 {% block toolbar_left %}
         <div class="toolbarheader bkgd" id="box-champ-title">{% trans "CHAMP" %}</div>
-        <div class="toolbarcontent">
+        <div class="toolbarcontent" id="box-champ-content">
         	<p>
         		{% if group %}
         			<a href="{% url champ_dashboard group_slug=group.slug %}">Dashboard</a>
@@ -31,6 +37,7 @@
                 <a href="{% url champ_confirmed_activities group.slug %}">list confirmed</a>
                 </p>
                 
+                {% comment %}
                 {% if is_president %}
                 	<p>
                 	Reflection journal:<br/>
@@ -38,6 +45,7 @@
                 	<a href="{% url champ_journal_list group.slug %}">browse journal</a>
                 	</p>
                 {% endif %}
+                {% endcomment %}
             {% endif %}
             
             <p>
