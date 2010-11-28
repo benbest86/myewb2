@@ -449,6 +449,28 @@ def activity_confirm(request, group_slug, activity_id):
     return HttpResponseRedirect(reverse('champ_activity', kwargs={'group_slug': group_slug, 'activity_id': activity_id}))
 
 @group_admin_required()
+def activity_unconfirm(request, group_slug, activity_id):
+    group = get_object_or_404(Network, slug=group_slug)
+    activity = get_object_or_404(Activity, pk=activity_id)
+    
+    if not activity.group.pk == group.pk:
+        return HttpResponseForbidden()
+    
+    if activity.visible == False:
+        request.user.message_set.create(message="That activity has been deleted.")
+        return HttpResponseRedirect(redirect('champ_dashboard', kwargs={'group_slug': group.slug}))
+    
+    if not activity.confirmed:
+        request.user.message_set.create(message="This activity isn't confirmed")
+
+    else:
+        activity.confirmed = False
+        activity.save()
+        request.user.message_set.create(message="Activity un-confirmed.  Don't forget to confirm it again when you're done editing!")
+        
+    return HttpResponseRedirect(reverse('champ_activity', kwargs={'group_slug': group_slug, 'activity_id': activity_id}))
+
+@group_admin_required()
 def activity_delete(request, group_slug, activity_id):
     group = get_object_or_404(Network, slug=group_slug)
     activity = get_object_or_404(Activity, pk=activity_id)

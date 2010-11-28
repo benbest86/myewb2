@@ -18,7 +18,7 @@
 			<td><strong>{{ name }}</strong></td>
 			{# TODO : write a tag that will display "unknown" only for required fields #}
 			{#<td>{{ value|default:"<span style='color: red'>unknown</span>"|linebreaksbr }}</td>#}
-			<td>{{ value|linebreaksbr }}</td>
+			<td>{{ value|default_if_none:""|linebreaksbr }}</td>
 		</tr>
 	{% endfor %}
 

@@ -88,15 +88,15 @@
 	</tr>
 	<tr>
 		<td><strong># of Volunteers</strong></td>
-		<td>{{ activity.numVolunteers }}</td>
+		<td>{{ activity.numVolunteers|default_if_none:"" }}</td>
 	</tr>
 	<tr>
 		<td><strong>Person-hours of prep</strong></td>
-		<td>{{ activity.prepHours }}</td>
+		<td>{{ activity.prepHours|default_if_none:"" }}</td>
 	</tr>
 	<tr>
 		<td><strong>Person-hours of execution</strong></td>
-		<td>{{ activity.execHours }}</td>
+		<td>{{ activity.execHours|default_if_none:"" }}</td>
 	</tr>
 	
 	<tr>
@@ -114,8 +114,25 @@
 
 {% block toolbar_left %}
 	{% if is_admin %}
-        <div class="toolbarheader bkgd" id="box-activity-delete">{% trans "Delete" %}</div>
+        <div class="toolbarheader bkgd" id="box-activity-delete">Activity Status</div>
         <div class="toolbarcontent">
+			{% if activity.confirmed %}
+				<a href="{% url champ_unconfirm_activity group.slug activity.pk %}">
+					Un-confirm this activity
+				</a><br/>
+				(re-open it for editing)
+			{% else %}
+				{% if activity.can_be_confirmed %}
+					<a href="{% url champ_confirm_activity group.slug activity.pk %}">
+						Confirm this activity
+					</a>
+				{% else %}
+					Missing values - <br/>
+					can't confirm
+				{% endif %}
+			{% endif %}
+			<br/><br/>
+			
         	<a href="{% url champ_activity_delete group.slug activity.pk %}">Delete this activity</a>
         </div>
     {% endif %}
