@@ -27,6 +27,7 @@ urlpatterns = patterns('champ.views',
     url(r'^(?P<group_slug>[-\w]+)/activity/(?P<activity_id>\d+)/unconfirm/', 'activity_unconfirm', name="champ_unconfirm_activity"),
     url(r'^(?P<group_slug>[-\w]+)/activity/(?P<activity_id>\d+)/delete/', 'activity_delete', name="champ_activity_delete"),
     url(r'^(?P<group_slug>[-\w]+)/activity/(?P<activity_id>\d+)/copy/', 'activity_copy', name="champ_activity_copy"),
+    url(r'^(?P<group_slug>[-\w]+)/activity/(?P<activity_id>\d+)/pdf/', 'activity_as_pdf', name="champ_activity_pdf"),
     url(r'^(?P<group_slug>[-\w]+)/activity/(?P<activity_id>\d+)/', 'activity_detail', name="champ_activity"),
 
     url(r'^(?P<group_slug>[-\w]+)/metric/(?P<activity_id>\d+)/addmetric/', 'metric_add', name="champ_add_metric"),

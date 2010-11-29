@@ -10,7 +10,7 @@ define a different template segment for each, then build a list and include/pars
 (instead of having them fixed in run_stats() here)....
 """
 
-import csv
+import csv, copy
 from datetime import date
 
 from django.contrib.admin.views.decorators import staff_member_required
@@ -570,6 +570,111 @@ def activity_delete(request, group_slug, activity_id):
                                    'is_group_admin': True,
                                    'is_president': group.user_is_president(request.user)},
                                   context_instance=RequestContext(request))
+
+@chapter_exec_required()
+def activity_as_pdf(request, group_slug, activity_id):
+    group = get_object_or_404(Network, slug=group_slug)
+    activity = get_object_or_404(Activity, pk=activity_id)
+    
+    if not activity.group.pk == group.pk:
+        return HttpResponseForbidden()
+    
+    try:
+        from reportlab.pdfgen import canvas
+        from reportlab.lib.pagesizes import letter
+        from reportlab.lib.styles import getSampleStyleSheet
+        from reportlab.platypus import Paragraph, Image, Spacer, SimpleDocTemplate
+        from reportlab.lib import enums
+        import settings
+    except:
+        return HttpResponse("Missing library")
+    
+    width, pageHeight = letter
+    response = HttpResponse(mimetype='application/pdf')
+    response['Content-Disposition'] = 'attachment; filename=champ_activity.pdf'
+    
+    stylesheet = getSampleStyleSheet()
+    normalStyle = copy.deepcopy(stylesheet['Normal'])
+    normalStyle.fontName = 'Times-Roman'
+    normalStyle.fontSize = 12
+    normalStyle.leading = 15
+    
+    bold = copy.deepcopy(normalStyle)
+    bold.fontName = 'Times-Bold'
+    bold.leftIndent = 6
+
+    rightAlign = copy.deepcopy(normalStyle)
+    rightAlign.alignment = enums.TA_RIGHT
+
+    lindent = copy.deepcopy(normalStyle)
+    lindent.leftIndent = 12
+
+    bground = copy.deepcopy(normalStyle)
+    bground.backColor = '#e0e0e0'
+
+    h1 = copy.deepcopy(normalStyle)
+    h1.fontName = 'Times-Bold'
+    h1.fontSize = 18
+    h1.leading = 22
+    h1.backColor = '#d0d0d0'
+    h1.borderPadding = 3
+    h1.spaceBefore = 3
+    h1.spaceAfter = 3
+
+    h2 = copy.deepcopy(normalStyle)
+    h2.fontName = 'Times-Bold'
+    h2.fontSize = 14
+    h2.leading = 18
+    h2.backColor = '#e8e8e8'
+    h2.borderPadding = 3
+    h2.spaceBefore = 3
+    h2.spaceAfter = 3
+
+    page = SimpleDocTemplate(response, pagesize=letter, title="EWB Event Summary")
+    p = []
+    
+    p.append(Paragraph("Engineers Without Borders Canada", normalStyle))
+    p.append(Paragraph("Event Summary", normalStyle))
+    p.append(Spacer(0, -50))
+    img = Image(settings.MEDIA_ROOT + '/images/emaillogo.jpg', 100, 51)
+    img.hAlign = 'RIGHT'
+    p.append(img)
+    #p.line(50, height - 90, width - 50, height - 90)
+    p.append(Spacer(0, 10))
+
+    p.append(Paragraph("<strong>" + str(activity.date) + "</strong>", rightAlign))
+    p.append(Paragraph("Printed: " + str(date.today()), rightAlign))
+    p.append(Spacer(0, -20))
+
+    p.append(Paragraph("<strong>" + group.chapter_info.chapter_name + "</strong>", normalStyle))
+    p.append(Spacer(0, 20))
+    
+    p.append(Paragraph(activity.name, h1))
+    p.append(Spacer(0, 10))
+
+    p.append(Paragraph("<strong>Volunters:</strong> " + str(activity.numVolunteers), normalStyle))
+    p.append(Paragraph("<strong>Prep time:</strong> " + str(activity.prepHours) + " person hours", normalStyle))
+    p.append(Paragraph("<strong>Execution time:</strong> " + str(activity.execHours) + " person hours", normalStyle))
+    p.append(Spacer(0, 10))
+    
+    for m in activity.get_metrics():
+        metricname = ''
+        for mshort, mlong in ALLMETRICS:
+            if mshort == m.metricname:
+                metricname = mlong
+                
+        p.append(Paragraph(metricname, h2))
+        for x, y in m.get_values().items():
+            if x and y:
+                p.append(Paragraph(str(x), bold))
+                p.append(Paragraph(str(y), lindent))
+                p.append(Spacer(0, 10))
+            
+        p.append(Spacer(0, 10))
+        
+    
+    page.build(p)
+    return response
 
 @group_admin_required()
 def metric_add(request, group_slug, activity_id):
