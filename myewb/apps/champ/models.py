@@ -17,11 +17,11 @@ from siteutils.shortcuts import get_object_or_none
 ALLMETRICS = (('all', "Event Impact"),
               ('func', "Chapter Functioning"),
               ('ml', "Member Learning"),
-              ('so', "School Outreach"),
+              ('so', "Youth Engagement"),
               ('pe', "Public Outreach"),
               ('pa', "Advocacy"),
               ('wo', "Workplace Outreach"),
-              ('ce', "Curriculum Enhancement"),
+              ('ce', "Global Engineering"),
               ('pub', "Publicity"),
               ('fund', "Fundraising"))
 
@@ -44,6 +44,15 @@ class Activity(models.Model):
     prepHours = models.IntegerField(null=True, blank=True)
     execHours = models.IntegerField(null=True, blank=True)
     numVolunteers = models.IntegerField(null=True, blank=True)
+    
+    RATINGS = (('1', 'Complete flop'),
+               ('2', 'Under-whelming'),
+               ('3', 'Not great, not bad'),
+               ('4', 'Woot woot!'),
+               ('5', 'Completely and utterly blew our minds!'))
+    rating = models.IntegerField('Rating',
+                                 null=True, blank=True,
+                                 choices=RATINGS)
     
     def get_metrics(self, pad = False):
         """
@@ -207,23 +216,37 @@ class MemberLearningMetrics(Metrics):
     metricname = "ml"
     
     type = models.CharField(verbose_name="Activity Type",
-                            max_length=255, null=True, blank=True)
-    learning_partner = models.NullBooleanField(verbose_name="LP related?", blank=True)
-    curriculum = models.CharField(verbose_name="Curriculum",
-                                  max_length=255, null=True, blank=True)
-    resources_by = models.CharField(verbose_name="Resources developed by",
-                                    max_length=255, null=True, blank=True)
-    duration = models.FloatField(verbose_name="Duration",
-                                 null=True, blank=True)
-    attendance = models.IntegerField(verbose_name="Attendees",
+                            max_length=255, null=True, blank=True,
+                            help_text='ie chapter workshop, coffeeshop, development beers, movie night, book club...')
+    learning_partner = models.NullBooleanField(verbose_name="Chapter-African Partnership related?", blank=True)
+    
+    CURRICULUM_CHOICES = (('Development Knowledge', 'Development Knowledge'),
+                          ('EWB Approach', 'EWB Approach'),
+                          ('Creating Change', 'Creating Change'),
+                          ('Leadership', 'Leadership'),
+                          ('Other', 'Other'))
+    curriculum = models.CharField(verbose_name="Primary focus",
+                                  max_length=255, null=True, blank=True,
+                                  choices=CURRICULUM_CHOICES)
+    resources_by = models.CharField(verbose_name="Source",
+                                    max_length=255, null=True, blank=True,
+                                    help_text='describe where this activity came from: chapters.ewb.ca, myEWB, UofT hcapter, self-created, etc...')
+    duration = models.FloatField(verbose_name="Length",
+                                 null=True, blank=True,
+                                 help_text='in hours')
+    attendance = models.IntegerField(verbose_name="Number of participants",
                                      null=True, blank=True)
-    new_attendance = models.IntegerField(verbose_name="New Attendees",
+    new_attendance = models.IntegerField(verbose_name="Number of new participants",
                                          null=True, blank=True)
+    exec_attendance = models.IntegerField(verbose_name="Number of exec / chapter leaders who attended",
+                                          null=True, blank=True)
     
 class SchoolOutreachMetrics(Metrics):
     metricname = "so"
     school_name = models.CharField(verbose_name="Name of school",
                                    max_length=255, null=True, blank=True)
+    repeat_visit = models.NullBooleanField(verbose_name="Have you been to this school before?",
+                                           blank=True)
     teacher_name = models.CharField(verbose_name="Teacher's name",
                                     max_length=255, null=True, blank=True)
     teacher_email = models.EmailField(verbose_name="Teacher's email",
@@ -233,13 +256,16 @@ class SchoolOutreachMetrics(Metrics):
     presentations = models.IntegerField(verbose_name="# of presentations",
                                         null=True, blank=True)
     students = models.IntegerField("# of students",
-                                   null=True, blank=True)
+                                   null=True, blank=True,
+                                   help_text='total of all presentations combined')
     grades = models.CharField("Grades",
-                              max_length=255, null=True, blank=True)
+                              max_length=255, null=True, blank=True,
+                              help_text='grades of the students presented to')
     subject = models.CharField(verbose_name="Class",
                                max_length=255, null=True, blank=True)
     workshop = models.CharField(verbose_name="Workshop",
-                                max_length=255, null=True, blank=True)
+                                max_length=255, null=True, blank=True,
+                                help_text='Water for the World, Food for Thought, Energy Matters, or other YE activities...')
     facilitators = models.IntegerField("# of facilitators",
                                        null=True, blank=True)
     new_facilitators = models.IntegerField("# of new facilitators",
@@ -263,26 +289,43 @@ class FunctioningMetrics(Metrics):
 class PublicEngagementMetrics(Metrics):
     metricname = "pe"
     type = models.CharField("Event Type",
-                            max_length=255, null=True, blank=True)
+                            max_length=255, null=True, blank=True,
+                            help_text='BBQ, Reverse Trick of Treat, banner Drop, etc')
+    LOCATION_CHOICES = (('on campus', 'on campus'),
+                        ('off campus', 'off campus'))
     location = models.CharField("Location",
-                                max_length=255, null=True, blank=True)
+                                max_length=255, null=True, blank=True,
+                                choices=LOCATION_CHOICES)
     purpose = models.CharField("Purpose",
-                               max_length=255, null=True, blank=True)
-    subject = models.CharField("Subject",
-                               max_length=255, null=True, blank=True)
+                               max_length=255, null=True, blank=True,
+                               help_text='why are you doing what you\'re doing?')
+    
+    OUTREACH_SUBJECTS= (('Advocacy','Advocacy'),
+                        ('Global Engineerin', 'Global Engineering'),
+                        ('Fair Trade', 'Fair Trade'),
+                        ('Recruitment', 'Recruitment'),
+                        ('EWB Awareness', 'EWB awareness'),
+                        ('Connecting Canadians to Africa', 'Connecting Canadians to Africa'),
+                        ('Other', 'Other'))
+    subject = models.CharField("Focus",
+                               max_length=255, null=True, blank=True,
+                               choices=OUTREACH_SUBJECTS)
     level1 = models.IntegerField("People reached, level 1",
-                                 null=True, blank=True)
+                                 null=True, blank=True,
+                                 help_text='engaged under 30 seconds - they may have received information or a pamphlet, but may or may not have talked to you')
     level2 = models.IntegerField("People reached, level 2",
-                                 null=True, blank=True)
+                                 null=True, blank=True,
+                                 help_text='engaged for 30 seconds to 5 minutes - they know your core message and might act on it.<br/>ie, signing a petition for an advocacy event')
     level3 = models.IntegerField("People reached, level 3",
-                                 null=True, blank=True)
+                                 null=True, blank=True,
+                                 help_text='engaged for over 5 minutes - they are going to act on it.<br/>ie, writing a letter to the editor or an MP')
     
 class PublicAdvocacyMetrics(Metrics):
     metricname = "pa"
     type = models.CharField(verbose_name="Event Type",
                             max_length=255, null=True, blank=True)
-    units = models.IntegerField("Units",
-                                null=True, blank=True)
+    #units = models.IntegerField("Units",
+    #                            null=True, blank=True)
     decision_maker = models.CharField("Decision-maker",
                                       max_length=255, null=True, blank=True)
     position = models.CharField("Position",
@@ -294,23 +337,53 @@ class PublicAdvocacyMetrics(Metrics):
     learned = models.TextField("What we learned",
                                null=True, blank=True)
     
+class AdvocacyLettersMetrics(Metrics):
+    metricname = "adv"
+    signatures = models.IntegerField("Number of petition signatures",
+                                     blank=True, null=True)
+    letters = models.IntegerField("Number of letters sent to decision-makers",
+                                  blank=True, null=True)
+    editorials = models.IntegerField("Number of letters written to editors/media outlets",
+                                     blank=True, null=True,
+                                     help_text="(even if unpublished)")
+    other = models.TextField("Other",
+                             blank=True, null=True,
+                             help_text="please specify numbers and content")
+    
 class PublicationMetrics(Metrics):
     metricname = "pub"
     outlet = models.CharField(verbose_name="Name of media outlet",
                               max_length=255, null=True, blank=True)
-    type = models.CharField("Type of media",
-                            max_length=255, null=True, blank=True)
+    type = models.CharField("What kind of media?",
+                            max_length=255, null=True, blank=True,
+                            help_text="ie television, op-ed, photo, letter to the editor, newspaper story...")
     location = models.CharField("Location",
-                                max_length=255, null=True, blank=True)
+                                max_length=255, null=True, blank=True,
+                                help_text='e Montreal, National News, provincial...')
     circulation = models.IntegerField("Circulation/viewership",
-                                      null=True, blank=True)
+                                      null=True, blank=True,
+                                      help_text='most media websites include the circulation if you search a little bit')
+    focus = models.CharField('Focus',
+                             max_length=255, null=True, blank=True,
+                             choices=PublicEngagementMetrics.OUTREACH_SUBJECTS)
     
 class FundraisingMetrics(Metrics):
     metricname = "fund"
     goal = models.IntegerField(verbose_name="Fundraising goal",
                                null=True, blank=True)
     revenue = models.IntegerField(verbose_name="Approximate revenue",
-                                  null=True, blank=True)
+                                  null=True, blank=True,
+                                  help_text='total money taken in from the event: revenue = profits + expenses')
+    RECURRING_OPTIONS = (('one-off', 'one-off'),
+                         ('recurring', 'recurring'),
+                         ('funding', 'funding'),
+                         ('other', 'other'))
+    recurring = models.CharField('Event frequency',
+                                 max_length=255, blank=True, null=True,
+                                 choices=RECURRING_OPTIONS,
+                                 help_text='recurring: done on a regular or semi-regular basis, ie BBQs<br/> \
+                                 one-off: a unique event like a wine and cheese, calendars sales, etc.<br/> \
+                                 funding: money from a variety of sources, ie corporate, university, grants, student levy<br/>')
     
 class WorkplaceOutreachMetrics(Metrics):
     metricname = "wo"
@@ -330,8 +403,9 @@ class WorkplaceOutreachMetrics(Metrics):
                                         null=True, blank=True)
     attendance = models.IntegerField(verbose_name="# of attendees",
                                      null=True, blank=True)
-    type = models.CharField(verbose_name="Type of presentation",
-                            max_length=255, null=True, blank=True)
+    type = models.CharField(verbose_name="Presentation Content",
+                            max_length=255, null=True, blank=True,
+                            help_text='ie water and sanitation work in Malawi, Root Causes of Poverty, EWB 101, Fair Trade...')
     
 class CurriculumEnhancementMetrics(Metrics):
     metricname = "ce"
@@ -341,9 +415,11 @@ class CurriculumEnhancementMetrics(Metrics):
                             max_length=255, null=True, blank=True)
     students = models.IntegerField(verbose_name="# of students reached",
                                    null=True, blank=True)
+    tas = models.IntegerField(verbose_name="# of TAs engaged",
+                                   null=True, blank=True)
     hours = models.IntegerField(verbose_name="Total class hours",
                                 null=True, blank=True)
-    professor = models.CharField(verbose_name="Professor",
+    professor = models.CharField(verbose_name="Professor(s)",
                                  max_length=255, null=True, blank=True)
     ce_activity = models.CharField(verbose_name="Activity",
                                    max_length=255, null=True, blank=True)

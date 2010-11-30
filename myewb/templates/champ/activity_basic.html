@@ -1,3 +1,5 @@
+{% load icon_tags %}
+
 	<tr class="metric-basic">
 		<th colspan="2">
 			Basic Info
@@ -20,6 +22,10 @@
 	<tr class="metric-basic">
 		<td><strong>Activity date</strong></td>
 		<td>{{ activity.date|date }}</td>
+	</tr>
+	<tr class="metric-basic">
+		<td><strong>Activity rating</strong></td>
+		<td>{{ activity.rating|to_stars }}</td>
 	</tr>
 	<tr class="metric-basic">
 		<td><strong>Record Created</strong></td>

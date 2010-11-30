@@ -46,7 +46,7 @@ class ChampForm(forms.ModelForm):
     
     class Meta:
         model = Activity
-        fields = ('name', 'date', 'numVolunteers', 'prepHours', 'execHours')
+        fields = ('name', 'date', 'rating', 'numVolunteers', 'prepHours', 'execHours')
         
 class ImpactForm(forms.ModelForm):
     class Meta:
@@ -71,6 +71,10 @@ class PublicEngagementForm(forms.ModelForm):
 class PublicAdvocacyForm(forms.ModelForm):
     class Meta:
         model = PublicAdvocacyMetrics
+        
+class AdvocacyLettersForm(forms.ModelForm):
+    class Meta:
+        model = AdvocacyLettersMetrics
         
 class PublicationForm(forms.ModelForm):
     class Meta:
