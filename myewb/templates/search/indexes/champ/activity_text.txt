@@ -1,0 +1,10 @@
+{{ object.name }}
+{{ object.creator.visible_name }}
+
+
+{% for metric in object.get_metrics %}
+	{% for name, value in metric.get_values.items %}
+		{{ value|default_if_none:""|striptags|linebreaksbr }}
+	{% endfor %}
+{% endfor %}
+

@@ -8,6 +8,7 @@ Copyright 2010 Engineers Without Borders Canada
 
 from datetime import datetime
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -54,6 +55,10 @@ class Activity(models.Model):
                                  null=True, blank=True,
                                  choices=RATINGS)
     
+    class Meta:
+        verbose_name = "CHAMP activity"
+        verbose_name_plural = "CHAMP activities"
+        
     def get_metrics(self, pad = False):
         """
         Returns a list of all metrics associated with this activity,
@@ -102,6 +107,9 @@ class Activity(models.Model):
             if m.can_be_confirmed() == False:
                 return False
         return True
+    
+    def get_absolute_url(self):
+        return reverse('champ_activity', kwargs={'group_slug': self.group.slug, 'activity_id': self.id})
     
 class YearPlan(models.Model):
     year = models.IntegerField()
