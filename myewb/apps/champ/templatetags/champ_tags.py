@@ -15,8 +15,9 @@ register = template.Library()
 def champ_activities(group):
     today = date.today()
     
-    activity_filters, metric_filters = build_filters(today.year, today.month)
-    activity_filters = [{'group__slug': group.slug}]
+    activity_filters, metric_filters = build_filters(year=today.year, month=today.month)
+    activity_filters.append({'group__slug': group.slug})
+    print "looking up ", today.year, " m ", today.month
     
     return run_query(Activity.objects.all(), activity_filters).count()
 
@@ -24,8 +25,8 @@ def champ_activities(group):
 def champ_unconfirmed(group):
     today = date.today()
     
-    activity_filters, metric_filters = build_filters(today.year, today.month)
-    activity_filters = [{'group__slug': group.slug}]
+    activity_filters, metric_filters = build_filters(year=today.year, month=today.month)
+    activity_filters.append({'group__slug': group.slug})
     
     return run_query(Activity.objects.filter(confirmed=False), activity_filters).count()
 
