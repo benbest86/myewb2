@@ -88,7 +88,6 @@ class Activity(models.Model):
     def get_available_metrics(self):
         results = []
         metrics = Metrics.objects.filter(activity=self.pk)
-        print "hello??"
         
         for m in metrics:
             m = getattr(m, m.metric_type)
@@ -208,7 +207,6 @@ class Metrics(models.Model):
         fields = self.get_values(use_verbosename=False)
         required = self.required_fields
         
-        print required
         for f, value in fields.items():
             if (value == None or value == "") and (required == 'all' or f in required):
                 return False
