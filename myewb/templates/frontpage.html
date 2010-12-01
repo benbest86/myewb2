@@ -7,6 +7,7 @@
 {% load tagging_tags %}
 {% load events_tags %}
 {% load cache %}
+{% load champ_tags %}
 
 {% block extra_head %}
     {{ block.super }}
@@ -329,6 +330,17 @@ $(document).ready(function() {
             	</div>
         </div>
         {% endcache %}
+        
+        {% if is_exec %}
+	        <div class="toolbarheader bkgd" id="box-frontpage-champ">{% trans "CHAMP summary" %}</div>
+	        <div class="toolbarcontent" style="line-height: 1.5em;">
+      			<a href="{% url champ_dashboard group_slug=request.user.get_profile.get_chapter.slug %}">{% champ_activities request.user.get_profile.get_chapter %} {% month %} activities<a/><br/> 
+                &nbsp;&nbsp;
+                (<a href="{% url champ_unconfirmed_activities request.user.get_profile.get_chapter.slug %}">{% champ_unconfirmed request.user.get_profile.get_chapter %} unconfirmed<a/>)<br/>
+                &nbsp;&nbsp;
+                <a href="{% url champ_new_activity request.user.get_profile.get_chapter.slug %}">record an activity</a><br/>
+	        </div>
+        {% endif %}
         
         
     {% else %}

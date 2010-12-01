@@ -324,8 +324,8 @@ class PublicAdvocacyMetrics(Metrics):
     metricname = "pa"
     type = models.CharField(verbose_name="Event Type",
                             max_length=255, null=True, blank=True)
-    #units = models.IntegerField("Units",
-    #                            null=True, blank=True)
+    units = models.IntegerField("Units",
+                                null=True, blank=True)
     decision_maker = models.CharField("Decision-maker",
                                       max_length=255, null=True, blank=True)
     position = models.CharField("Position",
