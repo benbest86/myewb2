@@ -11,6 +11,9 @@ else:
 
 class WhiteboardIndex(index_class):
     text = CharField(document=True, model_attr='content')
+    
+    def get_updated_field(self):
+        return 'last_update'
 
 # not currently used; see apps/search/view.py, create_queryset()
 #    def load_all_queryset(self):

@@ -16,6 +16,9 @@ class CHAMPIndex(index_class):
 
     def prepare_author(self, obj):
         return obj.creator.visible_name()
+    
+    def get_updated_field(self):
+        return 'modified_date'
 
 # not currently used; see apps/search/view.py, create_queryset()
 #    def load_all_queryset(self):
