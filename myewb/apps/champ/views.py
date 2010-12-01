@@ -279,7 +279,7 @@ def confirmed(request, group_slug):
     activities = Activity.objects.filter(confirmed=True,
                                          visible=True,
                                          group__slug=group_slug)
-    activites = activities.order_by('-date')
+    activities = activities.order_by('-date')
     
     return render_to_response('champ/activity_list.html',
                               {'confirmed': True,
@@ -296,7 +296,7 @@ def unconfirmed(request, group_slug):
     activities = Activity.objects.filter(confirmed=False,
                                          visible=True,
                                          group__slug=group_slug)
-    activites = activities.order_by('-date')
+    activities = activities.order_by('-date')
     
     return render_to_response('champ/activity_list.html',
                               {'confirmed': False,
