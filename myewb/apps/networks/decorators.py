@@ -4,6 +4,7 @@ from django.template import RequestContext
 
 from django.contrib.auth.models import User
 from base_groups.models import BaseGroup, GroupMember
+from siteutils.shortcuts import get_object_or_none
 
 class chapter_president_required(object):
     """
