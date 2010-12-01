@@ -22,6 +22,7 @@ from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponse
 from django.db.models import Q
 from django.template import RequestContext
 from django.template.loader import render_to_string
+from haystack.query import SearchQuerySet
 
 from base_groups.decorators import group_admin_required
 from networks.decorators import chapter_president_required, chapter_exec_required
@@ -889,6 +890,27 @@ def yearplan(request, group_slug, year=None):
                                'is_president': group.user_is_president(request.user)
                                },
                                context_instance=RequestContext(request))
+
+@chapter_exec_required()
+def champ_search(request):
+    query = ''
+    results = []
+    qs = SearchQuerySet().models(Activity)
+    
+    form = CHAMPSearchForm(request.GET,
+                           searchqueryset=qs)
+                            # , load_all=True
+    
+    if form.is_valid():
+        results = form.search()
+    
+    context = {
+        'form': form,
+        'results': results,
+    }
+    
+    return render_to_response("champ/search.html", context, context_instance=RequestContext(request))
+
 
 @group_admin_required()
 def csv_so(request, group_slug):

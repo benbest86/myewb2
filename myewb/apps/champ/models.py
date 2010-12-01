@@ -111,6 +111,16 @@ class Activity(models.Model):
     def get_absolute_url(self):
         return reverse('champ_activity', kwargs={'group_slug': self.group.slug, 'activity_id': self.id})
     
+    def get_description(self):
+        try:
+            metric = ImpactMetrics.objects.get(activity=self)
+            if metric.description:
+                return metric.description
+        except:
+            pass
+        return ''
+        
+    
 class YearPlan(models.Model):
     year = models.IntegerField()
     group = models.ForeignKey(BaseGroup, unique_for_year="year")

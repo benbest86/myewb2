@@ -13,9 +13,14 @@ class CHAMPIndex(index_class):
     text = CharField(document=True, use_template=True)
     author = CharField(model_attr='creator')
     pub_date = DateTimeField(model_attr='date')
-
+    rating = IntegerField(model_attr='rating', null=True)
+    metrics = MultiValueField()
+    
     def prepare_author(self, obj):
         return obj.creator.visible_name()
+    
+    def prepare_metrics(self, obj):
+        return [m.metricname for m in obj.get_metrics()]
     
     def get_updated_field(self):
         return 'modified_date'
