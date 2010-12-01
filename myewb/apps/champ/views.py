@@ -246,7 +246,7 @@ def new_activity(request, group_slug):
                 metric.save()
             
             request.user.message_set.create(message="Activity recorded")
-            return HttpResponseRedirect(reverse('champ_dashboard', kwargs={'group_slug': group_slug}))
+            return HttpResponseRedirect(reverse('champ_activity', kwargs={'group_slug': group_slug, 'activity_id': activity.id}))
             
         else:
             # create all the other metric forms as blank forms
