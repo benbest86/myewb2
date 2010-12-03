@@ -99,11 +99,11 @@ def run_stats(filters):
     fundraising_dollars_nonevent = 0
     for f in fundraising_metrics:
         fundraising_dollars += f.revenue
-        if fundraising.recurring == 'one-off':
+        if f.recurring == 'one-off':
             fundraising_dollars_oneoff += f.revenue
-        elif fundraising.recurring == 'recurring':
+        elif f.recurring == 'recurring':
             fundraising_dollars_recurring += f.revenue
-        elif fundraising.recurring == 'funding':
+        elif f.recurring == 'funding':
             fundraising_dollars_nonevent += f.revenue
     
     publicity_metrics = run_query(PublicationMetrics.objects.all(), filters)
