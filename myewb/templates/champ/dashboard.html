@@ -16,6 +16,14 @@
 {% load helpers %}
 
 {% block champ_body %}
+<style>
+	#champtable td, #champtable th.topheading {
+		text-align: center;
+	}
+	#champtable td.labelcell {
+		text-align: left;
+	}
+</style>
 
 <h3 align="center">Currently Displaying: 
 
@@ -124,50 +132,272 @@ Chapter:
 </form>
 </div>
 
-{% if group %}
-    {% include "champ/group_dashboard.html" %}
-{% endif %}
+<br/><br/>
+<table class="cellpadding8 standard" {# width="500" #} style="margin: 0 auto; width: 90%;" id="champtable">
 
-<h3>Canada-Wide Dashboard</h3>
+<tr>
+	<th {# style="width: 300px;" #}>&nbsp;</th>
+	{% if group %}
+		<th {# style="width: 150px;" #} class="topheading">
+			{{ group.name }}:<br/>
+			{% if term %}
+			    {{ term }} term, {{ year }}
+			{% else %}
+			    {% if month %}
+			        {{ month|month }}, {{ year }}
+			    {% else %}
+			        {% if year %}
+			            {{ year|schoolyear }}
+			        {% else %}
+			            all dates
+			        {% endif %}
+			    {% endif %}
+			{% endif %}
+		</th>
+		<th {# style="width: 150px;" #} class="topheading">{{ year|schoolyear }} Plan
+		{% if is_group_admin %}
+		     <br />
+		     {% if year %}
+		     	<a href="{% url champ_yearplan group.slug year %}">[edit]</a>
+		     {% else %}
+		     	<a href="{% url champ_yearplan group.slug %}">[edit]</a>
+		     {% endif %}
+		{% endif %}
+		</th>
+	{% endif %}
+	<th {#style="width: 150px;"#} class="topheading">
+		National:<br/>
+		{% if term %}
+		    {{ term }} term, {{ year }}
+		{% else %}
+		    {% if month %}
+		        {{ month|month }}, {{ year }}
+		    {% else %}
+		        {% if year %}
+		            {{ year|schoolyear }}
+		        {% else %}
+		            all dates
+		        {% endif %}
+		    {% endif %}
+		{% endif %}
+	</th>
+	<th {#style="width: 150px;"#} class="topheading">
+		National goals<br/>
+		({{ year|schoolyear }})
+	</th>
+</tr>
 
-<table class="cellpadding8 standard" width="500" style="margin: 0 auto;">
+
 <tr><td style="width: 200px"></td><td></td></tr>
-<tr><th colspan="2">CHAMP Usage</th></tr>
-{# <tr><td class="labelcell">Reflection Journal Entries:</td><td> {{ journals }} </td></tr> #}
-<tr><td class="labelcell">Unconfirmed Activities:</td><td> {{ unconfirmed }} </td></tr>
-<tr><td class="labelcell">Confirmed Activities:</td><td>  {{ confirmed }} </td></tr>
 
-<tr><th colspan="2">Member Learning</th></tr>
-<tr><td class="labelcell">Member Learning Hours:</td><td> {{ ml_hours }} </td></tr>
-<tr><td class="labelcell">Average Attendance:</td><td>  {{ ml_attendance }}  </td></tr>
+<tr><th colspan="5" align="left">CHAMP Usage</th></tr>
+<tr>
+	<td  class="labelcell">Unconfirmed Activities:</td>
+	{% if group %}
+		<td> {{ unconfirmed }} <a href="{% url champ_unconfirmed_activities group.slug %}" class="more">list &raquo;</a></td>
+		<td>&nbsp;</td>
+	{% endif %}
+	<td>{{ natl_unconfirmed }}</td>
+	<td>&nbsp;</td>
+</tr>
+<tr>
+	<td class="labelcell">Confirmed Activities:</td>
+	{% if group %}
+		<td>  {{ confirmed }} <a href="{% url champ_confirmed_activities group.slug %}" class="more">list &raquo;</a></td>
+		<td>&nbsp;</td>
+	{% endif %}
+	<td>{{ natl_confirmed }}</td>
+	<td>&nbsp;</td>
+</tr>
 
-<tr><th colspan="2">Public Outreach</th></tr>
-<tr><td class="labelcell">People reached:</td><td> {{pe_people }}  </td></tr>
+<tr><th colspan="5" align="left">Member Learning</th></tr>
+<tr>
+	<td class="labelcell">Member Learning Hours:</td>
+	{% if group %}
+		<td> {{ ml_hours }} </td>
+		<td> {% if yearplan %} {{ yearplan.ml_total_hours }} {% endif %}</td>
+	{% endif %}
+	<td>{{ natl_ml_hours }}</td>
+	<td>25,000</td>
+</tr>
+<tr>
+	<td  class="labelcell">Average Attendance:</td>
+	{% if group %}
+		<td> {{ ml_attendance }}  </td>
+		<td> {% if yearplan %} {{ yearplan.ml_average_attendance }} {% endif %}</td>
+	{% endif %}
+	<td>{{ natl_ml_attendance }}</td>
+	<td>20</td>
+</tr>
+<tr>
+	<td  class="labelcell">Number of events:</td>
+	{% if group %}
+		<td> {{ ml_events }}  </td>
+		<td> {% if yearplan %} {{ yearplan.ml_events }} {% endif %}</td>
+	{% endif %}
+	<td>{{ natl_ml_events }}</td>
+	<td>1,400</td>
+</tr>
 
-<tr><th colspan="2">Advocacy</th></tr>
-<tr><td class="labelcell">Contacts with decision makers:</td><td> {{ po_contacts }}  </td></tr>
+<tr><th colspan="5" align="left">Public Outreach</th></tr>
+<tr>
+	<td class="labelcell">People reached on campus:</td>
+	{% if group %}
+		<td> {{ pe_people_oncampus }} </td>
+		<td> {% if yearplan %} {{ yearplan.eng_people_reached }} {% endif %}</td>
+	{% endif %}
+	<td>{{ natl_pe_people_oncampus }}</td>
+	<td>80,050</td>
+</tr>
+<tr>
+	<td class="labelcell">People reached off campus:</td>
+	{% if group %}
+		<td> {{ pe_people_offcampus }} </td>
+		<td> {% if yearplan %} {{ yearplan.eng_people_reached_offcampus }} {% endif %}</td>
+	{% endif %}
+	<td>{{ natl_pe_people_offcampus }}</td>
+	<td>40,000</td>
+</tr>
+<tr>
+	<td class="labelcell">Number of events:</td>
+	{% if group %}
+		<td> {{ pe_events }} </td>
+		<td> {% if yearplan %} {{ yearplan.eng_events }} {% endif %}</td>
+	{% endif %}
+	<td>{{ natl_pe_events }}</td>
+	<td>414</td>
+</tr>
 
-<tr><th colspan="2">Curriculum Enhancement</th></tr>
-<tr><td class="labelcell">Students Reached:</td><td> {{ ce_students }}  </td></tr>
-<tr><td class="labelcell">Total Class Hours:</td><td> {{ ce_hours}}  </td></tr>
+<tr><th colspan="5" align="left">Advocacy</th></tr>
+<tr>
+	<td class="labelcell">MP meetings:</td>
+	{% if group %}
+		<td> {{ po_contacts }} </td>
+		<td> {% if yearplan %} {{ yearplan.adv_contacts }} {% endif %}</td>
+	{% endif %}
+	<td>{{ natl_po_contacts }}</td>
+	<td>235</td>
+</tr>
+<tr>
+	<td class="labelcell">Letters to the editor:</td>
+	{% if group %}
+		<td> {{ po_letters }} </td>
+		<td> {% if yearplan %} {{ yearplan.adv_letters }} {% endif %}</td>
+	{% endif %}
+	<td>{{ natl_po_letters }}</td>
+	<td>110</td>
+</tr>
 
-<tr><th colspan="2">Workplace Outreach</th></tr>
-<tr><td class="labelcell">Professionals Reached:</td><td>  {{ wo_professionals }} </td></tr>
-<tr><td class="labelcell">Presentations:</td><td>  {{ wo_presentations }} </td></tr>
+<tr><th colspan="5" align="left">Global Engineering</th>
+</tr>
+<tr>
+	<td class="labelcell">Students Reached:</td>
+	{% if group %}
+		<td> {{ ce_students }} </td>
+		<td> {% if yearplan %} {{ yearplan.ce_students }} {% endif %}</td>
+	{% endif %}
+	<td>{{ natl_ce_students }}</td>
+	<td>20,500</td>
+</tr>
+<tr>
+	<td class="labelcell">Total Class Hours:</td>
+	{% if group %}
+		<td> {{ ce_hours }} </td>
+		<td> {% if yearplan %} {{ yearplan.ce_hours }} {% endif %}</td>
+	{% endif %}
+	<td>{{ natl_ce_hours }}</td>
+	<td>234</td>
+</tr>
 
-<tr><th colspan="2">School Outreach</th></tr>
-<tr><td class="labelcell">Students Reached:</td><td>  {{ so_students }} </td></tr>
-<tr><td class="labelcell">Presentations:</td><td>  {{ so_presentations }} </td></tr>
+<tr><th colspan="5" align="left">Workplace Outreach</th></tr>
+<tr>
+	<td class="labelcell">Professionals Reached:</td>
+	{% if group %}
+		<td>  {{ wo_professionals }} </td>
+		<td> {% if yearplan %} {{ yearplan.wo_reached }} {% endif %}</td>
+	{% endif %}
+	<td>{{ natl_wo_professionals }}</td>
+	<td></td>
+</tr>
+<tr>
+	<td class="labelcell">Presentations:</td>
+	{% if group %}
+		<td>  {{ wo_presentations }} </td>
+		<td> {% if yearplan %} {{ yearplan.wo_presentations }} {% endif %}</td>
+	{% endif %}
+	<td>{{ natl_wo_presentations }}</td>
+	<td></td>
+</tr>
 
+<tr><th colspan="5" align="left">Youth Engagement</th></tr>
+<tr>
+	<td class="labelcell">Students Reached:</td>
+	{% if group %}
+		<td>  {{ so_students }} </td>
+		<td> {% if yearplan %} {{ yearplan.so_reached }} {% endif %}</td>
+	{% endif %}
+	<td>{{ natl_so_students }}</td>
+	<td>26,417</td>
+</tr>
+<tr>
+	<td class="labelcell">Presentations:</td>
+	{% if group %}
+		<td>  {{ so_presentations }} </td>
+		<td> {% if yearplan %} {{ yearplan.so_presentations }} {% endif %}</td>
+	{% endif %}
+	<td>{{ natl_so_presentations }}</td>
+	<td>1,200</td>
+</tr>
 
-<tr><th colspan="2">Fundraising</th></tr>
-<tr><td class="labelcell">Dollars Fundraised:</td><td>  $ {{ fundraising_dollars }} </td></tr>
+<tr><th colspan="5" align="left">Fundraising</th></tr>
+<tr>
+	<td class="labelcell">Total Dollars Fundraised:</td>
+	{% if group %}
+		<td>  $ {{ fundraising_dollars|default:0 }} </td>
+		<td> {% if yearplan %} $ {{ yearplan.fund_total|default:0 }} {% endif %}</td>
+	{% endif %}
+	<td>$ {{ natl_fundraising_dollars|default:0 }}</td>
+	<td>$780,000</td>
+</tr>
+<tr>
+	<td class="labelcell">Dollars from one-off events:</td>
+	{% if group %}
+		<td>  $ {{ fundraising_dollars_oneoff|default:0 }} </td>
+		<td> {% if yearplan %} $ {{ yearplan.fund_oneoff|default:0 }} {% endif %}</td>
+	{% endif %}
+	<td>$ {{ natl_fundraising_dollars_oneoff|default:0 }}</td>
+	<td>$138,000</td>
+</tr>
+<tr>
+	<td class="labelcell">Dollars from recurring activities:</td>
+	{% if group %}
+		<td>  $ {{ fundraising_dollars_recurring|default:0 }} </td>
+		<td> {% if yearplan %} $ {{ yearplan.fund_recurring|default:0 }} {% endif %}</td>
+	{% endif %}
+	<td>$ {{ natl_fundraising_dollars_recurring|default:0 }}</td>
+	<td>$95,000</td>
+</tr>
+<tr>
+	<td class="labelcell">Dollars from non-event sources:</td>
+	{% if group %}
+		<td>  $ {{ fundraising_dollars_nonevent|default:0 }} </td>
+		<td> {% if yearplan %} $ {{ yearplan.fund_nonevent|default:0 }} {% endif %}</td>
+	{% endif %}
+	<td>$ {{ natl_fundraising_dollars_nonevent|default:0 }}</td>
+	<td>$273,000</td>
+</tr>
 
-<tr><th colspan="2">Publicity</th></tr>
-<tr><td class="labelcell">Media Hits:</td><td>  {{ publicity_hits }} </td></tr>
-</table></table>
-
-
+<tr><th colspan="5" align="left">Publicity</th></tr>
+<tr>
+	<td class="labelcell">Media Hits:</td>
+	{% if group %}
+		<td>  {{ publicity_hits }} </td>
+		<td> {% if yearplan %} {{ yearplan.pub_media_hits }} {% endif %}</td>
+	{% endif %}
+	<td>{{ natl_publicity_hits }}</td>
+	<td></td>
+</tr>
+</table>
 
 {% endblock %}
 

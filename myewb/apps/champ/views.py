@@ -43,22 +43,33 @@ def run_stats(filters):
     ml_metrics = run_query(MemberLearningMetrics.objects.all(), filters)
     ml_hours = 0
     ml_attendance = 0
-    ml_num = ml_metrics.count()
+    ml_events = ml_metrics.count()
     for m in ml_metrics:
         ml_hours += m.duration * m.attendance
         ml_attendance += m.attendance
-    if ml_num:
-        ml_attendance = ml_attendance / ml_num
+    if ml_events:
+        ml_attendance = ml_attendance / ml_events
         
     pe_metrics = run_query(PublicEngagementMetrics.objects.all(), filters)
-    pe_people = 0
+    pe_people_oncampus = 0
+    pe_people_offcampus = 0
+    pe_events = 0
     for p in pe_metrics:
-        pe_people += p.level1 + p.level2 + p.level3
+        if p.location == 'off campus':
+            pe_people_offcampus += p.level1 + p.level2 + p.level3
+        else:
+            pe_people_oncampus += p.level1 + p.level2 + p.level3
+        pe_events += 1
     
     po_metrics = run_query(PublicAdvocacyMetrics.objects.all(), filters)
     po_contacts = 0
     for p in po_metrics:
-        po_contacts += p.units
+        po_contacts += 1
+        
+    adv_metrics = run_query(AdvocacyLettersMetrics.objects.all(), filters)
+    po_letters = 0
+    for p in adv_metrics:
+        po_letters += p.editorials
     
     ce_metrics = run_query(CurriculumEnhancementMetrics.objects.all(), filters)
     ce_students = 0
@@ -83,8 +94,17 @@ def run_stats(filters):
     
     fundraising_metrics = run_query(FundraisingMetrics.objects.all(), filters)
     fundraising_dollars = 0
+    fundraising_dollars_oneoff = 0
+    fundraising_dollars_recurring = 0
+    fundraising_dollars_nonevent = 0
     for f in fundraising_metrics:
         fundraising_dollars += f.revenue
+        if fundraising.recurring == 'one-off':
+            fundraising_dollars_oneoff += f.revenue
+        elif fundraising.recurring == 'recurring':
+            fundraising_dollars_recurring += f.revenue
+        elif fundraising.recurring == 'funding':
+            fundraising_dollars_nonevent += f.revenue
     
     publicity_metrics = run_query(PublicationMetrics.objects.all(), filters)
     publicity_hits = publicity_metrics.count()
@@ -92,8 +112,12 @@ def run_stats(filters):
     context = {}
     context['ml_hours'] = ml_hours
     context['ml_attendance'] = ml_attendance
-    context['pe_people'] = pe_people
+    context['ml_events'] = ml_events
+    context['pe_people_oncampus'] = pe_people_oncampus
+    context['pe_people_offcampus'] = pe_people_offcampus
+    context['pe_events'] = pe_events
     context['po_contacts'] = po_contacts
+    context['po_letters'] = po_letters
     context['ce_students'] = ce_students
     context['ce_hours'] = ce_hours
     context['wo_professionals'] = wo_professionals
@@ -101,6 +125,9 @@ def run_stats(filters):
     context['so_students'] = so_students
     context['so_presentations'] = so_presentations
     context['fundraising_dollars'] = fundraising_dollars
+    context['fundraising_dollars_oneoff'] = fundraising_dollars_oneoff
+    context['fundraising_dollars_recurring'] = fundraising_dollars_recurring
+    context['fundraising_dollars_nonevent'] = fundraising_dollars_nonevent
     context['publicity_hits'] = publicity_hits
     
     return context
@@ -166,6 +193,18 @@ def dashboard(request, year=None, month=None, term=None,
     context['unconfirmed'] = run_query(Activity.objects.filter(confirmed=False), activity_filters).count()
     context['confirmed'] = run_query(Activity.objects.filter(confirmed=True), activity_filters).count()
     context['journals'] = journals
+    
+    natl_activity_filters, natl_metric_filters = build_filters(year, month, term)
+    natl_activity_filters.append({'visible': True})
+    natl_metric_filters.append({'activity__visible': True})
+    natl_metric_filters.append({'activity__confirmed': True})
+    natl_context = run_stats(natl_metric_filters)
+    natl_context['unconfirmed'] = run_query(Activity.objects.filter(confirmed=False), natl_activity_filters).count()
+    natl_context['confirmed'] = run_query(Activity.objects.filter(confirmed=True), natl_activity_filters).count()
+
+    # stuff all national values into context, prepending key with natl_
+    for x, y in natl_context.items():
+        context['natl_' + x] = y
     
     context['group'] = None
     context['yearplan'] = None    

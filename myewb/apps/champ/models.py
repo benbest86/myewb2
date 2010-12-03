@@ -130,10 +130,14 @@ class YearPlan(models.Model):
     
     ml_total_hours = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Member learning:</b> Total Hours'))
     ml_average_attendance = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Member learning:</b> Average Attendance'))
+    ml_events = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Member learning:</b> Number of events'))
     
-    eng_people_reached = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Public Outreach:</b> People Reached')) # @@@ I hope this is the case! eng_people_reached != public outreach ??
+    eng_people_reached = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Public Outreach:</b> People Reached on campus')) # @@@ I hope this is the case! eng_people_reached != public outreach ??
+    eng_people_reached_offcampus = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Public Outreach:</b> People Reached off campus')) # @@@ I hope this is the case! eng_people_reached != public outreach ??
+    eng_events = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Public Outreach:</b> Number of events'))
     
-    adv_contacts = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Advocacy:</b> Contacts with decision makers'))
+    adv_contacts = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Advocacy:</b> MP meetings'))
+    adv_letters = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Advocacy:</b> Letters to the editor'))
 
     ce_hours = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Curriculum Enhancement:</b> Total Class Hours'))
     ce_students = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Curriculum Enhancement:</b> Students Reached'))
@@ -145,6 +149,9 @@ class YearPlan(models.Model):
     so_reached = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>School Outreach:</b> Students Reached'))
 
     fund_total = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Fundraising:</b> Dollars Fundraised'))
+    fund_oneoff = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Fundraising:</b> Dollars from one-off events'))
+    fund_recurring = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Fundraising:</b> Dollars from recurring events'))
+    fund_nonevent = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Fundraising:</b> Dollars from non-event sources'))
     
     pub_media_hits = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Publicity:</b> Media Hits'))
 
