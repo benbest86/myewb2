@@ -359,7 +359,7 @@ def activity_detail(request, group_slug, activity_id):
     
     if activity.visible == False:
         request.user.message_set.create(message="That activity has been deleted.")
-        return HttpResponseRedirect(redirect('champ_dashboard', kwargs={'group_slug': group.slug}))
+        return HttpResponseRedirect(reverse('champ_dashboard', kwargs={'group_slug': group.slug}))
     
     return render_to_response('champ/activity_detail.html',
                               {'activity': activity,
