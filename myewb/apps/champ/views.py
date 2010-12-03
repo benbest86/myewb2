@@ -175,15 +175,17 @@ def dashboard(request, year=None, month=None, term=None,
 
     activity_filters, metric_filters = build_filters(year, month, term)
     
+    journals = 0
+    grp = None
     if group_slug:
-        activity_filters.append({'group__slug': group_slug})
-        metric_filters.append({'activity__group__slug': group_slug})
-        journals = run_query(Journal.objects.all(), activity_filters).count()
-        
         grp = get_object_or_404(Network, slug=group_slug)
-    else:
-        journals = 0
-        grp = None
+        
+        if grp.is_chapter():
+            activity_filters.append({'group__slug': group_slug})
+            metric_filters.append({'activity__group__slug': group_slug})
+            journals = run_query(Journal.objects.all(), activity_filters).count()
+        else:
+            grp = None
 
     activity_filters.append({'visible': True})
     metric_filters.append({'activity__visible': True})
