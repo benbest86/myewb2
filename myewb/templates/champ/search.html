@@ -77,7 +77,7 @@
         {% for result in results %}
 			<div class="post">
 				<div class="postheader yellow" style="position: relative;"> <!-- header row -->
-	  					<a class="postheaderlink" href="{{ result.object.get_absolute_url }}">CHAMP activity: {{ result.object.name }}</a>
+	  					<a class="postheaderlink" href="{{ result.object.get_absolute_url }}">{{ result.object.name }}</a>
 				</div>
 	
 				<div class="postsubheader yellow yellow-border bkgd-light"> <!-- stat row -->
