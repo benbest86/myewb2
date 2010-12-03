@@ -13,8 +13,11 @@ class CHAMPIndex(index_class):
     text = CharField(document=True, use_template=True)
     author = CharField(model_attr='creator')
     pub_date = DateTimeField(model_attr='date')
-    rating = IntegerField(model_attr='rating', null=True)
+    rating = IntegerField(model_attr='rating', default=1)
     metrics = MultiValueField()
+    
+    def get_queryset(self):
+        return Activity.objects.filter(visible=True, confirmed=True)
     
     def prepare_author(self, obj):
         return obj.creator.visible_name()
