@@ -7,12 +7,16 @@ Created on: 2009-10-18
 @author: Francis Kung
 """
 
+import csv
+from datetime import date
+
 from django.contrib import auth
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail
 from django.core.urlresolvers import reverse
+from django.db.models import Sum
 from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
@@ -31,6 +35,7 @@ from profiles.models import MemberProfile
 from profiles.forms import AddressForm
 from siteutils.shortcuts import get_object_or_none
 from siteutils.decorators import owner_required, secure_required
+from siteutils.helpers import fix_encoding
 
 @secure_required
 def login(request):
@@ -207,8 +212,32 @@ def list(request, chapter=None):
                                                                       cancelled=False)
                 chapter.numRegistrations = registrations.count()
             
+            stats = {}
+            if request.user.has_module_perms('conference'):
+                reg = ConferenceRegistration.objects.filter(cancelled=False)
+                stats['total_registration'] = reg.count()
+                stats['external_registration'] = reg.filter(user__is_bulk=True).count()
+                
+                all_fees = reg.aggregate(Sum('amountPaid'), Sum('africaFund'))
+                stats['reg_fees'] = all_fees['amountPaid__sum']
+                stats['africafund'] = all_fees['africaFund__sum']
+                stats['africafund_percent'] = reg.filter(africaFund__isnull=False).count() * 100 / stats['total_registration']  
+                stats['male'] = reg.filter(user__memberprofile__gender='M').count()
+                stats['male_percent'] = stats['male'] * 100 / stats['total_registration']
+                stats['female'] = reg.filter(user__memberprofile__gender='F').count()
+                stats['female_percent'] = stats['female'] * 100 / stats['total_registration']
+            
+                reg = reg.filter(user__is_bulk=False)
+                stats['member_registration'] = reg.filter(code__isnull=False).count()
+                
+                reg = reg.filter(code__isnull=True) 
+                stats['open_registration'] = reg.filter(type__contains='open').count()
+                stats['alumni_registration'] = reg.filter(type__contains='alumni').count()
+                
             return render_to_response('conference/select_chapter.html',
-                                      {'chapters': chapters},
+                                      {'chapters': chapters,
+                                       'stats': stats,
+                                       'is_admin': request.user.has_module_perms('conference')},
                                       context_instance=RequestContext(request)
                                       )
     
@@ -229,6 +258,53 @@ def list(request, chapter=None):
                                context_instance=RequestContext(request)
                                )
     
+def download(request, who=None):
+    if not request.user.has_module_perms('conference'):
+        return render_to_response('denied.html', context_instance=RequestContext(request))
+    
+    reg = ConferenceRegistration.objects.filter(cancelled=False)
+    
+    if who == 'chapter':
+        reg = reg.filter(user__is_bulk=False, code__isnull=False)
+    elif who == 'open':
+        reg = reg.filter(user__is_bulk=False, type__contains='open')
+    elif reg == 'alumni':
+        reg = reg.filter(user__is_bulk=False, type__contains='alumni')
+    elif reg == 'external':
+        reg = reg.filter(user__is_bulk=True)
+        
+    response = HttpResponse(mimetype='text/csv')
+    response['Content-Disposition'] = 'attachment; filename=confreg_%s_%d-%d-%d.csv' % (who, date.today().month, date.today().day, date.today().year)
+    
+    writer = csv.writer(response)
+    writer.writerow(['First name', 'Last name', 'Email',
+                     'Gender', 'Chapter', 'amount paid',
+                     'room size', 'registered on', 'headset',
+                     'food prefs', 'special needs',
+                     'emergency name', 'emergency phone', 'prev conferences',
+                     'prev retreats', 'cell phone', 'grouping',
+                     'reg code', 'reg type', 'african delegate'])
+    
+    for r in reg:
+        fname = r.user.first_name
+        lname = r.user.last_name
+        email = r.user.email
+        gender = r.user.get_profile().gender
+        if r.user.get_profile().get_chapter():
+            chapter = r.user.get_profile().get_chapter().name
+        else:
+            chapter = ''
+        
+        row = [fname, lname, email, gender, chapter,
+               r.amountPaid, r.roomSize, r.date, r.headset,
+               r.foodPrefs, r.specialNeeds, r.emergName, r.emergPhone,
+               r.prevConfs, r.prevRetreats, r.cellphone, r.grouping,
+               r.code, r.type, r.africaFund]
+            
+        writer.writerow([fix_encoding(s) for s in row])
+
+    return response
+
 def generate_codes(request):
     # ensure only admins...
     if request.user.has_module_perms('conference'):

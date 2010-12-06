@@ -45,7 +45,7 @@ class ConferenceRegistration(models.Model):
         grp, created = Community.objects.get_or_create(slug='conference2011',
                                                        defaults={'invite_only': True,
                                                                  'name': 'National Conference 2011 - EWB delegates',
-                                                                 'creator': request.user,
+                                                                 'creator': self.user,
                                                                  'description': 'National Conference 2011 delegates (EWB members)',
                                                                  'mailchimp_name': 'National Conference 2011 members',
                                                                  'mailchimp_category': 'Conference'})
@@ -53,7 +53,7 @@ class ConferenceRegistration(models.Model):
         grp2, created = Community.objects.get_or_create(slug='conference2011-external',
                                                         defaults={'invite_only': True,
                                                                   'name': 'National Conference 2011 - external delegates',
-                                                                  'creator': request.user,
+                                                                  'creator': self.user,
                                                                   'description': 'National Conference 2011 delegates (external)',
                                                                   'mailchimp_name': 'National Conference 2011 external',
                                                                   'mailchimp_category': 'Conference'})
