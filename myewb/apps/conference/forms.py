@@ -301,13 +301,24 @@ class ConferenceRegistrationFormPreview(PaymentFormPreview):
             # lastly, add them to the group
             grp, created = Community.objects.get_or_create(slug='conference2011',
                                                            defaults={'invite_only': True,
-                                                                     'name': 'National Conference 2011 delegates',
+                                                                     'name': 'National Conference 2011 - EWB delegates',
                                                                      'creator': request.user,
-                                                                     'description': 'National Conference 2011 delegates',
-                                                                     'mailchimp_name': 'National Conference 2011',
+                                                                     'description': 'National Conference 2011 delegates (EWB members)',
+                                                                     'mailchimp_name': 'National Conference 2011 members',
                                                                      'mailchimp_category': 'Conference'})
-            grp.add_member(request.user)
-            
+
+            grp2, created = Community.objects.get_or_create(slug='conference2011-external',
+                                                            defaults={'invite_only': True,
+                                                                      'name': 'National Conference 2011 - external delegates',
+                                                                      'creator': request.user,
+                                                                      'description': 'National Conference 2011 delegates (external)',
+                                                                      'mailchimp_name': 'National Conference 2011 external',
+                                                                      'mailchimp_category': 'Conference'})
+
+            if request.user.is_bulk:
+                grp2.add_member(request.user)
+            else:
+                grp.add_member(request.user)
             
             # don't do the standard render_to_response; instead, do a redirect
             # so that someone can't double-submit by hitting refresh

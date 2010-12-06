@@ -44,12 +44,22 @@ class ConferenceRegistration(models.Model):
         # remove from delegates group
         grp, created = Community.objects.get_or_create(slug='conference2011',
                                                        defaults={'invite_only': True,
-                                                                 'name': 'National Conference 2011 delegates',
-                                                                 'creator': self.user,
-                                                                 'description': 'National Conference 2011 delegates',
-                                                                 'mailchimp_name': 'National Conference 2011',
+                                                                 'name': 'National Conference 2011 - EWB delegates',
+                                                                 'creator': request.user,
+                                                                 'description': 'National Conference 2011 delegates (EWB members)',
+                                                                 'mailchimp_name': 'National Conference 2011 members',
                                                                  'mailchimp_category': 'Conference'})
+
+        grp2, created = Community.objects.get_or_create(slug='conference2011-external',
+                                                        defaults={'invite_only': True,
+                                                                  'name': 'National Conference 2011 - external delegates',
+                                                                  'creator': request.user,
+                                                                  'description': 'National Conference 2011 delegates (external)',
+                                                                  'mailchimp_name': 'National Conference 2011 external',
+                                                                  'mailchimp_category': 'Conference'})
+
         grp.remove_member(self.user)
+        grp2.remove_member(self.user)
         
         # re-enable code
         if self.code and self.code.expired:
