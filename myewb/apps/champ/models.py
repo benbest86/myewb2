@@ -253,7 +253,7 @@ class MemberLearningMetrics(Metrics):
                                   choices=CURRICULUM_CHOICES)
     resources_by = models.CharField(verbose_name="Source",
                                     max_length=255, null=True, blank=True,
-                                    help_text='describe where this activity came from: chapters.ewb.ca, myEWB, UofT hcapter, self-created, etc...')
+                                    help_text='describe where this activity came from: chapters.ewb.ca, myEWB, UofT chapter, self-created, etc...')
     duration = models.FloatField(verbose_name="Length",
                                  null=True, blank=True,
                                  help_text='in hours')
