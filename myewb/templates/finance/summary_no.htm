@@ -17,4 +17,8 @@
 {% endblock summary_nav %}
 
 {% block monthly_summary %}
+<h2>Chart - Monthly Income/Expenditures</h2>	
+<p align="center">{% if monthly_chart %}<img src="{{monthly_chart}}" alt="Monthly Breakdown" />{% endif %}</p>
+<h2>Chart - Monthly Account Balance</h2>	
+<p align="center">{% if accbal_chart %}<img src="{{accbal_chart}}" alt="Account Balance" />{% endif %}</p>
 {% endblock monthly_summary %}
