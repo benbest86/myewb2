@@ -19,7 +19,7 @@ from django.utils import simplejson
 
 from friends.models import Friendship
 from siteutils.models import Address
-from profiles.forms import AddressForm
+from profiles.forms import AddressForm, SimpleAddressForm
 from profiles.models import MemberProfile
 from siteutils.http import JsonResponse
 from siteutils.decorators import owner_required
@@ -66,12 +66,17 @@ def address_index(request, username, object=None):
 
 @owner_required(MemberProfile)
 def create_address(request, username, object=None):
-    form = AddressForm(request.POST)
+    form = SimpleAddressForm(request.POST)
     other_user = get_object_or_404(User, username=username)
-    if form.is_valid() and is_label_unique_for_user(other_user, form.cleaned_data['label'], None):
+    if form.is_valid():
         address = form.save(commit=False)
         profile = other_user.get_profile()
         address.content_object = profile
+        
+        address.label = address.city
+        while not is_label_unique_for_user(other_user, address.label):
+            address.label = address.label + '1'
+        
         address.save()
         profile.addresses.add(address)
         if request.is_ajax():
@@ -81,11 +86,11 @@ def create_address(request, username, object=None):
             #return HttpResponseRedirect(reverse('profile_address_detail', kwargs={'username': username, 'label': address.label}))
             return HttpResponseRedirect(reverse('profile_edit'))
     else:
-        label = ""
-        label_error = False
-        if form.is_valid():
-            label = form.cleaned_data['label']
-            label_error = not is_label_unique_for_user(other_user, form.cleaned_data['label'], None)
+        #label = ""
+        #label_error = False
+        #if form.is_valid():
+        #    label = form.cleaned_data['label']
+        #    label_error = not is_label_unique_for_user(other_user, form.cleaned_data['label'], None)
             
         if request.is_ajax():
             error_html =  render_to_string('profiles/new_address.html',
@@ -116,7 +121,7 @@ def new_address(request, username, object=None):
     other_user = get_object_or_404(User, username=username)
     if request.method == 'POST':
         return create_address(request, username)
-    form = AddressForm()
+    form = SimpleAddressForm()
     return render_to_response(
             'profiles/new_address.html',
             {
