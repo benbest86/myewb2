@@ -47,21 +47,36 @@ class ConferenceRegistrationForm(forms.ModelForm):
 								   widget=forms.Textarea,
 								   help_text='Please let us know about any special dietary, accessibility or other needs you may have, or any medical conditions (including allergies).')
     
-    emergName = forms.CharField(label='Emergency contact name')
-    emergPhone = forms.CharField(label='Emergency contact phone number')
+    #emergName = forms.CharField(label='Emergency contact name')
+    #emergPhone = forms.CharField(label='Emergency contact phone number')
     
-    prevConfs = forms.ChoiceField(label='EWB national conferences attended',
-								  choices=PASTEVENTS)
-    prevRetreats = forms.ChoiceField(label='EWB regional retreats attended',
-									 choices=PASTEVENTS)
+    #prevConfs = forms.ChoiceField(label='EWB national conferences attended',
+	#							  choices=PASTEVENTS)
+    #prevRetreats = forms.ChoiceField(label='EWB regional retreats attended',
+	#								 choices=PASTEVENTS)
     
-    resume = forms.FileField(label='Resume',
-                             required=False,
-                             help_text="(optional) Attach a resume if you would like it shared with our sponsors")
+    #resume = forms.FileField(label='Resume',
+    #                         required=False,
+    #                         help_text="(optional) Attach a resume if you would like it shared with our sponsors")
     
     cellphone = forms.CharField(label='Cell phone number',
                                 required=False,
                                 help_text="(optional) If you wish to receive logistical updates and reminders by text message during the conference")
+
+    code = forms.CharField(label='Registraton code',
+                           help_text='if you have a registration code, enter it here for a discounted rate.',
+                           required=False)
+    type = forms.ChoiceField(label='Registration type',
+							 choices=FINAL_CHOICES,
+							 widget=forms.RadioSelect,
+							 #help_text="""<a href='#' id='confoptiontablelink'>click here for a rate guide and explanation</a>""")
+                             help_text="""Note that tickets to the Gala on Saturday evening featuring K'naan are sold separately, through the Gala event site""")
+    
+    africaFund = forms.ChoiceField(label='Support an African delegate?',
+                                   choices=AFRICA_FUND,
+                                   initial='75',
+								   required=False,
+								   help_text='<a href="/site_media/static/conference/delegateinfo.html" class="delegatelink">more information...</a>')
 
     grouping = forms.ChoiceField(label='Which group do you belong to?',
                                  choices=EXTERNAL_GROUPS,
@@ -70,20 +85,6 @@ class ConferenceRegistrationForm(forms.ModelForm):
                                 required=False,
                                 help_text='(if other)')
     
-    code = forms.CharField(label='Registraton code',
-                           help_text='if you have a registration code, enter it here for a discounted rate.',
-                           required=False)
-    type = forms.ChoiceField(label='Registration type',
-							 choices=ROOM_CHOICES,
-							 widget=forms.RadioSelect,
-							 help_text="""<a href='#' id='confoptiontablelink'>click here for a rate guide and explanation</a>""")
-    
-    africaFund = forms.ChoiceField(label='Support an African delegate?',
-                                   choices=AFRICA_FUND,
-                                   initial='75',
-								   required=False,
-								   help_text='<a href="/site_media/static/conference/delegateinfo.html" class="delegatelink">more information...</a>')
-
     ccardtype = forms.ChoiceField(label='Credit card type',
 								  choices=CC_TYPES)
     cc_number = CreditCardNumberField(label='Credit card number')
@@ -97,8 +98,9 @@ class ConferenceRegistrationForm(forms.ModelForm):
 
     class Meta:
         model = ConferenceRegistration
-        fields = ['headset', 'foodPrefs', 'specialNeeds', 'emergName', 'emergPhone',
-                  'prevConfs', 'prevRetreats', 'resume', 'cellphone', 
+        fields = ['headset', 'foodPrefs', 'specialNeeds', #'emergName', 'emergPhone',
+                  #'prevConfs', 'prevRetreats', 'resume',
+                  'cellphone', 
                   'code', 'type', 'africaFund']
 
     def clean_code(self):
@@ -237,14 +239,16 @@ class ConferenceRegistrationForm(forms.ModelForm):
         self._user = value
         if self.fields.get('address', None):
             self.fields['address'].user = value
-        if value.is_bulk:
-            del(self.fields['prevConfs'])
-            del(self.fields['prevRetreats'])
-            #del(self.fields['code'])
-            self.fields['type'].choices=EXTERNAL_CHOICES
-        else:
-            del(self.fields['grouping'])
-            del(self.fields['grouping2'])
+            
+        #
+        #if value.is_bulk:
+        #    del(self.fields['prevConfs'])
+        #    del(self.fields['prevRetreats'])
+        #    #del(self.fields['code'])
+        #    self.fields['type'].choices=EXTERNAL_CHOICES
+        #else:
+        #    del(self.fields['grouping'])
+        #    del(self.fields['grouping2'])
             
     user = property(_get_user, _set_user)
 

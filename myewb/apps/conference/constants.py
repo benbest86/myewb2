@@ -130,6 +130,15 @@ EXTERNAL_CHOICES = (('fridaystudent', _('Friday attendance (student)')),
                     ('twoday', _('Friday and Saturday attendance'))
                    ) 
                 
+FINAL_CHOICES = (('friday', _('Friday attendance')),
+                    ('saturday', _('Saturday attendance')),
+                    ('twoday', _('Friday and Saturday attendance')),
+                    ('fridaystudent', _('Friday attendance (student)')),
+                    ('saturdaystudent', _('Saturday attendance (student)')),
+                    ('twodaystudent', _('Friday and Saturday attendance (student)')),
+                    ('nohotel', _('EWB Members late registration')),
+                   ) 
+                
 
 PASTEVENTS = (('0', '0'),
               ('1', '1'),
