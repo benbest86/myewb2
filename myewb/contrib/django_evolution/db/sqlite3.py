@@ -1,5 +1,5 @@
 from django.core.management import color
-from django.db import connection, models
+from django.db import models
 
 from common import BaseEvolutionOperations
 
@@ -7,7 +7,6 @@ TEMP_TABLE_NAME = 'TEMP_TABLE'
 
 class EvolutionOperations(BaseEvolutionOperations):
     def delete_column(self, model, f):
-        qn = connection.ops.quote_name
         output = []
 
         field_list = [field for field in model._meta.local_fields
@@ -24,43 +23,43 @@ class EvolutionOperations(BaseEvolutionOperations):
 
         return output
 
-    def create_mock_model(self, model, fields):
-        field_sig_dict = {}
-        for f in fields:
-            field_sig_dict[f.name] = create_field_sig(field)
+    def copy_to_temp_table(self, source_table_name, original_field_list,
+                           new_field_list=None):
+        qn = self.connection.ops.quote_name
 
-        proj_sig = create_project_sig()
-        model_sig = create_model_sig(model)
-        model_sig['fields'] = field_sig_dict
-        mock_model = MockModel(proj_sig, model.app_name, model.model_name, model_sig, stub=False)
+        source_columns = self.column_names(original_field_list)
 
-    def copy_to_temp_table(self, source_table_name, field_list):
-        qn = connection.ops.quote_name
-        output = [self.create_temp_table(field_list)]
-        columns = []
-        for field in field_list:
-            if not models.ManyToManyField == field.__class__:
-                columns.append(qn(field.column))
-        column_names = ', '.join(columns)
-        return ['INSERT INTO %s SELECT %s FROM %s;' % (qn(TEMP_TABLE_NAME), column_names, qn(source_table_name))]
+        if new_field_list:
+            temp_columns = self.column_names(new_field_list)
+        else:
+            temp_columns = source_columns
+
+        return ['INSERT INTO %s (%s) SELECT %s FROM %s;' %
+                (qn(TEMP_TABLE_NAME), temp_columns, source_columns,
+                 qn(source_table_name))]
 
     def copy_from_temp_table(self, dest_table_name, field_list):
-        qn = connection.ops.quote_name
-        columns = []
-        for field in field_list:
-            if not models.ManyToManyField == field.__class__:
-                columns.append(qn(field.column))
-        column_names = ', '.join(columns)
+        qn = self.connection.ops.quote_name
         params = {
             'dest_table_name': qn(dest_table_name),
             'temp_table': qn(TEMP_TABLE_NAME),
-            'column_names': column_names,
+            'column_names': self.column_names(field_list),
         }
 
         return ['INSERT INTO %(dest_table_name)s (%(column_names)s) SELECT %(column_names)s FROM %(temp_table)s;' % params]
 
+    def column_names(self, field_list):
+        qn = self.connection.ops.quote_name
+        columns = []
+
+        for field in field_list:
+            if not isinstance(field, models.ManyToManyField):
+                columns.append(qn(field.column))
+
+        return ', '.join(columns)
+
     def insert_to_temp_table(self, field, initial):
-        qn = connection.ops.quote_name
+        qn = self.connection.ops.quote_name
 
         # At this point, initial can only be None if null=True, otherwise it is
         # a user callable or the default AddFieldInitialCallback which will shortly raise an exception.
@@ -97,10 +96,10 @@ class EvolutionOperations(BaseEvolutionOperations):
                 self._meta = FakeMeta(table_name, field_list)
 
         style = color.no_style()
-        return connection.creation.sql_indexes_for_model(FakeModel(table_name, field_list), style)
+        return self.connection.creation.sql_indexes_for_model(FakeModel(table_name, field_list), style)
 
     def create_table(self, table_name, field_list, temporary=False, create_index=True):
-        qn = connection.ops.quote_name
+        qn = self.connection.ops.quote_name
         output = []
 
         create = ['CREATE']
@@ -115,14 +114,21 @@ class EvolutionOperations(BaseEvolutionOperations):
                 column_name = qn(field.column)
                 column_type = field.db_type()
                 params = [column_name, column_type]
-                if field.null:
+
+                # Always use null if this is a temporary table. It may be
+                # used to create a new field (which will be null while data is
+                # copied across from the old table).
+                if temporary or field.null:
                     params.append('NULL')
                 else:
                     params.append('NOT NULL')
+
                 if field.unique:
                     params.append('UNIQUE')
+
                 if field.primary_key:
                     params.append('PRIMARY KEY')
+
                 columns.append(' '.join(params))
 
         output.append(', '.join(columns))
@@ -151,7 +157,8 @@ class EvolutionOperations(BaseEvolutionOperations):
         table_name = opts.db_table
         output = []
         output.extend(self.create_temp_table(new_fields))
-        output.extend(self.copy_to_temp_table(table_name, original_fields))
+        output.extend(self.copy_to_temp_table(table_name, original_fields,
+                                              new_fields))
         output.extend(self.delete_table(table_name))
         output.extend(self.create_table(table_name, new_fields))
         output.extend(self.copy_from_temp_table(table_name, new_fields))
@@ -163,7 +170,7 @@ class EvolutionOperations(BaseEvolutionOperations):
         output = []
         table_name = model._meta.db_table
         original_fields = [field for field in model._meta.local_fields if field.db_type() is not None]
-        new_fields = original_fields
+        new_fields = list(original_fields)
         new_fields.append(f)
 
         output.extend(self.create_temp_table(new_fields))
