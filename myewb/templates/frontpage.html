@@ -331,7 +331,7 @@ $(document).ready(function() {
         </div>
         {% endcache %}
         
-        {% if is_exec %}
+        {% if is_exec and request.user.get_profile.get_chapter %}
 	        <div class="toolbarheader bkgd" id="box-frontpage-champ">{% trans "CHAMP summary" %}</div>
 	        <div class="toolbarcontent" style="line-height: 1.5em;">
       			<a href="{% url champ_dashboard group_slug=request.user.get_profile.get_chapter.slug %}">{% champ_activities request.user.get_profile.get_chapter %} {% month %} activities<a/><br/> 
