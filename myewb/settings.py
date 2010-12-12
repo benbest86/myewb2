@@ -338,6 +338,7 @@ GOOGLE_PASSWORD = ""
 MAILCHIMP_KEY = None            # your API key with them
 MAILCHIMP_LISTID = None         # the ID of the list you use
 MAILCHIMP_CALLBACK_KEY = None   # a key to use for securing callbacks
+MAILCHIMP_SUBSCRIBE = "http://www.mailchimp.com"      # link to mailchimp subscribe form
 
 
 # debug login

@@ -133,9 +133,15 @@ def email(request, form_class=AddEmailForm, template_name="account/email.html",
                 email_address.set_as_primary()
     else:
         add_email_form = form_class()
+        
+    emails = user.emailaddress_set.all().order_by('-primary', '-verified', 'email')
+    mailchimp_enable = settings.MAILCHIMP_SUBSCRIBE
     return render_to_response(template_name, {
         "add_email_form": add_email_form,
         "other_user": user,
+        "is_me": user == request.user,
+        'emails': emails,
+        'mailchimp_enable': mailchimp_enable
     }, context_instance=RequestContext(request))
 
 def silent_signup(request, email):

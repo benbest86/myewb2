@@ -442,6 +442,14 @@ div.roundtop {
     -moz-border-radius-topleft: 10px;
 }
 
+div.round {
+	-webkit-border-radius: 0.5em;
+	-moz-border-radius: 0.5em;
+	padding: 10px;
+	margin: 5px 10px 10px;
+	text-align: center;
+}
+
 div#messages {
     background: green;
 }
