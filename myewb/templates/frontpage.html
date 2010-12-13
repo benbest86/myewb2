@@ -8,6 +8,7 @@
 {% load events_tags %}
 {% load cache %}
 {% load champ_tags %}
+{% load perspectives %}
 
 {% block extra_head %}
     {{ block.super }}
@@ -386,10 +387,118 @@ $(document).ready(function() {
 {% endblock %}      
 
 {% block toolbarcolumn_right_top %}
-            <div id="toolbarcolumn_right_container">
+	<div id="toolbarcolumn_right_container">
 
+		{% perspectives user as perspectives %}
+		<style>
+		  a.bigorangebutton {
+		    color:white;
+		    display: block;
+		    text-align: center;
+		    padding:10px;
+		    text-decoration: none;
+		    font-size: 16px;
+		    font-weight: bold;
+		    background: url('http://perspectives.ewb.ca/theworks/css/images/textures/Orange-Texture.png') center center #ff5a01;
+		    border: 1px solid #777;
+		    border-left-color: #999;
+		    border-top-color: #999;
+		    width: 260px;
+		    overflow: hidden;
+		    margin: 0 auto 5px auto;
+		    color: #ffffff;
+		  }
+		  a.bigorangebutton:hover {
+		    background-position: center bottom;
+		    background-color: #ff5a01;
+		    background-image: url('http://perspectives.ewb.ca/theworks/css/images/buttonbg-transparent5.png') !important;
+		  }
+		</style>
+		
+		<div style="background-color: #FF5A01; -moz-border-radius-topleft: 7px;  -webkit-border-top-left-radius: 7px; background-image:url(https://perspectives.ewb.ca/theworks/css/images/textures/Orange-Noise.png);" id="box-perspectives-ewb-rightbar" class="toolbarheader-wide bkgd ">
+			The Perspectives Challenge
+		</div>
+		<div style="border-color: #FF5A01; border-right: 0pt none; background-color:white; padding: 10px; position: relative;" class="toolbarcontent_right">
+			{% if perspectives.user %}
+				<div style="width: 95px; position: absolute; top: 35px; right: 0; border-left: 1px solid #d0d0d0;">
+			{% else %}
+				<div style="width: 95px; height: 70px; position: absolute; top: 10px; right: 0; border-left: 1px solid #d0d0d0;">
+			{% endif %}
+				
+				<div style="font-size: 22px; color: #ff5a01; text-align: center; font-weight: bold;">{{ perspectives.daysleft }}</div>
+				<div style="text-align: center; font-weight: bold; font-size: 16px;">DAYS<br/>LEFT</div>
+			</div>
+			
+			<div style="width: 150px; height: 60px; position: absolute; top: 10px; left: 0; text-align: center;">
+				<div style="text-align: center; font-weight: bold;">
+					{% if perspectives.user %}
+						Overall
+					{% else %}
+						&nbsp;
+					{% endif %}
+				</div>
 
-                <div id="box-around-ewb-rightbar" class="toolbarheader-wide bkgd frontpagetoolbarToggles">Essential EWB</div>
+				<a href="#" style="position: absolute; top: 20px; left: 150px; text-decoration: none;" id="perspectives-global-next">
+					&raquo;
+				</a>
+
+				<div id="perspectives-global" style="width: 150px;">
+					<div style="display: none; width: 150px;">
+						<div style="font-size: 20px; color: #ff5a01; text-align: center;">${{ perspectives.totaldonated }}</div>
+						<div style="text-align: center;">raised</div>
+					</div>
+					<div style="display: none; width: 150px;">
+						<div style="font-size: 20px; color: #ff5a01; text-align: center;">{{ perspectives.totaldonations }}</div>
+						<div style="text-align: center;">donations</div>
+					</div>
+					<div style="display: none; width: 150px;">
+						<div style="font-size: 20px; color: #ff5a01; text-align: center;">{{ perspectives.ongoingcampaigns }}</div>
+						<div style="text-align: center;">Perspectives shared</div>
+					</div>
+					<div style="display: none; width: 150px;">
+						<div style="font-size: 20px; color: #ff5a01; text-align: center;">{{ perspectives.peopleemailed }}</div>
+						<div style="text-align: center;">people reached</div>
+					</div>
+				</div>
+			</div>
+
+			{% if perspectives.user %}
+				<div style="width: 150px; height: 50px; position: absolute; top: 80px; left: 0;">
+					<div style="text-align: center; font-weight: bold;">Your perspective</div>
+
+					<a href="#" style="position: absolute; top: 20px; left: 150px; text-decoration: none;" id="perspectives-user-next">
+						&raquo;
+					</a>
+
+					<div id="perspectives-user">
+						<div style="display: none; width: 150px;">
+							<div style="font-size: 20px; color: #ff5a01; text-align: center;">${{ perspectives.user.donationamt|default:0 }}</div>
+							<div style="text-align: center;">raised</div>
+						</div>
+						<div style="display: none; width: 150px;">
+							<div style="font-size: 20px; color: #ff5a01; text-align: center;">{{ perspectives.user.numdonations|default:0 }}</div>
+							<div style="text-align: center;">donations</div>
+						</div>
+						<div style="display: none; width: 150px;">
+							<div style="font-size: 20px; color: #ff5a01; text-align: center;">${{ perspectives.user.goal|default:0 }}</div>
+							<div style="text-align: center;">goal</div>
+						</div>
+					</div>
+				</div>
+	
+				<a style="font-size: 14px; margin-top: 130px;" href="https://perspectives.ewb.ca/login" target="_new" class="bigorangebutton">
+				        Go to your dashboard
+				</a>
+			{% else %}
+				<a style="font-size: 14px; margin-top: 80px;" href="https://perspectives.ewb.ca" target="_new" class="bigorangebutton">
+				        Share your perspective today!
+				</a>
+			{% endif %}
+
+		</div>
+		<br/>
+
+        <div id="box-around-ewb-rightbar" class="toolbarheader-wide bkgd frontpagetoolbarToggles">Essential EWB</div>
 {% endblock %}
 
 {% block toolbarcolumn_right_bottom %}
@@ -403,6 +512,27 @@ $(document).ready(function() {
 {% endblock %}      
 
 {% block extra_body %}
+	<script type="text/javascript" src="{{ STATIC_URL }}js/jquery.cycle.min.js"></script>
+	
+	<script type="text/javascript">
+		$(document).ready(function() {
+			$('#perspectives-global').cycle({
+				fx: 'scrollLeft',
+				speed: 500,
+				timeout: 4500,
+				next: '#perspectives-global-next'
+			});
+
+			if ($('#perspectives-user').length)
+				$('#perspectives-user').cycle({
+					fx: 'scrollLeft',
+					speed: 500,
+					timeout: 4500,
+					next: '#perspectives-user-next'
+				});
+		});
+	</script>
+	
 {% comment %}
     <script type="text/javascript">
       // from http://stackoverflow.com/questions/619773/filter-out-replies-in-a-twitter-feed
