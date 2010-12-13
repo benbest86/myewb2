@@ -19,7 +19,7 @@ class PerspectivesNode(template.Node):
             params['user'] = user.id
     
         encoded = urllib.urlencode(params)
-        handle = urllib.urlopen("http://localhost/permagoo/myewbapi.php",
+        handle = urllib.urlopen("https://perspectives.ewb.ca/myewbapi.php",
                                 encoded)
         
         json = handle.read()
