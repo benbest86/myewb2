@@ -25,8 +25,8 @@ class ConferenceRegistration(models.Model):
     specialNeeds = models.TextField()
     emergName = models.CharField(max_length=255)
     emergPhone = models.CharField(max_length=50)
-    prevConfs = models.SmallIntegerField()
-    prevRetreats = models.SmallIntegerField()
+    prevConfs = models.SmallIntegerField(default=0)
+    prevRetreats = models.SmallIntegerField(default=0)
     cellphone = models.CharField(max_length=50, blank=True, null=True)
     grouping = models.CharField(max_length=50, blank=True, null=True)
     
