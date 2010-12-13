@@ -439,7 +439,7 @@ $(document).ready(function() {
 				</div>
 
 				<a href="#" style="position: absolute; top: 20px; left: 150px; text-decoration: none;" id="perspectives-global-next">
-					&raquo;
+					<img src="{{STATIC_URL}}images/right-arrow-off.png" style="border: 0px;" class="rightarrow"/>
 				</a>
 
 				<div id="perspectives-global" style="width: 150px;">
@@ -467,7 +467,7 @@ $(document).ready(function() {
 					<div style="text-align: center; font-weight: bold;">Your perspective</div>
 
 					<a href="#" style="position: absolute; top: 20px; left: 150px; text-decoration: none;" id="perspectives-user-next">
-						&raquo;
+						<img src="{{STATIC_URL}}images/right-arrow-off.png" style="border: 0px;" class="rightarrow"/>
 					</a>
 
 					<div id="perspectives-user">
@@ -530,6 +530,13 @@ $(document).ready(function() {
 					timeout: 4500,
 					next: '#perspectives-user-next'
 				});
+
+			$('.rightarrow').hover(function() {
+										$(this).attr('src', '{{STATIC_URL}}images/right-arrow-on.png');
+								   },
+								   function() {
+										$(this).attr('src', '{{STATIC_URL}}images/right-arrow-off.png');
+								   });
 		});
 	</script>
 	
