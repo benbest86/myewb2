@@ -130,6 +130,10 @@ def email(request, form_class=AddEmailForm, template_name="account/email.html",
                     user=user,
                     email=email,
                 )
+                if user.nomail and user.bouncing:
+                    user.nomail = False
+                    user.bouncing = False
+                    user.save()
                 email_address.set_as_primary()
     else:
         add_email_form = form_class()
