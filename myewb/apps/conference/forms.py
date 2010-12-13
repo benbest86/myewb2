@@ -98,11 +98,13 @@ class ConferenceRegistrationForm(forms.ModelForm):
 
     class Meta:
         model = ConferenceRegistration
-        fields = ['headset', 'foodPrefs', 'specialNeeds', #'emergName', 'emergPhone',
-                  #'prevConfs', 'prevRetreats', 'resume',
-                  'cellphone', 
-                  'code', 'type', 'africaFund']
-
+#        fields = ['headset', 'foodPrefs', 'specialNeeds', #'emergName', 'emergPhone',
+#                  #'prevConfs', 'prevRetreats', 'resume',
+#                  'cellphone', 
+#                  'code', 'type', 'africaFund']
+        fields = ['type', 'grouping', 'grouping2', 'africaFund', 'cellphone',
+                  'headset', 'foodPrefs', 'specialNeeds', 'code']
+        
     def clean_code(self):
         codestring = self.cleaned_data['code'].strip().lower()
         
