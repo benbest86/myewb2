@@ -135,6 +135,18 @@
 
             <div id="maincolumn" style="overflow-x: hidden;">
 
+	            {% if user.is_authenticated and user.nomail %}
+	            	<div id="nomail" class="round" style="background: #ff0000; color: #ffffff; font-weight: bold;">
+	            		 
+		            	{% if user.bouncing %}
+		            		Your email address is bouncing	
+		            	{% else %}
+		            		myEWB emails to your account are disabled 
+		            	{% endif %}
+		            	- <a href="{% url acct_email %}">click here to resume email delivery</a>
+		            </div>
+	            {% endif %}
+	            
                 {% block body %}
 
                 {% endblock %}

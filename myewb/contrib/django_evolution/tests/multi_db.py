@@ -4,7 +4,7 @@ tests = r"""
 >>> from django.db import models
 
 >>> from django_evolution.mutations import ChangeField
->>> from django_evolution.tests.utils import test_proj_sig, execute_test_sql, register_models, deregister_models
+>>> from django_evolution.tests.utils import test_proj_sig_multi, execute_test_sql, register_models_multi, deregister_models
 >>> from django_evolution.diff import Diff
 
 >>> import copy
@@ -70,8 +70,8 @@ tests = r"""
 ...         self.suffix = suffix
 ...
 ...     def __call__(self):
-...         from django.db import connection
-...         qn = connection.ops.quote_name
+...         from django.db import connections
+...         qn = connections['db_multi'].ops.quote_name
 ...         return qn('char_field')
 
 # Now, a useful test model we can use for evaluating diffs
@@ -89,15 +89,15 @@ tests = r"""
 ...     char_field = models.CharField(max_length=20)
 ...     char_field1 = models.CharField(max_length=25, null=True)
 ...     char_field2 = models.CharField(max_length=30, null=False)
-...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='change_field_non-default_m2m_table')
+...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='multi_db_non-default_m2m_table')
 
 # Store the base signatures
 >>> anchors = [('ChangeAnchor1', ChangeAnchor1)]
 >>> test_model = ('TestModel', ChangeBaseModel)
 
->>> start = register_models(*anchors)
->>> start.update(register_models(test_model))
->>> start_sig = test_proj_sig(test_model, *anchors)
+>>> start = register_models_multi('tests', 'db_multi', *anchors)
+>>> start.update(register_models_multi('tests', 'db_multi', test_model))
+>>> start_sig = test_proj_sig_multi('tests', test_model, *anchors)
 
 # Setting a null constraint without an initial value
 >>> class SetNotNullChangeModel(models.Model):
@@ -111,10 +111,10 @@ tests = r"""
 ...     char_field = models.CharField(max_length=20)
 ...     char_field1 = models.CharField(max_length=25, null=False)
 ...     char_field2 = models.CharField(max_length=30, null=False)
-...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='change_field_non-default_m2m_table')
+...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='multi_db_non-default_m2m_table')
 
->>> end = register_models(('TestModel', SetNotNullChangeModel), *anchors)
->>> end_sig = test_proj_sig(('TestModel', SetNotNullChangeModel), *anchors)
+>>> end = register_models_multi('tests', 'db_multi', ('TestModel', SetNotNullChangeModel), *anchors)
+>>> end_sig = test_proj_sig_multi('tests', ('TestModel', SetNotNullChangeModel), *anchors)
 >>> d = Diff(start_sig, end_sig)
 >>> print d
 In model tests.TestModel:
@@ -157,7 +157,7 @@ SimulationFailure: Cannot change column 'char_field1' on 'tests.TestModel' witho
 >>> Diff(test_sig, end_sig).is_empty()
 True
 
->>> execute_test_sql(start, end, test_sql) # SetNotNullChangedModelWithConstant
+>>> execute_test_sql(start, end, test_sql, database='db_multi', app_label='tests') # SetNotNullChangedModelWithConstant
 %(SetNotNullChangeModelWithConstant)s
 
 # With a good initial value (callable)
@@ -171,7 +171,7 @@ True
 >>> Diff(test_sig, end_sig).is_empty()
 True
 
->>> execute_test_sql(start, end, test_sql)
+>>> execute_test_sql(start, end, test_sql, database='db_multi', app_label='tests') # SetNotNullChangeModelWithCallable
 %(SetNotNullChangeModelWithCallable)s
 
 # Removing a null constraint
@@ -186,10 +186,10 @@ True
 ...     char_field = models.CharField(max_length=20)
 ...     char_field1 = models.CharField(max_length=25, null=True)
 ...     char_field2 = models.CharField(max_length=30, null=True)
-...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='change_field_non-default_m2m_table')
+...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='multi_db_non-default_m2m_table')
 
->>> end = register_models(('TestModel', SetNullChangeModel), *anchors)
->>> end_sig = test_proj_sig(('TestModel', SetNullChangeModel), *anchors)
+>>> end = register_models_multi('tests', 'db_multi', ('TestModel', SetNullChangeModel), *anchors)
+>>> end_sig = test_proj_sig_multi('tests', ('TestModel', SetNullChangeModel), *anchors)
 >>> d = Diff(start_sig, end_sig)
 >>> print d
 In model tests.TestModel:
@@ -208,7 +208,7 @@ In model tests.TestModel:
 >>> Diff(test_sig, end_sig).is_empty()
 True
 
->>> execute_test_sql(start, end, test_sql) # SetNullChangeModel
+>>> execute_test_sql(start, end, test_sql, database='db_multi', app_label='tests') # SetNullChangeModel
 %(SetNullChangeModel)s
 
 # Removing a null constraint
@@ -223,10 +223,10 @@ True
 ...     char_field = models.CharField(max_length=20)
 ...     char_field1 = models.CharField(max_length=25, null=True)
 ...     char_field2 = models.CharField(max_length=30, null=False)
-...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='change_field_non-default_m2m_table')
+...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='multi_db_non-default_m2m_table')
 
->>> end = register_models(('TestModel', NoOpChangeModel), *anchors)
->>> end_sig = test_proj_sig(('TestModel', NoOpChangeModel), *anchors)
+>>> end = register_models_multi('tests', 'db_multi', ('TestModel', NoOpChangeModel), *anchors)
+>>> end_sig = test_proj_sig_multi('tests', ('TestModel', NoOpChangeModel), *anchors)
 >>> d = Diff(start_sig, end_sig)
 >>> print d
 <BLANKLINE>
@@ -241,7 +241,7 @@ True
 >>> Diff(test_sig, end_sig).is_empty()
 True
 
->>> execute_test_sql(start, end, test_sql) # NoOpChangeModel
+>>> execute_test_sql(start, end, test_sql, database='db_multi', app_label='tests') # NoOpChangeModel
 %(NoOpChangeModel)s
 
 # Increasing the max_length of a character field
@@ -256,10 +256,10 @@ True
 ...     char_field = models.CharField(max_length=45)
 ...     char_field1 = models.CharField(max_length=25, null=True)
 ...     char_field2 = models.CharField(max_length=30, null=False)
-...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='change_field_non-default_m2m_table')
+...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='multi_db_non-default_m2m_table')
 
->>> end = register_models(('TestModel', IncreasingMaxLengthChangeModel), *anchors)
->>> end_sig = test_proj_sig(('TestModel', IncreasingMaxLengthChangeModel), *anchors)
+>>> end = register_models_multi('tests', 'db_multi', ('TestModel', IncreasingMaxLengthChangeModel), *anchors)
+>>> end_sig = test_proj_sig_multi('tests', ('TestModel', IncreasingMaxLengthChangeModel), *anchors)
 >>> d = Diff(start_sig, end_sig)
 >>> print d
 In model tests.TestModel:
@@ -278,7 +278,7 @@ In model tests.TestModel:
 >>> Diff(test_sig, end_sig).is_empty()
 True
 
->>> execute_test_sql(start, end, test_sql) # IncreasingMaxLengthChangeModel
+>>> execute_test_sql(start, end, test_sql, database='db_multi', app_label='tests') # IncreasingMaxLengthChangeModel
 %(IncreasingMaxLengthChangeModel)s
 
 # Decreasing the max_length of a character field
@@ -293,10 +293,10 @@ True
 ...     char_field = models.CharField(max_length=1)
 ...     char_field1 = models.CharField(max_length=25, null=True)
 ...     char_field2 = models.CharField(max_length=30, null=False)
-...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='change_field_non-default_m2m_table')
+...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='multi_db_non-default_m2m_table')
 
->>> end = register_models(('TestModel', DecreasingMaxLengthChangeModel), *anchors)
->>> end_sig = test_proj_sig(('TestModel', DecreasingMaxLengthChangeModel), *anchors)
+>>> end = register_models_multi('tests', 'db_multi', ('TestModel', DecreasingMaxLengthChangeModel), *anchors)
+>>> end_sig = test_proj_sig_multi('tests', ('TestModel', DecreasingMaxLengthChangeModel), *anchors)
 >>> d = Diff(start_sig, end_sig)
 >>> print d
 In model tests.TestModel:
@@ -315,7 +315,7 @@ In model tests.TestModel:
 >>> Diff(test_sig, end_sig).is_empty()
 True
 
->>> execute_test_sql(start, end, test_sql) # DecreasingMaxLengthChangeModel
+>>> execute_test_sql(start, end, test_sql, database='db_multi', app_label='tests') # DecreasingMaxLengthChangeModel
 %(DecreasingMaxLengthChangeModel)s
 
 # Renaming a column
@@ -330,10 +330,10 @@ True
 ...     char_field = models.CharField(max_length=20)
 ...     char_field1 = models.CharField(max_length=25, null=True)
 ...     char_field2 = models.CharField(max_length=30, null=False)
-...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='change_field_non-default_m2m_table')
+...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='multi_db_non-default_m2m_table')
 
->>> end = register_models(('TestModel', DBColumnChangeModel), *anchors)
->>> end_sig = test_proj_sig(('TestModel', DBColumnChangeModel), *anchors)
+>>> end = register_models_multi('tests', 'db_multi', ('TestModel', DBColumnChangeModel), *anchors)
+>>> end_sig = test_proj_sig_multi('tests', ('TestModel', DBColumnChangeModel), *anchors)
 >>> d = Diff(start_sig, end_sig)
 >>> print d
 In model tests.TestModel:
@@ -352,7 +352,7 @@ In model tests.TestModel:
 >>> Diff(test_sig, end_sig).is_empty()
 True
 
->>> execute_test_sql(start, end, test_sql) # DBColumnChangeModel
+>>> execute_test_sql(start, end, test_sql, database='db_multi', app_label='tests') # DBColumnChangeModel
 %(DBColumnChangeModel)s
 
 # Changing the db_table of a many to many relationship
@@ -369,8 +369,8 @@ True
 ...     char_field2 = models.CharField(max_length=30, null=False)
 ...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='custom_m2m_db_table_name')
 
->>> end = register_models(('TestModel', M2MDBTableChangeModel), *anchors)
->>> end_sig = test_proj_sig(('TestModel', M2MDBTableChangeModel), *anchors)
+>>> end = register_models_multi('tests', 'db_multi', ('TestModel', M2MDBTableChangeModel), *anchors)
+>>> end_sig = test_proj_sig_multi('tests', ('TestModel', M2MDBTableChangeModel), *anchors)
 
 >>> d = Diff(start_sig, end_sig)
 >>> print d
@@ -390,7 +390,7 @@ In model tests.TestModel:
 >>> Diff(test_sig, end_sig).is_empty()
 True
 
->>> execute_test_sql(start, end, test_sql) # M2MDBTableChangeModel
+>>> execute_test_sql(start, end, test_sql, database='db_multi', app_label='tests') # M2MDBTableChangeModel
 %(M2MDBTableChangeModel)s
 
 # Adding an index
@@ -405,10 +405,10 @@ True
 ...     char_field = models.CharField(max_length=20)
 ...     char_field1 = models.CharField(max_length=25, null=True)
 ...     char_field2 = models.CharField(max_length=30, null=False)
-...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='change_field_non-default_m2m_table')
+...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='multi_db_non-default_m2m_table')
 
->>> end = register_models(('TestModel', AddDBIndexChangeModel), *anchors)
->>> end_sig = test_proj_sig(('TestModel', AddDBIndexChangeModel), *anchors)
+>>> end = register_models_multi('tests', 'db_multi', ('TestModel', AddDBIndexChangeModel), *anchors)
+>>> end_sig = test_proj_sig_multi('tests', ('TestModel', AddDBIndexChangeModel), *anchors)
 >>> d = Diff(start_sig, end_sig)
 >>> print d
 In model tests.TestModel:
@@ -427,7 +427,7 @@ In model tests.TestModel:
 >>> Diff(test_sig, end_sig).is_empty()
 True
 
->>> execute_test_sql(start, end, test_sql) # AddDBIndexChangeModel
+>>> execute_test_sql(start, end, test_sql, database='db_multi', app_label='tests') # AddDBIndexChangeModel
 %(AddDBIndexChangeModel)s
 
 # Removing an index
@@ -442,10 +442,10 @@ True
 ...     char_field = models.CharField(max_length=20)
 ...     char_field1 = models.CharField(max_length=25, null=True)
 ...     char_field2 = models.CharField(max_length=30, null=False)
-...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='change_field_non-default_m2m_table')
+...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='multi_db_non-default_m2m_table')
 
->>> end = register_models(('TestModel', RemoveDBIndexChangeModel), *anchors)
->>> end_sig = test_proj_sig(('TestModel', RemoveDBIndexChangeModel), *anchors)
+>>> end = register_models_multi('tests', 'db_multi', ('TestModel', RemoveDBIndexChangeModel), *anchors)
+>>> end_sig = test_proj_sig_multi('tests', ('TestModel', RemoveDBIndexChangeModel), *anchors)
 >>> d = Diff(start_sig, end_sig)
 >>> print d
 In model tests.TestModel:
@@ -464,7 +464,7 @@ In model tests.TestModel:
 >>> Diff(test_sig, end_sig).is_empty()
 True
 
->>> execute_test_sql(start, end, test_sql) # RemoveDBIndexChangeModel
+>>> execute_test_sql(start, end, test_sql, database='db_multi', app_label='tests') # RemoveDBIndexChangeModel
 %(RemoveDBIndexChangeModel)s
 
 # Adding a unique constraint
@@ -479,10 +479,10 @@ True
 ...     char_field = models.CharField(max_length=20)
 ...     char_field1 = models.CharField(max_length=25, null=True)
 ...     char_field2 = models.CharField(max_length=30, null=False)
-...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='change_field_non-default_m2m_table')
+...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='multi_db_non-default_m2m_table')
 
->>> end = register_models(('TestModel', AddUniqueChangeModel), *anchors)
->>> end_sig = test_proj_sig(('TestModel', AddUniqueChangeModel), *anchors)
+>>> end = register_models_multi('tests', 'db_multi', ('TestModel', AddUniqueChangeModel), *anchors)
+>>> end_sig = test_proj_sig_multi('tests', ('TestModel', AddUniqueChangeModel), *anchors)
 >>> d = Diff(start_sig, end_sig)
 >>> print d
 In model tests.TestModel:
@@ -501,7 +501,7 @@ In model tests.TestModel:
 >>> Diff(test_sig, end_sig).is_empty()
 True
 
->>> execute_test_sql(start, end, test_sql) # AddUniqueChangeModel
+>>> execute_test_sql(start, end, test_sql, database='db_multi', app_label='tests') # AddUniqueChangeModel
 %(AddUniqueChangeModel)s
 
 # Remove a unique constraint
@@ -516,10 +516,10 @@ True
 ...     char_field = models.CharField(max_length=20)
 ...     char_field1 = models.CharField(max_length=25, null=True)
 ...     char_field2 = models.CharField(max_length=30, null=False)
-...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='change_field_non-default_m2m_table')
+...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='multi_db_non-default_m2m_table')
 
->>> end = register_models(('TestModel', RemoveUniqueChangeModel), *anchors)
->>> end_sig = test_proj_sig(('TestModel', RemoveUniqueChangeModel), *anchors)
+>>> end = register_models_multi('tests', 'db_multi', ('TestModel', RemoveUniqueChangeModel), *anchors)
+>>> end_sig = test_proj_sig_multi('tests', ('TestModel', RemoveUniqueChangeModel), *anchors)
 >>> d = Diff(start_sig, end_sig)
 >>> print d
 In model tests.TestModel:
@@ -538,7 +538,7 @@ In model tests.TestModel:
 >>> Diff(test_sig, end_sig).is_empty()
 True
 
->>> execute_test_sql(start, end, test_sql) # RemoveUniqueChangeModel
+>>> execute_test_sql(start, end, test_sql, database='db_multi', app_label='tests') # RemoveUniqueChangeModel
 %(RemoveUniqueChangeModel)s
 
 # Changing more than one attribute at a time (on different fields)
@@ -553,10 +553,10 @@ True
 ...     char_field = models.CharField(max_length=35)
 ...     char_field1 = models.CharField(max_length=25, null=True)
 ...     char_field2 = models.CharField(max_length=30, null=True)
-...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='change_field_non-default_m2m_table')
+...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='multi_db_non-default_m2m_table')
 
->>> end = register_models(('TestModel', MultiAttrChangeModel), *anchors)
->>> end_sig = test_proj_sig(('TestModel', MultiAttrChangeModel), *anchors)
+>>> end = register_models_multi('tests', 'db_multi', ('TestModel', MultiAttrChangeModel), *anchors)
+>>> end_sig = test_proj_sig_multi('tests', ('TestModel', MultiAttrChangeModel), *anchors)
 >>> d = Diff(start_sig, end_sig)
 >>> print d
 In model tests.TestModel:
@@ -579,7 +579,7 @@ In model tests.TestModel:
 >>> Diff(test_sig, end_sig).is_empty()
 True
 
->>> execute_test_sql(start, end, test_sql) # MultiAttrChangeModel
+>>> execute_test_sql(start, end, test_sql, database='db_multi', app_label='tests') # MultiAttrChangeModel
 %(MultiAttrChangeModel)s
 
 # Changing more than one attribute at a time (on one fields)
@@ -594,10 +594,10 @@ True
 ...     char_field = models.CharField(max_length=20)
 ...     char_field1 = models.CharField(max_length=25, null=True)
 ...     char_field2 = models.CharField(max_length=35, null=True)
-...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='change_field_non-default_m2m_table')
+...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='multi_db_non-default_m2m_table')
 
->>> end = register_models(('TestModel', MultiAttrSingleFieldChangeModel), *anchors)
->>> end_sig = test_proj_sig(('TestModel', MultiAttrSingleFieldChangeModel), *anchors)
+>>> end = register_models_multi('tests', 'db_multi', ('TestModel', MultiAttrSingleFieldChangeModel), *anchors)
+>>> end_sig = test_proj_sig_multi('tests', ('TestModel', MultiAttrSingleFieldChangeModel), *anchors)
 >>> d = Diff(start_sig, end_sig)
 >>> print d
 In model tests.TestModel:
@@ -617,7 +617,7 @@ In model tests.TestModel:
 >>> Diff(test_sig, end_sig).is_empty()
 True
 
->>> execute_test_sql(start, end, test_sql) # MultiAttrSingleFieldChangeModel
+>>> execute_test_sql(start, end, test_sql, database='db_multi', app_label='tests') # MultiAttrSingleFieldChangeModel
 %(MultiAttrSingleFieldChangeModel)s
 
 # Redundant attributes. (Some attribute have changed, while others haven't but are specified anyway.)
@@ -632,10 +632,10 @@ True
 ...     char_field = models.CharField(max_length=35)
 ...     char_field1 = models.CharField(max_length=25, null=True)
 ...     char_field2 = models.CharField(max_length=30, null=True)
-...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='change_field_non-default_m2m_table')
+...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='multi_db_non-default_m2m_table')
 
->>> end = register_models(('TestModel', RedundantAttrsChangeModel), *anchors)
->>> end_sig = test_proj_sig(('TestModel', RedundantAttrsChangeModel), *anchors)
+>>> end = register_models_multi('tests', 'db_multi', ('TestModel', RedundantAttrsChangeModel), *anchors)
+>>> end_sig = test_proj_sig_multi('tests', ('TestModel', RedundantAttrsChangeModel), *anchors)
 >>> d = Diff(start_sig, end_sig)
 
 >>> test_sig = copy.deepcopy(start_sig)
@@ -653,7 +653,7 @@ True
 >>> Diff(test_sig, end_sig).is_empty()
 True
 
->>> execute_test_sql(start, end, test_sql) # RedundantAttrsChangeModel
+>>> execute_test_sql(start, end, test_sql, database='db_multi', app_label='tests') # RedundantAttrsChangeModel
 %(RedundantAttrsChangeModel)s
 
 # Change field type to another type with same internal_type
@@ -672,16 +672,16 @@ True
 ...     char_field = models.CharField(max_length=20)
 ...     char_field1 = models.CharField(max_length=25, null=True)
 ...     char_field2 = models.CharField(max_length=30, null=False)
-...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='change_field_non-default_m2m_table')
+...     m2m_field1 = models.ManyToManyField(ChangeAnchor1, db_table='multi_db_non-default_m2m_table')
 
->>> end = register_models(('TestModel', MinorFieldTypeChangeModel), *anchors)
->>> end_sig = test_proj_sig(('TestModel', MinorFieldTypeChangeModel), *anchors)
+>>> end = register_models_multi('tests', 'db_multi', ('TestModel', MinorFieldTypeChangeModel), *anchors)
+>>> end_sig = test_proj_sig_multi('tests', ('TestModel', MinorFieldTypeChangeModel), *anchors)
 >>> d = Diff(start_sig, end_sig)
 
 >>> d.is_empty()
 True
 
 # Clean up after the applications that were installed
->>> deregister_models()
+>>> deregister_models('tests')
 
-""" % test_sql_mapping('change_field')
+""" % test_sql_mapping('multi_db', db_name='db_multi')
