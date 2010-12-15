@@ -18,10 +18,23 @@ send_mail = get_send_mail()
 
 class EmailAddressManager(models.Manager):
 
-    def add_email(self, user, email):
+    def add_email(self, user, email,
+                  send_confirmation=True,
+                  confirmation_subject=None,
+                  confirmation_template=None,
+                  verified=False):
         try:
             email_address = self.create(user=user, email=email)
-            EmailConfirmation.objects.send_confirmation(email_address)
+            
+            if send_confirmation:
+                EmailConfirmation.objects.send_confirmation(email_address,
+                                                            subject=confirmation_subject,
+                                                            template=confirmation_template)
+                
+            if verified:
+                email_address.verified = True
+                email_address.save()
+                
             return email_address
         except IntegrityError:
             return None
@@ -89,10 +102,11 @@ class EmailConfirmationManager(models.Manager):
             email_confirmed.send(sender=self.model, email_address=email_address)
             return email_address
 
-    def send_confirmation(self, email_address):
+    def send_confirmation(self, email_address, subject=None, template=None):
         salt = sha_constructor(str(random())).hexdigest()[:5]
         confirmation_key = sha_constructor(salt + email_address.email).hexdigest()
         current_site = Site.objects.get_current()
+        
         # check for the url with the dotted view path
         try:
             path = reverse("emailconfirmation.views.confirm_email",
@@ -101,21 +115,30 @@ class EmailConfirmationManager(models.Manager):
             # or get path with named urlconf instead
             path = reverse(
                 "emailconfirmation_confirm_email", args=[confirmation_key])
+            
         activate_url = u"http://%s%s" % (unicode(current_site.domain), path)
+        
         context = {
             "user": email_address.user,
             "activate_url": activate_url,
             "current_site": current_site,
             "confirmation_key": confirmation_key,
+            "email": email_address.email,
         }
-        subject = render_to_string(
-            "emailconfirmation/email_confirmation_subject.txt", context)
-        # remove superfluous line breaks
-        subject = "".join(subject.splitlines())
-        message = render_to_string(
-            "emailconfirmation/email_confirmation_message.txt", context)
+        
+        if not subject:
+            subject = render_to_string(
+                "emailconfirmation/email_confirmation_subject.txt", context)
+            # remove superfluous line breaks
+            subject = "".join(subject.splitlines())
+            
+        if not template:
+            template = "emailconfirmation/email_confirmation_message.txt"
+        message = render_to_string(template, context)
+        
         send_mail(subject, message, settings.DEFAULT_FROM_EMAIL,
                   [email_address.email], priority="high")
+        
         return self.create(
             email_address=email_address,
             sent=datetime.now(),
