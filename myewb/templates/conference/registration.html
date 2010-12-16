@@ -278,6 +278,19 @@
 															$('#confoptiontable').hide();
 														},
 				});
+
+				$('#conf-registration').submit(function() {
+					if ($('select[name=address]').val() == 'new')
+					{
+						$('select.compactaddresswidget').change(function() {
+							$('#conf-registration').submit();
+						});
+						$('#new-address').submit();
+						return false;
+					}
+					else
+						return true;
+				});
 			});
 		</script>
 
