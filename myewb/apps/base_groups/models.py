@@ -380,6 +380,7 @@ class GroupMemberRecord(BaseGroupMember):
 
     class Meta(BaseGroupMember.Meta):
         get_latest_by = 'datetime'
+        ordering = ('-datetime',)
 
     def __init__(self, *args, **kwargs):
         instance = kwargs.pop('instance', None)
