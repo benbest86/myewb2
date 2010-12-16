@@ -85,7 +85,7 @@ class ConferenceRegistrationForm(forms.ModelForm):
                                 required=False,
                                 help_text='(if other)')
     
-    ccardtype = forms.ChoiceField(label='Credit card type',
+    cc_type = forms.ChoiceField(label='Credit card type',
 								  choices=CC_TYPES)
     cc_number = CreditCardNumberField(label='Credit card number')
     cc_expiry = CreditCardExpiryField(label='Credit card expiry',
