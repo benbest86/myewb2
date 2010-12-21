@@ -381,7 +381,7 @@ class ConferenceSignupForm(forms.Form):
         try:
             new_user = User.objects.get(email=email, is_bulk=1)
         except User.DoesNotExist:
-            new_user = User.extras.create_bulk_user(email)
+            new_user = User.extras.create_bulk_user(email, verified=True)
             
         profile = new_user.get_profile()
         profile.first_name = firstname

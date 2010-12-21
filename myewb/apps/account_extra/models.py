@@ -46,7 +46,7 @@ User.add_to_class('is_bulk', models.BooleanField(default=False))
 User.add_to_class('nomail', models.BooleanField(default=False))
 User.add_to_class('bouncing', models.BooleanField(default=False))
 
-def create_bulk_user_method(self, email):
+def create_bulk_user_method(self, email, verified=False):
     # ensure email is not already in use
     emailaddress = EmailAddress.objects.filter(email=email, verified=True)  # shoudl I remove the verified=True ?
     if emailaddress.count() > 0:
@@ -64,14 +64,21 @@ def create_bulk_user_method(self, email):
     # create the user
     new_user = self.create_user(username=username, email='')
     new_user.is_bulk = True
-    if settings.ACCOUNT_EMAIL_VERIFICATION:
+    if verified:
+        new_user.email = email
+    elif settings.ACCOUNT_EMAIL_VERIFICATION:
         new_user.is_active = False
     new_user.save()
 
     # this requires our modified emailconfirmation app, which takes
     # additional keyword args...
-    EmailAddress.objects.add_email(new_user, email,
-                                   confirmation_template="emailconfirmation/bulkuser.txt")
+    if verified:
+        EmailAddress.objects.add_email(new_user, email,
+                                       verified=True,
+                                       send_confirmation=False)
+    else:
+        EmailAddress.objects.add_email(new_user, email,
+                                       confirmation_template="emailconfirmation/bulkuser.txt")
     
     # and finish up
     signals.listsignup.send(sender=new_user, user=new_user)
