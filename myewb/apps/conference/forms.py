@@ -362,7 +362,7 @@ class ConferenceSignupForm(forms.Form):
     
     def clean_email(self):
         other_emails = EmailAddress.objects.filter(email__iexact=self.cleaned_data['email'])
-        verified_emails = other_emails.filter(verified=True)
+        verified_emails = other_emails.filter(verified=True, user__is_bulk=False)
         if verified_emails.count() > 0:
             raise forms.ValidationError("This email address has already been used. Please sign in or use a different email.")
         
