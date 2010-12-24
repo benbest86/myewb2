@@ -18,12 +18,12 @@ class PerspectivesNode(template.Node):
         if user.is_authenticated():
             params['user'] = user.id
     
-        encoded = urllib.urlencode(params)
-        handle = urllib.urlopen("https://perspectives.ewb.ca/myewbapi.php",
-                                encoded)
-        
-        json = handle.read()
         try:
+            encoded = urllib.urlencode(params)
+            handle = urllib.urlopen("https://perspectives.ewb.ca/myewbapi.php",
+                                    encoded)
+            
+            json = handle.read()
             obj = simplejson.loads(json)
         except:
             obj = {}
