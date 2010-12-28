@@ -26,6 +26,19 @@ from siteutils import schoolyear
 from siteutils.helpers import fix_encoding, copy_model_instance
 from siteutils.http import JsonResponse
 
-def default(request, group_slug):
-    return HttpResponse("test")
+def default(request):
+    if not request.GET.get('stage', None):
+        return select_graph(request)
+    else:
+        return draw_graph(request)
+        
+def select_graph(request):
+    metric = request.GET.get('metric', None)
+    group = request.GET.get('group', None)
     
+    return render_to_response('champ/champalytics/select.html',
+                              {},
+                              context_instance=RequestContext(request))
+
+def draw_graph(request):
+    return HttpResponse("graph")

@@ -23,6 +23,15 @@
 	#champtable td.labelcell {
 		text-align: left;
 	}
+	.champalytics_icon {
+	    height: 20px;
+	    width: 20px;
+	    padding: 2px;
+	    border: 1px solid #d0d0d0;
+	    -moz-border-radius: 0.5em;
+	    -webkit-border-radius: 0.5em;
+	    margin: -5px;
+	}
 </style>
 
 <h3 align="center">Currently Displaying: 
@@ -185,12 +194,15 @@ Chapter:
 		National goals<br/>
 		({{ year|schoolyear }})
 	</th>
+	<th {#style="width: 150px;"#} class="topheading">
+	    &nbsp;
+	</th>
 </tr>
 
 
 <tr><td style="width: 200px"></td><td></td></tr>
 
-<tr><th colspan="5" align="left">CHAMP Usage</th></tr>
+<tr><th colspan="6" align="left">CHAMP Usage</th></tr>
 <tr>
 	<td  class="labelcell">Unconfirmed Activities:</td>
 	{% if group %}
@@ -198,6 +210,7 @@ Chapter:
 		<td>&nbsp;</td>
 	{% endif %}
 	<td>{{ natl_unconfirmed }}</td>
+	<td>&nbsp;</td>
 	<td>&nbsp;</td>
 </tr>
 <tr>
@@ -208,9 +221,10 @@ Chapter:
 	{% endif %}
 	<td>{{ natl_confirmed }}</td>
 	<td>&nbsp;</td>
+	<td>&nbsp;</td>
 </tr>
 
-<tr><th colspan="5" align="left">Member Learning</th></tr>
+<tr><th colspan="6" align="left">Member Learning</th></tr>
 <tr>
 	<td class="labelcell">Member Learning Hours:</td>
 	{% if group %}
@@ -219,6 +233,11 @@ Chapter:
 	{% endif %}
 	<td>{{ natl_ml_hours }}</td>
 	<td>25,000</td>
+	<td>
+	    <a href="#" class="champalytics" id="ml_total_hours">
+	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
+	    </a>
+    </td>
 </tr>
 <tr>
 	<td  class="labelcell">Average Attendance:</td>
@@ -228,6 +247,11 @@ Chapter:
 	{% endif %}
 	<td>{{ natl_ml_attendance }}</td>
 	<td>20</td>
+	<td>
+	    <a href="#" class="champalytics" id="ml_attendance">
+	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
+	    </a>
+    </td>
 </tr>
 <tr>
 	<td  class="labelcell">Number of events:</td>
@@ -237,9 +261,14 @@ Chapter:
 	{% endif %}
 	<td>{{ natl_ml_events }}</td>
 	<td>1,400</td>
+	<td>
+	    <a href="#" class="champalytics" id="ml_events">
+	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
+	    </a>
+    </td>
 </tr>
 
-<tr><th colspan="5" align="left">Public Outreach</th></tr>
+<tr><th colspan="6" align="left">Public Outreach</th></tr>
 <tr>
 	<td class="labelcell">People reached on campus:</td>
 	{% if group %}
@@ -248,6 +277,11 @@ Chapter:
 	{% endif %}
 	<td>{{ natl_pe_people_oncampus }}</td>
 	<td>80,050</td>
+	<td>
+	    <a href="#" class="champalytics" id="pe_people_oncampus">
+	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
+	    </a>
+    </td>
 </tr>
 <tr>
 	<td class="labelcell">People reached off campus:</td>
@@ -257,6 +291,11 @@ Chapter:
 	{% endif %}
 	<td>{{ natl_pe_people_offcampus }}</td>
 	<td>40,000</td>
+	<td>
+	    <a href="#" class="champalytics" id="pe_people_offcampus">
+	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
+	    </a>
+    </td>
 </tr>
 <tr>
 	<td class="labelcell">Number of events:</td>
@@ -266,9 +305,14 @@ Chapter:
 	{% endif %}
 	<td>{{ natl_pe_events }}</td>
 	<td>414</td>
+	<td>
+	    <a href="#" class="champalytics" id="pe_events">
+	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
+	    </a>
+    </td>
 </tr>
 
-<tr><th colspan="5" align="left">Advocacy</th></tr>
+<tr><th colspan="6" align="left">Advocacy</th></tr>
 <tr>
 	<td class="labelcell">MP meetings:</td>
 	{% if group %}
@@ -277,6 +321,11 @@ Chapter:
 	{% endif %}
 	<td>{{ natl_po_contacts }}</td>
 	<td>235</td>
+	<td>
+	    <a href="#" class="champalytics" id="adv_contacts">
+	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
+	    </a>
+    </td>
 </tr>
 <tr>
 	<td class="labelcell">Letters to the editor:</td>
@@ -286,9 +335,14 @@ Chapter:
 	{% endif %}
 	<td>{{ natl_po_letters }}</td>
 	<td>110</td>
+	<td>
+	    <a href="#" class="champalytics" id="po_letters">
+	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
+	    </a>
+    </td>
 </tr>
 
-<tr><th colspan="5" align="left">Global Engineering</th>
+<tr><th colspan="6" align="left">Global Engineering</th>
 </tr>
 <tr>
 	<td class="labelcell">Students Reached:</td>
@@ -298,6 +352,11 @@ Chapter:
 	{% endif %}
 	<td>{{ natl_ce_students }}</td>
 	<td>20,500</td>
+	<td>
+	    <a href="#" class="champalytics" id="ce_students">
+	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
+	    </a>
+    </td>
 </tr>
 <tr>
 	<td class="labelcell">Total Class Hours:</td>
@@ -307,9 +366,14 @@ Chapter:
 	{% endif %}
 	<td>{{ natl_ce_hours }}</td>
 	<td>234</td>
+	<td>
+	    <a href="#" class="champalytics" id="ce_hours">
+	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
+	    </a>
+    </td>
 </tr>
 
-<tr><th colspan="5" align="left">Workplace Outreach</th></tr>
+<tr><th colspan="6" align="left">Workplace Outreach</th></tr>
 <tr>
 	<td class="labelcell">Professionals Reached:</td>
 	{% if group %}
@@ -318,6 +382,11 @@ Chapter:
 	{% endif %}
 	<td>{{ natl_wo_professionals }}</td>
 	<td></td>
+	<td>
+	    <a href="#" class="champalytics" id="wo_professionals">
+	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
+	    </a>
+    </td>
 </tr>
 <tr>
 	<td class="labelcell">Presentations:</td>
@@ -327,9 +396,14 @@ Chapter:
 	{% endif %}
 	<td>{{ natl_wo_presentations }}</td>
 	<td></td>
+	<td>
+	    <a href="#" class="champalytics" id="wo_presentations">
+	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
+	    </a>
+    </td>
 </tr>
 
-<tr><th colspan="5" align="left">Youth Engagement</th></tr>
+<tr><th colspan="6" align="left">Youth Engagement</th></tr>
 <tr>
 	<td class="labelcell">Students Reached:</td>
 	{% if group %}
@@ -338,6 +412,11 @@ Chapter:
 	{% endif %}
 	<td>{{ natl_so_students }}</td>
 	<td>26,417</td>
+	<td>
+	    <a href="#" class="champalytics" id="so_students">
+	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
+	    </a>
+    </td>
 </tr>
 <tr>
 	<td class="labelcell">Presentations:</td>
@@ -347,9 +426,14 @@ Chapter:
 	{% endif %}
 	<td>{{ natl_so_presentations }}</td>
 	<td>1,200</td>
+	<td>
+	    <a href="#" class="champalytics" id="so_presentations">
+	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
+	    </a>
+    </td>
 </tr>
 
-<tr><th colspan="5" align="left">Fundraising</th></tr>
+<tr><th colspan="6" align="left">Fundraising</th></tr>
 <tr>
 	<td class="labelcell">Total Dollars Fundraised:</td>
 	{% if group %}
@@ -358,6 +442,11 @@ Chapter:
 	{% endif %}
 	<td>$ {{ natl_fundraising_dollars|default:0 }}</td>
 	<td>$780,000</td>
+	<td>
+	    <a href="#" class="champalytics" id="fundraising_dollars">
+	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
+	    </a>
+    </td>
 </tr>
 <tr>
 	<td class="labelcell">Dollars from one-off events:</td>
@@ -367,6 +456,11 @@ Chapter:
 	{% endif %}
 	<td>$ {{ natl_fundraising_dollars_oneoff|default:0 }}</td>
 	<td>$138,000</td>
+	<td>
+	    <a href="#" class="champalytics" id="fundraising_dollars_oneoff">
+	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
+	    </a>
+    </td>
 </tr>
 <tr>
 	<td class="labelcell">Dollars from recurring activities:</td>
@@ -376,6 +470,11 @@ Chapter:
 	{% endif %}
 	<td>$ {{ natl_fundraising_dollars_recurring|default:0 }}</td>
 	<td>$95,000</td>
+	<td>
+	    <a href="#" class="champalytics" id="fundraising_dollars_recurring">
+	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
+	    </a>
+    </td>
 </tr>
 <tr>
 	<td class="labelcell">Dollars from non-event sources:</td>
@@ -385,9 +484,14 @@ Chapter:
 	{% endif %}
 	<td>$ {{ natl_fundraising_dollars_nonevent|default:0 }}</td>
 	<td>$452,000</td>
+	<td>
+	    <a href="#" class="champalytics" id="fundraising_dollars_nonevent">
+	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
+	    </a>
+    </td>
 </tr>
 
-<tr><th colspan="5" align="left">Publicity</th></tr>
+<tr><th colspan="6" align="left">Publicity</th></tr>
 <tr>
 	<td class="labelcell">Media Hits:</td>
 	{% if group %}
@@ -396,12 +500,19 @@ Chapter:
 	{% endif %}
 	<td>{{ natl_publicity_hits }}</td>
 	<td>250</td>
+	<td>
+	    <a href="#" class="champalytics" id="pub_media_hits">
+	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
+	    </a>
+    </td>
 </tr>
 </table>
 
 {% endblock %}
 
 {% block extra_body %}
+    <link type="text/css" href="{{STATIC_URL}}css/colorbox.css" rel="stylesheet" />
+    <script type="text/javascript" src="{{STATIC_URL}}js/colorbox.js"></script>
     <script type="text/javascript">
         $(document).ready(function() {
             $('#champ_groups').change(function() {
@@ -410,6 +521,23 @@ Chapter:
 	                window.location.href="{% url champ_dashboard %}" + $(this).val() + "/" + theDate.getFullYear() + "/";
 	            else
 	                window.location.href="{% url champ_dashboard %}" + theDate.getFullYear() + "/";
+            });
+            
+            $('.champalytics').click(function() {
+                var metric = $(this).attr('id');
+            	{% if group %}
+                    var group = '{{ group.slug }}';
+                {% else %}
+                    var group = 'none';
+                {% endif %}
+                
+                $(document).colorbox({href: '{% url champalytics %}?metric=' + $(this).attr('id') + '&group=' + group,
+                            open: true,
+                            iframe: true,
+                            width: '80%',
+                            height: '80%',
+                            opacity: '0.8'});
+                return false;
             });
         });
     </script>
