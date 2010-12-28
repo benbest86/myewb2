@@ -9,7 +9,7 @@
         <table style="display: none;" id="progress">
         {% for stat, numbers in chapter_progress.items %}
             {% ifnotequal numbers.0 -1 %}
-                <tr>
+                <tr class="data">
                     <td class="stat">{{ stat }}</td>
                     <td class="percent">{{ numbers.0 }}</td>
                     <td class="actual">{{ numbers.1 }}</td>
@@ -19,11 +19,18 @@
         {% endfor %}
         </table>
 
-        <div id="graph">
+        <div id="champsays" style="float: right; width: 250px; height: 250px; border: 1px solid #a0a0a0; padding: 10px; -moz-border-radius: 1em; -webkit-border-radius: 1em; margin-right: 50px;">
         </div>
 
-        <br/><br/><br/>        
-        <div>
+        <div id="graphcontainer" style="position: relative; width: 650px;">
+            <div id="graphlabels" style="width: 250px; position: absolute; top: 0; left: 0; text-align: right; font-weight: bold; padding-top: 15px;">
+            </div>
+            <div id="graph" style="width: 350px; position: absolute; top: 0; left: 250px;">
+            </div>
+        </div>
+
+        <br/>
+        <div id="omitted" style="padding-left: 250px; font-size: 10px;">
             <em>Omitted (no goal set):</em><br/>
             {% for stat, numbers in chapter_progress.items %}
                 {% ifequal numbers.0 -1 %}
@@ -31,6 +38,65 @@
                 {% endifequal %}
             {% endfor %}
         </div>
+        
+        <script type="text/javascript" src="{{STATIC_URL}}js/raphael/raphael-min.js"></script>
+        <script type="text/javascript" src="{{STATIC_URL}}js/raphael/g.raphael-min.js"></script>
+        <script type="text/javascript" src="{{STATIC_URL}}js/raphael/g.bar-min.js"></script>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                // parse table data into javascript variables
+                var metrics = [];
+                var values = [];
+                var difference = [];
+                var actual = [];
+                var goal = [];
+                var i = 0;
+                
+                $('tr.data').each(function() {
+                    i++;
+                    metrics.push($('.stat', this).text());
+                    values.push(parseInt($('.percent', this).text(), 10));
+                    difference.push(100 - parseInt($('.percent', this).text(), 10));
+                    actual.push(parseInt($('.actual', this).text(), 10));
+                    goal.push(parseInt($('.goal', this).text(), 10));
+                });
+                
+                // dynamically resize graph area
+                $('#graphcontainer').height((metrics.length * 50) + 'px');
+                $('#graph').height((metrics.length * 50) + 'px');
+                $('#graphlabels').height((metrics.length * 50) + 'px');
+                $('#champsays').height(($('#graphcontainer').height() + $('#omitted').height()) + 'px');
+
+                var newmargin = ($(document).width() - $('#graphcontainer').width() - $('#champsays').width()) / 2;
+                $('#champsays').css('margin-right', newmargin + 'px');
+                
+                // draw graph
+                var r = Raphael("graph");
+                graph = r.g.hbarchart(10, 10, 300, 220, [values, difference],
+                             {type: 'soft',
+                              stacked: 'true',
+                              axis: "0 1 1 0",
+                              colors: ['#ff7200', '#d0d0d0']});
+
+                // cool hover effect
+                graph.hoverColumn(function () {
+                        var y = [], res = [];
+                        for (var i = this.bars.length; i--;) {
+                            y.push(this.bars[i].y);
+                            res.push(this.bars[i].value || "0");
+                        }
+                        this.flag = r.g.popup(this.bars[0].x, Math.min.apply(Math, y), res[1] + "%").insertBefore(this);
+                    },
+                    function () {
+                        this.flag.animate({opacity: 0}, 300, function () {this.remove();});
+                    });
+
+                //graph.label([metrics]);   // is broken... so let's hack it in.
+                $('#graphlabels').css('line-height', $('#graphlabels').height() / (metrics.length+1) + 'px');
+                for (var i = 0; i < metrics.length; i++)
+                    $('#graphlabels').html($('#graphlabels').html() + metrics[i] + "<br/>");
+            });
+        </script>
         
     {% endif %}
     

@@ -103,7 +103,7 @@ def progress_draw(request):
                 yearplan_name = aggregates.YEARPLAN_MAP[s]
                 goal = getattr(yearplan, yearplan_name)
                 if goal:
-                    progress = stats[s] / goal
+                    progress = stats[s] * 100 / goal
                 else:
                     progress = -1
                 chapter_progress[s] = (progress, stats[s], goal)
