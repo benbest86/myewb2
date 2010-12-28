@@ -19,8 +19,16 @@
         {% endfor %}
         </table>
 
-        <div id="champsays" style="float: right; width: 250px; height: 250px; border: 1px solid #a0a0a0; padding: 10px; -moz-border-radius: 1em; -webkit-border-radius: 1em; margin-right: 50px;">
-        </div>
+        {% if champsays %}
+            <div id="champsays" style="float: right; width: 250px; border: 1px solid #a0a0a0; padding: 20px; -moz-border-radius: 1em; -webkit-border-radius: 1em; margin-right: 50px;">
+                <span style="font-weight: bold; font-decoration: italic; font-size: 16px;">THE CHAMP SAYS...</span>
+                <br/><br/>
+                {{ champsays|random }}
+                <br/><br/>
+            </div>
+        {% else %}
+            <div id="champsays style="display: none;"></div>
+        {% endif %}
 
         <div id="graphcontainer" style="position: relative; width: 650px;">
             <div id="graphlabels" style="width: 250px; position: absolute; top: 0; left: 0; text-align: right; font-weight: bold; padding-top: 15px;">
@@ -65,7 +73,6 @@
                 $('#graphcontainer').height((metrics.length * 50) + 'px');
                 $('#graph').height((metrics.length * 50) + 'px');
                 $('#graphlabels').height((metrics.length * 50) + 'px');
-                $('#champsays').height(($('#graphcontainer').height() + $('#omitted').height()) + 'px');
 
                 var newmargin = ($(document).width() - $('#graphcontainer').width() - $('#champsays').width()) / 2;
                 $('#champsays').css('margin-right', newmargin + 'px');

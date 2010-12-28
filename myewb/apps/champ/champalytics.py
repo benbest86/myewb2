@@ -95,6 +95,7 @@ def progress_draw(request):
     elif progressby == 'forchapter' and group:
         yp = YearPlan.objects.filter(group__slug=group, year=date.today().year)
         if yp.count():
+            champsays = []
             yearplan = yp[0]
             stats, national = build_stats(group)
             
@@ -104,13 +105,25 @@ def progress_draw(request):
                 goal = getattr(yearplan, yearplan_name)
                 if goal:
                     progress = stats[s] * 100 / goal
+                    
+                    if progress >= 100:
+                        champsays.append("You've hit your goal for %s, you champion!" % s);
+                    elif progress < 100 and progress > 80:
+                        champsays.append("You've almost hit your %s goal - way to go!" % s);
+                    elif progress < 30 and progress > 10:
+                        champsays.append("Your %s numbers are a bit low... need some help?" % s);
+                    elif progress < 10:
+                        champsays.append("Woah, watch out for %s - better get moving..." % s);
+                    
                 else:
                     progress = -1
                 chapter_progress[s] = (progress, stats[s], goal)
-            
+                
             context['stats'] = stats
             context['chapter_progress'] = chapter_progress
             context['national'] = national
+            context['champsays'] = champsays
+            
         else:
             context['noyearplan'] = True
             
