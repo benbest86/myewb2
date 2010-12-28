@@ -8,7 +8,13 @@ Copyright 2010 Engineers Without Borders Canada
 
 from django.conf.urls.defaults import *
 
-urlpatterns = patterns('champ.views',
+# champalytics
+# (needs to go first to override the group_slug matches later)
+urlpatterns = patterns('champ.champalytics',
+    url(r'^champalytics/$', 'default', name='champalytics')
+)
+
+urlpatterns = urlpatterns + patterns('champ.views',
     url(r'^$', 'dashboard', name='champ_dashboard'),    
     url(r'^(?P<year>\d{4})/(?P<month>\d{2})/$', 'dashboard', name='champ_dashboard'),    
     url(r'^(?P<year>\d{4})/(?P<term>[-\w]+)/$', 'dashboard', name='champ_dashboard'),    
@@ -46,3 +52,5 @@ urlpatterns = patterns('champ.views',
     url(r'^csv/so/', 'csv_global_so', name="champ_global_csv_so"),
     url(r'^csv/all/', 'csv_global_all', name="champ_global_csv"),
 )
+
+
