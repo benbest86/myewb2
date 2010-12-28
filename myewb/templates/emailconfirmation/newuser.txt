@@ -1,0 +1,13 @@
+Hello {{ user.visible_name }},
+
+Thank you for creating an account on myEWB - the online community platform for Engineers Without Borders Canada!  To complete your sign-up, please verify your email address: {{ activate_url}}
+
+With thousands of active members in 36 chapters across the country, myEWB is a vibrant network of individuals creating positive change both at home and with our partners in sub-Saharan Africa... and you are just one step away from joining.  
+
+In order to confirm your email address, go to {{ activate_url }}
+
+If you are not {{ user.visible_name }} or did not request to join Engineers Without Borders, please ignore this email and your account will remain inactive.
+
+Regards,
+Engineers Without Borders Canada
+http://www.ewb.ca

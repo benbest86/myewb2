@@ -229,11 +229,13 @@ class EmailSignupForm(forms.Form):
             # email already exists in system? re-send verification...
             email_address = get_object_or_none(EmailAddress, user=new_user, email=add_email)
             if email_address:
-                EmailConfirmation.objects.send_confirmation(email_address)
+                EmailConfirmation.objects.send_confirmation(email_address,
+                                                            template="emailconfirmation/newuser.txt")
                 
             # otherwise, create a new email (verification will be sent automatically)
             else:
-                EmailAddress.objects.add_email(new_user, add_email)
+                EmailAddress.objects.add_email(new_user, add_email,
+                                               confirmation_template="emailconfirmation/newuser.txt")
         
         if self.cleaned_data['chapter'] != "none" and self.cleaned_data['chapter'] != "":
             chapter = get_object_or_404(Network, slug=self.cleaned_data['chapter'])

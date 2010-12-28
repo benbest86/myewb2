@@ -1,9 +1,11 @@
+from django.contrib.auth.models import User
 from django.http import HttpResponseForbidden
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 
-from django.contrib.auth.models import User
 from base_groups.models import BaseGroup, GroupMember
+from communities.models import Community
+from siteutils.shortcuts import get_object_or_none
 
 class chapter_president_required(object):
     """

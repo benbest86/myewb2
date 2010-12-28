@@ -47,21 +47,36 @@ class ConferenceRegistrationForm(forms.ModelForm):
 								   widget=forms.Textarea,
 								   help_text='Please let us know about any special dietary, accessibility or other needs you may have, or any medical conditions (including allergies).')
     
-    emergName = forms.CharField(label='Emergency contact name')
-    emergPhone = forms.CharField(label='Emergency contact phone number')
+    #emergName = forms.CharField(label='Emergency contact name')
+    #emergPhone = forms.CharField(label='Emergency contact phone number')
     
-    prevConfs = forms.ChoiceField(label='EWB national conferences attended',
-								  choices=PASTEVENTS)
-    prevRetreats = forms.ChoiceField(label='EWB regional retreats attended',
-									 choices=PASTEVENTS)
+    #prevConfs = forms.ChoiceField(label='EWB national conferences attended',
+	#							  choices=PASTEVENTS)
+    #prevRetreats = forms.ChoiceField(label='EWB regional retreats attended',
+	#								 choices=PASTEVENTS)
     
-    resume = forms.FileField(label='Resume',
-                             required=False,
-                             help_text="(optional) Attach a resume if you would like it shared with our sponsors")
+    #resume = forms.FileField(label='Resume',
+    #                         required=False,
+    #                         help_text="(optional) Attach a resume if you would like it shared with our sponsors")
     
     cellphone = forms.CharField(label='Cell phone number',
                                 required=False,
                                 help_text="(optional) If you wish to receive logistical updates and reminders by text message during the conference")
+
+    code = forms.CharField(label='Registraton code',
+                           help_text='if you have a registration code, enter it here for a discounted rate.',
+                           required=False)
+    type = forms.ChoiceField(label='Registration type',
+							 choices=FINAL_CHOICES,
+							 widget=forms.RadioSelect,
+							 #help_text="""<a href='#' id='confoptiontablelink'>click here for a rate guide and explanation</a>""")
+                             help_text="""Note that tickets to the Gala on Saturday evening featuring K'naan are sold separately, through the Gala event site""")
+    
+    africaFund = forms.ChoiceField(label='Support an African delegate?',
+                                   choices=AFRICA_FUND,
+                                   initial='75',
+								   required=False,
+								   help_text='<a href="/site_media/static/conference/delegateinfo.html" class="delegatelink">more information...</a>')
 
     grouping = forms.ChoiceField(label='Which group do you belong to?',
                                  choices=EXTERNAL_GROUPS,
@@ -70,21 +85,7 @@ class ConferenceRegistrationForm(forms.ModelForm):
                                 required=False,
                                 help_text='(if other)')
     
-    code = forms.CharField(label='Registraton code',
-                           help_text='if you have a registration code, enter it here for a discounted rate.',
-                           required=False)
-    type = forms.ChoiceField(label='Registration type',
-							 choices=ROOM_CHOICES,
-							 widget=forms.RadioSelect,
-							 help_text="""<a href='#' id='confoptiontablelink'>click here for a rate guide and explanation</a>""")
-    
-    africaFund = forms.ChoiceField(label='Support an African delegate?',
-                                   choices=AFRICA_FUND,
-                                   initial='75',
-								   required=False,
-								   help_text='<a href="/site_media/static/conference/delegateinfo.html" class="delegatelink">more information...</a>')
-
-    ccardtype = forms.ChoiceField(label='Credit card type',
+    cc_type = forms.ChoiceField(label='Credit card type',
 								  choices=CC_TYPES)
     cc_number = CreditCardNumberField(label='Credit card number')
     cc_expiry = CreditCardExpiryField(label='Credit card expiry',
@@ -97,10 +98,13 @@ class ConferenceRegistrationForm(forms.ModelForm):
 
     class Meta:
         model = ConferenceRegistration
-        fields = ['headset', 'foodPrefs', 'specialNeeds', 'emergName', 'emergPhone',
-                  'prevConfs', 'prevRetreats', 'resume', 'cellphone', 
-                  'code', 'type', 'africaFund']
-
+#        fields = ['headset', 'foodPrefs', 'specialNeeds', #'emergName', 'emergPhone',
+#                  #'prevConfs', 'prevRetreats', 'resume',
+#                  'cellphone', 
+#                  'code', 'type', 'africaFund']
+        fields = ['type', 'grouping', 'grouping2', 'africaFund', 'cellphone',
+                  'headset', 'foodPrefs', 'specialNeeds', 'code']
+        
     def clean_code(self):
         codestring = self.cleaned_data['code'].strip().lower()
         
@@ -237,14 +241,16 @@ class ConferenceRegistrationForm(forms.ModelForm):
         self._user = value
         if self.fields.get('address', None):
             self.fields['address'].user = value
-        if value.is_bulk:
-            del(self.fields['prevConfs'])
-            del(self.fields['prevRetreats'])
-            #del(self.fields['code'])
-            self.fields['type'].choices=EXTERNAL_CHOICES
-        else:
-            del(self.fields['grouping'])
-            del(self.fields['grouping2'])
+            
+        #
+        #if value.is_bulk:
+        #    del(self.fields['prevConfs'])
+        #    del(self.fields['prevRetreats'])
+        #    #del(self.fields['code'])
+        #    self.fields['type'].choices=EXTERNAL_CHOICES
+        #else:
+        #    del(self.fields['grouping'])
+        #    del(self.fields['grouping2'])
             
     user = property(_get_user, _set_user)
 
@@ -301,13 +307,24 @@ class ConferenceRegistrationFormPreview(PaymentFormPreview):
             # lastly, add them to the group
             grp, created = Community.objects.get_or_create(slug='conference2011',
                                                            defaults={'invite_only': True,
-                                                                     'name': 'National Conference 2011 delegates',
+                                                                     'name': 'National Conference 2011 - EWB delegates',
                                                                      'creator': request.user,
-                                                                     'description': 'National Conference 2011 delegates',
-                                                                     'mailchimp_name': 'National Conference 2011',
+                                                                     'description': 'National Conference 2011 delegates (EWB members)',
+                                                                     'mailchimp_name': 'National Conference 2011 members',
                                                                      'mailchimp_category': 'Conference'})
-            grp.add_member(request.user)
-            
+
+            grp2, created = Community.objects.get_or_create(slug='conference2011-external',
+                                                            defaults={'invite_only': True,
+                                                                      'name': 'National Conference 2011 - external delegates',
+                                                                      'creator': request.user,
+                                                                      'description': 'National Conference 2011 delegates (external)',
+                                                                      'mailchimp_name': 'National Conference 2011 external',
+                                                                      'mailchimp_category': 'Conference'})
+
+            if request.user.is_bulk:
+                grp2.add_member(request.user)
+            else:
+                grp.add_member(request.user)
             
             # don't do the standard render_to_response; instead, do a redirect
             # so that someone can't double-submit by hitting refresh
@@ -345,7 +362,7 @@ class ConferenceSignupForm(forms.Form):
     
     def clean_email(self):
         other_emails = EmailAddress.objects.filter(email__iexact=self.cleaned_data['email'])
-        verified_emails = other_emails.filter(verified=True)
+        verified_emails = other_emails.filter(verified=True, user__is_bulk=False)
         if verified_emails.count() > 0:
             raise forms.ValidationError("This email address has already been used. Please sign in or use a different email.")
         
@@ -364,7 +381,7 @@ class ConferenceSignupForm(forms.Form):
         try:
             new_user = User.objects.get(email=email, is_bulk=1)
         except User.DoesNotExist:
-            new_user = User.extras.create_bulk_user(email)
+            new_user = User.extras.create_bulk_user(email, verified=True)
             
         profile = new_user.get_profile()
         profile.first_name = firstname

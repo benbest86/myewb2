@@ -8,6 +8,7 @@ Copyright 2010 Engineers Without Borders Canada
 
 from datetime import datetime
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -20,6 +21,7 @@ ALLMETRICS = (('all', "Event Impact"),
               ('so', "Youth Engagement"),
               ('pe', "Public Outreach"),
               ('pa', "Advocacy"),
+              ('adv', "Advocacy Letters"),
               ('wo', "Workplace Outreach"),
               ('ce', "Global Engineering"),
               ('pub', "Publicity"),
@@ -54,6 +56,10 @@ class Activity(models.Model):
                                  null=True, blank=True,
                                  choices=RATINGS)
     
+    class Meta:
+        verbose_name = "CHAMP activity"
+        verbose_name_plural = "CHAMP activities"
+        
     def get_metrics(self, pad = False):
         """
         Returns a list of all metrics associated with this activity,
@@ -83,7 +89,6 @@ class Activity(models.Model):
     def get_available_metrics(self):
         results = []
         metrics = Metrics.objects.filter(activity=self.pk)
-        print "hello??"
         
         for m in metrics:
             m = getattr(m, m.metric_type)
@@ -103,6 +108,19 @@ class Activity(models.Model):
                 return False
         return True
     
+    def get_absolute_url(self):
+        return reverse('champ_activity', kwargs={'group_slug': self.group.slug, 'activity_id': self.id})
+    
+    def get_description(self):
+        try:
+            metric = ImpactMetrics.objects.get(activity=self)
+            if metric.description:
+                return metric.description
+        except:
+            pass
+        return ''
+        
+    
 class YearPlan(models.Model):
     year = models.IntegerField()
     group = models.ForeignKey(BaseGroup, unique_for_year="year")
@@ -113,10 +131,14 @@ class YearPlan(models.Model):
     
     ml_total_hours = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Member learning:</b> Total Hours'))
     ml_average_attendance = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Member learning:</b> Average Attendance'))
+    ml_events = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Member learning:</b> Number of events'))
     
-    eng_people_reached = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Public Outreach:</b> People Reached')) # @@@ I hope this is the case! eng_people_reached != public outreach ??
+    eng_people_reached = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Public Outreach:</b> People Reached on campus')) # @@@ I hope this is the case! eng_people_reached != public outreach ??
+    eng_people_reached_offcampus = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Public Outreach:</b> People Reached off campus')) # @@@ I hope this is the case! eng_people_reached != public outreach ??
+    eng_events = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Public Outreach:</b> Number of events'))
     
-    adv_contacts = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Advocacy:</b> Contacts with decision makers'))
+    adv_contacts = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Advocacy:</b> MP meetings'))
+    adv_letters = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Advocacy:</b> Letters to the editor'))
 
     ce_hours = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Curriculum Enhancement:</b> Total Class Hours'))
     ce_students = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Curriculum Enhancement:</b> Students Reached'))
@@ -128,6 +150,9 @@ class YearPlan(models.Model):
     so_reached = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>School Outreach:</b> Students Reached'))
 
     fund_total = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Fundraising:</b> Dollars Fundraised'))
+    fund_oneoff = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Fundraising:</b> Dollars from one-off events'))
+    fund_recurring = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Fundraising:</b> Dollars from recurring events'))
+    fund_nonevent = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Fundraising:</b> Dollars from non-event sources'))
     
     pub_media_hits = models.IntegerField(null=True, blank=True,  verbose_name=_('<b>Publicity:</b> Media Hits'))
 
@@ -190,7 +215,6 @@ class Metrics(models.Model):
         fields = self.get_values(use_verbosename=False)
         required = self.required_fields
         
-        print required
         for f, value in fields.items():
             if (value == None or value == "") and (required == 'all' or f in required):
                 return False
@@ -230,7 +254,7 @@ class MemberLearningMetrics(Metrics):
                                   choices=CURRICULUM_CHOICES)
     resources_by = models.CharField(verbose_name="Source",
                                     max_length=255, null=True, blank=True,
-                                    help_text='describe where this activity came from: chapters.ewb.ca, myEWB, UofT hcapter, self-created, etc...')
+                                    help_text='describe where this activity came from: chapters.ewb.ca, myEWB, UofT chapter, self-created, etc...')
     duration = models.FloatField(verbose_name="Length",
                                  null=True, blank=True,
                                  help_text='in hours')
@@ -324,8 +348,8 @@ class PublicAdvocacyMetrics(Metrics):
     metricname = "pa"
     type = models.CharField(verbose_name="Event Type",
                             max_length=255, null=True, blank=True)
-    #units = models.IntegerField("Units",
-    #                            null=True, blank=True)
+    units = models.IntegerField("Units",
+                                null=True, blank=True)
     decision_maker = models.CharField("Decision-maker",
                                       max_length=255, null=True, blank=True)
     position = models.CharField("Position",

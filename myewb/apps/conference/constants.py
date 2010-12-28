@@ -108,11 +108,11 @@ CONF_OPTIONS = {'confreg-2011-double-test': {'cost': 175,
                 'confreg-2011-nohotel-staff': {'cost': 0,
                                              'name': "EWB Staff - no room"},
 
-                'confreg-2011-double-alumni': {'cost': 125,
+                'confreg-2011-double-alumni': {'cost': 200,
                                              'name': "EWB Alumni"},
-                'confreg-2011-single-alumni': {'cost': 125,
+                'confreg-2011-single-alumni': {'cost': 200,
                                              'name': "EWB Alumni"},
-                'confreg-2011-nohotel-alumni': {'cost': 125,
+                'confreg-2011-nohotel-alumni': {'cost': 200,
                                              'name': "EWB Alumni"}
                
                }
@@ -128,6 +128,15 @@ EXTERNAL_CHOICES = (('fridaystudent', _('Friday attendance (student)')),
                     ('friday', _('Friday attendance')),
                     ('saturday', _('Saturday attendance')),
                     ('twoday', _('Friday and Saturday attendance'))
+                   ) 
+                
+FINAL_CHOICES = (('friday', _('Friday attendance')),
+                    ('saturday', _('Saturday attendance')),
+                    ('twoday', _('Friday and Saturday attendance')),
+                    ('fridaystudent', _('Friday attendance (student)')),
+                    ('saturdaystudent', _('Saturday attendance (student)')),
+                    ('twodaystudent', _('Friday and Saturday attendance (student)')),
+                    ('nohotel', _('EWB Members late registration')),
                    ) 
                 
 

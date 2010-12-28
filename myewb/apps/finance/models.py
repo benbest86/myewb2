@@ -39,6 +39,7 @@ ENTEREDBY_CHOICES = (
 TYPE_CHOICES = (
     ('EX','Expenditure'),
     ('IN', 'Income'),
+    ('CM', 'Commitment')
 )
 
 SUBMITTED_CHOICES = (
@@ -63,6 +64,7 @@ class MonthlyReport(models.Model):
     creator= models.ForeignKey(User, related_name="monthlyreport_created")
     
     def __unicode__(self):
+#        return u'%s (%s) - %s %s' %(self.group.name, self.type, self.date.year, self.date.month)
         return u'%s (%s) - %s %s' %(self.group.name, self.type, self.date.year, self.date.month)
 
 class Category(models.Model):
@@ -124,8 +126,8 @@ class Donation(Income):
     country = models.CharField(max_length = 200)
     postal = models.CharField('Postal Code', max_length = 200)
     cheque_date = models.DateField('Cheque Date (YYYY-MM-DD)', null=True, blank=True)
-    cheque_num = models.CharField('Cheque Number', max_length=3, null=True, blank=True)
-    taxreceipt = models.CharField('Tax Reciept? (Y/N)', max_length = 1)
+    cheque_num = models.CharField('Cheque Number', max_length=10, null=True, blank=True)
+    taxreceipt = models.CharField('Tax Receipt? (Y/N)', max_length = 1)
     cheque_img = models.FileField('Cheque Image', upload_to = 'donation_cheques', null=True, blank=True)
 
 

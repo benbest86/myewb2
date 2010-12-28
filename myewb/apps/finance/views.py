@@ -13,7 +13,8 @@ import shlex
 import tempfile
 
 from datetime import timedelta
-from pygooglechart import SimpleLineChart, Axis, PieChart3D, PieChart2D, StackedHorizontalBarChart
+from decimal import *
+from pygooglechart import SimpleLineChart, Axis, PieChart3D, PieChart2D, StackedHorizontalBarChart, StackedVerticalBarChart, BarChart
 
 #import your needed models here
 from django.contrib.admin.views.decorators import staff_member_required
@@ -48,6 +49,15 @@ def index(request, group_slug=None):
     context['allgroups'] = Network.objects.filter(chapter_info__isnull=False, is_active=True).order_by('name')
     
     return render_to_response('finance/index.htm',context, context_instance=RequestContext(request))
+
+
+def check(check):
+#===============================================================================
+# helper function to check for null values
+#===============================================================================
+    if not check:
+        check = 0
+    return check
 
 @group_admin_required()
 def create_income(request, group_slug):
@@ -92,7 +102,7 @@ def create_income(request, group_slug):
     template_data["trans_outstanding"] = outstanding
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)
+    #template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/create_income.htm', template_data, context_instance=RequestContext(request))
 
@@ -138,7 +148,7 @@ def create_expenditure(request, group_slug):
     template_data["trans_outstanding"] = outstanding
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)
+    #template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/create_expenditure.htm', template_data, context_instance=RequestContext(request))
 
@@ -184,7 +194,7 @@ def create_donation(request, group_slug):
     template_data["trans_outstanding"] = outstanding    
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)
+    #template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/create_donation.htm', template_data, context_instance=RequestContext(request))
 
@@ -210,6 +220,163 @@ def date_prevnext(date):
         prev_date = datetime.date(year=date.year, month=date.month-1, day=1)
     
     return prev_date, next_date
+
+def create_timeline_chart(income, expenditure):
+#===============================================================================
+# helper function to create over time income/exp/net values
+#===============================================================================
+#    set up start date
+    enddate = datetime.datetime.today()
+    startdate = enddate - timedelta(days=360)
+    startdate = datetime.date(year=startdate.year, month=startdate.month,day=1)
+    
+#   set up initial variables and arrays 
+    count = 0
+    exp_sum = []
+    inc_sum = []
+    net_sum = []
+    months = []
+    
+#    loop to go through all the months and determine income, exp, net, account balance
+    while count < 13:
+        exp = expenditure.filter(bank_date__month=startdate.month).exclude(bank_date__isnull=True).aggregate(total=Sum('amount'))
+        inc = income.filter(bank_date__month=startdate.month).exclude(bank_date__isnull=True).aggregate(total=Sum('amount'))
+        
+        exp['total'] = check(exp['total'])
+        inc['total']= check(inc['total'])
+        
+#        insert into arrays
+        months.append(startdate.strftime("%b %y"))
+        inc_sum.append(int(inc['total']))
+        exp_sum.append(int(exp['total']))
+        net_sum.append(int(inc['total']) - int(exp['total']))
+        
+#        change variables
+        startdate = startdate + timedelta(days=32)
+        startdate = datetime.date(year=startdate.year, month=startdate.month,day=1)
+        count = count + 1
+
+    xaxis = []
+    for i in range(0, len(months)):
+        xaxis.append(months[i])
+    
+    max_y = round(max(max(inc_sum), max(exp_sum), max(net_sum)),-3)
+    min_y = round(min(min(inc_sum), min(exp_sum), min(net_sum)), -3)
+    monthlyTransactionsChart = SimpleLineChart(650, 450, y_range=(min_y, max_y))
+    monthlyTransactionsChart.add_data(exp_sum)
+    monthlyTransactionsChart.add_data(inc_sum)
+    monthlyTransactionsChart.add_data(net_sum)
+
+#    yaxis = range(round(min(net_sum),-3)-1000, max_y, 5000)
+    yaxis = range(min_y, max_y, 5000)
+    monthlyTransactionsChart.set_axis_labels(Axis.LEFT, yaxis)
+    monthlyTransactionsChart.set_axis_labels(Axis.BOTTOM, xaxis)
+    monthlyTransactionsChart.set_colours(['B93B8F', '3B9C9C', 'F87217'])
+    monthlyTransactionsChart.set_legend(['Expenditures', 'Income', 'Net'])
+    monthlyTransactionsChart.set_legend_position('b')
+    
+    timelineChart = monthlyTransactionsChart.get_url()
+    
+    return timelineChart
+
+def create_accbal_chart(income, expenditure):
+#===============================================================================
+# helper function to create overtime graphs of account balance
+#===============================================================================
+
+    income_no = income.filter(account='NO')
+    income_ch = income.filter(account='CH')
+    expenditure_no = expenditure.filter(account='NO')
+    expenditure_ch = expenditure.filter(account='CH')
+#    set up start date
+    enddate = datetime.datetime.today()
+    startdate = enddate - timedelta(days=180)
+    startdate = datetime.date(year=startdate.year, month=startdate.month,day=1)
+    
+#   set up initial variables and arrays 
+    count = 0
+    months = []
+    acc_no = []
+    acc_ch = []
+    acc = []
+    
+#    find out the initial account balance
+    exp = expenditure.filter(bank_date__lt=startdate).exclude(bank_date__isnull=True).aggregate(total=Sum('amount'))
+    exp_no = expenditure_no.filter(bank_date__lt=startdate).exclude(bank_date__isnull=True).aggregate(total=Sum('amount'))
+    exp_ch = expenditure_ch.filter(bank_date__lt=startdate).exclude(bank_date__isnull=True).aggregate(total=Sum('amount'))
+    
+    inc = income.filter(bank_date__lt=startdate).exclude(bank_date__isnull=True).aggregate(total=Sum('amount'))
+    inc_ch = income_ch.filter(bank_date__lt=startdate).exclude(bank_date__isnull=True).aggregate(total=Sum('amount'))
+    inc_no = income_no.filter(bank_date__lt=startdate).exclude(bank_date__isnull=True).aggregate(total=Sum('amount'))
+    
+    inc['total'] = check(inc['total'])
+    inc_ch['total'] = check(inc_ch['total'])
+    inc_no['total'] = check(inc_no['total'])
+    exp['total'] = check(exp['total'])
+    exp_no['total'] = check(exp_no['total'])
+    exp_ch['total'] = check(exp_ch['total'])
+
+    account_bal = inc['total'] - exp['total']
+    account_bal_no = inc_no['total'] - exp_no['total']
+    account_bal_ch = inc_ch['total'] - exp_ch['total']
+    
+#    loop to go through all the months and determine net, account balance
+    while count < 7:
+        exp = expenditure.filter(bank_date__month=startdate.month).exclude(bank_date__isnull=True)
+        exp_no = exp.filter(account='NO').aggregate(total=Sum('amount'))
+        exp_ch = exp.filter(account='CH').aggregate(total=Sum('amount'))
+        inc = income.filter(bank_date__month=startdate.month).exclude(bank_date__isnull=True)
+        inc_no = inc.filter(account='NO').aggregate(total=Sum('amount'))
+        inc_ch = inc.filter(account='CH').aggregate(total=Sum('amount'))
+        exp = expenditure.filter(bank_date__month=startdate.month).exclude(bank_date__isnull=True).aggregate(total=Sum('amount'))
+        inc = income.filter(bank_date__month=startdate.month).exclude(bank_date__isnull=True).aggregate(total=Sum('amount'))
+        
+        inc['total'] = check(inc['total'])
+        inc_no['total'] = check(inc_no['total'])
+        inc_ch['total'] = check(inc_ch['total'])
+        exp['total'] = check(exp['total'])
+        exp_no['total'] = check(exp_no['total'])
+        exp_ch['total'] = check(exp_ch['total'])
+        
+#        determine account balance
+        account_bal = account_bal + (inc['total'] - exp['total'])
+        account_bal_no = account_bal_no + (inc_no['total'] - exp_no['total'])
+        account_bal_ch = account_bal_ch + (inc_ch['total'] - exp_ch['total'])
+
+#        insert into arrays
+        months.append(startdate.strftime("%b %y"))
+        acc.append(int(account_bal))
+        acc_no.append(int(account_bal_no))
+        acc_ch.append(int(account_bal_ch))
+        
+#        change variables
+        startdate = startdate + timedelta(days=32)
+        startdate = datetime.date(year=startdate.year, month=startdate.month,day=1)
+        count = count + 1
+        
+    xaxis = []
+    for i in range(0, len(months)):
+        xaxis.append(months[i])
+    
+    max_y = max(max(acc), max(acc_no), max(acc_ch))
+    min_y = min(min(acc), min(acc_no), min(acc_ch))
+    
+    accountBalanceChart = SimpleLineChart(650, 450, y_range=(min_y, max_y))
+    accountBalanceChart.add_data(acc)
+    accountBalanceChart.add_data(acc_no)
+    accountBalanceChart.add_data(acc_ch)
+    
+    yaxis = range(min_y, max_y, 5000)
+    yaxis[0] = ''
+    accountBalanceChart.set_axis_labels(Axis.LEFT, yaxis)
+    accountBalanceChart.set_axis_labels(Axis.BOTTOM, xaxis)
+    accountBalanceChart.set_colours(['F87217', '3B9C9C', 'B93B8F'])
+    accountBalanceChart.set_legend(['Overall Account Balance','NO Account Balance', 'CH Account Balance'])
+    accountBalanceChart.set_legend_position('b')
+    
+    accBalChart = accountBalanceChart.get_url()
+
+    return accBalChart
 
 def create_category_charts(expenditure_category, income_category):
     #===========================================================================
@@ -267,7 +434,7 @@ def summary(request, group_slug, year=None, month=None):
     ch_in = income_chap.filter(account="CH", bank_date__isnull=False).exclude(type = 'CM').aggregate(total=Sum('amount'))
     ch_ex = expenditure_chap.filter(account="CH", bank_date__isnull=False).exclude(type = 'CM').aggregate(total=Sum('amount'))
     chapter = trans_chap.filter(account="CH", bank_date__isnull=False).exclude(type = 'CM').aggregate(last_update=Max('bank_date'))
- 
+    
  #    if either of the totals is None, switch to 0    
     if not ch_in["total"]: 
         ch_in["total"] = 0
@@ -319,12 +486,13 @@ def summary(request, group_slug, year=None, month=None):
         template_data['empty'] = False
         income_category = income_chap.values('category__name').annotate(totalcategory=Sum('amount'))
         template_data["income_category"] = income_category
-        income_total = income_chap.aggregate(total = Sum('amount'))
+        income_total = income_chap.exclude(type = 'CM').aggregate(total = Sum('amount'))
         template_data["income_total"] = income_total
-        expenditure_category = expenditure_chap.values('category__name').annotate(totalcategory=Sum('amount'))
+        expenditure_category = expenditure_chap.exclude(type = 'CM').values('category__name').annotate(totalcategory=Sum('amount'))
         template_data["expenditure_category"] = expenditure_category
         expenditure_total = expenditure_chap.aggregate(total = Sum('amount'))
         template_data["expenditure_total"] = expenditure_total
+        template_data["net"] = income_total['total'] - expenditure_total['total']
         try:
             incomeChart, expenditureChart = create_category_charts(expenditure_category, income_category)
         except:
@@ -334,10 +502,7 @@ def summary(request, group_slug, year=None, month=None):
         template_data['empty'] = True
         incomeChart = None
         expenditureChart = None
-        
-#    charts
-#    incomeChart, expenditureChart = create_category_charts(expenditure_category, income_category)
-    
+          
     template_data["income_chart"] = incomeChart
     template_data["expenditure_chart"] = expenditureChart
     
@@ -351,9 +516,9 @@ def summary(request, group_slug, year=None, month=None):
 #       chapter summary
         submitted.append([])
         count = count + 1
-        in_month = trans_chap.filter(monthlyreport = m.id, type = "IN").aggregate(total = Sum('amount'))
+        in_month = trans_chap.filter(monthlyreport__date = m.date, type = "IN").aggregate(total = Sum('amount'))
 #        TODO: figure out if we want commitments in this measure or not
-        ex_month = trans_chap.filter(monthlyreport = m.id).exclude(type = "IN").aggregate(total = Sum('amount'))
+        ex_month = trans_chap.filter(monthlyreport__date = m.date).exclude(type = "IN").aggregate(total = Sum('amount'))
         date = m.date
         submitted[count].append(m.id)
         submitted[count].append(date)
@@ -416,7 +581,7 @@ def summary(request, group_slug, year=None, month=None):
     
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-#    template_data['is_president'] = group.user_is_president(request.user)
+#    #template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/summary.htm', template_data, context_instance=RequestContext(request))
 
@@ -430,29 +595,28 @@ def summary_no(request, year=None, month=None):
     monthly_chap = MonthlyReport.objects.all()
         
     template_data = dict()
+    
+#===============================================================================
+# determine account balances 
+#===============================================================================
 
-#    determine account balances
     ch_in = income_chap.filter(bank_date__isnull = False, account="CH").aggregate(total=Sum('amount'))
     ch_ex = expenditure_chap.filter(bank_date__isnull = False, account="CH").aggregate(total=Sum('amount'))
     chapter = trans_chap.filter(bank_date__isnull = False, account="CH").aggregate(last_update=Max('bank_date'))
  
- #    if either of the totals is None, switch to 0    
-    if not ch_in["total"]: 
-        ch_in["total"] = 0
-    if not ch_ex["total"]: 
-        ch_ex["total"] = 0
-        
+ #    if either of the totals is None, switch to 0        
+    ch_in['total'] = check(ch_in['total'])
+    ch_ex['total'] = check(ch_ex['total'])
+           
     chapter_balance = ch_in["total"] - ch_ex["total"] 
     
     no_in = income_chap.filter(account="NO", bank_date__isnull=False).exclude(type = 'CM').aggregate(total=Sum('amount'))
     no_ex = expenditure_chap.filter(account="NO", bank_date__isnull=False).exclude(type = 'CM').aggregate(total=Sum('amount'))
     national = trans_chap.filter(account="NO", bank_date__isnull=False).exclude(type = 'CM').aggregate(last_update=Max('bank_date'))
     
-#    if either of the totals is None, switch to 0    
-    if not no_in["total"]: 
-        no_in["total"] = 0
-    if not no_ex["total"]: 
-        no_ex["total"] = 0
+#    if either of the totals is None, switch to 0
+    no_in["total"] = check(no_in["total"])
+    no_ex["total"] = check(no_ex["total"])
     
     national_balance = no_in["total"] - no_ex["total"]
     
@@ -460,17 +624,15 @@ def summary_no(request, year=None, month=None):
     outstanding_ex = expenditure_chap.filter(account="CH", bank_date__isnull=True).exclude(type = 'CM').aggregate(total=Sum('amount'), last_update=Max('enter_date'))
     
     #    if either of the totals is None, switch to 0    
-    if not outstanding_in["total"]: 
-        outstanding_in["total"] = 0
-    if not outstanding_ex["total"]: 
-        outstanding_ex["total"] = 0
+    outstanding_in["total"] = check(outstanding_in["total"])
+    outstanding_ex["total"] = check(outstanding_ex["total"])
     
     total_bank_balance = chapter_balance + national_balance
     total_balance = total_bank_balance + outstanding_in["total"] - outstanding_ex["total"]
-    
-    
-    
-#    now determine category breakdown
+       
+#===============================================================================
+# determine the per category breakdown   
+#===============================================================================
     if year:
         template_data['year'] = year
         if month:
@@ -494,29 +656,46 @@ def summary_no(request, year=None, month=None):
         expenditure_category = expenditure_chap.filter(bank_date__isnull=False).values('category__name').annotate(totalcategory=Sum('amount'))
         expenditure_total = expenditure_chap.filter(bank_date__isnull=False).aggregate(total = Sum('amount'))
         
-        if not income_total["total"]: 
-            income_total["total"] = 0
-        if not expenditure_total["total"]: 
-            expenditure_total["total"] = 0
+        income_total["total"] = check(income_total["total"])
+        expenditure_total["total"] = check(expenditure_total["total"])
         
         template_data["expenditure_category"] = expenditure_category
-        template_data["income_total"] = income_total['total']
-        template_data["expenditure_total"] = expenditure_total['total']
+        template_data["income_total"] = income_total
+        template_data["expenditure_total"] = expenditure_total
         template_data["income_category"] = income_category
         template_data['net'] = income_total['total'] - expenditure_total['total']
     else:
         template_data['empty'] = True 
+
+#===============================================================================
+# make charts using helper functions
+#===============================================================================
 
     try: 
         incomeChart, expenditureChart = create_category_charts(expenditure_category, income_category)
     except:
         incomeChart = None
         expenditureChart = None
+        
+    try:
+        timelineChart = create_timeline_chart(income_chap, expenditure_chap)
+    except:
+        timelineChart = None
+    
+    try:
+        accBalChart = create_accbal_chart(income_chap, expenditure_chap)
+    except:
+        accBalChart = None
 
+    
     template_data["income_chart"] = incomeChart
     template_data["expenditure_chart"] = expenditureChart
-    
-#    template passing
+    template_data["monthly_chart"] = timelineChart
+    template_data["accbal_chart"] = accBalChart
+  
+#===============================================================================
+#     template information passing party
+#===============================================================================
     template_data["chapter_in"] = ch_in
     template_data["chapter_out"] = ch_ex
     template_data["chapter_balance"] = chapter_balance
@@ -592,7 +771,7 @@ def view(request, group_slug, year=None, month=None):
     
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-#    template_data['is_president'] = group.user_is_president(request.user)
+#    #template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/view.htm', template_data, context_instance=RequestContext(request))
 
@@ -623,7 +802,7 @@ def view_donations(request, group_slug, year=None, month=None):
     
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-#    template_data['is_president'] = group.user_is_president(request.user)
+#    #template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/view_donation.htm', template_data, context_instance=RequestContext(request))
 
@@ -646,7 +825,7 @@ def view_commitments(request, group_slug):
     
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-#    template_data['is_president'] = group.user_is_president(request.user)
+#    #template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/view_commitment.htm', template_data, context_instance=RequestContext(request))
 
@@ -673,7 +852,7 @@ def view_id(request, group_slug, id):
     
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)
+    #template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/view_detail.htm', template_data, context_instance=RequestContext(request))
 
@@ -693,7 +872,7 @@ def filter(request, group_slug):
     
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)
+    #template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/filter.htm', template_data, context_instance=RequestContext(request))
 
@@ -715,7 +894,7 @@ def filterfield(request, field, group_slug):
     
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)
+    #template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/filterfield.htm', template_data, context_instance=RequestContext(request))
 
@@ -741,7 +920,7 @@ def filterfieldval(request, field, value, group_slug):
     
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)
+    #template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/filterfieldval.htm', template_data, context_instance=RequestContext(request))
 
@@ -766,7 +945,7 @@ def edit(request, group_slug):
     
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)
+    #template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/edit.htm', template_data, context_instance=RequestContext(request))
 
@@ -878,7 +1057,7 @@ def edit_id(request, id, group_slug):
     
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)
+    #template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/edit_id.htm', template_data, context_instance=RequestContext(request))
 
@@ -903,7 +1082,7 @@ def edit_all(request, group_slug):
     
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)
+    #template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/edit_all.htm', template_data, context_instance=RequestContext(request))
 
@@ -943,7 +1122,7 @@ def delete_id(request, id, group_slug):
     
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)
+    #template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/delete_id.htm', template_data, context_instance=RequestContext(request))
 
@@ -976,7 +1155,7 @@ def confirm_delete_id(request, id, group_slug):
 
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)
+    #template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/delete_id.htm', template_data, context_instance=RequestContext(request))
 
@@ -1006,7 +1185,7 @@ def monthlyreports(request, group_slug):
     
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)
+    #template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/monthlyreports.htm', template_data, context_instance=RequestContext(request))
 
@@ -1163,7 +1342,7 @@ def monthlyreports_id(request, id, group_slug):
     
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)
+    #template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/monthlyreports_detail.htm', template_data, context_instance=RequestContext(request))
 
@@ -1272,7 +1451,7 @@ def monthlyreports_current(request, group_slug):
     
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)
+    #template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/monthlyreports_detail.htm', template_data, context_instance=RequestContext(request))
 
@@ -1294,7 +1473,7 @@ def monthlyreports_submit_confirm(request, group_slug, year=None, month=None):
     
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)
+    #template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/monthlyreports_submit_confirm.htm', template_data, context_instance=RequestContext(request))
 
@@ -1364,7 +1543,7 @@ def monthlyreports_submit(request, group_slug, year=None, month=None):
     
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)
+    #template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/monthlyreports_submit.htm', template_data, context_instance=RequestContext(request))
 
@@ -1516,7 +1695,7 @@ def csv_monthlyreport(request, id, group_slug):
         
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)
+    #template_data['is_president'] = group.user_is_president(request.user)
     
     return response
 
@@ -1741,7 +1920,7 @@ def upload_testdata(request, group_slug):
     
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)
+    #template_data['is_president'] = group.user_is_president(request.user)
     template_data['form'] = form
     template_data['type'] = "testdata"
     
@@ -2001,7 +2180,7 @@ def upload_file(request, group_slug):
     
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)
+    #template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/import.htm', {'form': form})
 
@@ -2014,7 +2193,7 @@ def budgets(request, group_slug):
     template_data['budgets'] = budgets
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)
+    #template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/budgets.htm', template_data, context_instance=RequestContext(request))
 
@@ -2095,7 +2274,7 @@ def input_budgetitems(request, group_slug, budget):
     template_data['budget'] = budget
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)
+    #template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/input_budget.htm', template_data, context_instance=RequestContext(request))
 
@@ -2180,7 +2359,7 @@ def view_budget(request, group_slug, budget):
     template_data['budget'] = budget_object
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)   
+    #template_data['is_president'] = group.user_is_president(request.user)   
     
     return render_to_response('finance/view_budget.htm', template_data, context_instance=RequestContext(request))
 
@@ -2210,7 +2389,7 @@ def create_budget (request, group_slug):
     template_data["form"] = form #pass the form to template as "form" variable    
     template_data['group'] = group
     template_data['is_group_admin'] = group.user_is_admin(request.user)
-    template_data['is_president'] = group.user_is_president(request.user)
+    #template_data['is_president'] = group.user_is_president(request.user)
     
     return render_to_response('finance/create_budget.htm', template_data, context_instance=RequestContext(request))
 

@@ -1,0 +1,124 @@
+{% extends 'champ/base.html' %}
+
+{% load i18n %}
+{% load avatar_tags %}
+{% load uni_form_tags %}
+{% load pagination_tags %}
+{% load base_groups_tags %}
+{% load group_tags %}
+{% load events_tags %}
+{% load whiteboard_tags %}
+
+{% block head_title %}{% trans "CHAMP Search" %}{% endblock %}
+
+{% block body %}
+
+    <h1>CHAMP Search</h1>
+
+	<form method="get" action=".">
+	    <table class="standard standard-right search-form shorter">
+	        {# {{ form.as_table }} #}
+	        
+	        <tr>
+	        	<th>
+	        		<label for="id_q">Keyword</label>
+	        	</th>
+	        	<td>
+	        		{{ form.q }}
+	        	</td>
+	        	<td rowspan="4" style="width: 25px;">
+	        		&nbsp;
+	        	</td>
+	        	<th rowspan="4">
+	        		<label>Event types</label>
+	        	</th>
+	        	<td rowspan="4">
+	        		{{ form.metrics }}
+	        	</td>
+	        </tr>
+	        
+			<tr>
+				<th>
+					<label for="id_start_date">Start date:</label>
+				</th>
+				<td>{{ form.start_date }}</td>
+			</tr>
+			
+			<tr>
+				<th>
+					<label for="id_end_date">End date:</label>
+				</th>
+				<td>{{ form.end_date }}</td>
+			</tr>
+			
+			<tr>
+				<th><label for="id_rating">Rating:</label></th>
+				<td>{{ form.rating }}</td>
+			</tr>
+
+			<tr>			 
+	            <td>&nbsp;</td>
+	            <td>
+	                <input type="submit" value="Search">
+	            </td>
+	            <td>&nbsp;</td>
+	            <td>&nbsp;</td>
+	            <td>&nbsp;</td>
+	        </tr>
+	    </table>
+	</form>
+    
+    <h1>Results</h1>
+      
+      
+	{% if results %}
+    	{% autopaginate results 10 %}
+
+        {% for result in results %}
+			<div class="post">
+				<div class="postheader yellow" style="position: relative;"> <!-- header row -->
+	  					<a class="postheaderlink" href="{{ result.object.get_absolute_url }}">{{ result.object.name }}</a>
+				</div>
+	
+				<div class="postsubheader yellow yellow-border bkgd-light"> <!-- stat row -->
+					<table width="100%" style="margin:0; padding: 0;">
+					<tr>
+					<td>
+						By <a href="{% url profile_detail result.object.creator.username %}">{{ result.object.creator.visible_name }}</a>
+						on {{result.object.date|date}}
+					</td>
+					<td align="right" width="50%">
+						{{ result.object.group.network.chapter_info.chapter_name }}
+					</td>
+					</tr>
+					</table>
+				</div>
+	
+		    	<div class="postcontent yellow-border">
+	                   <div class="textbody">
+						<p>{{ result.object.get_description }}</p>
+				    </div>
+	  					<br class="clear"/>
+				</div>
+			</div>
+        {% endfor %}
+
+		{% paginate %}
+
+	{% else %}
+    	<p>No results found.</p>
+    {% endif %}
+
+{% endblock %}
+
+{% block extra_body %}
+
+  <script type="text/javascript" src="{{STATIC_URL}}js/ui.datepicker.js"></script>
+
+  <script type="text/javascript">
+  $(document).ready(function(){
+    var datepicker = $("input#id_start_date, input#id_end_date").datepicker({});
+  });
+  </script>
+{% endblock %}
+  

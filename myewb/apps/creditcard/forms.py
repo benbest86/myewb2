@@ -328,6 +328,7 @@ class PaymentFormPreview(FormPreview):
             # TODO: any other processing/recordkeeping we want to do?
             # do I want to save this into the db?
             p = Payment()
+            p.cc_type = cleaned_data['cc_type']
             p.billing_name=cleaned_data['billing_name']
             p.phone=cleaned_data['phone']
             p.email=cleaned_data['email']

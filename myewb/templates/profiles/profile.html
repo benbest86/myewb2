@@ -16,9 +16,16 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
 
 {% block body %}
 	<style>
-	  a img {
-	    border: 0;
-	  }
+		  a img {
+	    	border: 0;
+	  	}
+		table.tablesorter th {
+		  	text-align: left;
+		  	background-image: url('{{STATIC_URL}}js/tablesort/bg.gif');
+		  	background-repeat: no-repeat;
+		  	background-position: center right;
+		  	cursor: pointer;
+		}
 	</style>
 
 	<br/>
@@ -156,7 +163,7 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
     {% if perms.profiles %}
         <h2>{% trans "myEWB History" %}</h2>
         {#we'll add a neat-o search &amp; sort feature and stuff soon#}
-        <table id="user-history" class="standard">
+        <table id="user-history" class="standard tablesorter">
             <thead>
             <tr>
                 <th>{% trans "Date" %}</th>
@@ -387,10 +394,11 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
     
 	<link type="text/css" href="{{STATIC_URL}}css/colorbox.css" rel="stylesheet" />
 	<script type="text/javascript" src="{{STATIC_URL}}js/colorbox.js"></script>
+	<script type="text/javascript" src="{{ STATIC_URL }}js/tablesort/jquery.tablesorter.min.js"></script>
     <script type="text/javascript">
 	    $(document).ready(function() {
 			$('#avatar').colorbox({transition: "elastic", width:"80%", height:"80%"});
-
+			$(".tablesorter").tablesorter();
 	    });
 		$('#manual_update').click(function() {
 			var confirmed = confirm("Only continue if this person has paid their membership fees in person - this will renew their membership by one year.");

@@ -71,3 +71,4 @@ def timezone(request):
     return {'current_timezone': current_timezone,
             'detected_timezone': detected_timezone,
             'timezones': timezones}
+

@@ -22,6 +22,7 @@ from django.http import HttpResponseNotFound, HttpResponseRedirect, HttpResponse
 from django.db.models import Q
 from django.template import RequestContext
 from django.template.loader import render_to_string
+from haystack.query import SearchQuerySet
 
 from base_groups.decorators import group_admin_required
 from networks.decorators import chapter_president_required, chapter_exec_required
@@ -42,22 +43,33 @@ def run_stats(filters):
     ml_metrics = run_query(MemberLearningMetrics.objects.all(), filters)
     ml_hours = 0
     ml_attendance = 0
-    ml_num = ml_metrics.count()
+    ml_events = ml_metrics.count()
     for m in ml_metrics:
         ml_hours += m.duration * m.attendance
         ml_attendance += m.attendance
-    if ml_num:
-        ml_attendance = ml_attendance / ml_num
+    if ml_events:
+        ml_attendance = ml_attendance / ml_events
         
     pe_metrics = run_query(PublicEngagementMetrics.objects.all(), filters)
-    pe_people = 0
+    pe_people_oncampus = 0
+    pe_people_offcampus = 0
+    pe_events = 0
     for p in pe_metrics:
-        pe_people += p.level1 + p.level2 + p.level3
+        if p.location == 'off campus':
+            pe_people_offcampus += p.level1 + p.level2 + p.level3
+        else:
+            pe_people_oncampus += p.level1 + p.level2 + p.level3
+        pe_events += 1
     
     po_metrics = run_query(PublicAdvocacyMetrics.objects.all(), filters)
     po_contacts = 0
     for p in po_metrics:
-        po_contacts += p.units
+        po_contacts += 1
+        
+    adv_metrics = run_query(AdvocacyLettersMetrics.objects.all(), filters)
+    po_letters = 0
+    for p in adv_metrics:
+        po_letters += p.editorials
     
     ce_metrics = run_query(CurriculumEnhancementMetrics.objects.all(), filters)
     ce_students = 0
@@ -82,8 +94,17 @@ def run_stats(filters):
     
     fundraising_metrics = run_query(FundraisingMetrics.objects.all(), filters)
     fundraising_dollars = 0
+    fundraising_dollars_oneoff = 0
+    fundraising_dollars_recurring = 0
+    fundraising_dollars_nonevent = 0
     for f in fundraising_metrics:
         fundraising_dollars += f.revenue
+        if f.recurring == 'one-off':
+            fundraising_dollars_oneoff += f.revenue
+        elif f.recurring == 'recurring':
+            fundraising_dollars_recurring += f.revenue
+        elif f.recurring == 'funding':
+            fundraising_dollars_nonevent += f.revenue
     
     publicity_metrics = run_query(PublicationMetrics.objects.all(), filters)
     publicity_hits = publicity_metrics.count()
@@ -91,8 +112,12 @@ def run_stats(filters):
     context = {}
     context['ml_hours'] = ml_hours
     context['ml_attendance'] = ml_attendance
-    context['pe_people'] = pe_people
+    context['ml_events'] = ml_events
+    context['pe_people_oncampus'] = pe_people_oncampus
+    context['pe_people_offcampus'] = pe_people_offcampus
+    context['pe_events'] = pe_events
     context['po_contacts'] = po_contacts
+    context['po_letters'] = po_letters
     context['ce_students'] = ce_students
     context['ce_hours'] = ce_hours
     context['wo_professionals'] = wo_professionals
@@ -100,6 +125,9 @@ def run_stats(filters):
     context['so_students'] = so_students
     context['so_presentations'] = so_presentations
     context['fundraising_dollars'] = fundraising_dollars
+    context['fundraising_dollars_oneoff'] = fundraising_dollars_oneoff
+    context['fundraising_dollars_recurring'] = fundraising_dollars_recurring
+    context['fundraising_dollars_nonevent'] = fundraising_dollars_nonevent
     context['publicity_hits'] = publicity_hits
     
     return context
@@ -147,15 +175,17 @@ def dashboard(request, year=None, month=None, term=None,
 
     activity_filters, metric_filters = build_filters(year, month, term)
     
+    journals = 0
+    grp = None
     if group_slug:
-        activity_filters.append({'group__slug': group_slug})
-        metric_filters.append({'activity__group__slug': group_slug})
-        journals = run_query(Journal.objects.all(), activity_filters).count()
-        
         grp = get_object_or_404(Network, slug=group_slug)
-    else:
-        journals = 0
-        grp = None
+        
+        if grp.is_chapter():
+            activity_filters.append({'group__slug': group_slug})
+            metric_filters.append({'activity__group__slug': group_slug})
+            journals = run_query(Journal.objects.all(), activity_filters).count()
+        else:
+            grp = None
 
     activity_filters.append({'visible': True})
     metric_filters.append({'activity__visible': True})
@@ -165,6 +195,18 @@ def dashboard(request, year=None, month=None, term=None,
     context['unconfirmed'] = run_query(Activity.objects.filter(confirmed=False), activity_filters).count()
     context['confirmed'] = run_query(Activity.objects.filter(confirmed=True), activity_filters).count()
     context['journals'] = journals
+    
+    natl_activity_filters, natl_metric_filters = build_filters(year, month, term)
+    natl_activity_filters.append({'visible': True})
+    natl_metric_filters.append({'activity__visible': True})
+    natl_metric_filters.append({'activity__confirmed': True})
+    natl_context = run_stats(natl_metric_filters)
+    natl_context['unconfirmed'] = run_query(Activity.objects.filter(confirmed=False), natl_activity_filters).count()
+    natl_context['confirmed'] = run_query(Activity.objects.filter(confirmed=True), natl_activity_filters).count()
+
+    # stuff all national values into context, prepending key with natl_
+    for x, y in natl_context.items():
+        context['natl_' + x] = y
     
     context['group'] = None
     context['yearplan'] = None    
@@ -246,7 +288,7 @@ def new_activity(request, group_slug):
                 metric.save()
             
             request.user.message_set.create(message="Activity recorded")
-            return HttpResponseRedirect(reverse('champ_dashboard', kwargs={'group_slug': group_slug}))
+            return HttpResponseRedirect(reverse('champ_activity', kwargs={'group_slug': group_slug, 'activity_id': activity.id}))
             
         else:
             # create all the other metric forms as blank forms
@@ -279,7 +321,7 @@ def confirmed(request, group_slug):
     activities = Activity.objects.filter(confirmed=True,
                                          visible=True,
                                          group__slug=group_slug)
-    activites = activities.order_by('-date')
+    activities = activities.order_by('-date')
     
     return render_to_response('champ/activity_list.html',
                               {'confirmed': True,
@@ -296,7 +338,7 @@ def unconfirmed(request, group_slug):
     activities = Activity.objects.filter(confirmed=False,
                                          visible=True,
                                          group__slug=group_slug)
-    activites = activities.order_by('-date')
+    activities = activities.order_by('-date')
     
     return render_to_response('champ/activity_list.html',
                               {'confirmed': False,
@@ -319,7 +361,7 @@ def activity_detail(request, group_slug, activity_id):
     
     if activity.visible == False:
         request.user.message_set.create(message="That activity has been deleted.")
-        return HttpResponseRedirect(redirect('champ_dashboard', kwargs={'group_slug': group.slug}))
+        return HttpResponseRedirect(reverse('champ_dashboard', kwargs={'group_slug': group.slug}))
     
     return render_to_response('champ/activity_detail.html',
                               {'activity': activity,
@@ -889,6 +931,27 @@ def yearplan(request, group_slug, year=None):
                                'is_president': group.user_is_president(request.user)
                                },
                                context_instance=RequestContext(request))
+
+@chapter_exec_required()
+def champ_search(request):
+    query = ''
+    results = []
+    qs = SearchQuerySet().models(Activity)
+    
+    form = CHAMPSearchForm(request.GET,
+                           searchqueryset=qs)
+                            # , load_all=True
+    
+    if form.is_valid():
+        results = form.search()
+    
+    context = {
+        'form': form,
+        'results': results,
+    }
+    
+    return render_to_response("champ/search.html", context, context_instance=RequestContext(request))
+
 
 @group_admin_required()
 def csv_so(request, group_slug):

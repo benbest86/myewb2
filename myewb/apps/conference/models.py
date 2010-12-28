@@ -25,8 +25,8 @@ class ConferenceRegistration(models.Model):
     specialNeeds = models.TextField()
     emergName = models.CharField(max_length=255)
     emergPhone = models.CharField(max_length=50)
-    prevConfs = models.SmallIntegerField()
-    prevRetreats = models.SmallIntegerField()
+    prevConfs = models.SmallIntegerField(default=0)
+    prevRetreats = models.SmallIntegerField(default=0)
     cellphone = models.CharField(max_length=50, blank=True, null=True)
     grouping = models.CharField(max_length=50, blank=True, null=True)
     
@@ -44,12 +44,22 @@ class ConferenceRegistration(models.Model):
         # remove from delegates group
         grp, created = Community.objects.get_or_create(slug='conference2011',
                                                        defaults={'invite_only': True,
-                                                                 'name': 'National Conference 2011 delegates',
+                                                                 'name': 'National Conference 2011 - EWB delegates',
                                                                  'creator': self.user,
-                                                                 'description': 'National Conference 2011 delegates',
-                                                                 'mailchimp_name': 'National Conference 2011',
+                                                                 'description': 'National Conference 2011 delegates (EWB members)',
+                                                                 'mailchimp_name': 'National Conference 2011 members',
                                                                  'mailchimp_category': 'Conference'})
+
+        grp2, created = Community.objects.get_or_create(slug='conference2011-external',
+                                                        defaults={'invite_only': True,
+                                                                  'name': 'National Conference 2011 - external delegates',
+                                                                  'creator': self.user,
+                                                                  'description': 'National Conference 2011 delegates (external)',
+                                                                  'mailchimp_name': 'National Conference 2011 external',
+                                                                  'mailchimp_category': 'Conference'})
+
         grp.remove_member(self.user)
+        grp2.remove_member(self.user)
         
         # re-enable code
         if self.code and self.code.expired:

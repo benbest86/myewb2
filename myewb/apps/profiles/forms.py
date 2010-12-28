@@ -47,6 +47,11 @@ class WorkRecordForm(forms.ModelForm):
 		model = WorkRecord
 		exclude = ('user', 'network')
 		
+class SimpleAddressForm(forms.ModelForm):
+    class Meta:
+        model = Address
+        exclude = ('label', 'content_type', 'object_id')
+
 class AddressForm(forms.ModelForm):
     class Meta:
         model = Address

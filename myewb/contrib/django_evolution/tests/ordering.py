@@ -1,5 +1,3 @@
-from django_evolution.tests.utils import test_sql_mapping
-
 tests = r"""
 >>> from django.db import models
 
@@ -26,7 +24,7 @@ tests = r"""
 >>> start_sig = test_proj_sig(test_model, *anchors)
 
 # Regression case 41: If deleteing a model and a foreign key to that model,
-# The key deletion needs to happen before the model deletion. 
+# The key deletion needs to happen before the model deletion.
 
 # Delete the foreign key...
 >>> class UpdatedCase41Model(models.Model):

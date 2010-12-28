@@ -7,6 +7,7 @@ Copyright 2010 Engineers Without Borders Canada
 """
 from django import forms
 from django.utils.translation import ugettext_lazy as _
+from haystack.forms import SearchForm
 
 from champ.models import *
 
@@ -98,6 +99,7 @@ METRICFORMS = {'all': ImpactForm,
                'func': FunctioningForm,
                'pe': PublicEngagementForm,
                'pa': PublicAdvocacyForm,
+               'adv': AdvocacyLettersForm,
                'pub': PublicationForm,
                'fund': FundraisingForm,
                'wo': WorkplaceOutreachForm,
@@ -113,3 +115,48 @@ class YearPlanForm(forms.ModelForm):
         model = YearPlan
         exclude = ('year', 'group', 'last_modified', 'last_editor')
         
+class CHAMPSearchForm(SearchForm):
+    q = forms.CharField(required=False, label=_('Keyword'))
+    start_date = forms.DateField(required=False)
+    end_date = forms.DateField(required=False)
+    
+    rating = forms.ChoiceField(required=False,
+                               choices=(('1', 'Any'),
+                                        ('2', 'At least 2 stars'),
+                                        ('3', 'At least 3 stars'),
+                                        ('4', 'At least 4 stars'),
+                                        ('5', '5 stars - only the best!')))
+    metrics = forms.MultipleChoiceField(required=False,
+                                        label='Event types',
+                                        choices=ALLMETRICS,
+                                        widget=forms.CheckboxSelectMultiple)
+
+    def search(self):
+        self.clean()
+        if not self.cleaned_data.get('q', None):
+            return None
+        
+        # First, store the SearchQuerySet received from other processing.
+        sqs = super(CHAMPSearchForm, self).search()
+
+        # Check to see if a start_date was chosen.
+        if self.cleaned_data['start_date']:
+            sqs = sqs.filter(pub_date__gte=self.cleaned_data['start_date'])
+
+        # Check to see if an end_date was chosen.
+        if self.cleaned_data['end_date']:
+            sqs = sqs.filter(pub_date__lte=self.cleaned_data['end_date'])
+
+        if self.cleaned_data['rating']:
+            try:
+                rating = int(self.cleaned_data['rating'])
+                sqs = sqs.filter(rating__gte=rating)
+            except:
+                pass
+            
+        if self.cleaned_data['metrics']:
+            for m in self.cleaned_data['metrics']:
+                sqs = sqs.filter(metrics=m)
+        
+        return sqs
+    

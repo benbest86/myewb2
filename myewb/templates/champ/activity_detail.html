@@ -75,21 +75,23 @@
 		{% include "champ/metrics.html" %}
 	{% endfor %}
 
-	<tr id="addmetricrow">
-		<th colspan="2">
-			<form action="{% url champ_add_metric group.slug activity.id %}" method="post" id="addmetric">
-				<span style="font-size: 14px; font-weight: bold;">Add a metric:</span>
-				
-				<select name="metrictype">
-					{% for type, name in activity.get_available_metrics.items %}
-						<option value="{{ type }}">{{ name }}</option>
-					{% endfor %}
-				</select>
-				
-				<input type="submit" value="add"/>
-			</form>
-		</th>
-	</tr>
+	{% if not activity.confirmed and is_group_admin %}
+		<tr id="addmetricrow">
+			<th colspan="2">
+				<form action="{% url champ_add_metric group.slug activity.id %}" method="post" id="addmetric">
+					<span style="font-size: 14px; font-weight: bold;">Add a metric:</span>
+					
+					<select name="metrictype">
+						{% for type, name in activity.get_available_metrics.items %}
+							<option value="{{ type }}">{{ name }}</option>
+						{% endfor %}
+					</select>
+					
+					<input type="submit" value="add"/>
+				</form>
+			</th>
+		</tr>
+	{% endif %}
 
 </table>
 <br/><br/><br/>

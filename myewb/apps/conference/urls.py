@@ -19,5 +19,12 @@ urlpatterns = patterns('conference.views',
     url(r'^list/(?P<chapter>[\w\._-]+)$', 'list', name='conference_list_chapter'),    
     url(r'^codes/$', 'generate_codes', name='conference_codes'),
     url(r'^codelookup/$', 'lookup_code', name='conference_code_lookup')    ,
-	(r'^who/', include('confcomm.urls')),
+
+    url(r'^download/all/$', 'download', kwargs={'who': 'all'}, name='conference_download_all'),
+    url(r'^download/chapter/$', 'download', kwargs={'who': 'chapter'}, name='conference_download_chapter'),
+    url(r'^download/open/$', 'download', kwargs={'who': 'open'}, name='conference_download_open'),
+    url(r'^download/alumni/$', 'download', kwargs={'who': 'alumni'}, name='conference_download_alumni'),
+    url(r'^download/external/$', 'download', kwargs={'who': 'external'}, name='conference_download_external'),
+	
+    (r'^who/', include('confcomm.urls')),
 )

@@ -19,7 +19,7 @@ div { border: 0px solid #000000; }
 /* Light colours (ie for subnav, subheader background) */
 .blue .bkgd-light   { background: #c2d1ff; }
 .green .bkgd-light  { background: #bce2bc; }
-.yellow .bkgd-light { background: #fcf2bd; }
+.yellow .bkgd-light, .yellow.bkgd-light { background: #fcf2bd; }
 .orange .bkgd-light, .orange.bkgd-light { background: #ffcf9f; }
 .red .bkgd-light, .red.bkgd-light    { background: #efcaca; }
 .purple .bkgd-light { background: #d9c1e5; }
@@ -440,6 +440,14 @@ div.roundtop {
     -webkit-border-top-left-radius: 10px;
     -moz-border-radius-topright: 10px;
     -moz-border-radius-topleft: 10px;
+}
+
+div.round {
+	-webkit-border-radius: 0.5em;
+	-moz-border-radius: 0.5em;
+	padding: 10px;
+	margin: 5px 10px 10px;
+	text-align: center;
 }
 
 div#messages {

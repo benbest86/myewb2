@@ -14,10 +14,13 @@ from django.shortcuts import render_to_response
 from django.template import RequestContext
 from haystack.query import RelatedSearchQuerySet
 
+from champ.models import Activity
 from group_topics.models import GroupTopic
 from whiteboard.models import Whiteboard
 from events.models import Event
+from communities.models import Community
 from search.forms import DateAuthorSearchForm
+from siteutils.shortcuts import get_object_or_none
 
 def create_queryset(user):
     # ideally we'd do it this way, and not mention specific models here
@@ -29,6 +32,14 @@ def create_queryset(user):
     qs = RelatedSearchQuerySet().load_all_queryset(GroupTopic, GroupTopic.objects.visible(user))
     qs = qs.load_all_queryset(Whiteboard, Whiteboard.objects.visible(user))
     qs = qs.load_all_queryset(Event, Event.objects.visible(user))
+
+    # TODO: centralize this somewhere?
+    execlist = get_object_or_none(Community, slug='exec')
+    if execlist and execlist.user_is_member(user, True):
+        qs = qs.load_all_queryset(Activity, Activity.objects.all())
+    else:
+        qs = qs.load_all_queryset(Activity, Activity.objects.none())
+        
     return qs
 
 def search(request):

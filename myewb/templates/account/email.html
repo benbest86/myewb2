@@ -1,4 +1,4 @@
-{% extends "profiles/base.html" %}
+{% extends "profiles/profile.html" %}
 
 {% load i18n %}
 {% load uni_form_tags %}
@@ -6,15 +6,78 @@
 {% block head_title %}{% trans "Account" %}{% endblock %}
 
 {% block body %}
-    <h1>{% trans "Account" %}</h1>
+	<style>
+		.email {
+			font-size: 14px;
+			border-right: 1px solid #b0b0b0;
+		}
+		tr {
+			border: 1px solid #b0b0b0;
+		}
+		table.email_list td {
+			padding: 10px;
+		}
+	</style>
+	
+    <h1>{% trans "My Email Addresses" %}</h1>
     
-    <h2>{% trans "Email Addresses" %}</h2>
-    
-    {% if other_user.emailaddress_set.all %}
-        <table class="email_list">
-            {% for emailaddress in other_user.emailaddress_set.all %}
-                <tr>
-                    <td>{% if emailaddress.primary %}<b>{{ emailaddress.email }}</b>{% else %}{{ emailaddress.email }}{% endif %}</td>
+    {% if user.nomail %}
+	    <div style="border: 1px solid #ff0000; margin: 10px; background: #ffbbbb; padding: 0 15px 0px;">
+	    	{% if user.bouncing %}
+    			<h2>Your email address is bouncing</h2>
+    			
+    			<p>
+    				<strong>Email delivery is suspended</strong><br/>
+    				When your email address has been bouncing for a while, we stop sending
+    				email to it - trying to email a bouncing account too many times can get
+    				us flagged as a spam source.
+    			</p>
+    			
+    			<p>
+    				<strong>My email is working now</strong><br/>
+	    			<a href="{{ mailchimp_enable }}" class="colorbox">Click here to resume email delivery to your account</a>.<br/>
+	    			You'll need to re-enter your email address, and then click the link in the verification email.
+    			</p>
+    			
+    			<p>
+    				<strong>Or, I want to use a different email address</strong><br/>
+    				You can add a new address below or change the address that we send myEWB email to.
+    				When you change your address, we'll automatically attempt to resume email delivery to your primary email. 
+    			</p>
+    			
+	    	{% else %}
+	    		<h2>myEWB emails to your account are disabled</h2>
+	    		
+	    		<p>
+	    			<strong>How did this happen?</strong><br/>
+	    			If you clicked the "unsubscribe" link at the bottom of one of our 
+	    			emails, your address is automatically removed from all EWB mailings - 
+	    			this includes the general organization-wide mailing list, as well as 
+	    			myEWB lists and notices.  This is to ensure that we do not continue 
+	    			emailing people who do not want to be emailed.
+	    		</p>
+	    		
+	    		<p>
+	    			<strong>I want back!</strong><br/>
+	    			<a href="{{ mailchimp_enable }}" class="colorbox">Click here to resume email delivery to your account</a>.<br/>
+	    			You'll need to re-enter your email address, and then click the link in the verification email.
+	    		</p>
+	    		
+	    		<p>
+	    			<strong>Can I specify what emails I want to receive?</strong><br/>
+	    			<a href="{% url profile_settings %}">Click here to update your email settings</a>
+	    		</p>
+	    	{% endif %}
+	    </div>
+    {% endif %}
+   	
+   	
+    {% if emails %}
+	   	<br/>
+        <table class="email_list" style="width: 75%;">
+            {% for emailaddress in emails %}
+                <tr style="background: {% cycle "#ffffff;" "#f0f0f0;" %}">
+                    <td class='email'>{% if emailaddress.primary %}<b>{{ emailaddress.email }}</b>{% else %}{{ emailaddress.email }}{% endif %}</td>
                     {% if emailaddress.verified %}
                         <td>
                             <span class="verified">{% trans "verified" %}</span>
@@ -57,6 +120,7 @@
         <p><span class="warning">{% trans "None" %}</span>. {% trans "You should really add one so you can receive notifications, reset your password if you forget it, etc." %}</p>
     {% endif %}
     
+    <br/><br/>
     <h3>{% trans "Add Email Address" %}</h3>
     
     <form method="post" action="" class="uniForm">
@@ -69,4 +133,15 @@
         </fieldset>
     </form>
     
+{% endblock %}
+
+{% block extra_body %}
+	<link type="text/css" href="{{STATIC_URL}}css/colorbox.css" rel="stylesheet" />
+	<script type="text/javascript" src="{{STATIC_URL}}js/colorbox.js"></script>
+    <script type="text/javascript">
+	    $(document).ready(function() {
+			//$('a.colorbox').click(function() { window.alert("yay"); });
+			$('a.colorbox').colorbox({transition: "elastic", width:"60%", height:"60%", iframe: true, opacity: '0.6'});
+	    });
+	</script>
 {% endblock %}

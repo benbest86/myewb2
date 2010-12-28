@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
-from django.db import models
+from django.db import models, IntegrityError
+
 from django.db.models.signals import post_save
 from emailconfirmation.models import EmailAddress
 from manager_extras.models import ExtraUserManager
@@ -45,7 +46,7 @@ User.add_to_class('is_bulk', models.BooleanField(default=False))
 User.add_to_class('nomail', models.BooleanField(default=False))
 User.add_to_class('bouncing', models.BooleanField(default=False))
 
-def create_bulk_user_method(self, email):
+def create_bulk_user_method(self, email, verified=False):
     # ensure email is not already in use
     emailaddress = EmailAddress.objects.filter(email=email, verified=True)  # shoudl I remove the verified=True ?
     if emailaddress.count() > 0:
@@ -61,16 +62,23 @@ def create_bulk_user_method(self, email):
         username = User.objects.make_random_password()
     
     # create the user
-    new_user = self.create_user(username=username, email=email)
+    new_user = self.create_user(username=username, email='')
     new_user.is_bulk = True
+    if verified:
+        new_user.email = email
+    elif settings.ACCOUNT_EMAIL_VERIFICATION:
+        new_user.is_active = False
     new_user.save()
-    
-    # and the EmailAddress object too (should this be a User.postsave instead?)
-    # (do not use EmailAddress.objects.add_email since that will generate a verification email)
-    try:
-        EmailAddress.objects.create(user=new_user, email=email)
-    except:
-        pass
+
+    # this requires our modified emailconfirmation app, which takes
+    # additional keyword args...
+    if verified:
+        EmailAddress.objects.add_email(new_user, email,
+                                       verified=True,
+                                       send_confirmation=False)
+    else:
+        EmailAddress.objects.add_email(new_user, email,
+                                       confirmation_template="emailconfirmation/bulkuser.txt")
     
     # and finish up
     signals.listsignup.send(sender=new_user, user=new_user)
@@ -90,7 +98,11 @@ def softdelete(self, *args, **kwargs):
     for avatar in avatars:
         avatar.delete()
     
-    self.get_profile().delete()
+    try:        # we really shouldn't be using profiles as a foreignkey...!!!
+        self.get_profile().delete()
+    except IntegrityError:
+        pass
+    
     old_email = self.email
     self.email = ""
     for email in self.emailaddress_set.all():

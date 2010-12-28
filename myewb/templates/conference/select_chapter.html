@@ -24,6 +24,38 @@
   padding: 10px 20px;
 }
 </style>
+
+
+{% if is_admin %}
+	<div style="width: 50%; float: right;">
+		<h2>More conference stats</h2>
+	
+		<p>	
+			<strong>{{ stats.member_registration}} subsidized chapter member registrations</strong><br/>
+			<strong>{{ stats.open_registration}} open member registrations</strong><br/>
+			<strong>{{ stats.alumni_registration}} alumni registrations</strong><br/>
+			<strong>{{ stats.external_registration}} external registrations</strong><br/>
+			<strong>{{ stats.total_registration}} total registrations (${{ stats.reg_fees}} collected)</strong>
+		</p>
+	
+		<p>
+			<strong>${{ stats.africafund }} for African delegates ({{ stats.africafund_percent }}% of registrations)</strong>
+		</p>
+		
+		<p>
+			{{ stats.male_percent }}% male ({{ stats.male }}), {{ stats.female_percent }}% female ({{ stats.female }})<br/>
+		</p>
+	
+		<p>
+			<a href="{% url conference_download_all %}">download all registrations</a><br/>
+			<a href="{% url conference_download_chapter %}">download subsidized chapter registrations</a><br/>
+			<a href="{% url conference_download_open %}">download open member registrations</a><br/>
+			<a href="{% url conference_download_alumni %}">download alumni registrations</a><br/>
+			<a href="{% url conference_download_external %}">download external registrations</a>
+		</p>
+	</div>	
+{% endif %}
+
 <table border="1" id="confreg-list">
 
 {% for chapter in chapters %}

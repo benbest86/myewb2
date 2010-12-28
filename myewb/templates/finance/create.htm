@@ -20,7 +20,6 @@
 	{% if trans_outstanding %}
 		<table class="cellpadding8 standard" width="700" style="margin: 0 auto;">
 			<tr>
-			<th>ID</th>
 			<th>Type</th>
 			<th>Category</th>
 			<th>Bank Date</th>
@@ -31,7 +30,6 @@
 			</tr>
 		{% for t in trans_outstanding %}
 			<tr>
-			<td>{{t.id}}</td>
 			<td>{{t.type}}</td>
 			<td>{{t.category}}</td>
 			<td>{{t.bank_date}}</td>

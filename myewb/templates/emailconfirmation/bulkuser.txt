@@ -1,0 +1,17 @@
+Hello,
+
+Please verify your email address: {{ activate_url}}
+
+Your email address, {{ email }}, has been added to a mailing list on myEWB - the online community platform for Engineers Without Borders Canada.
+
+Before you begin to receive emails, however, we must verify that you have requested this action.  In order to confirm this email address, go to {{ activate_url }}
+
+With thousands of active members in 36 chapters across the country, Engineers Without Borders Canada is a vibrant network of individuals creating positive change both at home and with our partners in sub-Saharan Africa - and you are just one step away from joining this network.
+
+Once your email address is confirmed, we encourage you to browse the discussions and activities taking place in our online community, at http://my.ewb.ca , and to learn more about EWB at http://www.ewb.ca 
+
+If you did not request to join an Engineers Without Borders mailing list, please ignore this email and your email address will remain inactive in our system.
+
+Regards,
+Engineers Without Borders Canada
+http://www.ewb.ca

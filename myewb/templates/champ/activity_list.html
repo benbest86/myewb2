@@ -1,9 +1,13 @@
 {% extends "champ/base.html" %}
 
 {% load i18n %}
+{% load pagination_tags %}
 
 {% block champ_body %}
 <style>
+	th {
+		background-color: #c0c0c0;
+	}
 	th, td {
 		padding: 5px 25px 5px 10px;
 		border: 1px solid #a0a0a0;
@@ -24,10 +28,11 @@
 {% endif %}
 <br/><br/><br/>
 
+{% autopaginate activities 15 %}
 <table>
 	<tr>
-		<th style="width: 25%;">Activity name</th>
-		<th style="width: 75%;">Activity date</th>
+		<th style="width: 75%;">Activity name</th>
+		<th style="width: 25%;">Activity date</th>
 	</tr>
 	{% for a in activities %}
 		<tr style="background-color: {% cycle '#ffffff' '#e0e0e0' %};">
@@ -36,6 +41,10 @@
 		</tr>
 	{% endfor %}
 </table>
+
+<br/>
+{% paginate %}
+<br/>
 
 {% endblock %}
 

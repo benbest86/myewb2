@@ -188,6 +188,36 @@
 				</div>		  
 				{% endifequal %}
 				
+				{# CHAMP ACTIVITY #}
+				{% ifequal result.model_name "activity" %}
+				<div class="post">
+					<div class="postheader yellow" style="position: relative;"> <!-- header row -->
+    					<a class="postheaderlink" href="{{ result.object.get_absolute_url }}">CHAMP activity: {{ result.object.name }}</a>
+					</div>
+	
+					<div class="postsubheader yellow yellow-border bkgd-light"> <!-- stat row -->
+						<table width="100%" style="margin:0; padding: 0;">
+						<tr>
+						<td>
+							By <a href="{% url profile_detail result.object.creator.username %}">{{ result.object.creator.visible_name }}</a>
+							on {{result.object.date|date}}
+						</td>
+						<td align="right" width="50%">
+							{{ result.object.group.network.chapter_info.chapter_name }}
+						</td>
+						</tr>
+						</table>
+					</div>
+	
+			    	<div class="postcontent yellow-border">
+	                    <div class="textbody">
+							<p>{{ result.object.get_description }}</p>
+					    </div>
+    					<br class="clear"/>
+					</div>
+				</div>		  
+				{% endifequal %}
+				
             {% endfor %}
 
 	        {% paginate %}

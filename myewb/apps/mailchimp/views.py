@@ -4,6 +4,8 @@ from django.http import HttpResponse, HttpResponseForbidden
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 
+from emailconfirmation.models import EmailAddress
+
 from mailchimp.models import ListEvent, GroupEvent, ProfileEvent 
 
 import settings
@@ -44,5 +46,25 @@ def callback(request):
             if type == 'cleaned':
                 user.bouncing = True
             user.save()
+            
+    elif type == 'subscribe':
+        email = request.POST.get('data[email]', None)
+        if not email:
+            return HttpResponse('no email provided')
+
+        emails = EmailAddress.objects.filter(email=email, verified=True)
+        
+        if emails.count():
+            for e in emails:        # should only return one... but just in case.
+                user = e.user
+                if user.nomail:
+                    user.nomail = False
+                    user.bouncing = False
+                    user.save()
+                    
+                    if not e.primary:
+                        e.set_as_primary()
+        else:
+            User.extras.create_bulk_user(email)
     
     return HttpResponse('success')
