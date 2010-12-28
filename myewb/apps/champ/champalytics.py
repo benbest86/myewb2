@@ -29,15 +29,34 @@ from siteutils.http import JsonResponse
 def default(request):
     if not request.GET.get('stage', None):
         return select_graph(request)
-    else:
+    elif request.GET['stage'] == 'options':
+        graphtype = request.GET.get('graphtype', None)
+
+        if graphtype == 'Progress to goal':
+            return options_progress(request)
+        
+    elif request.GET['stage'] == 'draw':
         return draw_graph(request)
+
+
+    return HttpResponse("Internal error - lost stage")
         
 def select_graph(request):
-    metric = request.GET.get('metric', None)
-    group = request.GET.get('group', None)
+    metric = request.GET.get('metric', '')
+    group = request.GET.get('group', '')
     
     return render_to_response('champ/champalytics/select.html',
-                              {},
+                              {metric: metric,
+                               group: group},
+                              context_instance=RequestContext(request))
+
+def options_progress(request):
+    metric = request.GET.get('metric', '')
+    group = request.GET.get('group', '')
+    
+    return render_to_response('champ/champalytics/options_progress.html',
+                              {metric: metric,
+                               group: group},
                               context_instance=RequestContext(request))
 
 def draw_graph(request):

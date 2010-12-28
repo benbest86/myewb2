@@ -1,7 +1,49 @@
 {% extends "champ/champalytics/base.html" %}
 
 {% block body %}
+    <style>
+        input.graphtype {
+            -moz-border-radius: 1em;
+            -webkit-border-radius: 1em;
+            border: 1px solid;
+            background: #ff7200;
+            padding: 25px;
+            text-align: center;
+            width: 500px;
+            font-weight: bold;
+            color: #ffffff;
+            cursor: pointer;
+            margin: 15px;
+        }
+        
+    </style>
 
-    Select your graph here...!
+    Which graph do you want to view?
+    <br/><br/><br/>
+    
+    <form method="get" action="{% url champalytics %}">
+        <input type="hidden" name="metric" value="{{ metric }}"/>
+        <input type="hidden" name="group" value="{{ group }}"/>
+        <input type="hidden" name="stage" value="options"/>
+
+        <input type="submit" name="graphtype" value="Progress to goal" class="graphtype"/>
+        <br/>
+        
+        <input type="submit" name="graphtype" value="Contribution to Natl" class="graphtype uhoh"/>
+        <br/>
+        
+        <input type="submit" name="graphtype" value="Year over year" class="graphtype uhoh"/>
+        <br/>
+    </form>
+    
+    
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.uhoh').click(function() {
+                window.alert("Not implemented.");
+                return false;
+            });
+        });
+    </script>
 
 {% endblock %}
