@@ -29,109 +29,30 @@ from networks.decorators import chapter_president_required, chapter_exec_require
 from networks.models import Network
 from champ.models import *
 from champ.forms import *
+from champ import aggregates
+from champ.aggregates import run_query
 from siteutils import schoolyear
 from siteutils.helpers import fix_encoding, copy_model_instance
 from siteutils.http import JsonResponse
 
-def run_query(query, filters):
-    for f in filters:
-        query = query.filter(**f)
-    return query
-
 def run_stats(filters):
-    # FIXME: these all need to be rewritten with aggregate functions when we go to django 1.1 !!!!!
-    ml_metrics = run_query(MemberLearningMetrics.objects.all(), filters)
-    ml_hours = 0
-    ml_attendance = 0
-    ml_events = ml_metrics.count()
-    for m in ml_metrics:
-        ml_hours += m.duration * m.attendance
-        ml_attendance += m.attendance
-    if ml_events:
-        ml_attendance = ml_attendance / ml_events
-        
-    pe_metrics = run_query(PublicEngagementMetrics.objects.all(), filters)
-    pe_people_oncampus = 0
-    pe_people_offcampus = 0
-    pe_events = 0
-    for p in pe_metrics:
-        if p.location == 'off campus':
-            pe_people_offcampus += p.level1 + p.level2 + p.level3
-        else:
-            pe_people_oncampus += p.level1 + p.level2 + p.level3
-        pe_events += 1
-    
-    po_metrics = run_query(PublicAdvocacyMetrics.objects.all(), filters)
-    po_contacts = 0
-    for p in po_metrics:
-        po_contacts += 1
-        
-    adv_metrics = run_query(AdvocacyLettersMetrics.objects.all(), filters)
-    po_letters = 0
-    for p in adv_metrics:
-        po_letters += p.editorials
-    
-    ce_metrics = run_query(CurriculumEnhancementMetrics.objects.all(), filters)
-    ce_students = 0
-    ce_hours = 0
-    for c in ce_metrics:
-        ce_students += c.students
-        ce_hours += c.hours
-    
-    wo_metrics = run_query(WorkplaceOutreachMetrics.objects.all(), filters)
-    wo_professionals = 0
-    wo_presentations = 0
-    for w in wo_metrics:
-        wo_professionals += w.attendance 
-        wo_presentations += w.presentations
-    
-    so_metrics = run_query(SchoolOutreachMetrics.objects.all(), filters)
-    so_students = 0
-    so_presentations = 0
-    for s in so_metrics:
-        so_students += s.students
-        so_presentations += s.presentations
-    
-    fundraising_metrics = run_query(FundraisingMetrics.objects.all(), filters)
-    fundraising_dollars = 0
-    fundraising_dollars_oneoff = 0
-    fundraising_dollars_recurring = 0
-    fundraising_dollars_nonevent = 0
-    for f in fundraising_metrics:
-        fundraising_dollars += f.revenue
-        if f.recurring == 'one-off':
-            fundraising_dollars_oneoff += f.revenue
-        elif f.recurring == 'recurring':
-            fundraising_dollars_recurring += f.revenue
-        elif f.recurring == 'funding':
-            fundraising_dollars_nonevent += f.revenue
-    
-    publicity_metrics = run_query(PublicationMetrics.objects.all(), filters)
-    publicity_hits = publicity_metrics.count()
-    
     context = {}
-    context['ml_hours'] = ml_hours
-    context['ml_attendance'] = ml_attendance
-    context['ml_events'] = ml_events
-    context['pe_people_oncampus'] = pe_people_oncampus
-    context['pe_people_offcampus'] = pe_people_offcampus
-    context['pe_events'] = pe_events
-    context['po_contacts'] = po_contacts
-    context['po_letters'] = po_letters
-    context['ce_students'] = ce_students
-    context['ce_hours'] = ce_hours
-    context['wo_professionals'] = wo_professionals
-    context['wo_presentations'] = wo_presentations
-    context['so_students'] = so_students
-    context['so_presentations'] = so_presentations
-    context['fundraising_dollars'] = fundraising_dollars
-    context['fundraising_dollars_oneoff'] = fundraising_dollars_oneoff
-    context['fundraising_dollars_recurring'] = fundraising_dollars_recurring
-    context['fundraising_dollars_nonevent'] = fundraising_dollars_nonevent
-    context['publicity_hits'] = publicity_hits
+    
+    for a in aggregates.CHAMP_AGGREGATES:
+        function = getattr(aggregates, a)
+        context[a] = function(filters)
     
     return context
 
+def run_natl_goals():
+    context = {}
+    
+    for a in aggregates.CHAMP_AGGREGATES:
+        name, goal = aggregates.CHAMP_AGGREGATES[a]
+        context[a] = goal
+        
+    return context
+        
 def build_filters(year=None, month=None, term=None):
     activity_filters = []
     metric_filters = []
@@ -250,6 +171,7 @@ def dashboard(request, year=None, month=None, term=None,
         context['nextterm'] = schoolyear.nextterm(term, year)
     
     context['allgroups'] = Network.objects.filter(chapter_info__isnull=False, is_active=True).order_by('name')
+    context['national'] = run_natl_goals()
     
     return render_to_response('champ/dashboard.html',
                               context,
