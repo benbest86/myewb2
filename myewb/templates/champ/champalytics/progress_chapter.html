@@ -38,26 +38,50 @@
         </div>
 
         <br/>
-        <div id="omitted" style="padding-left: 250px; font-size: 10px;">
+        <div id="graphdetail" style="float: left; width: 500px; border: 1px solid #a0a0a0; padding: 20px; -moz-border-radius: 1em; -webkit-border-radius: 1em; margin: 0 50px; display: none;">
+        </div>
+        
+        <div id="omitted" style="margin-left: 700px; font-size: 10px;">
+        {% comment %}
             <em>Omitted (no goal set):</em><br/>
             {% for stat, numbers in chapter_progress.items %}
                 {% ifequal numbers.0 -1 %}
                     {{ stat }}<br/>
                 {% endifequal %}
             {% endfor %}
+        {% endcomment %}
         </div>
         
         <script type="text/javascript" src="{{STATIC_URL}}js/raphael/raphael-min.js"></script>
         <script type="text/javascript" src="{{STATIC_URL}}js/raphael/g.raphael-min.js"></script>
-        <script type="text/javascript" src="{{STATIC_URL}}js/raphael/g.bar-min.js"></script>
+        <script type="text/javascript" src="{{STATIC_URL}}js/raphael/g.bar.js"></script>
         <script type="text/javascript">
+            var metrics = [];
+            var values = [];
+            var difference = [];
+            var actual = [];
+            var goal = [];
+            function showDetail(idx)
+            {
+                m = metrics[idx];
+                v = values[idx];
+                d = difference[idx];
+                a = actual[idx];
+                g = goal[idx];
+
+                var content = '<p><strong>' + m + '</strong></p>';
+                content += '<p><strong>' + a + '</strong> ';
+                content += '(' + v + '% of ' + g + ')</p>';
+                $('#graphdetail').html(content);
+                $('#graphdetail').slideDown();
+            }
+            function hideDetail()
+            {
+                $('#graphdetail').slideUp('fast');
+            }
+            
             $(document).ready(function() {
                 // parse table data into javascript variables
-                var metrics = [];
-                var values = [];
-                var difference = [];
-                var actual = [];
-                var goal = [];
                 var i = 0;
                 
                 $('tr.data').each(function() {
@@ -93,9 +117,11 @@
                             res.push(this.bars[i].value || "0");
                         }
                         this.flag = r.g.popup(this.bars[0].x, Math.min.apply(Math, y), res[1] + "%").insertBefore(this);
+                        showDetail(this.bars[0].idx);
                     },
                     function () {
                         this.flag.animate({opacity: 0}, 300, function () {this.remove();});
+                        hideDetail();
                     });
 
                 //graph.label([metrics]);   // is broken... so let's hack it in.
