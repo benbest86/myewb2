@@ -882,7 +882,7 @@
             "invite_only": false, 
             "visibility": "M", 
             "model": "Community", 
-            "slug": "prochapterpres", 
+            "slug": "citynetworkpres", 
             "name": "Professional Chapter Presidents"
         }
     }, 
