@@ -1,6 +1,37 @@
 {% extends "champ/champalytics/base.html" %}
 
 {% block body %}
-    Not much to show yet.
+    {% if noyearplan %}
+        <strong>Your chapter doesn't have any goals entered.  This graph isn't very interesting...</strong>
 
+    {% else %}
+
+        <table style="display: none;" id="progress">
+        {% for stat, numbers in chapter_progress.items %}
+            {% ifnotequal numbers.0 -1 %}
+                <tr>
+                    <td class="stat">{{ stat }}</td>
+                    <td class="percent">{{ numbers.0 }}</td>
+                    <td class="actual">{{ numbers.1 }}</td>
+                    <td class="goal">{{ numbers.2 }}</td>
+                </tr>
+            {% endifnotequal %}
+        {% endfor %}
+        </table>
+
+        <div id="graph">
+        </div>
+
+        <br/><br/><br/>        
+        <div>
+            <em>Omitted (no goal set):</em><br/>
+            {% for stat, numbers in chapter_progress.items %}
+                {% ifequal numbers.0 -1 %}
+                    {{ stat }}<br/>
+                {% endifequal %}
+            {% endfor %}
+        </div>
+        
+    {% endif %}
+    
 {% endblock %}

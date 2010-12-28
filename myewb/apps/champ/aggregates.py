@@ -209,3 +209,27 @@ def publicity_hits(filters):
     publicity_metrics = run_query(PublicationMetrics.objects.all(), filters)
     return publicity_metrics.count()
 
+# TODO: consolidate properly.  ugh.
+YEARPLAN_MAP = {
+    'ml_hours': 'ml_total_hours',
+    'ml_attendance': 'ml_average_attendance',
+    'ml_events': 'ml_events',
+    'pe_people_oncampus': 'eng_people_reached',
+    'pe_people_offcampus': 'eng_people_reached_offcampus',
+    'pe_events': 'eng_events',
+    'po_contacts': 'adv_contacts',
+    'po_letters': 'adv_letters',
+    'ce_students': 'ce_students',
+    'ce_hours': 'ce_hours',
+    'wo_professionals': 'wo_reached',
+    'wo_presentations': 'wo_presentations',
+    'so_students': 'so_reached',
+    'so_presentations': 'so_presentations',
+    'fundraising_dollars': 'fund_total',
+    'fundraising_dollars_oneoff': 'fund_oneoff',
+    'fundraising_dollars_recurring': 'fund_recurring',
+    'fundraising_dollars_nonevent': 'fund_nonevent',
+    'publicity_hits': 'pub_media_hits'
+    }
+
+

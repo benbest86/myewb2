@@ -59,32 +59,18 @@ def build_stats(group_slug=None):
         grp = get_object_or_404(Network, slug=group_slug)
         
         if grp.is_chapter():
-            activity_filters.append({'group__slug': group_slug})
             metric_filters.append({'activity__group__slug': group_slug})
-        else:
-            grp = None
 
-    activity_filters.append({'visible': True})
     metric_filters.append({'activity__visible': True})
     metric_filters.append({'activity__confirmed': True})
     context = run_stats(metric_filters)
 
-    context['unconfirmed'] = run_query(Activity.objects.filter(confirmed=False), activity_filters).count()
-    context['confirmed'] = run_query(Activity.objects.filter(confirmed=True), activity_filters).count()
-    
     natl_activity_filters, natl_metric_filters = build_filters(date.today().year)
-    natl_activity_filters.append({'visible': True})
     natl_metric_filters.append({'activity__visible': True})
     natl_metric_filters.append({'activity__confirmed': True})
     natl_context = run_stats(natl_metric_filters)
-    natl_context['unconfirmed'] = run_query(Activity.objects.filter(confirmed=False), natl_activity_filters).count()
-    natl_context['confirmed'] = run_query(Activity.objects.filter(confirmed=True), natl_activity_filters).count()
 
-    # stuff all national values into context, prepending key with natl_
-    for x, y in natl_context.items():
-        context['natl_' + x] = y
-
-    return context
+    return context, natl_context
 
 def progress_options(request):
     metric = request.GET.get('metric', '')
@@ -107,7 +93,27 @@ def progress_draw(request):
         
     
     elif progressby == 'forchapter' and group:
-        stats = build_stats(group)
+        yp = YearPlan.objects.filter(group__slug=group, year=date.today().year)
+        if yp.count():
+            yearplan = yp[0]
+            stats, national = build_stats(group)
+            
+            chapter_progress = {}
+            for s in stats:
+                yearplan_name = aggregates.YEARPLAN_MAP[s]
+                goal = getattr(yearplan, yearplan_name)
+                if goal:
+                    progress = stats[s] / goal
+                else:
+                    progress = -1
+                chapter_progress[s] = (progress, stats[s], goal)
+            
+            context['stats'] = stats
+            context['chapter_progress'] = chapter_progress
+            context['national'] = national
+        else:
+            context['noyearplan'] = True
+            
         template = 'progress_chapter'
     
     else:
