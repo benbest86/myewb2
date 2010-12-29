@@ -14,6 +14,9 @@
                     <td class="percent">{{ numbers.0 }}</td>
                     <td class="actual">{{ numbers.1 }}</td>
                     <td class="goal">{{ numbers.2 }}</td>
+                    <td class="npercent">{{ numbers.3 }}</td>
+                    <td class="nactual">{{ numbers.4 }}</td>
+                    <td class="ngoal">{{ numbers.5 }}</td>
                 </tr>
             {% endifnotequal %}
         {% endfor %}
@@ -61,6 +64,9 @@
             var difference = [];
             var actual = [];
             var goal = [];
+            var nvalues = [];
+            var nactual = [];
+            var ngoal = [];
             function showDetail(idx)
             {
                 m = metrics[idx];
@@ -68,16 +74,26 @@
                 d = difference[idx];
                 a = actual[idx];
                 g = goal[idx];
+                nv = nvalues[idx];
+                na = nactual[idx];
+                ng = ngoal[idx];
 
                 var content = '<p><strong>' + m + '</strong></p>';
-                content += '<p><strong>' + a + '</strong> ';
+
+                content += '<p><strong>Your chapter</strong><br/>';
+                content += '<strong>' + a + '</strong> ';
                 content += '(' + v + '% of ' + g + ')</p>';
+
+                content += '<p><strong>Nationally</strong><br/>';
+                content += '<strong>' + na + '</strong> ';
+                content += '(' + nv + '% of ' + ng + ')</p>';
+
                 $('#graphdetail').html(content);
-                $('#graphdetail').slideDown();
+                $('#graphdetail').show();
             }
             function hideDetail()
             {
-                $('#graphdetail').slideUp('fast');
+                $('#graphdetail').hide();
             }
             
             $(document).ready(function() {
@@ -91,6 +107,9 @@
                     difference.push(100 - parseInt($('.percent', this).text(), 10));
                     actual.push(parseInt($('.actual', this).text(), 10));
                     goal.push(parseInt($('.goal', this).text(), 10));
+                    nvalues.push(parseInt($('.npercent', this).text(), 10));
+                    nactual.push(parseInt($('.nactual', this).text(), 10));
+                    ngoal.push(parseInt($('.ngoal', this).text(), 10));
                 });
                 
                 // dynamically resize graph area
@@ -101,28 +120,48 @@
                 var newmargin = ($(document).width() - $('#graphcontainer').width() - $('#champsays').width()) / 2;
                 $('#champsays').css('margin-right', newmargin + 'px');
                 
-                // draw graph
-                var r = Raphael("graph");
-                graph = r.g.hbarchart(10, 10, 300, 220, [values, difference],
-                             {type: 'soft',
-                              stacked: 'true',
-                              axis: "0 1 1 0",
-                              colors: ['#ff7200', '#d0d0d0']});
+                {% if includenatl %}
+                    // draw graph
+                    var r = Raphael("graph");
+                    graph = r.g.hbarchart(10, 10, 300, 220, [values, difference],
+                                 {type: 'soft',
+                                  stacked: 'true',
+                                  axis: "0 1 1 0",
+                                  colors: ['#ff7200', '#d0d0d0']});
+                                  
+                    // cool hover effect
+                    graph.hoverColumn(function () {
+                            var y = [], res = [];
+                            for (var i = this.bars.length; i--;) {
+                                y.push(this.bars[i].y);
+                                res.push(this.bars[i].value || "0");
+                            }
+                            this.flag = r.g.popup(this.bars[0].x, Math.min.apply(Math, y), res[1] + "%").insertBefore(this);
+                            showDetail(this.bars[0].idx);
+                        },
+                        function () {
+                            this.flag.animate({opacity: 0}, 300, function () {this.remove();});
+                            hideDetail();
+                        });
 
-                // cool hover effect
-                graph.hoverColumn(function () {
-                        var y = [], res = [];
-                        for (var i = this.bars.length; i--;) {
-                            y.push(this.bars[i].y);
-                            res.push(this.bars[i].value || "0");
-                        }
-                        this.flag = r.g.popup(this.bars[0].x, Math.min.apply(Math, y), res[1] + "%").insertBefore(this);
-                        showDetail(this.bars[0].idx);
+                {% else %}
+                    // draw graph
+                    var r = Raphael("graph");
+                    graph = r.g.hbarchart(10, 10, 300, 220, [values, nvalues],
+                                 {type: 'soft',
+                                  axis: "0 1 1 0",
+                                  colors: ['#ff7200', '#d0d0d0']});
+                                  
+                    // cool hover effect
+                    graph.hover(function () {
+                        this.flag = r.g.popup(this.bar.x, this.bar.y, this.bar.value || "0").insertBefore(this);
+                        showDetail(this.bar.idx);
                     },
                     function () {
                         this.flag.animate({opacity: 0}, 300, function () {this.remove();});
                         hideDetail();
                     });
+                {% endif %}
 
                 //graph.label([metrics]);   // is broken... so let's hack it in.
                 $('#graphlabels').css('line-height', $('#graphlabels').height() / (metrics.length+1) + 'px');

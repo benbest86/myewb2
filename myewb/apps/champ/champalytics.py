@@ -100,9 +100,20 @@ def progress_draw(request):
             stats, national = build_stats(group)
             
             chapter_progress = {}
+
+            national_progress = {}
+            natl_goals = aggregates.CHAMP_AGGREGATES
+
             for s in stats:
                 yearplan_name = aggregates.YEARPLAN_MAP[s]
                 goal = getattr(yearplan, yearplan_name)
+                
+                name, ngoal = natl_goals[s]
+                if ngoal:
+                    nprogress = national[s] * 100 / ngoal
+                else:
+                    nprogress = 0
+                
                 if goal:
                     progress = stats[s] * 100 / goal
                     
@@ -117,18 +128,20 @@ def progress_draw(request):
                     
                 else:
                     progress = -1
-                chapter_progress[s] = (progress, stats[s], goal)
-                
-            context['stats'] = stats
+                    
+                chapter_progress[s] = (progress, stats[s], goal, nprogress, national[s], ngoal)
+            
             context['chapter_progress'] = chapter_progress
-            context['national'] = national
             context['champsays'] = champsays
+            
+            if request.GET.get('includenatl', None):
+                context['includenatl'] = True
             
         else:
             context['noyearplan'] = True
-            
-        template = 'progress_chapter'
     
+        template = 'progress_chapter'
+                
     else:
         return HttpResponse('oops')
     
