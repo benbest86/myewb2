@@ -120,7 +120,7 @@
                 var newmargin = ($(document).width() - $('#graphcontainer').width() - $('#champsays').width()) / 2;
                 $('#champsays').css('margin-right', newmargin + 'px');
                 
-                {% if includenatl %}
+                {% if not includenatl %}
                     // draw graph
                     var r = Raphael("graph");
                     graph = r.g.hbarchart(10, 10, 300, 220, [values, difference],
@@ -150,11 +150,11 @@
                     graph = r.g.hbarchart(10, 10, 300, 220, [values, nvalues],
                                  {type: 'soft',
                                   axis: "0 1 1 0",
-                                  colors: ['#ff7200', '#d0d0d0']});
+                                  colors: ['#ff7200', '#007fff']});
                                   
                     // cool hover effect
                     graph.hover(function () {
-                        this.flag = r.g.popup(this.bar.x, this.bar.y, this.bar.value || "0").insertBefore(this);
+                        this.flag = r.g.popup(this.bar.x, this.bar.y, (this.bar.value || "0") + "%").insertBefore(this);
                         showDetail(this.bar.idx);
                     },
                     function () {
