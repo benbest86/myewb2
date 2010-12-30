@@ -7,9 +7,10 @@
     {% block table %}    
     {% endblock %}
 
+    <div style="position: relative;">
     {% block champsays %}
         {% if champsays %}
-            <div id="champsays" style="float: right; width: 250px; border: 1px solid #a0a0a0; padding: 20px; -moz-border-radius: 1em; -webkit-border-radius: 1em; margin-right: 50px;">
+            <div id="champsays" style="position: absolute; width: 250px; border: 1px solid #a0a0a0; padding: 20px; -moz-border-radius: 1em; -webkit-border-radius: 1em; top: 25px; right: 0px;">
                 <span style="font-weight: bold; font-decoration: italic; font-size: 16px;">THE CHAMP SAYS...</span>
                 <br/><br/>
                 {{ champsays|random }}
@@ -33,6 +34,7 @@
         <div id="graphdetail" style="float: left; width: 500px; border: 1px solid #a0a0a0; padding: 20px; -moz-border-radius: 1em; -webkit-border-radius: 1em; margin: 0 50px; display: none;">
         </div>
     {% endblock %}
+    </div>
     
     <script type="text/javascript" src="{{STATIC_URL}}js/raphael/raphael-min.js"></script>
     <script type="text/javascript" src="{{STATIC_URL}}js/raphael/g.raphael-min.js"></script>
