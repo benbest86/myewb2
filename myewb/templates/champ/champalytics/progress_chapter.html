@@ -95,9 +95,10 @@
                 });
                 
                 // dynamically resize graph area
-                $('#graphcontainer').height((metrics.length * 50) + 'px');
-                $('#graph').height((metrics.length * 50) + 'px');
-                $('#graphlabels').height((metrics.length * 50) + 'px');
+                var boxheight = metrics.length * 50;
+                $('#graphcontainer').height(boxheight + 'px');
+                $('#graph').height(boxheight + 'px');
+                $('#graphlabels').height(boxheight + 'px');
 
                 var newmargin = ($(document).width() - $('#graphcontainer').width() - $('#champsays').width()) / 2;
                 $('#champsays').css('margin-right', newmargin + 'px');
@@ -105,7 +106,7 @@
                 {% if not includenatl %}
                     // draw graph
                     var r = Raphael("graph");
-                    graph = r.g.hbarchart(10, 10, 300, 220, [values, difference],
+                    graph = r.g.hbarchart(10, 10, 300, boxheight, [values, difference],
                                  {type: 'soft',
                                   stacked: 'true',
                                   axis: "0 1 1 0",
@@ -129,7 +130,7 @@
                 {% else %}
                     // draw graph
                     var r = Raphael("graph");
-                    graph = r.g.hbarchart(10, 10, 300, 220, [values, nvalues],
+                    graph = r.g.hbarchart(10, 10, 300, boxheight, [values, nvalues],
                                  {type: 'soft',
                                   axis: "0 1 1 0",
                                   colors: ['#ff7200', '#007fff']});
@@ -146,7 +147,7 @@
                 {% endif %}
 
                 //graph.label([metrics]);   // is broken... so let's hack it in.
-                $('#graphlabels').css('line-height', $('#graphlabels').height() / (metrics.length+1) + 'px');
+                $('#graphlabels').css('line-height', ($('#graphlabels').height()-(metrics.length)) / metrics.length + 'px');
                 for (var i = 0; i < metrics.length; i++)
                     $('#graphlabels').html($('#graphlabels').html() + metrics[i] + "<br/>");
             });

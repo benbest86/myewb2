@@ -107,7 +107,7 @@
                 });
 
             //graph.label([metrics]);   // is broken... so let's hack it in.
-            $('#graphlabels').css('line-height', $('#graphlabels').height() / (chapters.length+1) + 'px');
+            $('#graphlabels').css('line-height', ($('#graphlabels').height()-(chapters.length)) / chapters.length + 'px');
             for (var i = 0; i < chapters.length; i++)
                 $('#graphlabels').html($('#graphlabels').html() + chapters[i] + "<br/>");
         });

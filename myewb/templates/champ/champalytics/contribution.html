@@ -101,7 +101,7 @@
                 });
 
             //graph.label([metrics]);   // is broken... so let's hack it in.
-            $('#graphlabels').css('line-height', $('#graphlabels').height() / (metrics.length+1) + 'px');
+            $('#graphlabels').css('line-height', ($('#graphlabels').height()-(metrics.length)) / metrics.length + 'px');
             for (var i = 0; i < metrics.length; i++)
                 $('#graphlabels').html($('#graphlabels').html() + metrics[i] + "<br/>");
                 
