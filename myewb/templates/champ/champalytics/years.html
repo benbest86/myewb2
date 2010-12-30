@@ -1,0 +1,62 @@
+{% extends "champ/champalytics/base_draw.html" %}
+
+{% block title %}
+    Year-over-year for {{ metric }}
+{% endblock %}
+
+{% block table %}
+    <table style="display: none;" id="history">
+    {% for stat in history %}
+        <tr class="data">
+            <td class="year">{{ stat.0 }}</td>
+            <td class="chapter">{{ stat.1 }}</td>
+            <td class="national">{{ stat.2 }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+{% endblock %}
+
+{% block jscript %}
+    <script type="text/javascript">
+        var year = [];
+        var chapter = [];
+        var national = [];
+
+        $(document).ready(function() {
+            // parse table data into javascript variables
+            var i = 0;
+            
+            $('tr.data').each(function() {
+                i++;
+                year.push($('.year', this).text());
+                chapter.push(parseInt($('.chapter', this).text(), 10));
+                national.push(parseInt($('.national', this).text(), 10));
+            });
+            
+            // dynamically resize graph area
+            var boxheight = 500;
+            $('#graphcontainer').height(boxheight + 'px');
+            $('#graph').height(boxheight + 'px').width(600 + 'px').css('left', '0');
+            $('#graphlabels').height(boxheight + 'px');
+
+            var newmargin = ($(document).width() - $('#graphcontainer').width() - $('#champsays').width()) / 2;
+            $('#champsays').css('margin-right', newmargin + 'px');
+            
+            // draw graph
+            var r = Raphael("graph");
+
+            var lines = r.g.linechart(50, 50, 500, 400, year,
+                                      [chapter, national],
+                                      {nostroke: false, axis: "0 0 1 1", symbol: "o", smooth: true})
+            lines.hoverColumn(function () {
+                this.tags = r.set();
+                for (var i = 0, ii = this.y.length; i < ii; i++) {
+                    this.tags.push(r.g.tag(this.x, this.y[i], this.values[i], 160, 10).insertBefore(this).attr([{fill: "#fff"}, {fill: this.symbols[i].attr("fill")}]));
+                }
+            }, function () {
+                this.tags && this.tags.remove();
+            });
+            //lines.symbols.attr({r: 3});
+        });
+    </script>
+{% endblock %}

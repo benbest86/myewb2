@@ -42,6 +42,9 @@ def default(request):
         elif graphtype == 'Contribution to national':
             return contribution_draw(request)
         
+        elif graphtype == 'Year over year':
+            return year_draw(request)
+        
     return HttpResponse("Internal error - lost stage")
         
 def select_graph(request):
@@ -53,8 +56,11 @@ def select_graph(request):
                                'group': group},
                               context_instance=RequestContext(request))
                               
-def build_stats(group_slug=None):
-    activity_filters, metric_filters = build_filters(date.today().year)
+def build_stats(group_slug=None, year=None):
+    if not year:
+        year = date.today().year
+        
+    activity_filters, metric_filters = build_filters(year)
     
     if group_slug:
         grp = get_object_or_404(Network, slug=group_slug)
@@ -66,15 +72,18 @@ def build_stats(group_slug=None):
     metric_filters.append({'activity__confirmed': True})
     context = run_stats(metric_filters)
 
-    natl_activity_filters, natl_metric_filters = build_filters(date.today().year)
+    natl_activity_filters, natl_metric_filters = build_filters(year)
     natl_metric_filters.append({'activity__visible': True})
     natl_metric_filters.append({'activity__confirmed': True})
     natl_context = run_stats(natl_metric_filters)
 
     return context, natl_context
     
-def build_stats_for(group_slug=None, metric=None):
-    activity_filters, metric_filters = build_filters(date.today().year)
+def build_stats_for(group_slug=None, metric=None, year=None):
+    if not year:
+        year = date.today().year
+        
+    activity_filters, metric_filters = build_filters(year)
     
     if group_slug:
         grp = get_object_or_404(Network, slug=group_slug)
@@ -86,7 +95,7 @@ def build_stats_for(group_slug=None, metric=None):
     metric_filters.append({'activity__confirmed': True})
     context = run_stats_for(metric_filters, metric)
 
-    natl_activity_filters, natl_metric_filters = build_filters(date.today().year)
+    natl_activity_filters, natl_metric_filters = build_filters(year)
     natl_metric_filters.append({'activity__visible': True})
     natl_metric_filters.append({'activity__confirmed': True})
     natl_context = run_stats_for(natl_metric_filters, metric)
@@ -267,6 +276,27 @@ def contribution_draw(request):
     context['champsays'] = champsays
     
     return render_to_response('champ/champalytics/contribution.html',
+                              context,
+                              context_instance=RequestContext(request))
+
+def year_draw(request):
+    metric = request.GET.get('metric', '')
+    group = request.GET.get('group', '')
+    context = {}
+
+    champsays = []
+    history = []
+
+    for y in range(2007, date.today().year + 1):
+        stats, natlstats = build_stats_for(metric=metric, year=y)
+        history.append((y, stats, natlstats))
+
+    context['history'] = history
+    context['champsays'] = champsays
+    context['metric'] = metric
+    context['group'] = group
+    
+    return render_to_response('champ/champalytics/years.html',
                               context,
                               context_instance=RequestContext(request))
 
