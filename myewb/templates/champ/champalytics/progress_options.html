@@ -1,5 +1,7 @@
 {% extends "champ/champalytics/base.html" %}
 
+{% load helpers %}
+
 {% block body %}
 
     <h3>Progress to goal</h3>
@@ -12,7 +14,8 @@
         
         <input type="radio" name="progressby" value="formetric" id="formetric"/>
         <label for="formetric">
-            show me all chapters' progress for {{ metric }}
+            {% lookup_ctx namedict metric as metricname %}
+            show me all chapters' progress for {{ metricname.0 }}
         </label>
         <br/>
         

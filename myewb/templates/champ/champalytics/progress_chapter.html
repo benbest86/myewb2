@@ -1,5 +1,7 @@
 {% extends "champ/champalytics/base_draw.html" %}
 
+{% load helpers %}
+
 {% block table %}
     {% if noyearplan %}
         <stron>Your chapter doesn't have any goals entered.  This graph isn't very interesting...</strong>
@@ -10,7 +12,8 @@
         {% for stat, numbers in chapter_progress.items %}
             {% ifnotequal numbers.0 -1 %}
                 <tr class="data">
-                    <td class="stat">{{ stat }}</td>
+                    {% lookup_ctx namedict stat as metricname %}
+                    <td class="stat">{{ metricname.0 }}</td>
                     <td class="percent">{{ numbers.0 }}</td>
                     <td class="actual">{{ numbers.1 }}</td>
                     <td class="goal">{{ numbers.2 }}</td>

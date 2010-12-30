@@ -1,7 +1,10 @@
 {% extends "champ/champalytics/base_draw.html" %}
 
+{% load helpers %}
+
 {% block title %}
-    <h2>Progress for {{ metric }}</h2>
+    {% lookup_ctx namedict metric as metricname %}
+    <h2>Progress for {{ metricname.0 }}</h2>
 {% endblock %}
 
 {% block table %}

@@ -1,7 +1,10 @@
 {% extends "champ/champalytics/base_draw.html" %}
 
+{% load helpers %}
+
 {% block title %}
-    Year-over-year for {{ metric }}
+    {% lookup_ctx namedict metric as metricname %}
+    Year-over-year for {{ metricname.0 }}
 {% endblock %}
 
 {% block table %}

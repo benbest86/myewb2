@@ -1,10 +1,13 @@
 {% extends "champ/champalytics/base_draw.html" %}
 
+{% load helpers %}
+
 {% block table %}
     <table style="display: none;" id="contribution">
     {% for metric, stat in contributions.items %}
         <tr class="data">
-            <td class="metric">{{ metric }}</td>
+            {% lookup_ctx namedict metric as metricname %}
+            <td class="metric">{{ metricname.0 }}</td>
             <td class="stat">{{ stat.0 }}</td>
             <td class="chapter">{{ stat.1 }}</td>
             <td class="total">{{ stat.2 }}</td>

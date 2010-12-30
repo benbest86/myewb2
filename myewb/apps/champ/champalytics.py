@@ -109,7 +109,8 @@ def progress_options(request):
     
     return render_to_response('champ/champalytics/progress_options.html',
                               {'metric': metric,
-                               'group': group},
+                               'group': group,
+                               'namedict': aggregates.CHAMP_AGGREGATES},
                               context_instance=RequestContext(request))
                               
 def progress_draw(request):
@@ -180,9 +181,6 @@ def progress_draw(request):
             #    progress[g.slug] = 35
             
         context['progress'] = progress
-        context['group'] = group
-        context['metric'] = metric
-        context['champsays'] = champsays
         context['useabsolute'] = useabsolute
         template = 'progress_metric'
         
@@ -208,15 +206,16 @@ def progress_draw(request):
                 
                 if goal:
                     progress = stats[s] * 100 / goal
-                    
+
+                    mname, natlgoal = aggregates.CHAMP_AGGREGATES[s]
                     if progress >= 100:
-                        champsays.append("You've hit your goal for %s, you champion!" % s);
+                        champsays.append("You've hit your goal for %s, you champion!" % mname);
                     elif progress < 100 and progress > 80:
-                        champsays.append("You've almost hit your %s goal - way to go!" % s);
+                        champsays.append("You've almost hit your %s goal - way to go!" % mname);
                     elif progress < 30 and progress > 10:
-                        champsays.append("Your %s numbers are a bit low... need some help?" % s);
+                        champsays.append("Your %s numbers are a bit low... need some help?" % mname);
                     elif progress < 10:
-                        champsays.append("Woah, watch out for %s - better get moving..." % s);
+                        champsays.append("Woah, watch out for %s - better get moving..." % mname);
                     
                 else:
                     progress = -1
@@ -237,6 +236,10 @@ def progress_draw(request):
     else:
         return HttpResponse('oops')
     
+    context['champsays'] = champsays
+    context['group'] = group
+    context['metric'] = metric
+    context['namedict'] = aggregates.CHAMP_AGGREGATES    
     return render_to_response('champ/champalytics/' + template + '.html',
                               context,
                               context_instance=RequestContext(request))
@@ -252,14 +255,15 @@ def contribution_draw(request):
     context['metric_chapter'] = stats + 1
     context['metric_national'] = natlstats - stats + 1
     
+    mname, natlgoal = aggregates.CHAMP_AGGREGATES[metric]                    
     if stats < 5:
-        champsays.append("Looks like your %s program is just getting started..." % metric)
+        champsays.append("Looks like your %s program is just getting started..." % mname)
     if natlstats - stats < 5:
-        champsays.append("I can't believe it - you're carrying the organization in %s!" % metric)
+        champsays.append("I can't believe it - you're carrying the organization in %s!" % mname)
     elif natlstats - stats < (stats / 2):
-        champsays.append("Show 'em how it's done for %s!" % metric)
+        champsays.append("Show 'em how it's done for %s!" % mname)
     elif natlstats - stats < stats:
-        champsays.append("Woah, you're really rocking out on %s - you account for over half of all EWB's numbers!" % metric)
+        champsays.append("Woah, you're really rocking out on %s - you account for over half of all EWB's numbers!" % mname)
         
     stats, national = build_stats(group)
     contributions = {}
@@ -268,12 +272,14 @@ def contribution_draw(request):
             contributions[s] = (stats[s] * 100 / national[s], stats[s], national[s])
             
             if national[s] - stats[s] < stats[s]:
-                champsays.append("Tell me how it's done - your %s numbers are amazing!" % s)
+                mname, natlgoal = aggregates.CHAMP_AGGREGATES[s]
+                champsays.append("Tell me how it's done - your %s numbers are amazing!" % mname)
         else:
             contributions[s] = (0, 0, 0)
 
     context['contributions'] = contributions            
     context['champsays'] = champsays
+    context['namedict'] = aggregates.CHAMP_AGGREGATES    
     
     return render_to_response('champ/champalytics/contribution.html',
                               context,
@@ -295,6 +301,7 @@ def year_draw(request):
     context['champsays'] = champsays
     context['metric'] = metric
     context['group'] = group
+    context['namedict'] = aggregates.CHAMP_AGGREGATES    
     
     return render_to_response('champ/champalytics/years.html',
                               context,
