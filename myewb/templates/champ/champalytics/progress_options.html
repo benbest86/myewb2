@@ -14,7 +14,15 @@
         <label for="formetric">
             show me all chapters' progress for {{ metric }}
         </label>
-        <br/><br/><br/>
+        <br/>
+        
+        <div id="useabsolutediv" style="padding-left: 50px; padding-top: 10px;">
+            <input type="checkbox" name="useabsolute" id="useabsolute"/>
+            <label for="useabsolute">
+                use absolute numbers instead of percentages
+            </label>
+        </div>
+        <br/><br/>
 
         {% if group %}
         {% ifnotequal group "none" %}

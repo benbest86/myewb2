@@ -1,6 +1,135 @@
 {% extends "champ/champalytics/base.html" %}
 
 {% block body %}
-    Not much to show yet.
+    <h2>Progress for {{ metric }}</h2>
+    
+    <table style="display: none;" id="progress">
+    {% for chapter, stat in progress.items %}
+        <tr class="data">
+            <td class="chapter">{{ chapter }}</td>
+            <td class="stat">{{ stat.0 }}</td>
+            <td class="absolute">{{ stat.1 }}</td>
+            <td class="goal">{{ stat.2 }}</td>
+        </tr>
+    {% endfor %}
+    </table>
 
+    {% if champsays %}
+        <div id="champsays" style="float: right; width: 250px; border: 1px solid #a0a0a0; padding: 20px; -moz-border-radius: 1em; -webkit-border-radius: 1em; margin-right: 50px;">
+            <span style="font-weight: bold; font-decoration: italic; font-size: 16px;">THE CHAMP SAYS...</span>
+            <br/><br/>
+            {{ champsays|random }}
+            <br/><br/>
+        </div>
+    {% else %}
+        <div id="champsays style="display: none;"></div>
+    {% endif %}
+
+    <div id="graphcontainer" style="position: relative; width: 650px;">
+        <div id="graphlabels" style="width: 250px; position: absolute; top: 0; left: 0; text-align: right; font-weight: bold; padding-top: 15px;">
+        </div>
+        <div id="graph" style="width: 350px; position: absolute; top: 0; left: 250px;">
+        </div>
+    </div>
+
+    <br/>
+    <div id="holder" style="float: right; width: 1px; height: 250px;"></div>
+    <div id="graphdetail" style="float: left; width: 500px; border: 1px solid #a0a0a0; padding: 20px; -moz-border-radius: 1em; -webkit-border-radius: 1em; margin: 0 50px; display: none;">
+    </div>
+    
+    <script type="text/javascript" src="{{STATIC_URL}}js/raphael/raphael-min.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/raphael/g.raphael-min.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/raphael/g.bar.js"></script>
+    <script type="text/javascript">
+        var chapters = [];
+        var values = [];
+        var difference = [];
+        var absolute = [];
+        var goal = [];
+        var topnumber = 0;
+
+        function showDetail(idx)
+        {
+            c = chapters[idx];
+            v = values[idx];
+            a = absolute[idx];
+            g = goal[idx];
+
+            var content = '<p><strong>' + c + '</strong></p>';
+
+            {% if not useabsolute %}
+                content += '<p>' + v + '% of goal</p>';
+            {% endif %}
+            content += '<p>' + a + ' out of ' + g + '</p>';
+
+            $('#graphdetail').html(content);
+            $('#graphdetail').show();
+        }
+        function hideDetail()
+        {
+            $('#graphdetail').hide();
+        }
+        
+        $(document).ready(function() {
+            // parse table data into javascript variables
+            var i = 0;
+            
+            $('tr.data').each(function() {
+                i++;
+                chapters.push($('.chapter', this).text());
+                values.push(parseInt($('.stat', this).text(), 10));
+                difference.push(100 - parseInt($('.stat', this).text(), 10));
+                absolute.push(parseInt($('.absolute', this).text(), 10));
+                goal.push(parseInt($('.goal', this).text(), 10));
+                
+                if (parseInt($('.stat', this).text(), 10) > topnumber)
+                    topnumber = parseInt($('.stat', this).text(), 10);
+            });
+            
+            {% if useabsolute %}
+                difference = [];
+                $('tr.data').each(function() {
+                    difference.push(topnumber - parseInt($('.stat', this).text(), 10));
+                });
+            {% endif %}
+            
+            // dynamically resize graph area
+            var boxheight = chapters.length * 50;
+            $('#graphcontainer').height(boxheight + 'px');
+            $('#graph').height(boxheight + 'px');
+            $('#graphlabels').height(boxheight + 'px');
+
+            var newmargin = ($(document).width() - $('#graphcontainer').width() - $('#champsays').width()) / 2;
+            $('#champsays').css('margin-right', newmargin + 'px');
+            
+            // draw graph
+            var r = Raphael("graph");
+            graph = r.g.hbarchart(10, 10, 300, boxheight, [values, difference],
+                         {type: 'soft',
+                          stacked: 'true',
+                          axis: "0 1 1 0",
+                          colors: ['#ff7200', '#d0d0d0']});
+                          
+            // cool hover effect
+            graph.hoverColumn(function () {
+                    var y = [], res = [];
+                    for (var i = this.bars.length; i--;) {
+                        y.push(this.bars[i].y);
+                        res.push(this.bars[i].value || "0");
+                    }
+                    this.flag = r.g.popup(this.bars[0].x, Math.min.apply(Math, y), res[1] + "%").insertBefore(this);
+                    showDetail(this.bars[0].idx);
+                },
+                function () {
+                    this.flag.animate({opacity: 0}, 300, function () {this.remove();});
+                    hideDetail();
+                });
+
+            //graph.label([metrics]);   // is broken... so let's hack it in.
+            $('#graphlabels').css('line-height', $('#graphlabels').height() / (chapters.length+1) + 'px');
+            for (var i = 0; i < chapters.length; i++)
+                $('#graphlabels').html($('#graphlabels').html() + chapters[i] + "<br/>");
+        });
+    </script>
+    
 {% endblock %}

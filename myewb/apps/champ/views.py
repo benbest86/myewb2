@@ -44,6 +44,12 @@ def run_stats(filters):
     
     return context
 
+def run_stats_for(filters, metric):
+    context = {}
+    
+    function = getattr(aggregates, metric)
+    return function(filters)
+
 def run_natl_goals():
     context = {}
     
