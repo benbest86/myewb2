@@ -1,0 +1,128 @@
+{% extends "champ/champalytics/base_draw.html" %}
+
+{% block table %}
+    <table style="display: none;" id="contribution">
+    {% for metric, stat in contributions.items %}
+        <tr class="data">
+            <td class="metric">{{ metric }}</td>
+            <td class="stat">{{ stat.0 }}</td>
+            <td class="chapter">{{ stat.1 }}</td>
+            <td class="total">{{ stat.2 }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+{% endblock %}
+
+{% block graphs %}
+    <div id="graphcontainer2" style="width: 650px; height: 300px;">
+        <div id="graph2" style="width: 650px; height: 300px;">
+        </div>
+    </div>
+
+    <br/>
+    
+    {{ block.super }}
+{% endblock %}
+
+{% block jscript %}
+    <script type="text/javascript">
+        var metrics = [];
+        var values = [];
+        var difference = [];
+        var chapter = [];
+        var total = [];
+
+        function showDetail(idx)
+        {
+            m = metrics[idx];
+            v = values[idx];
+            c = chapter[idx];
+            t = total[idx];
+
+            var content = '<p><strong>' + m + '</strong></p>';
+
+            content += '<p>Your chapter: ' + v + '% of all ' + m + ' numbers</p>';
+            content += '<p>(' + c + ' of ' + t + ')</p>';
+
+            $('#graphdetail').html(content);
+            $('#graphdetail').show();
+        }
+        function hideDetail()
+        {
+            $('#graphdetail').hide();
+        }
+        
+        $(document).ready(function() {
+            // parse table data into javascript variables
+            var i = 0;
+            
+            $('tr.data').each(function() {
+                i++;
+                metrics.push($('.metric', this).text());
+                values.push(parseInt($('.stat', this).text(), 10));
+                difference.push(100 - parseInt($('.stat', this).text(), 10));
+                chapter.push(parseInt($('.chapter', this).text(), 10));
+                total.push(parseInt($('.total', this).text(), 10));
+            });
+            
+            // dynamically resize graph area
+            var boxheight = metrics.length * 50;
+            $('#graphcontainer').height(boxheight + 'px');
+            $('#graph').height(boxheight + 'px');
+            $('#graphlabels').height(boxheight + 'px');
+
+            var newmargin = ($(document).width() - $('#graphcontainer').width() - $('#champsays').width()) / 2;
+            $('#champsays').css('margin-right', newmargin + 'px');
+            
+            // draw graph
+            var r = Raphael("graph");
+            graph = r.g.hbarchart(10, 10, 300, boxheight, [values, difference],
+                         {type: 'soft',
+                          stacked: 'true',
+                          axis: "0 1 1 0",
+                          colors: ['#ff7200', '#d0d0d0']});
+                          
+            // cool hover effect
+            graph.hoverColumn(function () {
+                    var y = [], res = [];
+                    for (var i = this.bars.length; i--;) {
+                        y.push(this.bars[i].y);
+                        res.push(this.bars[i].value || "0");
+                    }
+                    this.flag = r.g.popup(this.bars[0].x, Math.min.apply(Math, y), res[1] + "%").insertBefore(this);
+                    showDetail(this.bars[0].idx);
+                },
+                function () {
+                    this.flag.animate({opacity: 0}, 300, function () {this.remove();});
+                    hideDetail();
+                });
+
+            //graph.label([metrics]);   // is broken... so let's hack it in.
+            $('#graphlabels').css('line-height', $('#graphlabels').height() / (metrics.length+1) + 'px');
+            for (var i = 0; i < metrics.length; i++)
+                $('#graphlabels').html($('#graphlabels').html() + metrics[i] + "<br/>");
+                
+            // draw graph
+            var r2 = Raphael("graph2");
+            var graph2 = r2.g.piechart(150, 150, 125, [{{ metric_chapter }}, {{metric_national }}],
+                                       {legend: ['Your chapter', 'Other chapters'],
+                                        legendpos: 'east'});
+            graph2.hover(function() {
+                this.sector.stop();
+                this.sector.scale(1.1, 1.1, this.cx, this.cy);
+                if (this.label) {
+                    this.label[0].stop();
+                    this.label[0].scale(1.5);
+                    this.label[1].attr({"font-weight": 800});
+                }
+            }, function() {
+                this.sector.animate({scale: [1, 1, this.cx, this.cy]}, 500, "bounce");
+                if (this.label) {
+                    this.label[0].animate({scale: 1}, 500, "bounce");
+                    this.label[1].attr({"font-weight": 400});
+                }
+            });
+                          
+        });
+    </script>
+{% endblock %}

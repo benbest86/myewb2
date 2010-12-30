@@ -39,7 +39,8 @@ def default(request):
             elif stage == 'draw':
                 return progress_draw(request)
                 
-        
+        elif graphtype == 'Contribution to national':
+            return contribution_draw(request)
         
     return HttpResponse("Internal error - lost stage")
         
@@ -231,6 +232,41 @@ def progress_draw(request):
                               context,
                               context_instance=RequestContext(request))
                               
+def contribution_draw(request):
+    metric = request.GET.get('metric', '')
+    group = request.GET.get('group', '')
+    context = {}
 
-def draw_graph(request):
-    return HttpResponse("graph")
+    champsays = []
+    
+    stats, natlstats = build_stats_for(metric=metric)
+    context['metric_chapter'] = stats + 1
+    context['metric_national'] = natlstats - stats + 1
+    
+    if stats < 5:
+        champsays.append("Looks like your %s program is just getting started..." % metric)
+    if natlstats - stats < 5:
+        champsays.append("I can't believe it - you're carrying the organization in %s!" % metric)
+    elif natlstats - stats < (stats / 2):
+        champsays.append("Show 'em how it's done for %s!" % metric)
+    elif natlstats - stats < stats:
+        champsays.append("Woah, you're really rocking out on %s - you account for over half of all EWB's numbers!" % metric)
+        
+    stats, national = build_stats(group)
+    contributions = {}
+    for s in stats:
+        if national[s]:
+            contributions[s] = (stats[s] * 100 / national[s], stats[s], national[s])
+            
+            if national[s] - stats[s] < stats[s]:
+                champsays.append("Tell me how it's done - your %s numbers are amazing!" % s)
+        else:
+            contributions[s] = (0, 0, 0)
+
+    context['contributions'] = contributions            
+    context['champsays'] = champsays
+    
+    return render_to_response('champ/champalytics/contribution.html',
+                              context,
+                              context_instance=RequestContext(request))
+
