@@ -1,0 +1,43 @@
+{% extends "champ/champalytics/base.html" %}
+
+{% block body %}
+    {% block title %}
+    {% endblock %}
+
+    {% block table %}    
+    {% endblock %}
+
+    {% block champsays %}
+        {% if champsays %}
+            <div id="champsays" style="float: right; width: 250px; border: 1px solid #a0a0a0; padding: 20px; -moz-border-radius: 1em; -webkit-border-radius: 1em; margin-right: 50px;">
+                <span style="font-weight: bold; font-decoration: italic; font-size: 16px;">THE CHAMP SAYS...</span>
+                <br/><br/>
+                {{ champsays|random }}
+                <br/><br/>
+            </div>
+        {% else %}
+            <div id="champsays style="display: none;"></div>
+        {% endif %}
+    {% endblock %}
+
+    {% block graphs %}
+        <div id="graphcontainer" style="position: relative; width: 650px;">
+            <div id="graphlabels" style="width: 250px; position: absolute; top: 0; left: 0; text-align: right; font-weight: bold; padding-top: 15px;">
+            </div>
+            <div id="graph" style="width: 350px; position: absolute; top: 0; left: 250px;">
+            </div>
+        </div>
+
+        <br/>
+        <div id="holder" style="float: right; width: 1px; height: 250px;"></div>
+        <div id="graphdetail" style="float: left; width: 500px; border: 1px solid #a0a0a0; padding: 20px; -moz-border-radius: 1em; -webkit-border-radius: 1em; margin: 0 50px; display: none;">
+        </div>
+    {% endblock %}
+    
+    <script type="text/javascript" src="{{STATIC_URL}}js/raphael/raphael-min.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/raphael/g.raphael-min.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/raphael/g.bar.js"></script>
+    {% block jscript %}
+    {% endblock %}
+    
+{% endblock %}

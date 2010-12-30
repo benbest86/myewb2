@@ -1,8 +1,8 @@
-{% extends "champ/champalytics/base.html" %}
+{% extends "champ/champalytics/base_draw.html" %}
 
-{% block body %}
+{% block table %}
     {% if noyearplan %}
-        <strong>Your chapter doesn't have any goals entered.  This graph isn't very interesting...</strong>
+        <stron>Your chapter doesn't have any goals entered.  This graph isn't very interesting...</strong>
 
     {% else %}
 
@@ -21,43 +21,22 @@
             {% endifnotequal %}
         {% endfor %}
         </table>
+    {% endif %}
+{% endblock %}
 
-        {% if champsays %}
-            <div id="champsays" style="float: right; width: 250px; border: 1px solid #a0a0a0; padding: 20px; -moz-border-radius: 1em; -webkit-border-radius: 1em; margin-right: 50px;">
-                <span style="font-weight: bold; font-decoration: italic; font-size: 16px;">THE CHAMP SAYS...</span>
-                <br/><br/>
-                {{ champsays|random }}
-                <br/><br/>
-            </div>
-        {% else %}
-            <div id="champsays style="display: none;"></div>
-        {% endif %}
-
-        <div id="graphcontainer" style="position: relative; width: 650px;">
-            <div id="graphlabels" style="width: 250px; position: absolute; top: 0; left: 0; text-align: right; font-weight: bold; padding-top: 15px;">
-            </div>
-            <div id="graph" style="width: 350px; position: absolute; top: 0; left: 250px;">
-            </div>
-        </div>
-
-        <br/>
-        <div id="graphdetail" style="float: left; width: 500px; border: 1px solid #a0a0a0; padding: 20px; -moz-border-radius: 1em; -webkit-border-radius: 1em; margin: 0 50px; display: none;">
-        </div>
+{% comment %}
+<div id="omitted" style="margin-left: 700px; font-size: 10px;">
+    <em>Omitted (no goal set):</em><br/>
+    {% for stat, numbers in chapter_progress.items %}
+        {% ifequal numbers.0 -1 %}
+            {{ stat }}<br/>
+        {% endifequal %}
+    {% endfor %}
+</div>
+{% endcomment %}
         
-        <div id="omitted" style="margin-left: 700px; font-size: 10px;">
-        {% comment %}
-            <em>Omitted (no goal set):</em><br/>
-            {% for stat, numbers in chapter_progress.items %}
-                {% ifequal numbers.0 -1 %}
-                    {{ stat }}<br/>
-                {% endifequal %}
-            {% endfor %}
-        {% endcomment %}
-        </div>
-        
-        <script type="text/javascript" src="{{STATIC_URL}}js/raphael/raphael-min.js"></script>
-        <script type="text/javascript" src="{{STATIC_URL}}js/raphael/g.raphael-min.js"></script>
-        <script type="text/javascript" src="{{STATIC_URL}}js/raphael/g.bar.js"></script>
+{% block jscript %}
+    {% if not noyearplan %}
         <script type="text/javascript">
             var metrics = [];
             var values = [];
