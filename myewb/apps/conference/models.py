@@ -221,6 +221,9 @@ class ConferenceSession(models.Model):
             if user in self.maybes.all():
                 return True
         return False
+        
+    def popular(self):
+        return True
 
 class ConferenceBlock(models.Model):
     user = models.ForeignKey(User)

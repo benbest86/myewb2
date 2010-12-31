@@ -151,10 +151,17 @@ def room(request, room):
 def session_detail(request, session):
     s = get_object_or_404(ConferenceSession, id=session)
     
+    attendees = s.attendees.order_by('?')
+    numattendees = attendees.count()
+    if  numattendees < 10:
+        attendees = attendees[0:numattendees]
+    else:
+        attendees = attendees[0:10]
     # TODO: build RSVP list, predict capacity...
     
     return render_to_response("conference/schedule/session_detail.html",
-                              {"session": s},
+                              {"session": s,
+                               "attendees": attendees},
                               context_instance = RequestContext(request))
 
 

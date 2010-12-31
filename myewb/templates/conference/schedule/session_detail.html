@@ -1,11 +1,16 @@
 {% extends "conference/schedule/base.html" %}
 
 {% load conference_tags %}
+{% load avatar_tags %}
 
 {% block body %}
     <strong>{{ session.name }}</strong><br/>
     {{ session.time}} - {{ session.endtime }} ({{ session.room.name }})<br/>
     <em>{{ session.streamverbose }}</em>
+    {% if session.popular %}
+        <br/>
+        <span style="color: red;">Popular - arrive early to save a seat!</span>
+    {% endif %}
     <br/><br/>
     
     {% if request.user.is_authenticated %}
@@ -40,8 +45,17 @@
     <hr/>
     
     <p>
-        TODO: who else is attending, predict capacity...
+        Room capacity: {{ session.capacity }}
     </p>
+    <p>
+        Attending:<br/>
+        {% for u in attendees %}
+            <div style="float: left; width: 35px; height: 35px; padding: 3px; margin: 4px; border: 1px solid #d0d0d0;">
+                {% avatar u 35 %}
+            </div>
+        {% endfor %}
+    </p>
+    <br style="clear: both;"/>
     <hr/>
     
     <p>
