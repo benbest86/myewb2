@@ -251,10 +251,14 @@ def contribution_draw(request):
 
     champsays = []
     
-    stats, natlstats = build_stats_for(metric=metric)
-    context['metric_chapter'] = stats + 1
-    context['metric_national'] = natlstats - stats + 1
-    
+    stats, natlstats = build_stats_for(group_slug=group, metric=metric)
+    context['metric_chapter'] = stats
+    context['metric_national'] = natlstats - stats
+    if context['metric_chapter'] == 0:
+        context['metric_chapter'] = 0.001
+    if context['metric_national'] == 0:
+        context['metric_national'] = 0.001
+
     mname, natlgoal = aggregates.CHAMP_AGGREGATES[metric]                    
     if stats < 5:
         champsays.append("Looks like your %s program is just getting started..." % mname)
@@ -294,7 +298,10 @@ def year_draw(request):
     history = []
 
     for y in range(2007, date.today().year + 1):
-        stats, natlstats = build_stats_for(metric=metric, year=y)
+        if group and group != "none":
+            stats, natlstats = build_stats_for(metric=metric, group_slug=group, year=y)
+        else:
+            stats, natlstats = build_stats_for(metric=metric, year=y)
         history.append((y, stats, natlstats))
 
     context['history'] = history

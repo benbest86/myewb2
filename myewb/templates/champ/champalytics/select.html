@@ -9,10 +9,10 @@
         <input type="submit" name="graphtype" value="Progress to goal" class="graphtype"/>
         <br/>
         
-        {% if group %}
+        {% ifnotequal group "none" %}
             <input type="submit" name="graphtype" value="Contribution to national" class="graphtype"/>
             <br/>
-        {% endif %}
+        {% endifnotequal %}
         
         <input type="submit" name="graphtype" value="Year over year" class="graphtype"/>
         <br/>
