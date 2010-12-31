@@ -30,6 +30,11 @@
                 background: blue;
                 color: #ffffff;
             }
+            #header {
+                background: #000000;
+                padding: 5px;
+                text-align: center;
+            }
             #footer {
                 background: #e0e0e0;
                 font-size: 0.75em;
@@ -40,19 +45,31 @@
     </head>
 
     <body>
-        <strong>Kumvana - schedule</strong>
-        <br/><br/>
+        <div id="header">
+            <img src="{{STATIC_URL}}images/kumvanasmallnew.png"/>
+        </div>
     
-        {% block body %}
-        {% endblock %}
-       
-        {% if perms.conference %}
-            <hr/>
-            <p>
-                <a href="{% url conference_session_new %}">Add a new session</a>
-            </p>
-        {% endif %}
+        {% if not request.is_mobile %}
+            <div style="background: #e0e0e0;">
+                <div style="width: 75%; margin: 0 auto; background: #ffffff; padding: 15px;">
+                    {% endif %}
+                    <br/>
+
+                    {% block body %}
+                    {% endblock %}
+
+                    {% if perms.conference %}
+                        <hr/>
+                        <p>
+                            <a href="{% url conference_session_new %}">Add a new session</a>
+                        </p>
+                    {% endif %}
         
+                    {% if not request.is_mobile %}
+                </div>
+            </div>
+        {% endif %}
+       
         <div id="footer">
             Engineers Without Borders Canada (C) 2010-2011
             <br/><br/>
