@@ -4,8 +4,8 @@
 {% load avatar_tags %}
 
 {% block body %}
-    <strong>{{ session.name }}</strong><br/>
-    {{ session.time}} - {{ session.endtime }} ({{ session.room.name }})<br/>
+    <h1>{{ session.name }}</h1>
+    {{ session.time|time:"g:i A" }} - {{ session.endtime|time:"g:i A" }} ({{ session.room.name }})<br/>
     <em>{{ session.streamverbose }}</em>
     {% if session.popular %}
         <br/>

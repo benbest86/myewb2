@@ -6,57 +6,58 @@
     {% if stream %}
         {% for sid, sname in streams %}
             {% ifequal stream sid %}
-                <strong>{{ sname}}</strong>
+                <h1>{{ sname}}</h1>
             {% endifequal %}
         {% endfor %}
     {% else %}
-        <strong>{{ day|date:"l" }} at {{ time|time:"P" }}</strong>
+        <h1>{{ day|date:"l" }} at {{ time|time:"P" }}</h1>
     {% endif %}
-    <br/><br/>
 
     {% for s in sessions %}    
-        <strong>{{ s.name }}</strong><br/>
-        {% if stream %}
-            {{ s.time}} - {{ s.endtime }} ({{ s.room.name }})
-        {% else %}
-            {{ s.room.name }} - {{ s.length }} minutes<br/>
-            <em>{{ s.streamverbose }}</em>
-        {% endif %}
-        <br/><br/>
-
-        {% if request.user.is_authenticated %}
-            {% attendance s request.user as attending tentative %}
-            {% if attending %}
-                <strong>This session is in your schedule!</strong><br/>
-                <em>This is NOT a formal RSVP; all sessions are first-come, first-serve</em>
-                <br/>
-                <a href="{% url conference_session_tentative s.id %}">Move to my backup list</a> | 
-                <a href="{% url conference_session_skip s.id %}">Remove from my schedule</a>
-            {% endif %}
-            
-            {% if tentative %}
-                <strong>This session is in your backup list.</strong><br/>
-                <em>This is NOT a formal RSVP; all sessions are first-come, first-serve</em>
-                <br/>
-                <a href="{% url conference_session_attend s.id %}">Move to my schedule</a> | 
-                <a href="{% url conference_session_skip s.id %}">Remove from my list</a>
-            {% endif %}
-            
-            {% if not attending and not tentative %}
-                Add to... 
-                <a href="{% url conference_session_attend s.id %}">my schedule</a> | 
-                <a href="{% url conference_session_tentative s.id %}">my backup list</a>
+        <div class="sessionname">{{ s.name }}</div>
+        <div class="sessiondetail">
+            {% if stream %}
+                {{ s.day|date:"l"}} at {{ s.time|time:"P" }} ({{ s.room.name }})
+            {% else %}
+                {{ s.room.name }} - {{ s.length }} minutes<br/>
+                <em>{{ s.streamverbose }}</em>
             {% endif %}
             <br/><br/>
-        {% endif %}
-    
-        <p>
-            {{ s.short_description|linebreaksbr }}
-        </p>
+
+            {% if request.user.is_authenticated %}
+                {% attendance s request.user as attending tentative %}
+                {% if attending %}
+                    <strong>This session is in your schedule!</strong><br/>
+                    <em>This is NOT a formal RSVP; all sessions are first-come, first-serve</em>
+                    <br/>
+                    <a href="{% url conference_session_tentative s.id %}">Move to my backup list</a> | 
+                    <a href="{% url conference_session_skip s.id %}">Remove from my schedule</a>
+                {% endif %}
+                
+                {% if tentative %}
+                    <strong>This session is in your backup list.</strong><br/>
+                    <em>This is NOT a formal RSVP; all sessions are first-come, first-serve</em>
+                    <br/>
+                    <a href="{% url conference_session_attend s.id %}">Move to my schedule</a> | 
+                    <a href="{% url conference_session_skip s.id %}">Remove from my list</a>
+                {% endif %}
+                
+                {% if not attending and not tentative %}
+                    Add to... 
+                    <a href="{% url conference_session_attend s.id %}">my schedule</a> | 
+                    <a href="{% url conference_session_tentative s.id %}">my backup list</a>
+                {% endif %}
+                <br/><br/>
+            {% endif %}
         
-        <p>
-            <a href="{% url conference_session s.id %}">view details &raquo;</a>
-        </p>
+            <p>
+                {{ s.short_description|linebreaksbr }}
+            </p>
+            
+            <p>
+                <a href="{% url conference_session s.id %}">view details &raquo;</a>
+            </p>
+        </div>
         
         {% if not forloop.last %}<hr/>{% endif %}
     {% endfor %}

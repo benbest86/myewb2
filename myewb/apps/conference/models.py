@@ -173,8 +173,8 @@ STREAMS = (('coalitions', 'Coalitions for Change'),
 class ConferenceSession(models.Model):
     name = models.CharField(max_length=255)
     room = models.ForeignKey(ConferenceRoom)
-    day = models.DateField()
-    time = models.TimeField()
+    day = models.DateField(help_text='yyyy-mm-dd')
+    time = models.TimeField(help_text='hh:mm in 24-hour time. must be either :00 or :30 to show up on schedules')
     length = models.IntegerField(help_text="in minutes")
     sessiontype = models.CharField(max_length=50, choices=SESSION_TYPES)
     short_description = models.TextField(blank=True)
@@ -208,7 +208,7 @@ class ConferenceSession(models.Model):
                 return sname
         
     def endtime(self):
-        return self.time + timedelta(minutes=self.length)
+        return datetime.combine(date.today(), self.time) + timedelta(minutes=self.length)
         
     def user_is_attending(self, user):
         if user.is_authenticated():

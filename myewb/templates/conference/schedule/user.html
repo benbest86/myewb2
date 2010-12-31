@@ -3,6 +3,7 @@
 {% load conference_tags %}
 
 {% block body %}
+    <h1>My Conference Schedule</h1>
     <p>
         {% if day %}
             <a href="{% url conference_by_day day 'all' %}">View the master schedule</a>
