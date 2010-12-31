@@ -11,7 +11,8 @@
     {% block champsays %}
         <div id="champsays" style="position: fixed; width: 250px; top: 25px; right: 0px;">
         {% if champsays %}
-            <div style="border: 1px solid #a0a0a0; padding: 15px; -moz-border-radius: 1em; -webkit-border-radius: 1em; ">
+            <div style="border: 1px solid #a0a0a0; padding: 15px; -moz-border-radius: 1em; -webkit-border-radius: 1em; position: relative;">
+                <img src="{{STATIC_URL}}images/thechamp.png" style="position: absolute; top: -15px; right: -40px;"/>
                 <span style="font-weight: bold; font-decoration: italic; font-size: 16px;">THE CHAMP SAYS...</span>
                 <br/><br/>
                 {{ champsays|random }}

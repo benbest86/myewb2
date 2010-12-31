@@ -1,9 +1,6 @@
 {% extends "champ/champalytics/base.html" %}
 
 {% block body %}
-    Which graph do you want to view?
-    <br/><br/><br/>
-    
     <form method="get" action="{% url champalytics %}">
         <input type="hidden" name="metric" value="{{ metric }}"/>
         <input type="hidden" name="group" value="{{ group }}"/>
