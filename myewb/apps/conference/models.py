@@ -154,3 +154,31 @@ class QuasiVIPCode(ConferenceCode):
     
     def isAvailable(self):
         return True
+        
+class ConferenceRoom(models.Model):
+    pass
+
+SESSION_TYPES = (('keynote', "Keynote"),
+                 ('speaker', "Speaker"),
+                 ('panel', "Panel discussion"),
+                 ('workshop', "Workshop"),
+                 ('social', "Social time"),
+                 ('networking', "Networking"),
+                 ('other', "Other"))
+                 
+class ConferenceSession(models.Model):
+    name = models.CharField(max_length=255)
+    room = models.ForeignKey(ConferenceRoom)
+    day = models.DateField()
+    time = models.DateTimeField()
+    length = models.IntegerField(help_text="in minutes")
+    sessiontype = models.CharField(max_length=50, choices=SESSION_TYPES)
+    
+    attendees = models.ManyToManyField(User, related_name="conference_sessions")
+    maybes = models.ManyToManyField(User, related_name="conference_maybe")
+    
+class ConferenceBlock(models.Model):
+    user = models.ForeignKey(User)
+    day = models.DateTimeField()
+    length = models.IntegerField(help_text="in minutes")
+    

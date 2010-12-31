@@ -28,3 +28,17 @@ urlpatterns = patterns('conference.views',
 	
     (r'^who/', include('confcomm.urls')),
 )
+
+urlpatterns += patterns('conference.schedule',
+    url(r'^schedule/$', 'schedule', name='conference_schedule'),
+    url(r'^schedule/print/$', 'print_schedule', name='conference_print'),
+    url(r'^schedule/day/(?P<day>[\w]+)/$', 'day', name='conference_by_day'),
+    url(r'^schedule/room/(?P<room>[\d]+)/$', 'room', name='conference_by_room'),
+    url(r'^schedule/stream/(?P<stream>[\w]+)/$', 'stream', name='conference_by_stream'),
+    
+    url(r'^schedule/session/(?P<session>[\d]+)/$', 'session_detail', name='conference_session'),
+
+    url(r'^schedule/rsvp/$', 'session_rsvp', name='conference_session_rsvp'),
+    url(r'^schedule/block/$', 'block', name='conference_block'),
+)
+
