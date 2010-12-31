@@ -209,6 +209,18 @@ class ConferenceSession(models.Model):
         
     def endtime(self):
         return self.time + timedelta(minutes=self.length)
+        
+    def user_is_attending(self, user):
+        if user.is_authenticated():
+            if user in self.attendees.all():
+                return True
+        return False
+        
+    def user_is_tentative(self, user):
+        if user.is_authenticated():
+            if user in self.maybes.all():
+                return True
+        return False
 
 class ConferenceBlock(models.Model):
     user = models.ForeignKey(User)

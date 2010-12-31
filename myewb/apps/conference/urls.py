@@ -42,7 +42,9 @@ urlpatterns += patterns('conference.schedule',
     url(r'^schedule/session/(?P<session>[\d]+)/delete/$', 'session_delete', name='conference_session_delete'),
     url(r'^schedule/session/new/$', 'session_new', name='conference_session_new'),
 
-    url(r'^schedule/rsvp/$', 'session_rsvp', name='conference_session_rsvp'),
+    url(r'^schedule/(?P<session>[\d]+)/attend/$', 'session_attend', name='conference_session_attend'),
+    url(r'^schedule/(?P<session>[\d]+)/tentative/$', 'session_tentative', name='conference_session_tentative'),
+    url(r'^schedule/(?P<session>[\d]+)/skip/$', 'session_skip', name='conference_session_skip'),
     url(r'^schedule/block/$', 'block', name='conference_block'),
 )
 

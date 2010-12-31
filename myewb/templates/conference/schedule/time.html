@@ -1,5 +1,7 @@
 {% extends "conference/schedule/base.html" %}
 
+{% load conference_tags %}
+
 {% block body %}
     {% if stream %}
         {% for sid, sname in streams %}
@@ -23,14 +25,28 @@
         <br/><br/>
 
         {% if request.user.is_authenticated %}
-            <a href="#">Attend</a> | <a href="#">Tentative</a> | <a href="#">Remove</a>
-
-            {% if perms.conference %}
-                || -- ||
-                <a href="{% url conference_session_edit s.id %}">edit</a> |
-                <a href="{% url conference_session_delete s.id %}">delete</a>
+            {% attendance s request.user as attending tentative %}
+            {% if attending %}
+                <strong>This session is in your schedule!</strong><br/>
+                <em>This is NOT a formal RSVP; all sessions are first-come, first-serve</em>
+                <br/>
+                <a href="{% url conference_session_tentative s.id %}">Move to my backup list</a> | 
+                <a href="{% url conference_session_skip s.id %}">Remove from my schedule</a>
             {% endif %}
-
+            
+            {% if tentative %}
+                <strong>This session is in your backup list.</strong><br/>
+                <em>This is NOT a formal RSVP; all sessions are first-come, first-serve</em>
+                <br/>
+                <a href="{% url conference_session_attend s.id %}">Move to my schedule</a> | 
+                <a href="{% url conference_session_skip s.id %}">Remove from my list</a>
+            {% endif %}
+            
+            {% if not attending and not tentative %}
+                Add to... 
+                <a href="{% url conference_session_attend s.id %}">my schedule</a> | 
+                <a href="{% url conference_session_tentative s.id %}">my backup list</a>
+            {% endif %}
             <br/><br/>
         {% endif %}
     

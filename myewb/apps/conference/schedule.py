@@ -209,16 +209,28 @@ def session_delete(request, session):
 
 @login_required
 def session_attend(request, session):
+    s = get_object_or_404(ConferenceSession, id=session)
+    s.maybes.remove(request.user)
+    s.attendees.add(request.user)
     
-    return HttpResponse("not implemented")
+    return HttpResponseRedirect(reverse('conference_session', kwargs={'session': s.id}))
     
 @login_required
 def session_tentative(request, session):
-    return HttpResponse("not implemented")
+    s = get_object_or_404(ConferenceSession, id=session)
+    s.attendees.remove(request.user)
+    s.maybes.add(request.user)
+    
+    return HttpResponseRedirect(reverse('conference_session', kwargs={'session': s.id}))
+    
     
 @login_required
 def session_skip(request, session):
-    return HttpResponse("not implemented")
+    s = get_object_or_404(ConferenceSession, id=session)
+    s.attendees.remove(request.user)
+    s.maybes.remove(request.user)
+    
+    return HttpResponseRedirect(reverse('conference_session', kwargs={'session': s.id}))
     
 @login_required
 def block(request):
