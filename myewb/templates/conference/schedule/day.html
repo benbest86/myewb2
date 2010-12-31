@@ -41,7 +41,10 @@
                 <br/><br/>
             {% endif %}
             
-            {{ s.description }}
+            {{ s.short_description|linebreaksbr }}
+            
+            <br/><br/>
+            <a href="{% url conference_session s.id %}">view details &raquo;</a>
         </p>
         <hr/>
     {% endfor %}    

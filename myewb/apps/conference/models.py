@@ -173,7 +173,8 @@ class ConferenceSession(models.Model):
     time = models.DateTimeField()
     length = models.IntegerField(help_text="in minutes")
     sessiontype = models.CharField(max_length=50, choices=SESSION_TYPES)
-    description = models.TextField(blank=True)
+    short_description = models.TextField(blank=True)
+    long_description = models.TextField(blank=True)
     
     attendees = models.ManyToManyField(User, related_name="conference_sessions")
     maybes = models.ManyToManyField(User, related_name="conference_maybe")

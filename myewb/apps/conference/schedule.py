@@ -103,7 +103,14 @@ def stream(request, stream):
     return HttpResponse("not implemented")
 
 def session_detail(request, session):
-    return HttpResponse("not implemented")
+    s = get_object_or_404(ConferenceSession, id=session)
+    
+    # TODO: build RSVP list, predict capacity...
+    
+    return render_to_response("conference/schedule/session_detail.html",
+                              {"session": s},
+                              context_instance = RequestContext(request))
+
 
 def session_new(request):
     if request.method == 'POST':

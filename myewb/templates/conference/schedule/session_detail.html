@@ -1,0 +1,36 @@
+{% extends "conference/schedule/base.html" %}
+
+{% block body %}
+    <strong>{{ session.name }}</strong><br/>
+    {{ session.time}} - {{ session.endtime }} <em>({{ session.room.name }})</em>
+    <br/><br/>
+    
+    {% if request.user.is_authenticated %}
+        <a href="#">Attend</a> | <a href="#">Tentative</a> | <a href="#">Remove</a>
+        <br/><br/>
+    {% endif %}
+    
+    <p>
+        {{ session.long_description|linebreaksbr }}
+    </p>
+    <hr/>
+    
+    <p>
+        TODO: who else is attending, predict capacity...
+    </p>
+    <hr/>
+    
+    <p>
+        <a href="#">Find other sessions at this time</a><br/>
+        <a href="#">Find other sessions in this content stream</a>
+    </p>
+    <hr/>
+    
+    {% if perms.conference %}
+        <p>
+            <a href="{% url conference_session_edit session.id %}">Edit this session</a><br/>
+            <a href="{% url conference_session_delete session.id %}">Delete this session</a>
+        </p>
+    {% endif %}
+    
+{% endblock %}
