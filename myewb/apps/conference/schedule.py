@@ -26,7 +26,7 @@ from account_extra.forms import EmailLoginForm, EmailSignupForm
 
 from base_groups.models import BaseGroup
 from conference.forms import ConferenceSessionForm
-from conference.models import ConferenceRegistration, ConferenceCode, ConferenceRoom, ConferenceSession
+from conference.models import ConferenceRegistration, ConferenceCode, ConferenceRoom, ConferenceSession, STREAMS
 from conference.constants import *
 from conference.utils import needsToRenew
 from networks.models import ChapterInfo
@@ -36,15 +36,19 @@ from siteutils.shortcuts import get_object_or_none
 from siteutils.decorators import owner_required, secure_required
 from siteutils.helpers import fix_encoding
 
+CONFERENCE_DAYS = (('thurs', 'Thursday', 13),
+                   ('fri', 'Friday', 14),
+                   ('sat', 'Saturday', 15))
+
 def schedule(request):
     if request.user.is_authenticated:
         if ConferenceSession.objects.filter(attendees=request.user).count():
             return schedule_for_user(request, request.user)
 
     if date.today() == date(year=2011, month=1, day=15): #saturday
-        return HttpResponseRedirect(reverse('conference_by_day', kwargs={'day': 'sat'}));
+        return HttpResponseRedirect(reverse('conference_by_day', kwargs={'day': 'sat', 'stream': 'all'}));
     else:
-        return HttpResponseRedirect(reverse('conference_by_day', kwargs={'day': 'fri'}));
+        return HttpResponseRedirect(reverse('conference_by_day', kwargs={'day': 'fri', 'stream': 'all'}));
 
 def schedule_for_user(request, user, day=None, time=None):
     if not day and date.today() == date(year=2011, month=1, day=13): #thurs
@@ -76,7 +80,7 @@ def schedule_for_user(request, user):
 def print_schedule(request):
     return HttpResponse("not implemented")
         
-def day(request, day):
+def day(request, day, stream):
     if day == 'thurs':
         fday = date(year=2011, month=1, day=13)
     elif day == 'fri':
@@ -85,11 +89,22 @@ def day(request, day):
         fday = date(year=2011, month=1, day=15)
     else:                       # use fri as a default for unrecognized days
         fday = date(year=2011, month=1, day=14)
+        
+    timelist = []
+    for t in range(8, 22):
+        timelist.append(t)
 
     sessions = ConferenceSession.objects.filter(day=fday)
+    if stream != 'all':
+        sessions = sessions.filter(stream=stream)
+    
     return render_to_response("conference/schedule/day.html",
                               {"sessions": sessions,
-                               "day": day},
+                               "day": day,
+                               "timelist": timelist,
+                               "stream": stream,
+                               "streams": STREAMS,
+                               "days": CONFERENCE_DAYS},
                               context_instance = RequestContext(request))
 
 
@@ -97,9 +112,6 @@ def time(request, day, time):
     return HttpResponse("not implemented")
 
 def room(request, room):
-    return HttpResponse("not implemented")
-
-def stream(request, stream):
     return HttpResponse("not implemented")
 
 def session_detail(request, session):

@@ -20,4 +20,8 @@ def lookup_cost(code, room):
         return "$%d &nbsp;&nbsp;&nbsp;(%s)" % (listing['cost'], listing['name'])
     else:
         return ""
-    
+
+@register.simple_tag
+def rowspan(length):
+    return length / 30
+

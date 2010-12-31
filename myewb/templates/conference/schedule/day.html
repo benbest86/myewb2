@@ -1,52 +1,65 @@
 {% extends "conference/schedule/base.html" %}
 
+{% load conference_tags %}
+
 {% block body %}
-    Daily schedule
+    {% for did, dname, dnum in days %}
+        {% ifequal day did %}
+            <strong>{{ dname }}</strong>
+        {% else %}
+            <a href="{% url conference_by_day did stream %}">{{ dname }}</a>
+        {% endifequal %}
+        {% if not forloop.last %} | {% endif %}
+    {% endfor %}
     <br/>
-
-    {% ifequal day "thurs" %}
-        Thursday
-    {% else %}
-        <a href="{% url conference_by_day 'thurs' %}">Thursday</a>
-    {% endifequal %}
-    |
     
-    {% ifequal day "fri" %}
-        Friday
+    {% ifequal stream "all" %}
+        <strong>All streams</strong>
     {% else %}
-        <a href="{% url conference_by_day 'fri' %}">Friday</a>
-    {% endifequal %}
-    |
-    
-    {% ifequal day "sat" %}
-        Saturday
-    {% else %}
-        <a href="{% url conference_by_day 'sat' %}">Saturday</a>
-    {% endifequal %}
+        <a href="{% url conference_by_day day 'all' %}">All streams</a>
+    {% endifequal %} | 
+    {% for sid, sname in streams %}
+        {% ifequal stream sid %}
+            <strong>{{ sname }}</strong>
+        {% else %}
+            <a href="{% url conference_by_day day sid %}">{{ sname }}</a>
+        {% endifequal %}
+        {% if not forloop.last %} | {% endif %}
+    {% endfor %}
     <br/><br/>
-    <hr/>
     
-    {% for s in sessions %}
-        <p>
-            <strong>{{ s.name }}</strong><br/>
-            {{ s.time}} - {{ s.endtime }} <em>({{ s.room.name }})</em>
-            <br/><br/>
-            
-            {% if request.user.is_authenticated %}
-                <a href="#">Attend</a> | <a href="#">Tentative</a> | <a href="#">Remove</a>
-                {% if perms.conference %}
-                    || -- || <a href="{% url conference_session_edit s.id %}">edit</a>
-                    | <a href="{% url conference_session_delete s.id %}">delete</a>
-                {% endif %}
-                <br/><br/>
-            {% endif %}
-            
-            {{ s.short_description|linebreaksbr }}
-            
-            <br/><br/>
-            <a href="{% url conference_session s.id %}">view details &raquo;</a>
-        </p>
-        <hr/>
-    {% endfor %}    
-
+    <table border="1" width="100%">
+        {% for t in timelist %}
+            <tr>
+                <th>{{ t }}:00</th>
+                {% for s in sessions %}
+                    {% ifequal s.time.hour t %}
+                        {% ifequal s.time.minute 0 %}
+                            <td rowspan="{% rowspan s.length %}">
+                                <a href="{% url conference_session s.id %}">
+                                    <strong>{{ s.name }}</strong>
+                                </a><br/>
+                                <em>{{ s.room.name }}</em>
+                            </td>
+                        {% endifequal %}
+                    {% endifequal %}
+                {% endfor %}
+            </tr>
+            <tr>
+                <th>&nbsp;</th>
+                {% for s in sessions %}
+                    {% ifequal s.time.hour t %}
+                        {% ifequal s.time.minute 30 %}
+                            <td rowspan="{% rowspan s.length %}">
+                                <a href="{% url conference_session s.id %}">
+                                    <strong>{{ s.name }}</strong>
+                                </a><br/>
+                                <em>{{ s.room.name }}</em>
+                            </td>
+                        {% endifequal %}
+                    {% endifequal %}
+                {% endfor %}
+            </tr>
+        {% endfor %}
+    </table>
 {% endblock %}

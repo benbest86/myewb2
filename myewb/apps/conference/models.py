@@ -166,30 +166,32 @@ SESSION_TYPES = (('keynote', "Keynote"),
                  ('networking', "Networking"),
                  ('other', "Other"))
                  
+STREAMS = (('coalitions', 'Coalitions for Change'),
+           ('prosperity', 'Unlocking African Prosperity'),
+           ('rethinking', 'Rethinking Development'))
+                 
 class ConferenceSession(models.Model):
     name = models.CharField(max_length=255)
     room = models.ForeignKey(ConferenceRoom)
     day = models.DateField()
-    time = models.DateTimeField()
+    time = models.TimeField()
     length = models.IntegerField(help_text="in minutes")
     sessiontype = models.CharField(max_length=50, choices=SESSION_TYPES)
     short_description = models.TextField(blank=True)
     long_description = models.TextField(blank=True)
     
+    stream = models.CharField(max_length=50, choices=STREAMS)
+    capacity = models.IntegerField()
+    
     attendees = models.ManyToManyField(User, related_name="conference_sessions")
     maybes = models.ManyToManyField(User, related_name="conference_maybe")
     
     class Meta:
-        ordering = ('time',)
+        ordering = ('day', 'time',)
         
     def endtime(self):
         return self.time + timedelta(minutes=self.length)
 
-    def save(self):
-        self.day = self.time.date()
-        return super(ConferenceSession, self).save()
-        
-    
 class ConferenceBlock(models.Model):
     user = models.ForeignKey(User)
     day = models.DateTimeField()
