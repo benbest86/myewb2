@@ -5,6 +5,22 @@
 
 {% block body %}
     <h1>{{ session.name }}</h1>
+
+    {% if not request.is_mobile %}    
+        <div style="float: right; width: 25%; border: 1px solid; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; padding: 0.5em; margin: 0.5em;">
+            Capacity: {{ session.capacity }}
+            <br/>
+            <p>
+                Attending:<br/>
+                {% for u in attendees %}
+                    <div style="float: left; width: 35px; height: 35px; padding: 3px; margin: 4px; border: 1px solid #d0d0d0;">
+                        {% avatar u 35 %}
+                    </div>
+                {% endfor %}
+            </p>
+        </div>
+    {% endif %}
+    
     {{ session.day|date:"l"}}, {{ session.time|time:"g:i A" }} - {{ session.endtime|time:"g:i A" }} ({{ session.room }})<br/>
     <span class="{{ session.stream }}"><em>{{ session.streamverbose }}</em></span>
     {% if session.popular %}
@@ -48,21 +64,24 @@
     <p>
         {{ session.long_description|linebreaksbr }}
     </p>
+    <br style="clear: both;">
     <hr/>
     
-    <p>
-        Session capacity: {{ session.capacity }}
-    </p>
-    <p>
-        Attending:<br/>
-        {% for u in attendees %}
-            <div style="float: left; width: 35px; height: 35px; padding: 3px; margin: 4px; border: 1px solid #d0d0d0;">
-                {% avatar u 35 %}
-            </div>
-        {% endfor %}
-    </p>
-    <br style="clear: both;"/>
-    <hr/>
+    {% if request.is_mobile %}
+        <p>
+            Session capacity: {{ session.capacity }}
+        </p>
+        <p>
+            Attending:<br/>
+            {% for u in attendees %}
+                <div style="float: left; width: 35px; height: 35px; padding: 3px; margin: 4px; border: 1px solid #d0d0d0;">
+                    {% avatar u 35 %}
+                </div>
+            {% endfor %}
+        </p>
+        <br style="clear: both;"/>
+        <hr/>
+    {% endif %}
     
     <p>
         <a href="{% url conference_by_time session.dayverbose session.timeverbose %}">Find other sessions at this time</a><br/>
