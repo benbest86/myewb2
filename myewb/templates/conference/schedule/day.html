@@ -42,7 +42,7 @@
                 {% for s in sessions %}
                     {% ifequal s.time.hour t %}
                         {% ifequal s.time.minute 0 %}
-                            <td rowspan="{% rowspan s.length %}">
+                            <td rowspan="{% rowspan s.length %}" class="{{ s.stream }}">
                                 <a href="{% url conference_session s.id %}">
                                     <strong>{{ s.name }}</strong>
                                 </a><br/>
@@ -57,7 +57,7 @@
                 {% for s in sessions %}
                     {% ifequal s.time.hour t %}
                         {% ifequal s.time.minute 30 %}
-                            <td rowspan="{% rowspan s.length %}">
+                            <td rowspan="{% rowspan s.length %}" class="{{ s.stream }}">
                                 <a href="{% url conference_session s.id %}">
                                     <strong>{{ s.name }}</strong>
                                 </a><br/>
