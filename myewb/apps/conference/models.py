@@ -176,7 +176,7 @@ class ConferenceSession(models.Model):
     day = models.DateField(help_text='yyyy-mm-dd')
     time = models.TimeField(help_text='hh:mm in 24-hour time. must be either :00 or :30 to show up on schedules')
     length = models.IntegerField(help_text="in minutes")
-    sessiontype = models.CharField(max_length=50, choices=SESSION_TYPES)
+    sessiontype = models.CharField(max_length=50, choices=SESSION_TYPES, blank=True, null=True)
     short_description = models.TextField(blank=True)
     long_description = models.TextField(blank=True)
     

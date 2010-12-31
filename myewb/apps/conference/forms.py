@@ -401,7 +401,7 @@ class ConferenceSignupForm(forms.Form):
 class ConferenceSessionForm(forms.ModelForm):
     class Meta:
         model = ConferenceSession
-        fields = ['name', 'room', 'day', 'time', 'length', 'sessiontype',
+        fields = ['name', 'room', 'day', 'time', 'length',
                   'stream', 'capacity',
                   'short_description', 'long_description']
 
