@@ -237,6 +237,12 @@ class ConferenceSession(models.Model):
             return True
         
         return False
+        
+    def fixed(self):
+        if self.stream == 'common':
+            return True
+        else:
+            return False
 
 class ConferenceBlock(models.Model):
     user = models.ForeignKey(User)

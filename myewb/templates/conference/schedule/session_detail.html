@@ -6,7 +6,7 @@
 {% block body %}
     <h1>{{ session.name }}</h1>
 
-    {% if not request.is_mobile %}    
+    {% if not request.is_mobile and not session.fixed %}
         <div style="float: right; width: 25%; border: 1px solid; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; padding: 0.5em; margin: 0.5em;">
             Capacity: {{ session.capacity }}
             <br/>
@@ -23,7 +23,7 @@
     
     {{ session.day|date:"l"}}, {{ session.time|time:"g:i A" }} - {{ session.endtime|time:"g:i A" }} ({{ session.room }})<br/>
     <span class="{{ session.stream }}"><em>{{ session.streamverbose }}</em></span>
-    {% if session.popular %}
+    {% if session.popular and not session.fixed %}
         <br/>
         <span style="color: red;">Popular - arrive early to save a seat!</span>
     {% endif %}
@@ -35,7 +35,7 @@
 
     <br/><br/>
     
-    {% if request.user.is_authenticated %}
+    {% if request.user.is_authenticated and not session.fixed %}
         {% attendance session request.user as attending tentative %}
         {% if attending %}
             <strong>This session is in your schedule!</strong><br/>
@@ -67,7 +67,7 @@
     <br style="clear: both;">
     <hr/>
     
-    {% if request.is_mobile %}
+    {% if request.is_mobile and not session.fixed %}
         <p>
             Session capacity: {{ session.capacity }}
         </p>
@@ -84,12 +84,16 @@
     {% endif %}
     
     <p>
-        <a href="{% url conference_by_time session.dayverbose session.timeverbose %}">Find other sessions at this time</a><br/>
-        <a href="{% url conference_by_stream session.stream %}">Find other sessions in this content stream</a>
-        <br/><br/>
+        {% if not session.fixed %}
+            <a href="{% url conference_by_time session.dayverbose session.timeverbose %}">Find other sessions at this time</a><br/>
+            <a href="{% url conference_by_stream session.stream %}">Find other sessions in this content stream</a>
+            <br/><br/>
+        {% endif %}
         
-        {% if request.user.is_authenticated and attending %}
-            <a href="{% url conference_for_user session.dayverbose %}">&laquo; back to my schedule</a><br/>
+        {% if request.user.is_authenticated %}
+            {% if attending or session.fixed %}
+                <a href="{% url conference_for_user session.dayverbose %}">&laquo; back to my schedule</a><br/>
+            {% endif %}
         {% endif %}   
         <a href="{% url conference_by_day session.dayverbose 'all' %}">&laquo; back to the master schedule</a><br/>
     </p>

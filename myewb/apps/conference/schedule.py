@@ -12,6 +12,7 @@ from datetime import date
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
+from django.db.models import Q
 from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
@@ -59,11 +60,12 @@ def schedule_for_user(request, user=None, day=None, time=None):
     elif day == 'sat':
         fday = date(year=2011, month=1, day=15)
 
+    query = Q(attendees = user) | Q(stream='common')
     if day:
-        sessions = ConferenceSession.objects.filter(attendees=user, day=fday)
+        sessions = ConferenceSession.objects.filter(query, day=fday)
     else:
-        sessions = ConferenceSession.objects.filter(attendees=user)
-    
+        sessions = ConferenceSession.objects.filter(query)
+
     timelist = []
     for t in range(8, 22):
         timelist.append(t)
