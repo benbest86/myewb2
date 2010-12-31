@@ -26,7 +26,7 @@ from account_extra.forms import EmailLoginForm, EmailSignupForm
 
 from base_groups.models import BaseGroup
 from conference.forms import ConferenceSessionForm
-from conference.models import ConferenceRegistration, ConferenceCode, ConferenceRoom, ConferenceSession, STREAMS
+from conference.models import ConferenceRegistration, ConferenceCode, ConferenceRoom, ConferenceSession, STREAMS, STREAMS_SHORT
 from conference.constants import *
 from conference.utils import needsToRenew
 from networks.models import ChapterInfo
@@ -113,7 +113,7 @@ def day(request, day, stream):
                                "day": day,
                                "timelist": timelist,
                                "stream": stream,
-                               "streams": STREAMS,
+                               "streams": STREAMS_SHORT,
                                "days": CONFERENCE_DAYS},
                               context_instance = RequestContext(request))
 

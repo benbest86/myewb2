@@ -10,6 +10,7 @@
         </p>
     {% endif %}
 
+    Day: 
     {% for did, dname, dnum in days %}
         {% ifequal day did %}
             <strong>{{ dname }}</strong>
@@ -19,11 +20,12 @@
         {% if not forloop.last %} | {% endif %}
     {% endfor %}
     <br/>
-    
+
+    Stream:     
     {% ifequal stream "all" %}
-        <strong>All streams</strong>
+        <strong>All</strong>
     {% else %}
-        <a href="{% url conference_by_day day 'all' %}">All streams</a>
+        <a href="{% url conference_by_day day 'all' %}">All</a>
     {% endifequal %} | 
     {% for sid, sname in streams %}
         {% ifequal stream sid %}
