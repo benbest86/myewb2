@@ -31,6 +31,8 @@ urlpatterns = patterns('conference.views',
 
 urlpatterns += patterns('conference.schedule',
     url(r'^schedule/$', 'schedule', name='conference_schedule'),
+    url(r'^schedule/user/$', 'schedule_for_user', name='conference_for_user'),
+    url(r'^schedule/user/(?P<day>[\w]+)/$', 'schedule_for_user', name='conference_for_user'),
     url(r'^schedule/print/$', 'print_schedule', name='conference_print'),
     url(r'^schedule/day/(?P<day>[\w]+)/(?P<stream>[\w]+)/$', 'day', name='conference_by_day'),
     url(r'^schedule/time/(?P<day>[\w]+)/(?P<time>[\d]+)/$', 'time', name='conference_by_time'),

@@ -43,7 +43,7 @@ CONFERENCE_DAYS = (('thurs', 'Thursday', 13),
 def schedule(request):
     if request.user.is_authenticated:
         if ConferenceSession.objects.filter(attendees=request.user).count():
-            return schedule_for_user(request, request.user)
+            return HttpResponseRedirect(reverse('conference_for_user'));
 
     if date.today() == date(year=2011, month=1, day=15): #saturday
         return HttpResponseRedirect(reverse('conference_by_day', kwargs={'day': 'sat', 'stream': 'all'}));
@@ -51,7 +51,10 @@ def schedule(request):
         return HttpResponseRedirect(reverse('conference_by_day', kwargs={'day': 'fri', 'stream': 'all'}));
 
 @login_required
-def schedule_for_user(request, user, day=None, time=None):
+def schedule_for_user(request, user=None, day=None, time=None):
+    if not user:
+        user = request.user
+        
     if not day and date.today() == date(year=2011, month=1, day=13): #thurs
         day = 'thurs'
     elif not day and date.today() == date(year=2011, month=1, day=14):
@@ -71,9 +74,17 @@ def schedule_for_user(request, user, day=None, time=None):
     else:
         sessions = ConferenceSession.objects.filter(attendees=user)
     
+    timelist = []
+    for t in range(8, 22):
+        timelist.append(t)
+
     return render_to_response("conference/schedule/user.html",
-                              {"sessions": sessions},
+                              {"sessions": sessions,
+                               "day": day,
+                               "timelist": timelist,
+                               "days": CONFERENCE_DAYS},
                               context_instance = RequestContext(request))
+
 
 @login_required
 def print_schedule(request):

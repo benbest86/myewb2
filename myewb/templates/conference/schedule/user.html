@@ -3,33 +3,19 @@
 {% load conference_tags %}
 
 {% block body %}
-
-    {% if request.user.is_authenticated %}
-        <p>
-            <a href="{% url conference_for_user %}">View my personalized schedule</a>
-        </p>
-    {% endif %}
+    <p>
+        {% if day %}
+            <a href="{% url conference_by_day day 'all' %}">View the master schedule</a>
+        {% else %}
+            <a href="{% url conference_by_day 'fri' 'all' %}">View the master schedule</a>
+        {% endif %}
+    </p>
 
     {% for did, dname, dnum in days %}
         {% ifequal day did %}
             <strong>{{ dname }}</strong>
         {% else %}
-            <a href="{% url conference_by_day did stream %}">{{ dname }}</a>
-        {% endifequal %}
-        {% if not forloop.last %} | {% endif %}
-    {% endfor %}
-    <br/>
-    
-    {% ifequal stream "all" %}
-        <strong>All streams</strong>
-    {% else %}
-        <a href="{% url conference_by_day day 'all' %}">All streams</a>
-    {% endifequal %} | 
-    {% for sid, sname in streams %}
-        {% ifequal stream sid %}
-            <strong>{{ sname }}</strong>
-        {% else %}
-            <a href="{% url conference_by_day day sid %}">{{ sname }}</a>
+            <a href="{% url conference_for_user did %}">{{ dname }}</a>
         {% endifequal %}
         {% if not forloop.last %} | {% endif %}
     {% endfor %}
