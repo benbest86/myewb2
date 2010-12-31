@@ -25,6 +25,10 @@ def lookup_cost(code, room):
 def rowspan(length):
     return length / 30
 
+@register.simple_tag
+def height(length):
+    return "%fem" % (length / 30 * 1.5)
+
 class AttendanceNode(template.Node):
     def __init__(self, session, user, context_attending, context_tentative):
         self.session = template.Variable(session)

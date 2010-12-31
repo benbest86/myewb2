@@ -29,11 +29,12 @@
                 {% for s in sessions %}
                     {% ifequal s.time.hour t %}
                         {% ifequal s.time.minute 0 %}
-                            <td rowspan="{% rowspan s.length %}" class="{{ s.stream }}">
+                            <td rowspan="{% rowspan s.length %}" class="tlink {{ s.stream }}" style="height: {% height s.length %}">
                                 <a href="{% url conference_session s.id %}">
                                     <strong>{{ s.name }}</strong>
-                                </a><br/>
-                                <em>{{ s.room.name }}</em>
+                                    <br/>
+                                    <em>{{ s.room.name }}</em>
+                                </a>
                             </td>
                         {% endifequal %}
                     {% endifequal %}
@@ -44,11 +45,12 @@
                 {% for s in sessions %}
                     {% ifequal s.time.hour t %}
                         {% ifequal s.time.minute 30 %}
-                            <td rowspan="{% rowspan s.length %}" class="{{ s.stream }}">
+                            <td rowspan="{% rowspan s.length %}" class="tlink {{ s.stream }}" style="height: {% height s.length %}">
                                 <a href="{% url conference_session s.id %}">
                                     <strong>{{ s.name }}</strong>
-                                </a><br/>
-                                <em>{{ s.room.name }}</em>
+                                    <br/>
+                                    <em>{{ s.room.name }}</em>
+                                </a>
                             </td>
                         {% endifequal %}
                     {% endifequal %}
