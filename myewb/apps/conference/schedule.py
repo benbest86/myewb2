@@ -157,7 +157,6 @@ def session_detail(request, session):
         attendees = attendees[0:numattendees]
     else:
         attendees = attendees[0:10]
-    # TODO: build RSVP list, predict capacity...
     
     return render_to_response("conference/schedule/session_detail.html",
                               {"session": s,

@@ -30,6 +30,12 @@
                 background: blue;
                 color: #ffffff;
             }
+            #footer {
+                background: #e0e0e0;
+                font-size: 0.75em;
+                text-align: center;
+                padding: 10px;
+            }
         </style>
     </head>
 
@@ -46,5 +52,16 @@
                 <a href="{% url conference_session_new %}">Add a new session</a>
             </p>
         {% endif %}
+        
+        <div id="footer">
+            Engineers Without Borders Canada (C) 2010-2011
+            <br/><br/>
+            
+            {% if request.is_mobile %}
+                This website optimized for mobile phones
+            {% else %}
+                This website is mobile phone friendly
+            {% endif %}
+        </div>
     </body>
 </html>
