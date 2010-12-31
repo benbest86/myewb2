@@ -6,7 +6,7 @@ Copyright 2009-2010 Engineers Without Borders Canada
 @author: Francis Kung
 """
 
-import csv
+import csv, datetime
 from datetime import date
 
 from django.contrib import auth
@@ -109,7 +109,25 @@ def day(request, day, stream):
 
 
 def time(request, day, time):
-    return HttpResponse("not implemented")
+    if day == 'thurs':
+        fday = date(year=2011, month=1, day=13)
+    elif day == 'fri':
+        fday = date(year=2011, month=1, day=14)
+    elif day == 'sat':
+        fday = date(year=2011, month=1, day=15)
+    else:                       # use fri as a default for unrecognized days
+        fday = date(year=2011, month=1, day=14)
+
+    ftime = datetime.time(hour=int(time[0:2]), minute=int(time[2:4]))
+    sessions = ConferenceSession.objects.filter(day=fday, time=ftime)
+    
+    return render_to_response("conference/schedule/time.html",
+                              {"sessions": sessions,
+                               "day": fday,
+                               "time": ftime},
+                              context_instance = RequestContext(request))
+
+
 
 def room(request, room):
     return HttpResponse("not implemented")

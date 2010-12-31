@@ -189,6 +189,19 @@ class ConferenceSession(models.Model):
     class Meta:
         ordering = ('day', 'time',)
         
+    def dayverbose(self):
+        if self.day == date(year=2011, month=1, day=13):
+            return 'thurs'
+        elif self.day == date(year=2011, month=1, day=14):
+            return 'fri'
+        elif self.day == date(year=2011, month=1, day=15):
+            return 'sat'
+        
+        return ''
+        
+    def timeverbose(self):
+        return "%02d%02d" % (self.time.hour, self.time.minute)
+        
     def endtime(self):
         return self.time + timedelta(minutes=self.length)
 

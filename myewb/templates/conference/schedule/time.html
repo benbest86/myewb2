@@ -1,0 +1,32 @@
+{% extends "conference/schedule/base.html" %}
+
+{% block body %}
+    <strong>{{ day|date:"l" }} at {{ time|time:"P" }}</strong>
+    <br/><br/>
+
+    {% for s in sessions %}    
+        <strong>{{ s.name }}</strong><br/>
+        <em>{{ s.room.name }} - {{ s.length }} minutes</em>
+        <br/><br/>
+
+        {% if request.user.is_authenticated %}
+            <a href="#">Attend</a> | <a href="#">Tentative</a> | <a href="#">Remove</a>
+
+            {% if perms.conference %}
+                || -- ||
+                <a href="{% url conference_session_edit s.id %}">edit</a> |
+                <a href="{% url conference_session_delete s.id %}">delete</a>
+            {% endif %}
+
+            <br/><br/>
+        {% endif %}
+    
+        <p>
+            {{ s.short_description|linebreaksbr }}
+        </p>
+        
+        {% if not forloop.last %}<hr/>{% endif %}
+    {% endfor %}
+    
+
+{% endblock %}
