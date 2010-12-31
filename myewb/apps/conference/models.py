@@ -155,6 +155,13 @@ class QuasiVIPCode(ConferenceCode):
     def isAvailable(self):
         return True
         
+class FriendsConferenceCode(ConferenceCode):
+    def getShortname(self):
+        return 'friends'
+        
+    def isAvailable(self):
+        return True
+
 SESSION_TYPES = (('keynote', "Keynote"),
                  ('speaker', "Speaker"),
                  ('panel', "Panel discussion"),

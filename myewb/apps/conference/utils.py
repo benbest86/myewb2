@@ -3,11 +3,14 @@ from datetime import date
 from conference.constants import *
 from profiles.models import MemberProfile
 
-def needsToRenew(profile):
+def needsToRenew(profile, type=None):
     if profile.user.is_staff:
         return False
     
     if profile.user2.is_bulk:
+        return False
+
+    if not type or type != 'nohotel':
         return False
     
     if profile.membership_expiry == None:

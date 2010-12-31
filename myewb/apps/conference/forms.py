@@ -21,7 +21,7 @@ from emailconfirmation.models import EmailAddress
 
 from communities.models import Community
 from conference.constants import *
-from conference.models import ConferenceRegistration, ConferenceCode, AlumniConferenceCode, QuasiVIPCode, InvalidCode, ConferenceSession
+from conference.models import ConferenceRegistration, ConferenceCode, AlumniConferenceCode, QuasiVIPCode, FriendsConferenceCode, InvalidCode, ConferenceSession
 from conference.utils import needsToRenew
 from creditcard.models import CC_TYPES, Product
 from creditcard.forms import CreditCardNumberField, CreditCardExpiryField, PaymentFormPreview
@@ -116,6 +116,8 @@ class ConferenceRegistrationForm(forms.ModelForm):
                 code = AlumniConferenceCode()
             elif (codestring == 'ewbconfspecial'):
                 code = QuasiVIPCode()
+            elif (codestring == 'ewbfriendsconf'):
+                code = FriendsConferenceCode()
             else:
                 code = ConferenceCode.objects.get(code=codestring)
                 
@@ -187,7 +189,7 @@ class ConferenceRegistrationForm(forms.ModelForm):
         cleaned_data['products'].append(product.sku)
         total_cost = total_cost + Decimal(product.amount)
 
-        if needsToRenew(self.user.get_profile()):
+        if needsToRenew(self.user.get_profile(), type=cleaned_data['type']):
             # FIXME: some duplicated code from profiles.forms (where saving membership fees)
             if self.user.get_profile().student():
                 type = "studues"
