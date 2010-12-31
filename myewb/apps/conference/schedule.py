@@ -50,6 +50,7 @@ def schedule(request):
     else:
         return HttpResponseRedirect(reverse('conference_by_day', kwargs={'day': 'fri', 'stream': 'all'}));
 
+@login_required
 def schedule_for_user(request, user, day=None, time=None):
     if not day and date.today() == date(year=2011, month=1, day=13): #thurs
         day = 'thurs'
@@ -74,9 +75,7 @@ def schedule_for_user(request, user, day=None, time=None):
                               {"sessions": sessions},
                               context_instance = RequestContext(request))
 
-def schedule_for_user(request, user):
-    return HttpResponse("not implemented")
-
+@login_required
 def print_schedule(request):
     return HttpResponse("not implemented")
         
@@ -148,7 +147,11 @@ def session_detail(request, session):
                               context_instance = RequestContext(request))
 
 
+@login_required
 def session_new(request):
+    if not request.user.has_module_perms("conference"):
+        return HttpResponseRedirect(reverse('conference_schedule'))
+
     if request.method == 'POST':
         form = ConferenceSessionForm(request.POST)
 
@@ -163,7 +166,11 @@ def session_new(request):
                                "new": True},
                               context_instance = RequestContext(request))
 
+@login_required
 def session_edit(request, session):
+    if not request.user.has_module_perms("conference"):
+        return HttpResponseRedirect(reverse('conference_schedule'))
+
     s = get_object_or_404(ConferenceSession, id=session)
     
     if request.method == 'POST':
@@ -179,7 +186,11 @@ def session_edit(request, session):
                               {"form": form},
                               context_instance = RequestContext(request))
 
+@login_required
 def session_delete(request, session):
+    if not request.user.has_module_perms("conference"):
+        return HttpResponseRedirect(reverse('conference_schedule'))
+
     s = get_object_or_404(ConferenceSession, id=session)
     
     if request.method == 'POST' and request.POST.get('delete', None):
@@ -196,9 +207,20 @@ def session_delete(request, session):
                               {"session": s},
                               context_instance = RequestContext(request))
 
-def session_rsvp(request):
+@login_required
+def session_attend(request, session):
+    
     return HttpResponse("not implemented")
     
+@login_required
+def session_tentative(request, session):
+    return HttpResponse("not implemented")
+    
+@login_required
+def session_skip(request, session):
+    return HttpResponse("not implemented")
+    
+@login_required
 def block(request):
     return HttpResponse("not implemented")
     
