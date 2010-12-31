@@ -7,7 +7,7 @@
 
     {% if request.user.is_authenticated %}
         <p>
-            <a href="{% url conference_for_user %}">View my personalized schedule</a>
+            <a href="{% url conference_for_user day %}">View my personalized schedule</a>
         </p>
     {% endif %}
 
