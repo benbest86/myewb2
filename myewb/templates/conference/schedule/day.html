@@ -3,6 +3,7 @@
 {% load conference_tags %}
 
 {% block body %}
+    <h1>Conference Schedule</h1>
 
     {% if request.user.is_authenticated %}
         <p>
@@ -73,4 +74,11 @@
             </tr>
         {% endfor %}
     </table>
+    
+    {% if perms.conference %}
+        <p>
+            <a href="{% url conference_session_new %}">Add a new session</a>
+        </p>
+    {% endif %}
+        
 {% endblock %}

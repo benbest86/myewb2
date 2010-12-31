@@ -74,13 +74,6 @@
                     {% block body %}
                     {% endblock %}
 
-                    {% if perms.conference %}
-                        <hr/>
-                        <p>
-                            <a href="{% url conference_session_new %}">Add a new session</a>
-                        </p>
-                    {% endif %}
-        
                     {% if not request.is_mobile %}
                 </div>
             </div>

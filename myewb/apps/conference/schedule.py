@@ -49,16 +49,18 @@ def schedule_for_user(request, user=None, day=None, time=None):
         day = 'fri'
     elif not day and date.today() == date(year=2011, month=1, day=15):
         day = 'sat'
+    elif not day:
+        day = 'fri'
 
     if day == 'thurs':
-        day = date(year=2011, month=1, day=13)
+        fday = date(year=2011, month=1, day=13)
     elif day == 'fri':
-        day = date(year=2011, month=1, day=14)
+        fday = date(year=2011, month=1, day=14)
     elif day == 'sat':
-        day = date(year=2011, month=1, day=15)
+        fday = date(year=2011, month=1, day=15)
 
     if day:
-        sessions = ConferenceSession.objects.filter(attendees=user, day=day)
+        sessions = ConferenceSession.objects.filter(attendees=user, day=fday)
     else:
         sessions = ConferenceSession.objects.filter(attendees=user)
     
@@ -120,6 +122,7 @@ def time(request, day, time):
     
     return render_to_response("conference/schedule/time.html",
                               {"sessions": sessions,
+                               "dayshort": day,
                                "day": fday,
                                "time": ftime},
                               context_instance = RequestContext(request))

@@ -59,8 +59,19 @@
             </p>
         </div>
         
-        {% if not forloop.last %}<hr/>{% endif %}
+        <hr/>
     {% endfor %}
-    
+
+    {% if stream %}
+        {% if request.user.is_authenticated %}
+            <a href="{% url conference_for_user %}">&laquo; back to my schedule</a><br/>
+        {% endif %}   
+        <a href="{% url conference_by_day 'fri' stream %}">&laquo; back to the master schedule</a><br/>
+    {% else %}
+        {% if request.user.is_authenticated %}
+            <a href="{% url conference_for_user dayshort %}">&laquo; back to my schedule</a><br/>
+        {% endif %}   
+        <a href="{% url conference_by_day dayshort 'all' %}">&laquo; back to the master schedule</a><br/>
+    {% endif %}    
 
 {% endblock %}

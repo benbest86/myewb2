@@ -11,6 +11,12 @@
         <br/>
         <span style="color: red;">Popular - arrive early to save a seat!</span>
     {% endif %}
+    {% if perms.conference %}
+        <br/>
+        <a href="{% url conference_session_edit session.id %}">edit session</a> | 
+        <a href="{% url conference_session_delete session.id %}">delete session</a>
+    {% endif %}
+
     <br/><br/>
     
     {% if request.user.is_authenticated %}
@@ -61,14 +67,11 @@
     <p>
         <a href="{% url conference_by_time session.dayverbose session.timeverbose %}">Find other sessions at this time</a><br/>
         <a href="{% url conference_by_stream session.stream %}">Find other sessions in this content stream</a>
+        <br/><br/>
+        
+        {% if request.user.is_authenticated and attending %}
+            <a href="{% url conference_for_user session.dayverbose %}">&laquo; back to my schedule</a><br/>
+        {% endif %}   
+        <a href="{% url conference_by_day session.dayverbose 'all' %}">&laquo; back to the master schedule</a><br/>
     </p>
-    <hr/>
-    
-    {% if perms.conference %}
-        <p>
-            <a href="{% url conference_session_edit session.id %}">Edit this session</a><br/>
-            <a href="{% url conference_session_delete session.id %}">Delete this session</a>
-        </p>
-    {% endif %}
-    
 {% endblock %}
