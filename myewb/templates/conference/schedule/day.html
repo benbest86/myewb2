@@ -1,0 +1,44 @@
+{% extends "conference/schedule/base.html" %}
+
+{% block body %}
+    Daily schedule
+    <br/>
+
+    {% ifequal day "thurs" %}
+        Thursday
+    {% else %}
+        <a href="{% url conference_by_day 'thurs' %}">Thursday</a>
+    {% endifequal %}
+    |
+    
+    {% ifequal day "fri" %}
+        Friday
+    {% else %}
+        <a href="{% url conference_by_day 'fri' %}">Friday</a>
+    {% endifequal %}
+    |
+    
+    {% ifequal day "sat" %}
+        Saturday
+    {% else %}
+        <a href="{% url conference_by_day 'sat' %}">Saturday</a>
+    {% endifequal %}
+    <br/><br/>
+    <hr/>
+    
+    {% for s in sessions %}
+        <p>
+            <strong>{{ s.name }}</strong><br/>
+            {{ s.time}} - {{ s.endtime }} <em>({{ s.room.name }})</em>
+            <br/><br/>
+            
+            {% if request.user.is_authenticated %}
+                <a href="#">Attend</a> | <a href="#">Tentative</a> | <a href="#">Remove</a>
+                <br/><br/>
+            {% endif %}
+            
+            {{ s.description }}
+            <hr/>
+    {% endfor %}    
+
+{% endblock %}

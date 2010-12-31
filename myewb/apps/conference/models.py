@@ -1,5 +1,5 @@
 import hashlib
-from datetime import datetime
+from datetime import date, datetime, timedelta
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
@@ -173,10 +173,14 @@ class ConferenceSession(models.Model):
     time = models.DateTimeField()
     length = models.IntegerField(help_text="in minutes")
     sessiontype = models.CharField(max_length=50, choices=SESSION_TYPES)
+    description = models.TextField(blank=True)
     
     attendees = models.ManyToManyField(User, related_name="conference_sessions")
     maybes = models.ManyToManyField(User, related_name="conference_maybe")
     
+    def endtime(self):
+        return self.time + timedelta(minutes=self.length)
+        
     class Meta:
         ordering = ('time',)
         

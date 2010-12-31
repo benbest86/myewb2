@@ -38,7 +38,8 @@ from siteutils.helpers import fix_encoding
 
 def schedule(request):
     if request.user.is_authenticated:
-        return schedule_for_user(request, request.user)
+        if ConferenceSession.objects.filter(attendees=request.user).count():
+            return schedule_for_user(request, request.user)
 
     if date.today() == date(year=2011, month=1, day=15): #saturday
         return HttpResponseRedirect(reverse('conference_by_day', kwargs={'day': 'sat'}));
@@ -61,9 +62,9 @@ def schedule_for_user(request, user, day=None, time=None):
         day = date(year=2011, month=1, day=15)
 
     if day:
-        sessions = ConferenceSession.objects.filter(user=user, day=day)
+        sessions = ConferenceSession.objects.filter(attendees=user, day=day)
     else:
-        sessions = ConferenceSession.objects.filter(user=user)
+        sessions = ConferenceSession.objects.filter(attendees=user)
     
     return render_to_response("conference/schedule/user.html",
                               {"sessions": sessions},
@@ -76,7 +77,22 @@ def print_schedule(request):
     return HttpResponse("not implemented")
         
 def day(request, day):
-    return HttpResponse("not implemented")
+    if day == 'thurs':
+        fday = date(year=2011, month=1, day=13)
+    elif day == 'fri':
+        fday = date(year=2011, month=1, day=14)
+    elif day == 'sat':
+        fday = date(year=2011, month=1, day=15)
+    else:                       # use fri as a default for unrecognized days
+        fday = date(year=2011, month=1, day=14)
+
+    sessions = ConferenceSession.objects.filter(day=fday)
+    return render_to_response("conference/schedule/day.html",
+                              {"sessions": sessions,
+                               "day": day},
+                              context_instance = RequestContext(request))
+
+    
 
 def time(request, day, time):
     return HttpResponse("not implemented")
