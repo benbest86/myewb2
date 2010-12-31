@@ -1,0 +1,13 @@
+{% extends "conference/schedule/base.html" %}
+
+{% block body %}
+    <strong>Are you sure you want to delete the session:<br/>
+    <em>{{ session.name }}</em>?</strong>
+    <br/><br/>
+    
+    <form action="" method="post">
+        <input type="hidden" name="delete" value="yes"/>
+        <input type="submit" value="Delete"/>
+    </form>
+
+{% endblock %}

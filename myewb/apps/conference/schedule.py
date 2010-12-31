@@ -25,7 +25,7 @@ from attachments.models import Attachment
 from account_extra.forms import EmailLoginForm, EmailSignupForm
 
 from base_groups.models import BaseGroup
-from conference.forms import ConferenceRegistrationForm, ConferenceRegistrationFormPreview, CodeGenerationForm, ConferenceSignupForm
+from conference.forms import ConferenceSessionForm
 from conference.models import ConferenceRegistration, ConferenceCode, ConferenceRoom, ConferenceSession
 from conference.constants import *
 from conference.utils import needsToRenew
@@ -92,7 +92,6 @@ def day(request, day):
                                "day": day},
                               context_instance = RequestContext(request))
 
-    
 
 def time(request, day, time):
     return HttpResponse("not implemented")
@@ -107,13 +106,52 @@ def session_detail(request, session):
     return HttpResponse("not implemented")
 
 def session_new(request):
-    return HttpResponse("not implemented")
+    if request.method == 'POST':
+        form = ConferenceSessionForm(request.POST)
+
+        if form.is_valid():
+            session = form.save()
+            return HttpResponseRedirect(reverse('conference_session', kwargs={'session': session.id}))
+    else:
+        form = ConferenceSessionForm()
+        
+    return render_to_response("conference/schedule/session_edit.html",
+                              {"form": form,
+                               "new": True},
+                              context_instance = RequestContext(request))
 
 def session_edit(request, session):
-    return HttpResponse("not implemented")
+    s = get_object_or_404(ConferenceSession, id=session)
+    
+    if request.method == 'POST':
+        form = ConferenceSessionForm(request.POST, instance=s)
+
+        if form.is_valid():
+            session = form.save()
+            return HttpResponseRedirect(reverse('conference_session', kwargs={'session': session.id}))
+    else:
+        form = ConferenceSessionForm(instance=s)
+        
+    return render_to_response("conference/schedule/session_edit.html",
+                              {"form": form},
+                              context_instance = RequestContext(request))
 
 def session_delete(request, session):
-    return HttpResponse("not implemented")
+    s = get_object_or_404(ConferenceSession, id=session)
+    
+    if request.method == 'POST' and request.POST.get('delete', None):
+        redirect_day = 14
+        if s.day.day == 13:
+            redirect_day = 13
+        elif s.day.day == 15:
+            redirect_day = 15
+            
+        s.delete()
+        return HttpResponseRedirect(reverse('conference_by_day', kwargs={'day': redirect_day}))
+        
+    return render_to_response("conference/schedule/session_delete.html",
+                              {"session": s},
+                              context_instance = RequestContext(request))
 
 def session_rsvp(request):
     return HttpResponse("not implemented")

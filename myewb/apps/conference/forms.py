@@ -21,7 +21,7 @@ from emailconfirmation.models import EmailAddress
 
 from communities.models import Community
 from conference.constants import *
-from conference.models import ConferenceRegistration, ConferenceCode, AlumniConferenceCode, QuasiVIPCode, InvalidCode
+from conference.models import ConferenceRegistration, ConferenceCode, AlumniConferenceCode, QuasiVIPCode, InvalidCode, ConferenceSession
 from conference.utils import needsToRenew
 from creditcard.models import CC_TYPES, Product
 from creditcard.forms import CreditCardNumberField, CreditCardExpiryField, PaymentFormPreview
@@ -397,3 +397,9 @@ class ConferenceSignupForm(forms.Form):
         new_user.save()
         
         return new_user.username, password # required for authenticate()
+        
+class ConferenceSessionForm(forms.ModelForm):
+    class Meta:
+        model = ConferenceSession
+        fields = ['name', 'room', 'time', 'length', 'sessiontype', 'description']
+

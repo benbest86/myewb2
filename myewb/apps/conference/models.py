@@ -178,11 +178,15 @@ class ConferenceSession(models.Model):
     attendees = models.ManyToManyField(User, related_name="conference_sessions")
     maybes = models.ManyToManyField(User, related_name="conference_maybe")
     
-    def endtime(self):
-        return self.time + timedelta(minutes=self.length)
-        
     class Meta:
         ordering = ('time',)
+        
+    def endtime(self):
+        return self.time + timedelta(minutes=self.length)
+
+    def save(self):
+        self.day = self.time.date()
+        return super(ConferenceSession, self).save()
         
     
 class ConferenceBlock(models.Model):

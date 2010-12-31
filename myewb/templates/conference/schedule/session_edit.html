@@ -1,0 +1,32 @@
+{% extends "conference/schedule/base.html" %}
+
+{% block body %}
+    {% if new %}
+        <strong>New Session</strong>
+    {% else %}
+        <strong>Edit Session</strong>
+    {% endif %}
+    <br/><br/>
+    
+    {% if not new %}
+        <p>
+            <em>Be careful changing the time of an existing session; it will be 
+            automatically changed for all people attending the session, and may 
+            cause scheduling conflicts for them!</em>
+        </p>
+    {% endif %}
+    <form action="" method="post">
+        <table>
+            {{ form.as_table }}
+            <tr>
+                <th>&nbsp;</th>
+                {% if new %}
+                    <td><input type="submit" value="Add"/></td>
+                {% else %}
+                    <td><input type="submit" value="Edit"/></td>
+                {% endif %}
+            </tr>
+        </table>
+    </form>
+
+{% endblock %}
