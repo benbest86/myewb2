@@ -223,7 +223,12 @@ class ConferenceSession(models.Model):
         return False
         
     def popular(self):
-        return True
+        # TODO: I could probably come up with a better algorithm, which takes
+        # into account how many people have set up schedules...
+        if self.attendees.count() + (self.maybes.count() / 2) > self.capacity * 0.5:
+            return True
+        
+        return False
 
 class ConferenceBlock(models.Model):
     user = models.ForeignKey(User)
