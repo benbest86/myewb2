@@ -54,6 +54,15 @@ def stream(request, stream):
 def session_detail(request, session):
     return HttpResponse("not implemented")
 
+def session_new(request):
+    return HttpResponse("not implemented")
+
+def session_edit(request, session):
+    return HttpResponse("not implemented")
+
+def session_delete(request, session):
+    return HttpResponse("not implemented")
+
 def session_rsvp(request):
     return HttpResponse("not implemented")
     

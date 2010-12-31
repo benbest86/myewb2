@@ -37,6 +37,9 @@ urlpatterns += patterns('conference.schedule',
     url(r'^schedule/stream/(?P<stream>[\w]+)/$', 'stream', name='conference_by_stream'),
     
     url(r'^schedule/session/(?P<session>[\d]+)/$', 'session_detail', name='conference_session'),
+    url(r'^schedule/session/(?P<session>[\d]+)/edit/$', 'session_edit', name='conference_session_edit'),
+    url(r'^schedule/session/(?P<session>[\d]+)/delete/$', 'session_delete', name='conference_session_delete'),
+    url(r'^schedule/session/new/$', 'session_new', name='conference_session_new'),
 
     url(r'^schedule/rsvp/$', 'session_rsvp', name='conference_session_rsvp'),
     url(r'^schedule/block/$', 'block', name='conference_block'),
