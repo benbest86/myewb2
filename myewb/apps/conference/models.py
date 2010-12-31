@@ -195,7 +195,7 @@ class ConferenceSession(models.Model):
     maybes = models.ManyToManyField(User, related_name="conference_maybe")
     
     class Meta:
-        ordering = ('day', 'time',)
+        ordering = ('day', 'time', 'stream', 'length')
         
     def dayverbose(self):
         if self.day == date(year=2011, month=1, day=13):
