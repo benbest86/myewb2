@@ -24,6 +24,7 @@
         var year = [];
         var chapter = [];
         var national = [];
+        var zeroes = [];
 
         $(document).ready(function() {
             // parse table data into javascript variables
@@ -34,6 +35,7 @@
                 year.push($('.year', this).text());
                 chapter.push(parseInt($('.chapter', this).text(), 10));
                 national.push(parseInt($('.national', this).text(), 10));
+                zeroes.push(0);
             });
             
             // dynamically resize graph area
@@ -46,7 +48,7 @@
             var r = Raphael("graph");
 
             var lines = r.g.linechart(50, 50, 500, 400, year,
-                                      [chapter, national],
+                                      [chapter, national, zeroes],
                                       {nostroke: false, axis: "0 0 1 1", symbol: "o", smooth: true})
             lines.hoverColumn(function () {
                 this.tags = r.set();
