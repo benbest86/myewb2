@@ -6,7 +6,7 @@
     {% if stream %}
         {% for sid, sname in streams %}
             {% ifequal stream sid %}
-                <h1>{{ sname}}</h1>
+                <h1 class="{{ sid }}">{{ sname}}</h1>
             {% endifequal %}
         {% endfor %}
     {% else %}
@@ -20,7 +20,7 @@
                 {{ s.day|date:"l"}} at {{ s.time|time:"P" }} ({{ s.room }})
             {% else %}
                 {{ s.room }} - {{ s.length }} minutes<br/>
-                <em>{{ s.streamverbose }}</em>
+                <span class="{{ s.stream }}"><em>{{ s.streamverbose }}</em></span>
             {% endif %}
             <br/><br/>
 

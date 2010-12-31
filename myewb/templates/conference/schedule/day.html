@@ -11,32 +11,34 @@
         </p>
     {% endif %}
 
-    Day: 
-    {% for did, dname, dnum in days %}
-        {% ifequal day did %}
-            <strong>{{ dname }}</strong>
-        {% else %}
-            <a href="{% url conference_by_day did stream %}">{{ dname }}</a>
-        {% endifequal %}
-        {% if not forloop.last %} | {% endif %}
-    {% endfor %}
-    <br/>
+    <div style="line-height: 1.5em;">
+        Day: 
+        {% for did, dname, dnum in days %}
+            {% ifequal day did %}
+                <strong>{{ dname }}</strong>
+            {% else %}
+                <a href="{% url conference_by_day did stream %}">{{ dname }}</a>
+            {% endifequal %}
+            {% if not forloop.last %} | {% endif %}
+        {% endfor %}
+        <br/>
 
-    Stream:     
-    {% ifequal stream "all" %}
-        <strong>All</strong>
-    {% else %}
-        <a href="{% url conference_by_day day 'all' %}">All</a>
-    {% endifequal %} | 
-    {% for sid, sname in streams %}
-        {% ifequal stream sid %}
-            <strong>{{ sname }}</strong>
+        Stream:     
+        {% ifequal stream "all" %}
+            <strong>All</strong>
         {% else %}
-            <a href="{% url conference_by_day day sid %}">{{ sname }}</a>
-        {% endifequal %}
-        {% if not forloop.last %} | {% endif %}
-    {% endfor %}
-    <br/><br/>
+            <a href="{% url conference_by_day day 'all' %}">All</a>
+        {% endifequal %} | 
+        {% for sid, sname in streams %}
+            {% ifequal stream sid %}
+                <strong class="{{ sid }}">{{ sname }}</strong>
+            {% else %}
+                <a href="{% url conference_by_day day sid %}" class="{{ sid }}">{{ sname }}</a>
+            {% endifequal %}
+            {% if not forloop.last %} | {% endif %}
+        {% endfor %}
+    </div>
+    <br/>
     
     <table border="1" width="100%">
         {% for t in timelist %}

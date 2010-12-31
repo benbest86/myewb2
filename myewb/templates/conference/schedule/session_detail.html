@@ -5,8 +5,8 @@
 
 {% block body %}
     <h1>{{ session.name }}</h1>
-    {{ session.time|time:"g:i A" }} - {{ session.endtime|time:"g:i A" }} ({{ session.room }})<br/>
-    <em>{{ session.streamverbose }}</em>
+    {{ session.day|date:"l"}}, {{ session.time|time:"g:i A" }} - {{ session.endtime|time:"g:i A" }} ({{ session.room }})<br/>
+    <span class="{{ session.stream }}"><em>{{ session.streamverbose }}</em></span>
     {% if session.popular %}
         <br/>
         <span style="color: red;">Popular - arrive early to save a seat!</span>
