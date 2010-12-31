@@ -177,6 +177,10 @@ class ConferenceSession(models.Model):
     attendees = models.ManyToManyField(User, related_name="conference_sessions")
     maybes = models.ManyToManyField(User, related_name="conference_maybe")
     
+    class Meta:
+        ordering = ('time',)
+        
+    
 class ConferenceBlock(models.Model):
     user = models.ForeignKey(User)
     day = models.DateTimeField()

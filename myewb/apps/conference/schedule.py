@@ -26,7 +26,7 @@ from account_extra.forms import EmailLoginForm, EmailSignupForm
 
 from base_groups.models import BaseGroup
 from conference.forms import ConferenceRegistrationForm, ConferenceRegistrationFormPreview, CodeGenerationForm, ConferenceSignupForm
-from conference.models import ConferenceRegistration, ConferenceCode
+from conference.models import ConferenceRegistration, ConferenceCode, ConferenceRoom, ConferenceSession
 from conference.constants import *
 from conference.utils import needsToRenew
 from networks.models import ChapterInfo
@@ -37,12 +37,48 @@ from siteutils.decorators import owner_required, secure_required
 from siteutils.helpers import fix_encoding
 
 def schedule(request):
+    if request.user.is_authenticated:
+        return schedule_for_user(request, request.user)
+
+    if date.today() == date(year=2011, month=1, day=15): #saturday
+        return HttpResponseRedirect(reverse('conference_by_day', kwargs={'day': 'sat'}));
+    else:
+        return HttpResponseRedirect(reverse('conference_by_day', kwargs={'day': 'fri'}));
+
+def schedule_for_user(request, user, day=None, time=None):
+    if not day and date.today() == date(year=2011, month=1, day=13): #thurs
+        day = 'thurs'
+    elif not day and date.today() == date(year=2011, month=1, day=14):
+        day = 'fri'
+    elif not day and date.today() == date(year=2011, month=1, day=15):
+        day = 'sat'
+
+    if day == 'thurs':
+        day = date(year=2011, month=1, day=13)
+    elif day == 'fri':
+        day = date(year=2011, month=1, day=14)
+    elif day == 'sat':
+        day = date(year=2011, month=1, day=15)
+
+    if day:
+        sessions = ConferenceSession.objects.filter(user=user, day=day)
+    else:
+        sessions = ConferenceSession.objects.filter(user=user)
+    
+    return render_to_response("conference/schedule/user.html",
+                              {"sessions": sessions},
+                              context_instance = RequestContext(request))
+
+def schedule_for_user(request, user):
     return HttpResponse("not implemented")
 
 def print_schedule(request):
     return HttpResponse("not implemented")
         
 def day(request, day):
+    return HttpResponse("not implemented")
+
+def time(request, day, time):
     return HttpResponse("not implemented")
 
 def room(request, room):
