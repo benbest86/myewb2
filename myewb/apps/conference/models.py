@@ -202,6 +202,11 @@ class ConferenceSession(models.Model):
     def timeverbose(self):
         return "%02d%02d" % (self.time.hour, self.time.minute)
         
+    def streamverbose(self):
+        for sid, sname in STREAMS:
+            if self.stream == sid:
+                return sname
+        
     def endtime(self):
         return self.time + timedelta(minutes=self.length)
 

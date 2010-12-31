@@ -2,7 +2,8 @@
 
 {% block body %}
     <strong>{{ session.name }}</strong><br/>
-    {{ session.time}} - {{ session.endtime }} <em>({{ session.room.name }})</em>
+    {{ session.time}} - {{ session.endtime }} ({{ session.room.name }})<br/>
+    <em>{{ session.streamverbose }}</em>
     <br/><br/>
     
     {% if request.user.is_authenticated %}
@@ -22,7 +23,7 @@
     
     <p>
         <a href="{% url conference_by_time session.dayverbose session.timeverbose %}">Find other sessions at this time</a><br/>
-        <a href="#">Find other sessions in this content stream</a>
+        <a href="{% url conference_by_stream session.stream %}">Find other sessions in this content stream</a>
     </p>
     <hr/>
     

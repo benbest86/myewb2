@@ -1,12 +1,25 @@
 {% extends "conference/schedule/base.html" %}
 
 {% block body %}
-    <strong>{{ day|date:"l" }} at {{ time|time:"P" }}</strong>
+    {% if stream %}
+        {% for sid, sname in streams %}
+            {% ifequal stream sid %}
+                <strong>{{ sname}}</strong>
+            {% endifequal %}
+        {% endfor %}
+    {% else %}
+        <strong>{{ day|date:"l" }} at {{ time|time:"P" }}</strong>
+    {% endif %}
     <br/><br/>
 
     {% for s in sessions %}    
         <strong>{{ s.name }}</strong><br/>
-        <em>{{ s.room.name }} - {{ s.length }} minutes</em>
+        {% if stream %}
+            {{ s.time}} - {{ s.endtime }} ({{ s.room.name }})
+        {% else %}
+            {{ s.room.name }} - {{ s.length }} minutes<br/>
+            <em>{{ s.streamverbose }}</em>
+        {% endif %}
         <br/><br/>
 
         {% if request.user.is_authenticated %}
@@ -23,6 +36,10 @@
     
         <p>
             {{ s.short_description|linebreaksbr }}
+        </p>
+        
+        <p>
+            <a href="{% url conference_session s.id %}">view details &raquo;</a>
         </p>
         
         {% if not forloop.last %}<hr/>{% endif %}

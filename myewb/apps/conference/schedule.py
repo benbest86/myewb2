@@ -107,7 +107,6 @@ def day(request, day, stream):
                                "days": CONFERENCE_DAYS},
                               context_instance = RequestContext(request))
 
-
 def time(request, day, time):
     if day == 'thurs':
         fday = date(year=2011, month=1, day=13)
@@ -127,7 +126,14 @@ def time(request, day, time):
                                "time": ftime},
                               context_instance = RequestContext(request))
 
-
+def stream(request, stream):
+    sessions = ConferenceSession.objects.filter(stream=stream)
+    
+    return render_to_response("conference/schedule/time.html",
+                              {"sessions": sessions,
+                               "stream": stream,
+                               "streams": STREAMS},
+                              context_instance = RequestContext(request))
 
 def room(request, room):
     return HttpResponse("not implemented")

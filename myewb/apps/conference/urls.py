@@ -35,6 +35,7 @@ urlpatterns += patterns('conference.schedule',
     url(r'^schedule/day/(?P<day>[\w]+)/(?P<stream>[\w]+)/$', 'day', name='conference_by_day'),
     url(r'^schedule/time/(?P<day>[\w]+)/(?P<time>[\d]+)/$', 'time', name='conference_by_time'),
     url(r'^schedule/room/(?P<room>[\d]+)/$', 'room', name='conference_by_room'),
+    url(r'^schedule/stream/(?P<stream>[\w]+)/$', 'stream', name='conference_by_stream'),
     
     url(r'^schedule/session/(?P<session>[\d]+)/$', 'session_detail', name='conference_session'),
     url(r'^schedule/session/(?P<session>[\d]+)/edit/$', 'session_edit', name='conference_session_edit'),
