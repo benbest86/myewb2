@@ -33,7 +33,7 @@
                                 <a href="{% url conference_session s.id %}">
                                     <strong>{{ s.name }}</strong>
                                     <br/>
-                                    <em>{{ s.room.name }}</em>
+                                    <em>{{ s.room }}</em>
                                 </a>
                             </td>
                         {% endifequal %}
@@ -49,7 +49,7 @@
                                 <a href="{% url conference_session s.id %}">
                                     <strong>{{ s.name }}</strong>
                                     <br/>
-                                    <em>{{ s.room.name }}</em>
+                                    <em>{{ s.room }}</em>
                                 </a>
                             </td>
                         {% endifequal %}

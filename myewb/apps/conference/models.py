@@ -155,9 +155,6 @@ class QuasiVIPCode(ConferenceCode):
     def isAvailable(self):
         return True
         
-class ConferenceRoom(models.Model):
-    pass
-
 SESSION_TYPES = (('keynote', "Keynote"),
                  ('speaker', "Speaker"),
                  ('panel', "Panel discussion"),
@@ -175,7 +172,7 @@ STREAMS_SHORT = (('coalitions', 'Coalitions'),
                  
 class ConferenceSession(models.Model):
     name = models.CharField(max_length=255)
-    room = models.ForeignKey(ConferenceRoom)
+    room = models.CharField(max_length=255)
     day = models.DateField(help_text='yyyy-mm-dd')
     time = models.TimeField(help_text='hh:mm in 24-hour time. must be either :00 or :30 to show up on schedules')
     length = models.IntegerField(help_text="in minutes")

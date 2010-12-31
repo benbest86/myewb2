@@ -17,9 +17,9 @@
         <div class="sessionname">{{ s.name }}</div>
         <div class="sessiondetail">
             {% if stream %}
-                {{ s.day|date:"l"}} at {{ s.time|time:"P" }} ({{ s.room.name }})
+                {{ s.day|date:"l"}} at {{ s.time|time:"P" }} ({{ s.room }})
             {% else %}
-                {{ s.room.name }} - {{ s.length }} minutes<br/>
+                {{ s.room }} - {{ s.length }} minutes<br/>
                 <em>{{ s.streamverbose }}</em>
             {% endif %}
             <br/><br/>

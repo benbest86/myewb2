@@ -5,7 +5,7 @@
 
 {% block body %}
     <h1>{{ session.name }}</h1>
-    {{ session.time|time:"g:i A" }} - {{ session.endtime|time:"g:i A" }} ({{ session.room.name }})<br/>
+    {{ session.time|time:"g:i A" }} - {{ session.endtime|time:"g:i A" }} ({{ session.room }})<br/>
     <em>{{ session.streamverbose }}</em>
     {% if session.popular %}
         <br/>
@@ -45,7 +45,7 @@
     <hr/>
     
     <p>
-        Room capacity: {{ session.capacity }}
+        Session capacity: {{ session.capacity }}
     </p>
     <p>
         Attending:<br/>
