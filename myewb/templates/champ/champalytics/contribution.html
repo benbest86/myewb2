@@ -42,7 +42,7 @@
             c = chapter[idx];
             t = total[idx];
 
-            var content = '<p><strong>' + m + '</strong></p>';
+            var content = '<strong>' + m + '</strong><br/>';
 
             content += '<p>Your chapter: ' + v + '% of all ' + m + ' numbers</p>';
             content += '<p>(' + c + ' of ' + t + ')</p>';
@@ -74,9 +74,6 @@
             $('#graph').height(boxheight + 'px');
             $('#graphlabels').height(boxheight + 'px');
 
-            var newmargin = ($(document).width() - $('#graphcontainer').width() - $('#champsays').width()) / 2;
-            $('#champsays').css('margin-right', newmargin + 'px');
-            
             // draw graph
             var r = Raphael("graph");
             graph = r.g.hbarchart(10, 10, 300, boxheight, [values, difference],

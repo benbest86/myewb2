@@ -36,7 +36,7 @@
             a = absolute[idx];
             g = goal[idx];
 
-            var content = '<p><strong>' + c + '</strong></p>';
+            var content = '<strong>' + c + '</strong><br/>';
 
             {% if not useabsolute %}
                 content += '<p>' + v + '% of goal</p>';
@@ -80,9 +80,6 @@
             $('#graph').height(boxheight + 'px');
             $('#graphlabels').height(boxheight + 'px');
 
-            var newmargin = ($(document).width() - $('#graphcontainer').width() - $('#champsays').width()) / 2;
-            $('#champsays').css('margin-right', newmargin + 'px');
-            
             // draw graph
             var r = Raphael("graph");
             graph = r.g.hbarchart(10, 10, 300, boxheight, [values, difference],

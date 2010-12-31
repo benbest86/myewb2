@@ -12,7 +12,7 @@
         <input type="hidden" name="graphtype" value="Progress to goal"/>
         <input type="hidden" name="stage" value="draw"/>
         
-        <input type="radio" name="progressby" value="formetric" id="formetric"/>
+        <input type="radio" name="progressby" value="formetric" id="formetric" checked="checked"/>
         <label for="formetric">
             {% lookup_ctx namedict metric as metricname %}
             show me all chapters' progress for {{ metricname.0 }}

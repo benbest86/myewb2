@@ -42,9 +42,6 @@
             $('#graph').height(boxheight + 'px').width(600 + 'px').css('left', '0');
             $('#graphlabels').height(boxheight + 'px');
 
-            var newmargin = ($(document).width() - $('#graphcontainer').width() - $('#champsays').width()) / 2;
-            $('#champsays').css('margin-right', newmargin + 'px');
-            
             // draw graph
             var r = Raphael("graph");
 
