@@ -86,8 +86,10 @@ def schedule_for_user(request, user=None, day=None, time=None):
     return render_to_response("conference/schedule/user.html",
                               {"sessions": user_sessions,
                                "day": day,
+                               "fday": fday,
                                "timelist": timelist,
-                               "days": CONFERENCE_DAYS},
+                               "days": CONFERENCE_DAYS,
+                               "printable": request.GET.get('printable', None)},
                               context_instance = RequestContext(request))
 
 

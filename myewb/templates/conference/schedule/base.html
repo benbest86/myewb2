@@ -79,10 +79,11 @@
     </head>
 
     <body>
+        {% if not printable %}
         <div id="header">
             <img src="{{STATIC_URL}}images/kumvanasmallnew.png"/>
         </div>
-    
+
         {% if not request.is_mobile %}
             <div style="background: #e0e0e0;">
                 <div style="width: 75%; margin: 0 auto; background: #ffffff; padding: 15px;">
@@ -99,9 +100,13 @@
                             {% endif %}
                         </div>
                     {% endblock %}
-
+                
+                    {% endif %}
+                    
                     {% block body %}
                     {% endblock %}
+                    
+                    {% if not printable %}
 
                     {% if not request.is_mobile %}
                 </div>
@@ -120,5 +125,6 @@
                 This website is mobile phone friendly
             {% endif %}
         </div>
+        {% endif %}
     </body>
 </html>
