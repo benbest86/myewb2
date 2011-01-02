@@ -26,8 +26,8 @@ from pinax.apps.account.forms import ResetPasswordKeyForm, ResetPasswordForm
 
 from account_extra.forms import EmailLoginForm
 from base_groups.models import BaseGroup
-from conference.forms import ConferenceSessionForm
-from conference.models import ConferenceRegistration, ConferenceSession, STREAMS, STREAMS_SHORT
+from conference.forms import ConferenceSessionForm, ConferencePrivateEventForm
+from conference.models import ConferenceRegistration, ConferenceSession, ConferencePrivateEvent, STREAMS, STREAMS_SHORT
 from mailer.sendmail import send_mail
 from siteutils import online_middleware
 from siteutils.shortcuts import get_object_or_none
@@ -52,7 +52,7 @@ def schedule_for_user(request, user=None, day=None, time=None):
     if not user:
         user = request.user
         
-    if not day and date.today() == date(year=2011, month=1, day=13): #thurs
+    if not day and date.today() == date(year=2011, month=1, day=13): #thur
         day = 'thurs'
     elif not day and date.today() == date(year=2011, month=1, day=14):
         day = 'fri'
@@ -71,15 +71,20 @@ def schedule_for_user(request, user=None, day=None, time=None):
     query = Q(attendees = user) | Q(stream='common')
     if day:
         sessions = ConferenceSession.objects.filter(query, day=fday)
+        private = ConferencePrivateEvent.objects.filter(creator=request.user, day=fday)
     else:
         sessions = ConferenceSession.objects.filter(query)
+        private = ConferencePrivateEvent.objects.filter(creator=request.user)
+        
+    user_sessions = list(sessions)
+    user_sessions.extend(private)
 
     timelist = []
     for t in range(8, 22):
         timelist.append(t)
 
     return render_to_response("conference/schedule/user.html",
-                              {"sessions": sessions,
+                              {"sessions": user_sessions,
                                "day": day,
                                "timelist": timelist,
                                "days": CONFERENCE_DAYS},
@@ -251,9 +256,83 @@ def session_skip(request, session):
     return HttpResponseRedirect(reverse('conference_session', kwargs={'session': s.id}))
     
 @login_required
-def block(request):
-    return HttpResponse("not implemented")
+def private_detail(request, session):
+    s = get_object_or_404(ConferencePrivateEvent, id=session)
     
+    if s.creator != request.user:
+        return render_to_response("conference/schedule/denied.html",
+                                  {}, context_instance = RequestContext(request))
+    
+    return render_to_response("conference/schedule/session_private_detail.html",
+                              {"session": s,
+                               "attendees": [],
+                               "private": True},
+                              context_instance = RequestContext(request))
+
+@login_required
+def private_new(request):
+    if request.method == 'POST':
+        form = ConferencePrivateEventForm(request.POST)
+
+        if form.is_valid():
+            session = form.save(commit=False)
+            session.creator = request.user
+            session.save()
+            return HttpResponseRedirect(reverse('conference_private', kwargs={'session': session.id}))
+    else:
+        form = ConferencePrivateEventForm()
+        
+    return render_to_response("conference/schedule/session_edit.html",
+                              {"form": form,
+                               "new": True,
+                               "private": True},
+                              context_instance = RequestContext(request))
+
+@login_required
+def private_edit(request, session):
+    s = get_object_or_404(ConferencePrivateEvent, id=session)
+    
+    if s.creator != request.user:
+        return render_to_response("conference/schedule/denied.html",
+                                  {}, context_instance = RequestContext(request))
+    
+    if request.method == 'POST':
+        form = ConferencePrivateEventForm(request.POST, instance=s)
+
+        if form.is_valid():
+            session = form.save()
+            return HttpResponseRedirect(reverse('conference_private', kwargs={'session': session.id}))
+    else:
+        form = ConferencePrivateEventForm(instance=s)
+        
+    return render_to_response("conference/schedule/session_edit.html",
+                              {"form": form,
+                               "private": True},
+                              context_instance = RequestContext(request))
+
+@login_required
+def private_delete(request, session):
+    s = get_object_or_404(ConferencePrivateEvent, id=session)
+    
+    if s.creator != request.user:
+        return render_to_response("conference/schedule/denied.html",
+                                  {}, context_instance = RequestContext(request))
+    
+    if request.method == 'POST' and request.POST.get('delete', None):
+        redirect_day = 14
+        if s.day.day == 13:
+            redirect_day = 13
+        elif s.day.day == 15:
+            redirect_day = 15
+            
+        s.delete()
+        return HttpResponseRedirect(reverse('conference_for_user'))
+        
+    return render_to_response("conference/schedule/session_delete.html",
+                              {"session": s,
+                               "private": True},
+                              context_instance = RequestContext(request))
+
 def login(request):
     if request.user.is_authenticated():
         return HttpResponseRedirect(reverse('conference_schedule'))

@@ -7,13 +7,22 @@
         <h1>Edit Session</h1>
     {% endif %}
     
-    {% if not new %}
+    {% if private %}
         <p>
-            <em>Be careful changing the time of an existing session; it will be 
-            automatically changed for all people attending the session, and may 
-            cause scheduling conflicts for them!</em>
+            Add a custom event to your schedule.<br/>
+            This event will not show up in the public listing or anyone else's schedule,<br/>
+            but can be used to block off time for private meetings, networking, etc.
         </p>
+    {% else %}
+        {% if not new %}
+            <p>
+                <em>Be careful changing the time of an existing session; it will be 
+                automatically changed for all people attending the session, and may 
+                cause scheduling conflicts for them!</em>
+            </p>
+        {% endif %}
     {% endif %}
+    
     <form action="" method="post">
         <table>
             {{ form.as_table }}

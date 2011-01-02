@@ -1,7 +1,9 @@
 {% extends "conference/schedule/base.html" %}
 
 {% block body %}
-    <strong>Are you sure you want to delete the session:<br/>
+    <strong>Are you sure you want to delete the 
+        {% if private %}event{% else %}session{% endif %}:
+    <br/>
     <em>{{ session.name }}</em>?</strong>
     <br/><br/>
     

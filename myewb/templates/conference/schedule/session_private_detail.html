@@ -1,0 +1,26 @@
+{% extends "conference/schedule/base.html" %}
+
+{% block body %}
+    <h1>{{ session.name }}</h1>
+
+    {{ session.day|date:"l"}}, {{ session.time|time:"g:i A" }} - {{ session.endtime|time:"g:i A" }} ({{ session.room }})<br/>
+    <br/>
+    
+    This is a custom event in your schedule
+    <br/>
+    
+    <a href="{% url conference_private_edit session.id %}">edit event</a> | 
+    <a href="{% url conference_private_delete session.id %}">delete event</a>
+    <br/><br/>
+    
+    <p>
+        {{ session.description|linebreaksbr }}
+    </p>
+    <hr/>
+    
+    <p>
+        <a href="{% url conference_for_user %}">&laquo; back to my schedule</a> 
+    </p>
+
+{% endblock %}
+

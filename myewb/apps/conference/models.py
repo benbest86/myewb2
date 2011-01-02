@@ -2,6 +2,7 @@ import hashlib
 from datetime import date, datetime, timedelta
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
 
@@ -197,6 +198,9 @@ class ConferenceSession(models.Model):
     class Meta:
         ordering = ('day', 'time', 'stream', 'length')
         
+    def url(self):
+        return reverse('conference_session', kwargs={'session': self.id});
+        
     def dayverbose(self):
         if self.day == date(year=2011, month=1, day=13):
             return 'thurs'
@@ -244,8 +248,46 @@ class ConferenceSession(models.Model):
         else:
             return False
 
-class ConferenceBlock(models.Model):
-    user = models.ForeignKey(User)
-    day = models.DateTimeField()
+class ConferencePrivateEvent(models.Model):
+    name = models.CharField(max_length=255)
+    location = models.CharField(max_length=255)
+    day = models.DateField(help_text='yyyy-mm-dd')
+    time = models.TimeField(help_text='hh:mm in 24-hour time. must be either :00 or :30 to show up on schedules')
     length = models.IntegerField(help_text="in minutes")
+    description = models.TextField(blank=True)
+    creator = models.ForeignKey(User)
     
+    class Meta:
+        ordering = ('day', 'time', 'length')
+
+    def url(self):
+        return reverse('conference_private', kwargs={'session': self.id});
+        
+    def room(self):
+        return self.location
+        
+    def short_description(self):
+        return self.description
+
+    def long_description(self):
+        return self.description
+        
+    def stream(self):
+        return 'private'
+
+    def dayverbose(self):
+        if self.day == date(year=2011, month=1, day=13):
+            return 'thurs'
+        elif self.day == date(year=2011, month=1, day=14):
+            return 'fri'
+        elif self.day == date(year=2011, month=1, day=15):
+            return 'sat'
+        
+        return ''
+        
+    def timeverbose(self):
+        return "%02d%02d" % (self.time.hour, self.time.minute)
+        
+    def endtime(self):
+        return datetime.combine(date.today(), self.time) + timedelta(minutes=self.length)
+        

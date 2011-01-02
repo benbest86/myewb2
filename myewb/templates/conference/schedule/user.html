@@ -30,7 +30,7 @@
                     {% ifequal s.time.hour t %}
                         {% ifequal s.time.minute 0 %}
                             <td rowspan="{% rowspan s.length %}" class="tlink {{ s.stream }}" style="height: {% height s.length %}">
-                                <a href="{% url conference_session s.id %}">
+                                <a href="{{ s.url }}">
                                     <strong>{{ s.name }}</strong>
                                     <br/>
                                     <em>{{ s.room }}</em>
@@ -46,7 +46,7 @@
                     {% ifequal s.time.hour t %}
                         {% ifequal s.time.minute 30 %}
                             <td rowspan="{% rowspan s.length %}" class="tlink {{ s.stream }}" style="height: {% height s.length %}">
-                                <a href="{% url conference_session s.id %}">
+                                <a href="{{ s.url }}">
                                     <strong>{{ s.name }}</strong>
                                     <br/>
                                     <em>{{ s.room }}</em>
@@ -58,4 +58,9 @@
             </tr>
         {% endfor %}
     </table>
+    <br/>
+    
+    <a href="{% url conference_private_new %}">Add a custom event to my schedule</a>
+    <br/>
+    
 {% endblock %}

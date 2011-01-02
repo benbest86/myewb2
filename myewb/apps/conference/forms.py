@@ -21,7 +21,7 @@ from emailconfirmation.models import EmailAddress
 
 from communities.models import Community
 from conference.constants import *
-from conference.models import ConferenceRegistration, ConferenceCode, AlumniConferenceCode, QuasiVIPCode, FriendsConferenceCode, InvalidCode, ConferenceSession
+from conference.models import ConferenceRegistration, ConferenceCode, AlumniConferenceCode, QuasiVIPCode, FriendsConferenceCode, InvalidCode, ConferenceSession, ConferencePrivateEvent
 from conference.utils import needsToRenew
 from creditcard.models import CC_TYPES, Product
 from creditcard.forms import CreditCardNumberField, CreditCardExpiryField, PaymentFormPreview
@@ -406,4 +406,9 @@ class ConferenceSessionForm(forms.ModelForm):
         fields = ['name', 'room', 'day', 'time', 'length',
                   'stream', 'capacity',
                   'short_description', 'long_description']
+
+class ConferencePrivateEventForm(forms.ModelForm):
+    class Meta:
+        model = ConferencePrivateEvent
+        fields = ['name', 'location', 'day', 'time', 'length', 'description']
 
