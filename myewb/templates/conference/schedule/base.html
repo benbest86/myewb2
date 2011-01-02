@@ -85,7 +85,7 @@
     <body>
         {% if not printable %}
         <div id="header">
-            {% request.is_mobile %}
+            {% if request.is_mobile %}
                 <img src="{{STATIC_URL}}images/kumvanasmallnew_mobile.png"/>
             {% else %}
                 <img src="{{STATIC_URL}}images/kumvanasmallnew.png"/>
