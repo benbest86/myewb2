@@ -1,0 +1,58 @@
+{% extends "conference/schedule/base.html" %}
+
+{% block signin %}
+{% endblock %}
+
+{% block body %}
+    <style>
+        #signin th {
+            width: auto;
+            text-align: right;
+        }
+		ul.errorlist {
+		    margin-top: 0;
+			margin-left: 10px;
+			float: right;
+			list-style: none;
+			border: 1px solid #ff0000;
+			padding: 3px;
+			-moz-border-radius: 0.5em;
+			-webkit-border-radius: 0.5em;
+			color: #ff0000;
+			background: #ffdfdf;
+        }        
+    </style>
+    <h1>Sign in</h1>
+    
+    <p>
+        Sign in to your myEWB account to build and view your personal conference
+        schedule!
+    </p>
+    
+    
+    <form action="" method="post">
+        <table id="signin">
+            {{ form }}
+            <tr>
+                <td style="text-align: right;">&nbsp;</td>
+                <td>
+                    <input type="submit" value="Sign in"/>
+                </td>
+            </tr>
+        </table>
+    </form>
+    <br/>
+    
+    <p>
+        <strong><em>If you registered for conference without creating an account,<br/>
+        or if you have lost your password...</em></strong>
+        <br/><br/>
+        
+        Enter your email address to create/reset your password:<br/>
+        <form action="{% url conference_schedule_reset_pwd %}" method="post">
+            <input type="text" name="email"/>
+            <input type="submit" value="Send me a reset link"/>
+        </form>
+    </p>
+    
+{% endblock %}

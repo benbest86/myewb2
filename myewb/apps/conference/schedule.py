@@ -6,22 +6,30 @@ Copyright 2009-2010 Engineers Without Borders Canada
 @author: Francis Kung
 """
 
-import datetime
+import datetime, settings
 from datetime import date
 
+from account.models import PasswordReset
+from django.contrib import auth
 from django.contrib.auth.decorators import login_required, permission_required
 from django.contrib.auth.models import User
+from django.contrib.auth.views import logout as pinaxlogout
+from django.contrib.sites.models import Site
 from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import HttpResponseRedirect, HttpResponseForbidden, HttpResponse
 from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
+from django.template.loader import render_to_string
+from django.utils.hashcompat import sha_constructor
+from pinax.apps.account.forms import ResetPasswordKeyForm, ResetPasswordForm
 
-from account_extra.forms import EmailLoginForm, EmailSignupForm
-
+from account_extra.forms import EmailLoginForm
 from base_groups.models import BaseGroup
 from conference.forms import ConferenceSessionForm
 from conference.models import ConferenceRegistration, ConferenceSession, STREAMS, STREAMS_SHORT
+from mailer.sendmail import send_mail
+from siteutils import online_middleware
 from siteutils.shortcuts import get_object_or_none
 from siteutils.helpers import fix_encoding
 
@@ -30,7 +38,7 @@ CONFERENCE_DAYS = (('thurs', 'Thursday', 13),
                    ('sat', 'Saturday', 15))
 
 def schedule(request):
-    if request.user.is_authenticated:
+    if request.user.is_authenticated():
         if ConferenceSession.objects.filter(attendees=request.user).count():
             return HttpResponseRedirect(reverse('conference_for_user'));
 
@@ -246,4 +254,106 @@ def session_skip(request, session):
 def block(request):
     return HttpResponse("not implemented")
     
+def login(request):
+    if request.user.is_authenticated():
+        return HttpResponseRedirect(reverse('conference_schedule'))
+
+    signin_form = EmailLoginForm(initial={'remember': 'on'})
+    
+    if request.method == "POST":
+        signin_form = EmailLoginForm(request.POST)
+        if signin_form.is_valid():
+            user = signin_form.user
+            auth.login(request, user)
+            return HttpResponseRedirect(reverse('conference_schedule'))
+
+    return render_to_response("conference/schedule/login.html",
+                              {'form': signin_form},
+                              context_instance = RequestContext(request))
+
+def logout(request):
+    online_middleware.remove_user(request)
+    return pinaxlogout(request, next_page=reverse('conference_schedule'))
+
+def reset_password(request, key=None):
+    context = {}
+    
+    if request.method == 'POST' and request.POST.get('email', None):
+        if request.user.is_authenticated():
+            return HttpResponseRedirect(reverse('conference_schedule'))
+            
+        email = request.POST.get('email', None)
+        if User.objects.filter(email__iexact=email).count():
+            context['email'] = email
+        else:
+            context['email_error'] = email
+
+        for user in User.objects.filter(email__iexact=email):
+            temp_key = sha_constructor("%s%s%s" % (
+                settings.SECRET_KEY,
+                user.email,
+                settings.SECRET_KEY,
+            )).hexdigest()
+
+            # save it to the password reset model
+            password_reset = PasswordReset(user=user, temp_key=temp_key)
+            password_reset.save()
+
+            current_site = Site.objects.get_current()
+            domain = unicode(current_site.domain)
+
+            #send the password reset email
+            subject = "myEWB password reset"
+            message = render_to_string("conference/schedule/password_reset_message.txt", {
+                "user": user,
+                "temp_key": temp_key,
+                "domain": domain,
+            })
+            send_mail(subject=subject, txtMessage=message,
+                      fromemail=settings.DEFAULT_FROM_EMAIL,
+                      recipients=[user.email], priority="high")
+        
+    elif key:
+        if PasswordReset.objects.filter(temp_key__exact=key, reset=False).count():
+            if request.method == 'POST':
+                form = ResetPasswordKeyForm(request.POST)
+                
+                if form.is_valid():
+                    # get the password_reset object
+                    temp_key = form.cleaned_data.get("temp_key")
+                    password_reset = PasswordReset.objects.filter(temp_key__exact=temp_key, reset=False)
+                    password_reset = password_reset[0]  # should always be safe, as form_clean checks this
+
+                    # now set the new user password
+                    user = User.objects.get(passwordreset__exact=password_reset)
+                    result = user.set_password(form.cleaned_data['password1'])
+
+                    if not result:
+                        # unsuccessful
+                        form._errors[forms.forms.NON_FIELD_ERRORS] = ["Error (password is too simple maybe?)"]
+                    else:
+                        user.save()
+
+                        # change all the password reset records to this person to be true.
+                        for password_reset in PasswordReset.objects.filter(user=user):
+                            password_reset.reset = True
+                            password_reset.save()
+
+                        user = auth.authenticate(username=user.username, password=form.cleaned_data['password1'])
+                        auth.login(request, user)
+                        return HttpResponseRedirect(reverse('conference_schedule'))
+            else:
+                form = ResetPasswordKeyForm(initial={'temp_key': key})
+            
+            context['keyvalid'] = True
+            context['form'] = form
+        else:
+            context['keyerror'] = True
+    
+    else:
+        return HttpResponseRedirect(reverse('conference_schedule_login'))
+
+    return render_to_response("conference/schedule/reset.html",
+                              context,
+                              context_instance = RequestContext(request))
 

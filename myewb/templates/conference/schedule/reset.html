@@ -1,0 +1,63 @@
+{% extends "conference/schedule/base.html" %}
+
+{% block signin %}
+{% endblock %}
+
+{% block body %}
+    <style>
+        #reset th {
+            width: auto;
+            text-align: right;
+        }
+		ul.errorlist {
+		    margin-top: 0;
+			margin-left: 10px;
+			float: right;
+			list-style: none;
+			border: 1px solid #ff0000;
+			padding: 3px;
+			-moz-border-radius: 0.5em;
+			-webkit-border-radius: 0.5em;
+			color: #ff0000;
+			background: #ffdfdf;
+        }        
+    </style>
+    <h1>Reset password</h1>
+    
+    {% if email %}
+        <p>
+            An email has been sent to <strong>{{ email }}</strong> with a password
+            reset instructions.
+        </p>
+    {% endif %}
+    
+    {% if email_error %}
+        <p>
+            The email address you entered is not valid.
+        </p>
+    {% endif %}
+    
+    {% if keyvalid %}
+        <p>
+            Please select a new password:
+        </p>
+        <form action="" method="post">
+            <table id="reset">
+                {{ form }}
+                <tr>
+                    <td style="text-align: right;">&nbsp;</td>
+                    <td>
+                        <input type="submit" value="Change password"/>
+                    </td>
+                </tr>
+            </table>
+        </form>
+        <br/>
+        
+    {% endif %}
+    
+    {% if keyerror %}
+        <p>This password reset link is not valid (perhaps it has already been used?)</p>
+    {% endif %}
+    
+{% endblock %}

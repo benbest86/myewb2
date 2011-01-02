@@ -399,7 +399,7 @@ class ConferenceSignupForm(forms.Form):
         new_user.save()
         
         return new_user.username, password # required for authenticate()
-        
+                
 class ConferenceSessionForm(forms.ModelForm):
     class Meta:
         model = ConferenceSession

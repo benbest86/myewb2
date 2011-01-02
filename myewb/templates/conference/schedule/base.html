@@ -84,6 +84,18 @@
                 <div style="width: 75%; margin: 0 auto; background: #ffffff; padding: 15px;">
                     {% endif %}
 
+                    {% block signin %}
+                        <div>                    
+                            {% if request.user.is_authenticated %}
+                                Hello, <strong>{{ request.user.visible_name }}</strong>
+                                (<a href="{% url conference_schedule_logout %}">sign out</a>)
+                            {% else %}
+                                <a href="{% url conference_schedule_login %}">Sign in</a>
+                                to build your personal conference schedule
+                            {% endif %}
+                        </div>
+                    {% endblock %}
+
                     {% block body %}
                     {% endblock %}
 

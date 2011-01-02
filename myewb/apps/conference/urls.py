@@ -44,6 +44,11 @@ urlpatterns += patterns('conference.schedule',
     url(r'^schedule/session/(?P<session>[\d]+)/delete/$', 'session_delete', name='conference_session_delete'),
     url(r'^schedule/session/new/$', 'session_new', name='conference_session_new'),
 
+    url(r'^schedule/login/$', 'login', name='conference_schedule_login'),
+    url(r'^schedule/logout/$', 'logout', name='conference_schedule_logout'),
+    url(r'^schedule/reset_password/$', 'reset_password', name='conference_schedule_reset_pwd'),
+    url(r'^schedule/reset_password/(?P<key>[\w]+)/$', 'reset_password', name="conference_schedule_reset_pwd"),
+
     url(r'^schedule/(?P<session>[\d]+)/attend/$', 'session_attend', name='conference_session_attend'),
     url(r'^schedule/(?P<session>[\d]+)/tentative/$', 'session_tentative', name='conference_session_tentative'),
     url(r'^schedule/(?P<session>[\d]+)/skip/$', 'session_skip', name='conference_session_skip'),
