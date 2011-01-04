@@ -516,11 +516,10 @@ Chapter:
     <script type="text/javascript">
         $(document).ready(function() {
             $('#champ_groups').change(function() {
-                var theDate = new Date();
                 if ($(this).val())
-	                window.location.href="{% url champ_dashboard %}" + $(this).val() + "/" + theDate.getFullYear() + "/";
+	                window.location.href="{% url champ_dashboard %}" + $(this).val() + "/" + {{ nowyear }} + "/";
 	            else
-	                window.location.href="{% url champ_dashboard %}" + theDate.getFullYear() + "/";
+	                window.location.href="{% url champ_dashboard %}" + {{ nowyear }} + "/";
             });
             
             $('.champalytics').click(function() {
