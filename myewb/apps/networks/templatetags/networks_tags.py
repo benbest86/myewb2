@@ -11,6 +11,7 @@ Last modified on 2009-07-29
 from datetime import date
 from django import template
 from django.core.urlresolvers import reverse
+from siteutils import schoolyear
 
 register = template.Library()
 
@@ -23,9 +24,9 @@ def link_to_current_champ(user):
     chapter = user.get_profile().get_chapter()
     if chapter and chapter.is_chapter():
         return reverse('champ_dashboard', kwargs={'group_slug': chapter.slug,
-                                                  'year': date.today().year})
+                                                  'year': schoolyear.school_year()})
     else:
-        return reverse('champ_dashboard', kwargs={'year': date.today().year})
+        return reverse('champ_dashboard', kwargs={'year': schoolyear.school_year()})
     
     
 @register.simple_tag

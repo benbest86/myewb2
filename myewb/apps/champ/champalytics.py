@@ -58,7 +58,7 @@ def select_graph(request):
                               
 def build_stats(group_slug=None, year=None):
     if not year:
-        year = date.today().year
+        year = schoolyear.school_year()
         
     activity_filters, metric_filters = build_filters(year)
     
@@ -81,7 +81,7 @@ def build_stats(group_slug=None, year=None):
     
 def build_stats_for(group_slug=None, metric=None, year=None):
     if not year:
-        year = date.today().year
+        year = schoolyear.school_year()
         
     activity_filters, metric_filters = build_filters(year)
     
@@ -139,7 +139,7 @@ def progress_draw(request):
                 progress['national'] = (100, stats, ngoal)
         
         for g in allgroups:
-            yp = YearPlan.objects.filter(group=g, year=date.today().year)
+            yp = YearPlan.objects.filter(group=g, year=schoolyear.school_year())
             if yp.count():
                 yearplan = yp[0]
             else:
@@ -186,7 +186,7 @@ def progress_draw(request):
         
     
     elif progressby == 'forchapter' and group:
-        yp = YearPlan.objects.filter(group__slug=group, year=date.today().year)
+        yp = YearPlan.objects.filter(group__slug=group, year=schoolyear.school_year())
         if yp.count():
             yearplan = yp[0]
             stats, national = build_stats(group)
@@ -297,7 +297,7 @@ def year_draw(request):
     champsays = []
     history = []
 
-    for y in range(2007, date.today().year + 1):
+    for y in range(2007, schoolyear.school_year() + 1):
         if group and group != "none":
             stats, natlstats = build_stats_for(metric=metric, group_slug=group, year=y)
         else:

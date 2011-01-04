@@ -147,7 +147,7 @@ def dashboard(request, year=None, month=None, term=None,
         if year:
             yp = YearPlan.objects.filter(group=grp, year=year)
         else:
-            yp = YearPlan.objects.filter(group=grp, year=date.today().year)
+            yp = YearPlan.objects.filter(group=grp, year=schoolyear.school_year())
         if yp.count():
             context['yearplan'] = yp[0]
             
@@ -832,7 +832,7 @@ def journal_detail(request, group_slug, journal_id):
 def yearplan(request, group_slug, year=None):
     group = get_object_or_404(Network, slug=group_slug)
     if year == None:
-        year = date.today().year
+        year = schoolyear.school_year()
         
     yp, created = YearPlan.objects.get_or_create(group=group, year=year,
                                                  defaults={'last_editor': request.user})
