@@ -226,7 +226,7 @@ def session_delete(request, session):
             redirect_day = 'sat'
             
         s.delete()
-        return HttpResponseRedirect(reverse('conference_by_day', kwargs={'day': redirect_day}))
+        return HttpResponseRedirect(reverse('conference_by_day', kwargs={'day': redirect_day, 'stream': 'all'}))
         
     return render_to_response("conference/schedule/session_delete.html",
                               {"session": s},
