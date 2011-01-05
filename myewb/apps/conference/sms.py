@@ -19,7 +19,7 @@ from django.template import RequestContext
 from django.template.loader import render_to_string
 
 from conference.forms import ConferenceSmsForm, SMS_CHOICES
-from conference.models import ConferenceRegistration, ConferenceSession, ConferenceCellNumber
+from conference.models import ConferenceRegistration, ConferenceSession, ConferenceCellNumber, ConferencePhoneFrom
 from siteutils.shortcuts import get_object_or_none
 
 CONFERENCE_DAYS = (('thurs', 'Thursday', 13),
@@ -72,24 +72,19 @@ def send_sms(request, session=None):
                 registrations = list(registrations)
                 registrations.extend(list(ConferenceCellNumber.objects.filter(opt_out__isnull=True)))
             
-            
-            """
-            # Twilio, requiring us to disperse over a number of phone numbers...
-            
+            # Twilio
             for r in registrations:
                 if r.cellphone_optout or not r.cellphone:
                     continue
                 
                 fromnumber = r.cellphone_from
                 if not fromnumber:
-                    numbers = ConferencePhoneFrom.objects.filter(accounts__lt=10)
-                    if numbers.count():
-                        fromnumber = numbers[0]
-                        r.cellphone_from=fromnumber
-                        r.save()
-                    else:
-                        # create new number via api
-                        pass
+                    numbers = ConferencePhoneFrom.objects.order_by('accounts')
+                    fromnumber = numbers[0]
+                    r.cellphone_from=fromnumber
+                    r.save()
+                    fromnumber.accounts = fromnumber.accounts + 1
+                    fromnumber.save() 
                         
                 d = {'From': fromnumber.number,   #  '415-599-2671',
                      'To': r.cellphone,
@@ -105,7 +100,9 @@ def send_sms(request, session=None):
                     failed = failed + 1
                 else:
                     success = success + 1
-            """
+
+            response = ""
+            response = "%s<br/>Successful: %d<br/>Failed:%d<br/>" % (response, success, failed)
             
             """
             # ThunderTexting, simple GET
@@ -161,6 +158,7 @@ def send_sms(request, session=None):
                 response = r.read()
             """
             
+            """
             for r in registrations:
                 if hasattr(r, 'user'):
                     if r.cellphone and not r.cellphone_optout:
@@ -172,6 +170,7 @@ def send_sms(request, session=None):
                     
             if not response:
                 response = "No recipients matched your query."
+            """
                 
     else:
         form = ConferenceSmsForm()
@@ -192,9 +191,6 @@ def send_sms(request, session=None):
 
 # This requires mailbox support; see sms_poll.php and put it on a cron =)
 def stop_sms(request):
-    if request.method != 'POST' or not request.POST.get('message', None):
-        return HttpResponse("not supported")
-
     """
     ThunderTexting format:
     
@@ -209,8 +205,10 @@ def stop_sms(request):
     To Phone Number: 416xxxxxxx
     Your Message: ok, now what's next...!
     Your Reference: test1
-    """
     
+    if request.method != 'POST' or not request.POST.get('message', None):
+        return HttpResponse("not supported")
+
     result = ""
     
     message = request.POST.get('message', None)
@@ -229,7 +227,21 @@ def stop_sms(request):
         if lines[i].startswith('----'):
             break
         txtmessage = txtmessage + "\n" + lines[i]
+    """
     
+    """
+    Twilio format.  So much easier.
+    """
+    if request.method != 'POST' or not request.POST.get('From', None) or not request.POST.get('Body', None):
+        return HttpResponse("not supported")
+
+    fromnumber = request.POST.get('From', None)
+    txtmessage = request.POST.get('Body', None)
+    
+    if fromnumber[0:1] == '1':
+        fromnumber = fromnumber[1:]
+    elif fromnumber[0:2] == '+1':
+        fromnumber = fromnumber[2:]
     txtmessage = txtmessage.strip().lower()
     if txtmessage.find('stop') != -1:
         result = result + "stopping\n"
@@ -240,22 +252,51 @@ def stop_sms(request):
                 result = result + "goodbye %s\n" % reg.user.email
                 reg.cellphone_optout = datetime.now()
                 reg.save()
+                provider = reg.cellphone_from
+                if provider:
+                    provider.accounts = provider.accounts - 1
+                    provider.save()
                 
         numbers = ConferenceCellNumber.objects.filter(number=fromnumber, opt_out__isnull=True)
         if fromnumber and numbers.count():
             for n in numbers:
                 n.opt_out = datetime.now()
                 n.save()
+                provider = n.cellphone_from
+                if provider:
+                    provider.accounts = provider.accounts - 1
+                    provider.save()
             
                 
     #elif txtmessage.find('start') != -1:
     else:
-        numbers = ConferenceCellNumber.objects.filter(number=fromnumber, opt_out__isnull=True)
-        if not numbers.count():
+        r = ConferenceRegistration.objects.filter(cellphone=fromnumber, cancelled=False)
+        numbers = ConferenceCellNumber.objects.filter(number=fromnumber)
+
+        if r.count():
+            r.cellphone_optout = None
+            r.save()
+            
+            if r.cellphone_from:
+                provider = r.cellphone_from
+                provider.accounts = provider.accounts + 1
+                provider.save()
+                
+        
+        elif numbers.count():
+            result = result + "already found %s\n" % fromnumber
+            n = numbers[0]
+            n.opt_out = None
+            n.save()
+            
+            if n.cellphone_from:
+                provider = n.cellphone_from
+                provider.accounts = provider.accounts + 1
+                provider.save()
+                
+        else:
             ConferenceCellNumber.objects.create(number=fromnumber)
             result = result + "adding %s\n" % fromnumber
-        else:
-            result = result + "already found %s\n" % fromnumber
     
     #else:
     #    result = result + "dunno what to do\n"

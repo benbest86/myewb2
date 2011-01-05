@@ -30,8 +30,7 @@ class ConferenceRegistration(models.Model):
     prevRetreats = models.SmallIntegerField(default=0)
     cellphone = models.CharField(max_length=50, blank=True, null=True)
     cellphone_optout = models.DateTimeField(blank=True, null=True)
-    #cellphone_optout = models.BooleanField(default=False)
-    #cellphone_from = models.ForeignField('ConferencePhoneFrom')
+    cellphone_from = models.ForeignKey('ConferencePhoneFrom', null=True, blank=True)
     grouping = models.CharField(max_length=50, blank=True, null=True)
     
     txid = models.CharField(max_length=255)
@@ -295,14 +294,13 @@ class ConferencePrivateEvent(models.Model):
     def endtime(self):
         return datetime.combine(date.today(), self.time) + timedelta(minutes=self.length)
 
-"""
 class ConferencePhoneFrom(models.Model):
     number = models.CharField(max_length=10)
-    accounts = models.IntegerField
-"""
+    accounts = models.IntegerField(default=0)
 
 class ConferenceCellNumber(models.Model):
     number = models.CharField(max_length=10)
     opt_in = models.DateTimeField(auto_now_add=True)
     opt_out = models.DateTimeField(blank=True, null=True)
+    cellphone_from = models.ForeignKey(ConferencePhoneFrom, null=True, blank=True)
     
