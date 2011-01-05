@@ -235,6 +235,7 @@ def stop_sms(request):
     if request.method != 'POST' or not request.POST.get('From', None) or not request.POST.get('Body', None):
         return HttpResponse("not supported")
 
+    tonumber = request.POST.get('To', None)
     fromnumber = request.POST.get('From', None)
     txtmessage = request.POST.get('Body', None)
     result = ""
@@ -243,7 +244,14 @@ def stop_sms(request):
         fromnumber = fromnumber[1:]
     elif fromnumber[0:2] == '+1':
         fromnumber = fromnumber[2:]
+        
+    if tonumber[0:1] == '1':
+        tonumber = tonumber[1:]
+    elif tonumber[0:2] == '+1':
+        tonumber = tonumber[2:]
+        
     txtmessage = txtmessage.strip().lower()
+    
     if txtmessage.find('stop') != -1:
         result = result + "stopping\n"
         r = ConferenceRegistration.objects.filter(cellphone=fromnumber, cancelled=False)
@@ -279,7 +287,7 @@ def stop_sms(request):
     #elif txtmessage.find('start') != -1:
     else:
         r = ConferenceRegistration.objects.filter(cellphone=fromnumber, cancelled=False)
-        numbers = ConferenceCellNumber.objects.filter(number=fromnumber)
+        numbers = ConferenceCellNumber.objects.filter(cellphone=fromnumber)
 
         if r.count():
             reg = r[0]
@@ -288,9 +296,12 @@ def stop_sms(request):
             
             if reg.cellphone_from:
                 provider = reg.cellphone_from
-                provider.accounts = provider.accounts + 1
-                provider.save()
-                
+            else:
+                provider = ConferencePhoneFrom.objects.get_or_create(number=tonumber)
+                reg.cellphone_from = provider
+                reg.save()
+            provider.accounts = provider.accounts + 1
+            provider.save()
         
         elif numbers.count():
             result = result + "already found %s\n" % fromnumber
@@ -300,8 +311,12 @@ def stop_sms(request):
             
             if n.cellphone_from:
                 provider = n.cellphone_from
-                provider.accounts = provider.accounts + 1
-                provider.save()
+            else:
+                provider = ConferencePhoneFrom.objects.get_or_create(number=tonumber)
+                n.cellphone_from = provider
+                n.save()
+            provider.accounts = provider.accounts + 1
+            provider.save()
                 
         else:
             ConferenceCellNumber.objects.create(cellphone=fromnumber)
@@ -309,7 +324,7 @@ def stop_sms(request):
     
         xmlresponse = """<?xml version="1.0" encoding="UTF-8" ?>
 <Response>
-    <Sms>Welcome to the EWB Natinoal Conference 2011 notices list.  To unsubscribe, reply with STOP</Sms>
+    <Sms>Welcome to the EWB National Conference 2011 notices list.  To unsubscribe, reply with STOP</Sms>
 </Response>
 """
         return HttpResponse(xmlresponse)
