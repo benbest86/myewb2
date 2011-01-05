@@ -175,3 +175,62 @@ def send_sms(request, session=None):
     return render_to_response("conference/schedule/sms.html",
                               context,
                               context_instance = RequestContext(request))
+
+# This requires mailbox support; see sms_poll.php and put it on a cron =)
+def stop_sms(request):
+    if request.method != 'POST' or not request.POST.get('message', None):
+        return HttpResponse("not supported")
+
+    """
+    ThunderTexting format:
+    
+    Date Received: 1/4/2011 8:48:41 PM
+    From Phone Number: 1416xxxxxxx
+    Their Message: You tell me!
+    
+    Newline test
+    --------------------------
+    This is most likely a response to the following message you sent -  
+    Date Sent: 1/4/2011 8:48:03 PM
+    To Phone Number: 416xxxxxxx
+    Your Message: ok, now what's next...!
+    Your Reference: test1
+    """
+    
+    result = ""
+    
+    message = request.POST.get('message', None)
+    lines = message.split("\n")
+    date = lines[0]
+    fromnumber = lines[1]
+    txtmessage = lines[2]
+    for i in range(3, len(lines)):
+        if lines[i].startswith('----'):
+            break
+        txtmessage = txtmessage + "\n" + lines[i]
+    
+    txtmessage = txtmessage.strip().lower()
+    if txtmessage.find('stop') != -1:
+        result = result + "stopping\n"
+        tempa, tempb, fromnumber = fromnumber.partition(':')
+        fromnumber = fromnumber.strip()
+        
+        if fromnumber[0:1] == '1':
+            fromnumber = fromnumber[1:]
+        r = ConferenceRegistration.objects.filter(cellphone=fromnumber, cancelled=False)
+        
+        if fromnumber and r.count():
+            for reg in r:
+                result = result + "goodbye %s\n" % reg.user.email
+                reg.cellphone_optout = True
+                reg.save()
+                
+    elif txtmessage.find('start') != -1:
+        pass
+    
+    else:
+        result = result + "dunno what to do\n"
+        result = result + txtmessage
+
+        
+    return HttpResponse(result)

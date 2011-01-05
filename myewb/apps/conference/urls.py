@@ -62,5 +62,6 @@ urlpatterns += patterns('conference.schedule',
 
 urlpatterns += patterns('conference.sms',
     url(r'^schedule/sms/$', 'send_sms', name='conference_send_sms'),
-    url(r'^schedule/sms/(?P<session>[\d]+)/$', 'send_sms', name='conference_send_sms')
+    url(r'^schedule/sms/(?P<session>[\d]+)/$', 'send_sms', name='conference_send_sms'),
+    url(r'^schedule/sms/stop/$', 'stop_sms', name='conference_stop_sms')
 )
