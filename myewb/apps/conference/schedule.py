@@ -219,11 +219,11 @@ def session_delete(request, session):
     s = get_object_or_404(ConferenceSession, id=session)
     
     if request.method == 'POST' and request.POST.get('delete', None):
-        redirect_day = 14
+        redirect_day = 'fri'
         if s.day.day == 13:
-            redirect_day = 13
+            redirect_day = 'thurs'
         elif s.day.day == 15:
-            redirect_day = 15
+            redirect_day = 'sat'
             
         s.delete()
         return HttpResponseRedirect(reverse('conference_by_day', kwargs={'day': redirect_day}))
