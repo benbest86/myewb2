@@ -50,7 +50,7 @@
                 {% for s in sessions %}
                     {% ifequal s.time.hour t %}
                         {% ifequal s.time.minute 0 %}
-                            <td rowspan="{% rowspan s.length %}" class="tlink {{ s.stream }}" style="height: {% height s.length %}" colspan="{% colspans capacity %}">
+                            <td rowspan="{% rowspan s.length %}" class="tlink {{ s.stream }}" style="height: {% height s.length %}" colspan="{% colspans s.capacity %}">
                                 <a href="{{ s.url }}">
                                     <strong>{{ s.name }}</strong>
 {#                                    <br/> #}
@@ -66,7 +66,7 @@
                 {% for s in sessions %}
                     {% ifequal s.time.hour t %}
                         {% ifequal s.time.minute 30 %}
-                            <td rowspan="{% rowspan s.length %}" class="tlink {{ s.stream }}" style="height: {% height s.length %}" colspan="{% colspans capacity %}">
+                            <td rowspan="{% rowspan s.length %}" class="tlink {{ s.stream }}" style="height: {% height s.length %}" colspan="{% colspans s.capacity %}">
                                 <a href="{{ s.url }}">
                                     <strong>{{ s.name }}</strong>
 {#                                     <br/> #}
