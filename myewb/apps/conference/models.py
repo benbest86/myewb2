@@ -299,8 +299,7 @@ class ConferencePhoneFrom(models.Model):
     accounts = models.IntegerField(default=0)
 
 class ConferenceCellNumber(models.Model):
-    number = models.CharField(max_length=10)
+    cellphone = models.CharField(max_length=10)
     opt_in = models.DateTimeField(auto_now_add=True)
-    opt_out = models.DateTimeField(blank=True, null=True)
+    cellphone_optout = models.DateTimeField(blank=True, null=True)
     cellphone_from = models.ForeignKey(ConferencePhoneFrom, null=True, blank=True)
-    

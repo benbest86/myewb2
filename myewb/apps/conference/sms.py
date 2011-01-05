@@ -237,6 +237,7 @@ def stop_sms(request):
 
     fromnumber = request.POST.get('From', None)
     txtmessage = request.POST.get('Body', None)
+    result = ""
     
     if fromnumber[0:1] == '1':
         fromnumber = fromnumber[1:]
@@ -257,10 +258,10 @@ def stop_sms(request):
                     provider.accounts = provider.accounts - 1
                     provider.save()
                 
-        numbers = ConferenceCellNumber.objects.filter(number=fromnumber, opt_out__isnull=True)
+        numbers = ConferenceCellNumber.objects.filter(cellphone=fromnumber, cellphone_optout__isnull=True)
         if fromnumber and numbers.count():
             for n in numbers:
-                n.opt_out = datetime.now()
+                n.cellphone_optout = datetime.now()
                 n.save()
                 provider = n.cellphone_from
                 if provider:
@@ -274,11 +275,12 @@ def stop_sms(request):
         numbers = ConferenceCellNumber.objects.filter(number=fromnumber)
 
         if r.count():
-            r.cellphone_optout = None
-            r.save()
+            reg = r[0]
+            reg.cellphone_optout = None
+            reg.save()
             
-            if r.cellphone_from:
-                provider = r.cellphone_from
+            if reg.cellphone_from:
+                provider = reg.cellphone_from
                 provider.accounts = provider.accounts + 1
                 provider.save()
                 
@@ -286,7 +288,7 @@ def stop_sms(request):
         elif numbers.count():
             result = result + "already found %s\n" % fromnumber
             n = numbers[0]
-            n.opt_out = None
+            n.cellphone_optout = None
             n.save()
             
             if n.cellphone_from:
@@ -295,7 +297,7 @@ def stop_sms(request):
                 provider.save()
                 
         else:
-            ConferenceCellNumber.objects.create(number=fromnumber)
+            ConferenceCellNumber.objects.create(cellphone=fromnumber)
             result = result + "adding %s\n" % fromnumber
     
     #else:
