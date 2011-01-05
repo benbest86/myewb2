@@ -72,7 +72,7 @@ def send_sms(request, session=None):
             
             if not s and form.cleaned_data['grouping'] == 'all':
                 registrations = list(registrations)
-                registrations.extend(list(ConferenceCellNumber.objects.filter(opt_out__isnull=True)))
+                registrations.extend(list(ConferenceCellNumber.objects.filter(cellphone_optout__isnull=True)))
             
             # Twilio
             account = twilio.Account(sid, token)
