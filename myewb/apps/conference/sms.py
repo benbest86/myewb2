@@ -18,11 +18,6 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 
-try:
-    from twilio import twilio
-except:
-    pass
-
 from conference.forms import ConferenceSmsForm, SMS_CHOICES
 from conference.models import ConferenceRegistration, ConferenceSession, ConferenceCellNumber
 from siteutils.shortcuts import get_object_or_none
@@ -50,7 +45,6 @@ def send_sms(request, session=None):
             del(form.fields['grouping'])
 
         if form.is_valid():
-            account = twilio.Account(sid, token)
             success = 0
             failed = 0
             
@@ -101,6 +95,8 @@ def send_sms(request, session=None):
                      'To': r.cellphone,
                      'Body': form.cleaned_data['message']}
                 try:
+                    from twilio import twilio
+                    account = twilio.Account(sid, token)
                     response = account.request('/%s/Accounts/%s/SMS/Messages' % (api, sid),
                                                'POST', d)
                     
