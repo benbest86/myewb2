@@ -92,6 +92,7 @@ def send_sms(request, session=None):
                 d = {'From': fromnumber.number,   #  '415-599-2671',
                      'To': r.cellphone,
                      'Body': form.cleaned_data['message']}
+                
                 try:
                     response = account.request('/%s/Accounts/%s/SMS/Messages' % (api, sid),
                                                'POST', d)
@@ -164,10 +165,8 @@ def send_sms(request, session=None):
                 if hasattr(r, 'user'):
                     if r.cellphone and not r.cellphone_optout:
                         response = "%s<br/>%s %s - %s\n" % (response, r.user.first_name, r.user.last_name, r.type)
-                elif hasattr(r, 'number'):
-                    response = "%s<br/>%s\n" % (response, r.number)
                 else:
-                    response = "%s<br/>unknown\n"
+                    response = "%s<br/>%s\n" % (response, r.cellphone)
                     
             if not response:
                 response = "No recipients matched your query."
@@ -268,6 +267,13 @@ def stop_sms(request):
                 if provider:
                     provider.accounts = provider.accounts - 1
                     provider.save()
+                    
+        xmlresponse = """<?xml version="1.0" encoding="UTF-8" ?>
+<Response>
+    <Sms>You have been unsubscribed.  To re-subscribe to EWB National Conference 2011 notices, reply with START</Sms>
+</Response>
+"""
+        return HttpResponse(xmlresponse)
             
                 
     #elif txtmessage.find('start') != -1:
@@ -300,6 +306,13 @@ def stop_sms(request):
         else:
             ConferenceCellNumber.objects.create(cellphone=fromnumber)
             result = result + "adding %s\n" % fromnumber
+    
+        xmlresponse = """<?xml version="1.0" encoding="UTF-8" ?>
+<Response>
+    <Sms>Welcome to the EWB Natinoal Conference 2011 notices list.  To unsubscribe, reply with STOP</Sms>
+</Response>
+"""
+        return HttpResponse(xmlresponse)
     
     #else:
     #    result = result + "dunno what to do\n"
