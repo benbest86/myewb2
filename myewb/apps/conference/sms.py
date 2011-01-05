@@ -21,7 +21,7 @@ from django.template.loader import render_to_string
 from twilio import twilio
 
 from conference.forms import ConferenceSmsForm, SMS_CHOICES
-from conference.models import ConferenceRegistration, ConferenceSession
+from conference.models import ConferenceRegistration, ConferenceSession, ConferenceCellNumber
 from siteutils.shortcuts import get_object_or_none
 
 CONFERENCE_DAYS = (('thurs', 'Thursday', 13),
@@ -70,6 +70,11 @@ def send_sms(request, session=None):
                 registrations = ConferenceRegistration.objects.filter(~Q(type__contains='single'), ~Q(type__contains='double'))
             
             registrations = registrations.filter(cancelled=False, cellphone__isnull=False, cellphone_optout__isnull=True)
+            
+            if form.cleaned_data['grouping'] == 'all':
+                registrations = list(registrations)
+                registrations.extend(list(ConferenceCellNumber.objects.filter(opt_out__isnull=True)))
+            
             
             """
             # Twilio, requiring us to disperse over a number of phone numbers...
@@ -157,7 +162,13 @@ def send_sms(request, session=None):
                 response = r.read()
             """
             for r in registrations:
-                response = "%s<br/>%s %s - %s\n" % (response, r.user.first_name, r.user.last_name, r.type)
+                if hasattr(r, 'user'):
+                    if r.cellphone and not r.cellphone_optout:
+                        response = "%s<br/>%s %s - %s\n" % (response, r.user.first_name, r.user.last_name, r.type)
+                elif hasattr(r, 'number'):
+                    response = "%s<br/>%s\n" % (response, r.number)
+                else:
+                    response = "%s<br/>unknown\n"
                 
     else:
         form = ConferenceSmsForm()
@@ -203,6 +214,13 @@ def stop_sms(request):
     lines = message.split("\n")
     date = lines[0]
     fromnumber = lines[1]
+    
+    tempa, tempb, fromnumber = fromnumber.partition(':')
+    fromnumber = fromnumber.strip()
+    
+    if fromnumber[0:1] == '1':
+        fromnumber = fromnumber[1:]
+    
     txtmessage = lines[2]
     for i in range(3, len(lines)):
         if lines[i].startswith('----'):
@@ -212,11 +230,6 @@ def stop_sms(request):
     txtmessage = txtmessage.strip().lower()
     if txtmessage.find('stop') != -1:
         result = result + "stopping\n"
-        tempa, tempb, fromnumber = fromnumber.partition(':')
-        fromnumber = fromnumber.strip()
-        
-        if fromnumber[0:1] == '1':
-            fromnumber = fromnumber[1:]
         r = ConferenceRegistration.objects.filter(cellphone=fromnumber, cancelled=False)
         
         if fromnumber and r.count():
@@ -225,12 +238,25 @@ def stop_sms(request):
                 reg.cellphone_optout = datetime.now()
                 reg.save()
                 
-    elif txtmessage.find('start') != -1:
-        pass
-    
+        numbers = ConferenceCellNumber.objects.filter(number=fromnumber, opt_out__isnull=True)
+        if fromnumber and numbers.count():
+            for n in numbers:
+                n.opt_out = datetime.now()
+                n.save()
+            
+                
+    #elif txtmessage.find('start') != -1:
     else:
-        result = result + "dunno what to do\n"
-        result = result + txtmessage
+        numbers = ConferenceCellNumber.objects.filter(number=fromnumber, opt_out__isnull=True)
+        if not numbers.count():
+            ConferenceCellNumber.objects.create(number=fromnumber)
+            result = result + "adding %s\n" % fromnumber
+        else:
+            result = result + "already found %s\n" % fromnumber
+    
+    #else:
+    #    result = result + "dunno what to do\n"
+    #    result = result + txtmessage
 
         
     return HttpResponse(result)
