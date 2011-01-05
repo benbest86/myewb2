@@ -57,6 +57,10 @@ urlpatterns += patterns('conference.schedule',
     url(r'^schedule/private/(?P<session>[\d]+)/edit/$', 'private_edit', name='conference_private_edit'),
     url(r'^schedule/private/(?P<session>[\d]+)/delete/$', 'private_delete', name='conference_private_delete'),
     url(r'^schedule/private/new/$', 'private_new', name='conference_private_new'),
-
 )
 
+
+urlpatterns += patterns('conference.sms',
+    url(r'^schedule/sms/$', 'send_sms', name='conference_send_sms'),
+    url(r'^schedule/sms/(?P<session>[\d]+)/$', 'send_sms', name='conference_send_sms')
+)

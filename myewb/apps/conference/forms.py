@@ -412,3 +412,16 @@ class ConferencePrivateEventForm(forms.ModelForm):
         model = ConferencePrivateEvent
         fields = ['name', 'location', 'day', 'time', 'length', 'description']
 
+SMS_CHOICES = (('all', 'All conference delegates'),
+               ('internal', 'Internal (EWB member + alumni) delegates'),
+               ('external', 'External delegates'),
+               ('alumni', 'Alumni delegates'),
+               ('hotel', 'Internal delegates with a hotel room'),
+               ('nohotel', 'Internal delegates without a hotel room (incl alumni)'),
+               ('nohotel-all', 'All delegates without a hotel room (internal and external)'))
+class ConferenceSmsForm(forms.Form):
+    grouping = forms.ChoiceField(choices=SMS_CHOICES,
+                                 widget=forms.RadioSelect,
+                                 required=True)
+    message = forms.CharField(max_length=160,
+                              widget=forms.Textarea)

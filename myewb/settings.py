@@ -371,6 +371,12 @@ AVATAR_GRAVATAR_BACKUP = False
 CONF_HASH = ""
 API_KEY = ""
 
+# twilio account
+TWILIO_API_VERSION = '2010-04-01'
+TWILIO_ACCOUNT_SID = ''
+TWILIO_ACCOUNT_TOKEN = ''
+THUNDERTEXTING_KEY = ''
+
 # local_settings.py can be used to override environment-specific settings
 # like database and email that differ between development and production.
 try:

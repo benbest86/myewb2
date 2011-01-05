@@ -30,7 +30,8 @@
     {% if perms.conference %}
         <br/>
         <a href="{% url conference_session_edit session.id %}">edit session</a> | 
-        <a href="{% url conference_session_delete session.id %}">delete session</a>
+        <a href="{% url conference_session_delete session.id %}">delete session</a> |
+        <a href="{% url conference_send_sms session.id %}">text all attendees</a>
     {% endif %}
 
     <br/><br/>

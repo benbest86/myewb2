@@ -81,7 +81,8 @@
     
     {% if perms.conference %}
         <p>
-            <a href="{% url conference_session_new %}">Add a new session</a>
+            <a href="{% url conference_session_new %}">Add a new session</a><br/>
+            <a href="{% url conference_send_sms %}">Send a text to conference delegates</a>
         </p>
     {% endif %}
         
