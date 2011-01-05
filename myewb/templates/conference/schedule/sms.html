@@ -39,6 +39,15 @@
 	        </table>
 	    </form>
 	{% endif %}
-	
 
+	<hr/>	
+	{% if session %}
+		<a href="{% url conference_session session.id %}">&laquo; back to <em>{{ session.name }}</em></a><br/>
+		<a href="{% url conference_for_user session.dayverbose %}">&laquo; back to my schedule</a><br/>
+		<a href="{% url conference_by_day session.dayverbose 'all' %}">&laquo; back to the master schedule</a><br/>
+	{% else %}
+		<a href="{% url conference_for_user %}">&laquo; back to my schedule</a><br/>
+		<a href="{% url conference_by_day 'fri' 'all' %}">&laquo; back to the master schedule</a><br/>
+	{% endif %}
+	
 {% endblock %}

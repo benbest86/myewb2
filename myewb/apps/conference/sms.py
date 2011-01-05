@@ -68,7 +68,7 @@ def send_sms(request, session=None):
             
             registrations = registrations.filter(cancelled=False, cellphone__isnull=False, cellphone_optout__isnull=True)
             
-            if form.cleaned_data['grouping'] == 'all':
+            if not s and form.cleaned_data['grouping'] == 'all':
                 registrations = list(registrations)
                 registrations.extend(list(ConferenceCellNumber.objects.filter(opt_out__isnull=True)))
             
@@ -160,6 +160,7 @@ def send_sms(request, session=None):
             except Exception, e:
                 response = r.read()
             """
+            
             for r in registrations:
                 if hasattr(r, 'user'):
                     if r.cellphone and not r.cellphone_optout:
@@ -168,6 +169,9 @@ def send_sms(request, session=None):
                     response = "%s<br/>%s\n" % (response, r.number)
                 else:
                     response = "%s<br/>unknown\n"
+                    
+            if not response:
+                response = "No recipients matched your query."
                 
     else:
         form = ConferenceSmsForm()
