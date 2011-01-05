@@ -7,7 +7,7 @@ Created on 2009-10-18
 @author Francis Kung
 """
 
-from datetime import date
+from datetime import date, datetime, time
 from decimal import Decimal
 from django import forms
 from django.contrib.auth.models import User
@@ -399,8 +399,77 @@ class ConferenceSignupForm(forms.Form):
         new_user.save()
         
         return new_user.username, password # required for authenticate()
-                
+
+CONFERENCE_TIMES = (('8', '8'),
+                    ('9', '9'),
+                    ('10', '10'),
+                    ('11', '11'),
+                    ('12', '12'),
+                    ('13', '13'),
+                    ('14', '14'),
+                    ('15', '15'),
+                    ('16', '16'),
+                    ('17', '17'),
+                    ('18', '18'),
+                    ('19', '19'),
+                    ('20', '20'),
+                    ('21', '21'))
+CONFERENCE_MINUTES = ((':00', ':00'),
+                      (':30', ':30'))
+class DropdownTimeWidget(forms.MultiWidget):
+    def __init__(self, widgets=None, attrs=None):
+        if not widgets:
+            widgets = (forms.Select(choices=CONFERENCE_TIMES),
+                       forms.Select(choices=CONFERENCE_MINUTES))
+            
+        super(DropdownTimeWidget, self).__init__(widgets, attrs)
+     
+    def decompress(self, value):
+        if value:
+            return [value.hour, ":%02d" % value.minute]
+        return [None, None]
+
+class DropdownTimeField(forms.MultiValueField):
+    widget = DropdownTimeWidget
+
+    def __init__(self, fields=None, *args, **kwargs):
+        if not fields:
+            fields=(forms.ChoiceField(choices=CONFERENCE_TIMES),
+                    forms.ChoiceField(choices=CONFERENCE_MINUTES))
+            
+        super(DropdownTimeField, self).__init__(fields, *args, **kwargs)        
+    
+    def compress(self, data_list):
+        if data_list:
+            hour = int(data_list[0])
+            min = int(data_list[1][1:])
+            return time(hour, min)    
+
+CONFERENCE_DAY_CHOICES = (('2011-01-13', 'Thursday'),
+                          ('2011-01-14', 'Friday'),
+                          ('2011-01-15', 'Saturday'))
+CONFERENCE_LENGTH_CHOICES = (('30', '0 hours, 30 minutes'),
+                             ('60', '1 hour'),
+                             ('90', '1 hour, 30 minutes'),
+                             ('120', '2 hours'),
+                             ('150', '2 hours, 30 minutes'),
+                             ('180', '3 hours'),
+                             ('210', '3 hours, 30 minutes'),
+                             ('240', '4 hours'),
+                             ('270', '4 hours, 30 minutes'),
+                             ('300', '5 hours'),
+                             ('330', '5 hours, 30 minutes'),
+                             ('360', '6 hours'),
+                             ('390', '6 hours, 30 minutes'),
+                             ('420', '7 hours'),
+                             ('450', '7 hours, 30 minutes'),
+                             ('480', '8 hours'),
+                             )
 class ConferenceSessionForm(forms.ModelForm):
+    day = forms.ChoiceField(choices=CONFERENCE_DAY_CHOICES)
+    time = DropdownTimeField()
+    length = forms.ChoiceField(choices=CONFERENCE_LENGTH_CHOICES)
+    
     class Meta:
         model = ConferenceSession
         fields = ['name', 'room', 'day', 'time', 'length',
@@ -408,6 +477,10 @@ class ConferenceSessionForm(forms.ModelForm):
                   'short_description', 'long_description']
 
 class ConferencePrivateEventForm(forms.ModelForm):
+    day = forms.ChoiceField(choices=CONFERENCE_DAY_CHOICES)
+    time = DropdownTimeField()
+    length = forms.ChoiceField(choices=CONFERENCE_LENGTH_CHOICES)
+    
     class Meta:
         model = ConferencePrivateEvent
         fields = ['name', 'location', 'day', 'time', 'length', 'description']
