@@ -297,7 +297,7 @@ def stop_sms(request):
             if reg.cellphone_from:
                 provider = reg.cellphone_from
             else:
-                provider = ConferencePhoneFrom.objects.get_or_create(number=tonumber)
+                provider, created = ConferencePhoneFrom.objects.get_or_create(number=tonumber)
                 reg.cellphone_from = provider
                 reg.save()
             provider.accounts = provider.accounts + 1
@@ -312,14 +312,15 @@ def stop_sms(request):
             if n.cellphone_from:
                 provider = n.cellphone_from
             else:
-                provider = ConferencePhoneFrom.objects.get_or_create(number=tonumber)
+                provider, created = ConferencePhoneFrom.objects.get_or_create(number=tonumber)
                 n.cellphone_from = provider
                 n.save()
             provider.accounts = provider.accounts + 1
             provider.save()
                 
         else:
-            ConferenceCellNumber.objects.create(cellphone=fromnumber)
+            provider, created = ConferencePhoneFrom.objects.get_or_create(number=tonumber)
+            ConferenceCellNumber.objects.create(cellphone=fromnumber, cellphone_from=provider)
             result = result + "adding %s\n" % fromnumber
     
         xmlresponse = """<?xml version="1.0" encoding="UTF-8" ?>
