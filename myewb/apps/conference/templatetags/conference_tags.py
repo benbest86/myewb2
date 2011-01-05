@@ -29,6 +29,17 @@ def rowspan(length):
 def height(length):
     return "%fem" % (length / 30 * 1.5)
 
+@register.simple_tag
+def colspans(capacity):
+    if capacity > 500:
+        return "25"
+    elif capacity > 250:
+        return "5"
+    elif capacity > 110:
+        return "2"
+    else:
+        return "1"
+
 class AttendanceNode(template.Node):
     def __init__(self, session, user, context_attending, context_tentative):
         self.session = template.Variable(session)

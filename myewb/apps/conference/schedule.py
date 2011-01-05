@@ -113,7 +113,7 @@ def day(request, day, stream):
 
     sessions = ConferenceSession.objects.filter(day=fday)
     if stream != 'all':
-        sessions = sessions.filter(stream=stream)
+        sessions = sessions.filter(Q(stream=stream) | Q(stream='common'))
     
     return render_to_response("conference/schedule/day.html",
                               {"sessions": sessions,
