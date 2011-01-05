@@ -18,7 +18,10 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 
-from twilio import twilio
+try:
+    from twilio import twilio
+except:
+    pass
 
 from conference.forms import ConferenceSmsForm, SMS_CHOICES
 from conference.models import ConferenceRegistration, ConferenceSession, ConferenceCellNumber
