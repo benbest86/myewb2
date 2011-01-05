@@ -176,11 +176,11 @@ SESSION_TYPES = (('keynote', "Keynote"),
                  
 STREAMS = (('common', 'Common sessions'),
            ('coalitions', 'Coalitions for Change'),
-           ('prosperity', 'Unlocking African Prosperity'),
+           ('aprosperity', 'Unlocking African Prosperity'),
            ('rethinking', 'Rethinking Development'),
            ('internal', 'Internal Meetings'))
-STREAMS_SHORT = (('coalitions', 'Coalitions'),
-                 ('prosperity', 'African Prosperity'),
+STREAMS_SHORT = (('aprosperity', 'African Prosperity'),
+                 ('coalitions', 'Coalitions'),
                  ('rethinking', 'Rethinking Devt'))
                  
 class ConferenceSession(models.Model):

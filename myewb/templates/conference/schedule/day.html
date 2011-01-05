@@ -2,7 +2,7 @@
 
 {% load conference_tags %}
 
-{% block viewport %}600px{% endblock %}
+{% block viewport %}1400px{% endblock %}
 
 {% block body %}
     <h1>Conference Schedule</h1>
@@ -41,19 +41,20 @@
         {% endfor %}
     </div>
     <br/>
-    
-    <table border="1" width="100%">
+
+    <div style="width: 100%; overflow-x: auto;">
+    <table border="1" width="100%" id="byday">
         {% for t in timelist %}
             <tr>
                 <th>{{ t }}:00</th>
                 {% for s in sessions %}
                     {% ifequal s.time.hour t %}
                         {% ifequal s.time.minute 0 %}
-                            <td rowspan="{% rowspan s.length %}" class="tlink {{ s.stream }}" style="height: {% height s.length %}">
+                            <td rowspan="{% rowspan s.length %}" class="tlink {{ s.stream }}" style="height: {% height s.length %}" {% ifequal s.stream 'common' %}colspan="25"{% endifequal %}>
                                 <a href="{{ s.url }}">
                                     <strong>{{ s.name }}</strong>
-                                    <br/>
-                                    <em>{{ s.room }}</em>
+{#                                    <br/> #}
+{#                                    <em>{{ s.room }}</em> #}
                                 </a>
                             </td>
                         {% endifequal %}
@@ -65,11 +66,11 @@
                 {% for s in sessions %}
                     {% ifequal s.time.hour t %}
                         {% ifequal s.time.minute 30 %}
-                            <td rowspan="{% rowspan s.length %}" class="tlink {{ s.stream }}" style="height: {% height s.length %}">
+                            <td rowspan="{% rowspan s.length %}" class="tlink {{ s.stream }}" style="height: {% height s.length %}" {% ifequal s.stream 'common' %}colspan="25"{% endifequal %}>
                                 <a href="{{ s.url }}">
                                     <strong>{{ s.name }}</strong>
-                                    <br/>
-                                    <em>{{ s.room }}</em>
+{#                                     <br/> #}
+{#                                    <em>{{ s.room }}</em> #}
                                 </a>
                             </td>
                         {% endifequal %}
@@ -78,6 +79,7 @@
             </tr>
         {% endfor %}
     </table>
+    </div>
     
     {% if perms.conference %}
         <p>
