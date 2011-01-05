@@ -18,6 +18,8 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 
+from twilio import twilio
+
 from conference.forms import ConferenceSmsForm, SMS_CHOICES
 from conference.models import ConferenceRegistration, ConferenceSession, ConferenceCellNumber, ConferencePhoneFrom
 from siteutils.shortcuts import get_object_or_none
@@ -73,6 +75,7 @@ def send_sms(request, session=None):
                 registrations.extend(list(ConferenceCellNumber.objects.filter(opt_out__isnull=True)))
             
             # Twilio
+            account = twilio.Account(sid, token)
             for r in registrations:
                 if r.cellphone_optout or not r.cellphone:
                     continue
@@ -90,8 +93,6 @@ def send_sms(request, session=None):
                      'To': r.cellphone,
                      'Body': form.cleaned_data['message']}
                 try:
-                    from twilio import twilio
-                    account = twilio.Account(sid, token)
                     response = account.request('/%s/Accounts/%s/SMS/Messages' % (api, sid),
                                                'POST', d)
                     
