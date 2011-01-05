@@ -184,7 +184,7 @@ STREAMS_SHORT = (('coalitions', 'Coalitions'),
                  
 class ConferenceSession(models.Model):
     name = models.CharField(max_length=255)
-    room = models.CharField(max_length=255)
+    room = models.CharField(max_length=255, blank=True)
     day = models.DateField(help_text='yyyy-mm-dd')
     time = models.TimeField(help_text='hh:mm in 24-hour time. must be either :00 or :30 to show up on schedules')
     length = models.IntegerField(help_text="in minutes")
@@ -253,7 +253,7 @@ class ConferenceSession(models.Model):
 
 class ConferencePrivateEvent(models.Model):
     name = models.CharField(max_length=255)
-    location = models.CharField(max_length=255)
+    location = models.CharField(max_length=255, blank=True)
     day = models.DateField(help_text='yyyy-mm-dd')
     time = models.TimeField(help_text='hh:mm in 24-hour time. must be either :00 or :30 to show up on schedules')
     length = models.IntegerField(help_text="in minutes")
