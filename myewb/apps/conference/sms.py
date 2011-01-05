@@ -37,8 +37,10 @@ def do_send_sms(args):
         token = settings.TWILIO_ACCOUNT_TOKEN
 
         account = twilio.Account(sid, token)
-        response = account.request('/%s/Accounts/%s/SMS/Messages' % (api, sid),
-                        'POST', args)
+        
+        for x in args:
+            response = account.request('/%s/Accounts/%s/SMS/Messages' % (api, sid),
+                                       'POST', x)
     except Exception, e:
         response = e.read()
 
@@ -98,6 +100,7 @@ def send_sms(request, session=None):
             
             # Twilio
             account = twilio.Account(sid, token)
+            thread_list = {}
             for r in registrations:
                 if r.cellphone_optout or not r.cellphone:
                     continue
@@ -115,20 +118,26 @@ def send_sms(request, session=None):
                      'To': r.cellphone,
                      'Body': form.cleaned_data['message']}
                 
-                try:
-#                    response = account.request('/%s/Accounts/%s/SMS/Messages' % (api, sid),
-#                                               'POST', d)
-                    t = Thread(target=do_send_sms, args=(d,))
+                if fromnumber.number not in thread_list:
+                    thread_list[fromnumber.number] = []
+                thread_list[fromnumber.number].append(d)
+                
+            try:
+                for i in thread_list:
+                    t = Thread(target=do_send_sms, args=(thread_list[i],))
                     t.start()
-                    
-                except Exception, e:
-                    #response = e.read()
-                    failed = failed + 1
-                else:
-                    success = success + 1
+                
+            except Exception, e:
+                #response = e.read()
+                failed = failed + 1
+            else:
+                success = success + 1
 
             response = ""
-            response = "%s<br/>Successful: %d<br/>Failed:%d<br/>" % (response, success, failed)
+            if failed:
+                response = "%s<br/>Messages queued for sending, but some errors encountered =(" % response
+            else:
+                response = "%s<br/>Messages queued for sending!" % response
             
             """
             # ThunderTexting, simple GET
