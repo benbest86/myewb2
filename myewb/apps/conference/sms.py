@@ -18,7 +18,9 @@ from django.shortcuts import render_to_response, get_object_or_404
 from django.template import RequestContext
 from django.template.loader import render_to_string
 
+from threading import Thread
 from twilio import twilio
+from mailer import send_mail
 
 from conference.forms import ConferenceSmsForm, SMS_CHOICES
 from conference.models import ConferenceRegistration, ConferenceSession, ConferenceCellNumber, ConferencePhoneFrom
@@ -27,6 +29,26 @@ from siteutils.shortcuts import get_object_or_none
 CONFERENCE_DAYS = (('thurs', 'Thursday', 13),
                    ('fri', 'Friday', 14),
                    ('sat', 'Saturday', 15))
+
+def do_send_sms(args):
+    try:
+        api = settings.TWILIO_API_VERSION
+        sid = settings.TWILIO_ACCOUNT_SID
+        token = settings.TWILIO_ACCOUNT_TOKEN
+
+        account = twilio.Account(sid, token)
+        response = account.request('/%s/Accounts/%s/SMS/Messages' % (api, sid),
+                        'POST', args)
+    except Exception, e:
+        response = e.read()
+
+        send_mail(subject="sms error",
+                  txtMessage=response,
+                  htmlMessage=None,
+                  fromemail="itsupport@ewb.ca",
+                  recipients=['franciskung@ewb.ca',],
+                  use_template=False)
+    
 
 @login_required
 def send_sms(request, session=None):
@@ -94,8 +116,10 @@ def send_sms(request, session=None):
                      'Body': form.cleaned_data['message']}
                 
                 try:
-                    response = account.request('/%s/Accounts/%s/SMS/Messages' % (api, sid),
-                                               'POST', d)
+#                    response = account.request('/%s/Accounts/%s/SMS/Messages' % (api, sid),
+#                                               'POST', d)
+                    t = Thread(target=do_send_sms, args=(d,))
+                    t.start()
                     
                 except Exception, e:
                     #response = e.read()
@@ -249,6 +273,9 @@ def stop_sms(request):
         tonumber = tonumber[1:]
     elif tonumber[0:2] == '+1':
         tonumber = tonumber[2:]
+
+    if fromnumber == '5193627821' or tonumber == '5193627821':
+        return HttpResponse("")
         
     txtmessage = txtmessage.strip().lower()
     
@@ -284,8 +311,8 @@ def stop_sms(request):
         return HttpResponse(xmlresponse)
             
                 
-    #elif txtmessage.find('start') != -1:
-    else:
+    elif txtmessage.find('start') != -1:
+    #else:
         r = ConferenceRegistration.objects.filter(cellphone=fromnumber, cancelled=False)
         numbers = ConferenceCellNumber.objects.filter(cellphone=fromnumber)
 
@@ -333,6 +360,8 @@ def stop_sms(request):
     #else:
     #    result = result + "dunno what to do\n"
     #    result = result + txtmessage
+    else:
+        return HttpResponse("")
 
         
     return HttpResponse(result)
