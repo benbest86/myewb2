@@ -177,7 +177,8 @@ SESSION_TYPES = (('keynote', "Keynote"),
 STREAMS = (('common', 'Common sessions'),
            ('coalitions', 'Coalitions for Change'),
            ('prosperity', 'Unlocking African Prosperity'),
-           ('rethinking', 'Rethinking Development'))
+           ('rethinking', 'Rethinking Development'),
+           ('internal', 'Internal Meetings'))
 STREAMS_SHORT = (('coalitions', 'Coalitions'),
                  ('prosperity', 'African Prosperity'),
                  ('rethinking', 'Rethinking Devt'))
