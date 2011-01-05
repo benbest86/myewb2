@@ -69,7 +69,7 @@ def send_sms(request, session=None):
             elif form.cleaned_data['grouping'] == 'nohotel-all':
                 registrations = ConferenceRegistration.objects.filter(~Q(type__contains='single'), ~Q(type__contains='double'))
             
-            registrations = registrations.filter(cancelled=False, cellphone__isnull=False, cellphone_optout=False)
+            registrations = registrations.filter(cancelled=False, cellphone__isnull=False, cellphone_optout__isnull=True)
             
             """
             # Twilio, requiring us to disperse over a number of phone numbers...
@@ -222,7 +222,7 @@ def stop_sms(request):
         if fromnumber and r.count():
             for reg in r:
                 result = result + "goodbye %s\n" % reg.user.email
-                reg.cellphone_optout = True
+                reg.cellphone_optout = datetime.now()
                 reg.save()
                 
     elif txtmessage.find('start') != -1:
