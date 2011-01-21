@@ -100,7 +100,7 @@ def softdelete(self, *args, **kwargs):
     
     try:        # we really shouldn't be using profiles as a foreignkey...!!!
         self.get_profile().delete()
-    except IntegrityError:
+    except:
         pass
     
     old_email = self.email
