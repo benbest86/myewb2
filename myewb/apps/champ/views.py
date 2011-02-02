@@ -996,7 +996,10 @@ def run_full_csv(group=None):
         else:
             row.append('')
             
-        row.extend([a.date, a.date.strftime('%B'), schoolyear.school_year_name(a.date), a.numVolunteers, a.prepHours, a.execHours])
+        formatted_time = ''
+        if a.date:
+            formatted_time = a.date.strftime('%B')
+        row.extend([a.date, formatted_time, schoolyear.school_year_name(a.date), a.numVolunteers, a.prepHours, a.execHours])
         
         if impact:
             row.extend([impact.goals, impact.outcome])
