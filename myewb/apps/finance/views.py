@@ -491,6 +491,12 @@ def summary(request, group_slug, year=None, month=None):
         template_data["expenditure_category"] = expenditure_category
         expenditure_total = expenditure_chap.aggregate(total = Sum('amount'))
         template_data["expenditure_total"] = expenditure_total
+        
+        if not income_total['total']:
+            income_total['total'] = 0
+        if not expenditure_total['total']:
+            expenditure_total['total'] = 0
+        
         template_data["net"] = income_total['total'] - expenditure_total['total']
         try:
             incomeChart, expenditureChart = create_category_charts(expenditure_category, income_category)
