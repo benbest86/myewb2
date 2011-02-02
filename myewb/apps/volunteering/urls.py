@@ -15,6 +15,11 @@ urlpatterns = patterns('volunteering.views',
     url(r'^ov_info/$', "ov_info", name="ov_info"),
 )
 
+urlpatterns += patterns('siteutils.shortcuts',
+    url(r'^Volunteering', 'redirect_to_reverse', {'url': 'applications',
+                                    'permanent': True})
+)
+
 ### APPLICATION SESSIONS
 urlpatterns += patterns('volunteering.views.sessions',
   url(r'^sessions/$', 'sessions', name="sessions"),

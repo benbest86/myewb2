@@ -161,14 +161,17 @@ def session_detail(request, session):
     
     attendees = s.attendees.order_by('?')
     numattendees = attendees.count()
-    if  numattendees < 10:
-        attendees = attendees[0:numattendees]
-    else:
-        attendees = attendees[0:10]
+
+    if request.is_mobile or not request.user.has_module_perms("conference"):
+        if  numattendees < 10:
+            attendees = attendees[0:numattendees]
+        else:
+            attendees = attendees[0:10]
     
     return render_to_response("conference/schedule/session_detail.html",
                               {"session": s,
-                               "attendees": attendees},
+                               "attendees": attendees,
+                               "numattendees": numattendees},
                               context_instance = RequestContext(request))
 
 

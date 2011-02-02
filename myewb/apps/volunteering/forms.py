@@ -108,7 +108,8 @@ class ApplicationForm(forms.ModelForm):
         model = Application
         fields = ('en_writing', 'en_reading', 'en_speaking',
                   'fr_writing', 'fr_reading', 'fr_speaking',
-                  'schooling', 'resume_text', 'references', 'gpa')
+                  'resume_text', 'references')
+#                  'schooling', 'resume_text', 'references', 'gpa')
     
 class AnswerForm(forms.ModelForm):
   class Meta:

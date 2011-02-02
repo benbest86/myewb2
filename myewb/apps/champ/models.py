@@ -69,7 +69,10 @@ class Activity(models.Model):
         metrics = Metrics.objects.filter(activity=self.pk)
         
         for m in metrics:
-            results.append(getattr(m, m.metric_type))
+            try:
+                results.append(getattr(m, m.metric_type))
+            except:
+                pass
             
         # and sort the results, by the ordering in ALLMETRICS
         results2 = []

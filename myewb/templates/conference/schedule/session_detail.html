@@ -14,9 +14,11 @@
                 Attending:<br/>
                 {% for u in attendees %}
                     <div style="float: left; width: 35px; height: 35px; padding: 3px; margin: 4px; border: 1px solid #d0d0d0;">
-                        {% avatar u 35 %}
+                        <img src="{% avatar_url u 35 %}" alt="{{ u.visible_name }}" title="{{ u.visible_name }}" width="35" height="35"/>
                     </div>
                 {% endfor %}
+                <br style="clear: both;"/>
+                <div style="text-align: right; font-style: italic; padding-right: 30px;">... and more</div>
             </p>
         </div>
     {% endif %}
@@ -63,7 +65,7 @@
     {% endif %}
     
     <p>
-        {{ session.long_description|linebreaksbr }}
+        {{ session.long_description|safe|linebreaksbr }}
     </p>
     <br style="clear: both;">
     <hr/>
@@ -76,9 +78,11 @@
             Attending:<br/>
             {% for u in attendees %}
                 <div style="float: left; width: 35px; height: 35px; padding: 3px; margin: 4px; border: 1px solid #d0d0d0;">
-                    {% avatar u 35 %}
+                    <img src="{% avatar_url u 35 %}" alt="{{ u.visible_name }}" title="{{ u.visible_name }}" width="35" height="35"/>
                 </div>
             {% endfor %}
+            <br style="clear: both;"/>
+            <div style="text-align: right; font-style: italic; padding-right: 30px;">... and more</div>
         </p>
         <br style="clear: both;"/>
         <hr/>

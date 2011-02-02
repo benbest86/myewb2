@@ -162,14 +162,14 @@ def application_submit(request, app_id):
         application_errors.append('Please complete your English language evaluation.')
     if not application.fr_writing or not application.fr_reading or not application.fr_speaking:
         application_errors.append('Please complete your French language evaluation.')
-    if not application.schooling:
-        application_errors.append('Please complete your schooling information.')
+#    if not application.schooling:
+#        application_errors.append('Please complete your schooling information.')
     if not application.resume_text:
         application_errors.append('Please include your resume.')
     if not application.references:
         application_errors.append('Please include some references.')
-    if not application.gpa:
-        application_errors.append('Please enter your GPA.')
+#    if not application.gpa:
+#        application_errors.append('Please enter your GPA.')
         
     for q in application.session.application_questions():
         a = Answer.objects.filter(application=application, question=q)

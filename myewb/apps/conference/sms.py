@@ -31,26 +31,26 @@ CONFERENCE_DAYS = (('thurs', 'Thursday', 13),
                    ('sat', 'Saturday', 15))
 
 def do_send_sms(args):
-    try:
-        api = settings.TWILIO_API_VERSION
-        sid = settings.TWILIO_ACCOUNT_SID
-        token = settings.TWILIO_ACCOUNT_TOKEN
+    api = settings.TWILIO_API_VERSION
+    sid = settings.TWILIO_ACCOUNT_SID
+    token = settings.TWILIO_ACCOUNT_TOKEN
 
-        account = twilio.Account(sid, token)
-        
-        for x in args:
+    account = twilio.Account(sid, token)
+
+    for x in args:
+        try:
             response = account.request('/%s/Accounts/%s/SMS/Messages' % (api, sid),
                                        'POST', x)
-    except Exception, e:
-        response = e.read()
+        except Exception, e:
+            response = e.read()
 
-        send_mail(subject="sms error",
-                  txtMessage=response,
-                  htmlMessage=None,
-                  fromemail="itsupport@ewb.ca",
-                  recipients=['franciskung@ewb.ca',],
-                  use_template=False)
-    
+            send_mail(subject="sms error",
+                      txtMessage="%s \n From: %s \n To: %s \n" % (response, x['From'], x['To']),
+                      htmlMessage=None,
+                      fromemail="itsupport@ewb.ca",
+                      recipients=['franciskung@ewb.ca',],
+                      use_template=False)
+
 
 @login_required
 def send_sms(request, session=None):

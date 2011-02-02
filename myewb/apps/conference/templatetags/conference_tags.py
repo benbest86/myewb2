@@ -34,7 +34,7 @@ def colspans(capacity):
     if capacity > 500:
         return "25"
     elif capacity > 250:
-        return "5"
+        return "4"
     elif capacity > 110:
         return "2"
     else:

@@ -64,18 +64,21 @@ def create_bulk_user_method(self, email, verified=False):
     # create the user
     new_user = self.create_user(username=username, email='')
     new_user.is_bulk = True
-    if verified:
-        new_user.email = email
-    elif settings.ACCOUNT_EMAIL_VERIFICATION:
+#    if verified:
+#        new_user.email = email
+    if settings.ACCOUNT_EMAIL_VERIFICATION:
         new_user.is_active = False
     new_user.save()
 
     # this requires our modified emailconfirmation app, which takes
     # additional keyword args...
     if verified:
-        EmailAddress.objects.add_email(new_user, email,
-                                       verified=True,
-                                       send_confirmation=False)
+#        EmailAddress.objects.add_email(new_user, email,
+#                                       verified=True,
+#                                       send_confirmation=False)
+        EmailAddress.objects.create(email=email, user=new_user)
+        new_user.email = email
+        new_user.save()
     else:
         EmailAddress.objects.add_email(new_user, email,
                                        confirmation_template="emailconfirmation/bulkuser.txt")

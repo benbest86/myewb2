@@ -944,11 +944,11 @@ def run_full_csv(group=None):
                      'Goals', 'Outcomes', 'Created', 'Created By', 'Modified',
                      'Modified By', 'Confirmed?', '# Purposes', 'Purpose(s)',
                      
-                     'ML?', 'SO?', 'Functioning?', 'Engagement?', 'Advocacy?',
+                     'ML?', 'SO?', 'Functioning?', 'Engagement?', 'Advocacy meetings?', 'Letter writing?',
                      'Publicity?', 'Fundraising?', 'WO?', 'CE?',
                       
-                     'ML - Type', 'ML - LP Related', 'ML - Curriculum', 
-                     'ML - Resources By', 'ML - Duration', 'ML - Attendence',
+                     'ML - Type', 'ML - LP Related', 'ML - Focus', 
+                     'ML - Source', 'ML - Duration', 'ML - Attendence',
                      'ML - New Attendence',
                      
                      'SO - School Name', 'SO - Teacher Name', 'SO - Teacher Email',
@@ -966,6 +966,8 @@ def run_full_csv(group=None):
                      'Advocacy - Type', 'Advocacy - Units', 'Advocacy - DecisionMaker',
                      'Advocacy - Position', 'Advocacy - EWB', 'Advocacy - Purpose',
                      'Advocacy - Learned',
+
+                     'Letters - signatures', 'Letters - to decisionmakers', 'Letters - to media', 'Letters - other',
                      
                      'Publicity - Outlet', 'Publicity - Type', 'Publicity - Location',
                      'Publicity - Issue', 'Publicity - Circulation',
@@ -979,12 +981,14 @@ def run_full_csv(group=None):
                      'CE - Name', 'CE - Code', 'CE - NumStudents', 'CE - ClassHours',
                      'CE - Professor', 'CE - Activity'])
     
-    activities = Activity.objects.filter(visible=True)
+    start = date(2009, 9, 1)
+    end = date.today()
+    activities = Activity.objects.filter(visible=True, date__range=(start, end))
     if group:
         activities = activities.filter(group=group)
         
     for a in activities:
-        impact, func, ml, so, pe, pa, wo, ce, pub, fund = a.get_metrics(pad=True)
+        impact, func, ml, so, pe, pa, adv, wo, ce, pub, fund = a.get_metrics(pad=True)
         
         row = [a.group.name, a.name]
         if impact:
@@ -1035,6 +1039,10 @@ def run_full_csv(group=None):
             row.append('1')
         else:
             row.append('0')
+        if adv:
+            row.append('1')
+        else:
+            row.append('0')
         if pub:
             row.append('1')
         else:
@@ -1081,6 +1089,11 @@ def run_full_csv(group=None):
             row.extend([pa.type, pa.units, pa.decision_maker, pa.position, pa.ewb, pa.purpose, pa.learned])
         else:
             row.extend(['', '', '', '', '', '', ''])
+
+        if adv:
+            row.extend([adv.signatures, adv.letters, adv.editorials, adv.other])
+        else:
+            row.extend(['', '', '', ''])
 
         if pub:
             row.extend([pub.outlet, pub.type, pub.location, '', pub.circulation])

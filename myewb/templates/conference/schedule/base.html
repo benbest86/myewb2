@@ -5,10 +5,18 @@
         <meta name="viewport" content="width={% block viewport %}device-width{% endblock %}, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes" />
         <title>EWB Conference 2011</title>
 
+	{% if not request.is_mobile %}
+	        <link rel="stylesheet" type="text/css" href="https://conference2011.ewb.ca/wp-content/themes/conference2011/css/slideshow.css"> 
+	        <link rel="stylesheet" type="text/css" href="https://conference2011.ewb.ca/wp-content/themes/conference2011/css/navigation.css"> 
+	{% endif %}
         <style>
-            body {
+
+            body, div, p, tr, td {
                 font-family: 'Lucida Grande', Geneva, Verdana, Arial, Helvetica, sans-serif;
                 font-size: 14px;    /* need to test this on a mobile browser */
+            }
+            img {
+                border: 0;
             }
             a, a:visited {
                 /*color: #00e;*/
@@ -17,15 +25,24 @@
             a:hover {
                 text-decoration: none;
             }
-            th, td {
-                vertical-align: top;
+            .scheduler {
+              border-spacing: 2px 2px;
+              border-collapse: separate;
+              border: 1px solid #a0a0a0;
             }
-            th {
-                width: 7em;
+            .scheduler th, .scheduler td {
+                vertical-align: top;
+                border: 1px solid #a0a0a0;
+/*                margin: 2px; */
+            }
+            .scheduler th {
+                width: 5em;
                 height: 1.5em;
+                font-size: 1.0em;
+                padding: 2px;
             }
             #byday td {
-                font-size: 0.7em;
+                font-size: 0.8em;
             }
             .common, .common:visited, .common a, .common a:visited {
                 background: #f78f1e;
@@ -33,7 +50,7 @@
                 padding: 2px;
             }
             #byday td.common {
-				font-size: 1em;
+		font-size: 1.0em;
             }
             span.common {
                 background: #ffffff;
@@ -63,7 +80,6 @@
             #header {
                 background: #000000;
                 padding: 5px;
-                text-align: center;
             }
             #footer {
                 background: #e0e0e0;
@@ -87,22 +103,96 @@
             	font-style: italic;
             	font-size: 0.8em;
             }
+
+#logo { float:left; width:462px; height:70px; margin-top:4px; margin-bottom:12px; background: url(https://conference2011.ewb.ca/img/logo.png) no-repeat; }
+#hatchsm, .hatchsm { width:200px; height:35px; margin-top:23px; float:right; background:url(https://conference2011.ewb.ca/img/hatchsm.png) no-repeat; }
+.hatchsm { margin-top:0px; }
+#hatchsm a, #logo a { display:block; width:100%; height:100%; }
+.subpage { background: url(https://conference2011.ewb.ca/wp-content/themes/conference2011/img/background-sub.png) no-repeat 50% 0% !important; }
+#nav {
+color: #999;
+font-size: 10px;
+font-weight: bold;
+text-align: right;
+}
         </style>
     </head>
 
     <body>
         {% if not printable %}
-        <div id="header">
+{% if request.is_mobile %}
+        <div id="header" {% if not request.is_mobile %}style="text-align: center;"{% endif %}>
+            <a href="{% url conference_schedule %}">
             {% if request.is_mobile %}
                 <img src="{{STATIC_URL}}images/kumvanasmallnew_mobile.png"/>
             {% else %}
                 <img src="{{STATIC_URL}}images/kumvanasmallnew.png"/>
             {% endif %}
+            </a>
         </div>
+{% else %}
+<div id="nav" class="content">
+  <p>
+        <a href="http://conference2011.ewb.ca/index.html">Home</a> | <a href="http://conference2011.ewb.ca/contact.html">Contact</a>
+  </p>
+</div><div id="container" class="subpage" style="text-align: center;">
+  <div id="site" class="content">
+        <div id="header_sp">
+          <div id="logo"><a href="http://conference2011.ewb.ca"></a></div>
+          <div id="hatchsm"><a href="http://www.hatch.ca"></a></div>
 
+
+<div style="clear:both;" class="content">
+<table id="spss" style="margin: 0 auto;">
+        <tr>
+        <td><a href="http://conference2011.ewb.ca/wordpress/kumvana/"><img src="https://conference2011.ewb.ca/wp-content/themes/conference2011/img/slideshow/kumvanasmallnew.png"></a></td>
+        <td><a href="http://conference2011.ewb.ca/wordpress/coalitions/"><img src="https://conference2011.ewb.ca/wp-content/themes/conference2011/img/slideshow/coalitionsmallnew.png"></a></td>
+        <td><a href="http://conference2011.ewb.ca/wordpress/unlocking/"><img src="https://conference2011.ewb.ca/wp-content/themes/conference2011/img/slideshow/unlocksmallnew.png"></a></td>
+        <td><a href="http://conference2011.ewb.ca/wordpress/rethinking/"><img src="https://conference2011.ewb.ca/wp-content/themes/conference2011/img/slideshow/rethinkingsmallnew.png"></a></td>
+        </tr>
+</table>
+
+
+</div>    <div id="nav_new_container" style="width: 900px; margin: 0 auto;">
+
+<ul id="nav_new">
+<li><a href="/">Home</a></li>
+<li>
+        <a href="http://conference2011.ewb.ca/overview/">Conference</a>
+        <div class="submenu">
+                <a href='http://conference2011.ewb.ca/overview/' target=_self>Conference Overview</a><a href='http://conference2011.ewb.ca/themes/' target=_self>Themes</a><a href='http://conference2011.ewb.ca/photo-gallery/' target=_self>Photo Gallery</a><a href='http://conference2011.ewb.ca/kumvana/' target=_self>Kumvana</a><a href='http://conference2011.ewb.ca/about-ewb/' target=_self>About EWB</a>
+        </div>
+</li>
+
+<li>
+        <a href="http://conference2011.ewb.ca/speakers/">Speakers</a>
+        <div class="submenu">
+                <a href='http://conference2011.ewb.ca/speakers/' target=_self>Speaker List</a><a href='http://conference2011.ewb.ca/special-guests/' target=_self>Special Guests</a><a href='http://conference2011.ewb.ca/african-delegates/' target=_self>African Delegates</a>
+        </div>
+</li>
+<li>
+        <a href="http://conference2011.ewb.ca/schedule-2/">Logistics</a>
+        <div class="submenu">
+                <a href='http://conference2011.ewb.ca/schedule-2/' target=_self>Schedule and Location</a><a href='http://conference2011.ewb.ca/travel-accom/' target=_self>Travel and Accommodation</a><a href='http://my.ewb.ca/confcomm/app/#/' target=_self>Connect with Delegates</a><a href='http://conference2011.ewb.ca/vendors/' target=_self>Vendors</a><a href='http://conference2011.ewb.ca/sponsors/' target=_self>Conference Sponsors</a><a href='http://conference2011.ewb.ca/members/' target=_self>EWB Members Portal</a>
+        </div>
+</li>
+<li>
+        <a href="http://conference2011.ewb.ca/register/">Register</a>
+        <div class="submenu"> 
+                <a href='http://conference2011.ewb.ca/register/' target=_self>Register Now</a><a href='http://conference2011.ewb.ca/gala' target=_self>Gala</a><a href='http://conference2011.ewb.ca/registration-policies/' target=_self>Registration FAQ</a>
+        </div>
+</li>
+
+</ul>
+
+          </div>        </div>
+</div></div>
+
+{% endif %}
         {% if not request.is_mobile %}
-            <div style="background: #e0e0e0;">
-                <div style="width: 90%; margin: 0 auto; background: #ffffff; padding: 15px;">
+            <div style="background: #ffffff;"> 
+                <div style="width: 90%; margin: 0 auto; background: #ffffff; padding: 15px;"> 
+
                     {% endif %}
 
                     {% block signin %}
@@ -125,8 +215,8 @@
                     {% if not printable %}
 
                     {% if not request.is_mobile %}
-                </div>
-            </div>
+                </div> 
+            </div> 
         {% endif %}
        
         <div id="footer">
@@ -136,11 +226,26 @@
             <br/><br/>
             
             {% if request.is_mobile %}
-                This website optimized for mobile browsers
+                This page optimized for mobile browsers
             {% else %}
-                This website is mobile browser friendly
+                This page is mobile browser friendly
             {% endif %}
         </div>
         {% endif %}
+
+
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-907833-2']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script>
     </body>
 </html>
