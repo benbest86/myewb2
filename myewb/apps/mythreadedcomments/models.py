@@ -36,6 +36,7 @@ def send_to_watchlist(self):
     ctx = {'group': topic.group,
            'title': topic.title,
            'topic_id': topic.pk,
+           'reply_id': self.pk,
            'event': None,
            'attachments': attachments
           }
