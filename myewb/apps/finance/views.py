@@ -208,16 +208,15 @@ def create_chapter_filters(group_slug):
     return trans_chap, income_chap, donations_chap, expenditure_chap, monthly_chap
 
 def date_prevnext(date):
-    
     if date.month == 1:
         prev_date = datetime.date(year=date.year-1, month=12, day=1)
     else:
-        next_date = datetime.date(year=date.year, month=date.month+1, day=1)
-    
-    if date.month == 12:
-        prev_date = datetime.date(year=date.year+1, month=1, day=1) 
-    else:
         prev_date = datetime.date(year=date.year, month=date.month-1, day=1)
+        
+    if date.month == 12:
+        next_date = datetime.date(year=date.year+1, month=1, day=1) 
+    else:
+        next_date = datetime.date(year=date.year, month=date.month+1, day=1)
     
     return prev_date, next_date
 
