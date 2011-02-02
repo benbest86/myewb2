@@ -227,6 +227,9 @@ def new_email_member(request, group_slug):
             # request.user.message_set.create(message="Success")
             # won't work until we hit django 1.2
             return HttpResponseRedirect(group.get_absolute_url())
+        
+    else:
+        form = GroupAddEmailForm()
     
     return render_to_response("base_groups/new_email_member.html",
                               {'group': group,
