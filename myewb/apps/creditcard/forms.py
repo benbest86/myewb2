@@ -90,7 +90,7 @@ class ProductWidget(forms.HiddenInput):
         html = super(ProductWidget, self).render(name, value, attrs)
         
         product = Product.objects.get(sku=value)
-        html = "%s $%s - %s" % (html, product.amount, product.name)
+        html = "%s $%s - %s<br/><br/>" % (html, product.amount, product.name)
         return mark_safe(html)
         
 class PaymentForm(forms.ModelForm):

@@ -87,6 +87,7 @@ class MembershipForm(forms.Form):
         super(MembershipForm, self).__init__(*args, **kwargs)
     
 class MembershipFormPreview(PaymentFormPreview):
+    preview_template = 'profiles/membership_preview.html'
     username = None
 	
     # this gets called after transaction has been attempted
