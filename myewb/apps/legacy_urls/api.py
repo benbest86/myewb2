@@ -71,7 +71,7 @@ def login(request, details=False):
                         if not user.is_staff:
                             return HttpResponse("false")
                     elif level == 'email':
-                        if not user.get_profile().google_username:
+                        if not user.google_username:
                             return HttpResponse("false")
                     else:
                         return HttpResponse("false")
