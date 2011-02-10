@@ -9,7 +9,10 @@ from emailconfirmation.models import EmailAddress
 from django.shortcuts import get_object_or_404
 from django.http import HttpResponse, HttpResponseForbidden
 
+from base_groups.models import BaseGroup
+
 from siteutils.http import JsonResponse
+from siteutils.shortcuts import get_object_or_none
 import settings
 
 urlpatterns = patterns('siteutils.shortcuts',
@@ -54,6 +57,25 @@ def login(request, details=False):
                 
             user = authenticate(username=username, password=password)
             if user and user.is_active:
+                
+                if request.POST.get('group', None):
+                    slug = request.POST['group']
+                    group = get_object_or_none(BaseGroup, slug=slug)
+                    
+                    if not group or not group.user_is_member(user):
+                        return HttpResponse("false")
+                    
+                if request.POST.get('level', None):
+                    level = request.POST['level']
+                    if level == 'admin':
+                        if not user.is_staff:
+                            return HttpResponse("false")
+                    elif level == 'email':
+                        if not user.get_profile().google_username:
+                            return HttpResponse("false")
+                    else:
+                        return HttpResponse("false")
+                
                 if details:
                     response = {}
                     response['userid'] = str(user.id)
