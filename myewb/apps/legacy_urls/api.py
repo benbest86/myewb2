@@ -49,11 +49,15 @@ def login(request, details=False):
             password = request.POST['password']
             
             if User.objects.filter(username=username).count() == 0:
-                try:
+                if EmailAddress.objects.filter(email=username, verified=True).count() == 0:
+                    if User.objects.filter(google_username=username).count() == 0:
+                        return HttpResponse("false")
+                    else:
+                        u = User.objects.get(google_username=username)
+                        username = u.username
+                else:
                     email = EmailAddress.objects.get(email=username, verified=True)
-                except :
-                    return HttpResponse("false")
-                username = email.user.username
+                    username = email.user.username
                 
             user = authenticate(username=username, password=password)
             if user and user.is_active:
