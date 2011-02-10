@@ -1,0 +1,22 @@
+Hello {{ user.first_name }},
+<br/><br/>
+Last year, you became a paid member of Engineers Without Borders Canada - we 
+hope you have been enjoying your involvement, whether as a member of a 
+student chapter or city network, participant in our online community, or 
+supporter of our activities.
+<br/><br/>
+Your membership will expire in a month, however, and we hope you will
+renew it for another year:
+<a href="http://my.ewb.ca{% url profile_pay_membership user.username %}">http://my.ewb.ca{% url profile_pay_membership user.username %}</a>.
+Renewing will allow you to stay  involved in the governance of the 
+organization (through our annual general meeting), as well as attend our 
+national conference.  And most importantly, it is also an expression of your 
+support for Engineers Without Borders.
+<br/><br/>
+If you have any questions or concerns, please contact us at any time at 
+info@ewb.ca.  Thank you for your support, and we look forward to your 
+continued involvement in EWB!
+<br/><br/>
+Regards,<br/>
+Engineers Without Borders Canada
+

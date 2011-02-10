@@ -1,0 +1,21 @@
+Hello {{ user.first_name }},<br/><br/>
+
+This is a reminder that your Engineers Without Borders Canada membership 
+will expire in a week: you can renew at
+<a href="http://my.ewb.ca{% url profile_pay_membership user.username %}">http://my.ewb.ca{% url profile_pay_membership user.username %}</a>.
+<br/><br/>
+We hope you will renew your membership: doing so will allow you to stay 
+involved in the governance of the organization (through our annual general 
+meeting), as well as attend our national conference.  And most importantly, it 
+is also an expression of support for Engineers Without Borders.
+<br/><br/>
+Please consider renewing your membership for another year. Just visit 
+<a href="http://my.ewb.ca{% url profile_pay_membership user.username %}">http://my.ewb.ca{% url profile_pay_membership user.username %}</a>
+to renew your membership online.
+<br/><br/>
+If you have any questions or concerns, please contact us at any time at 
+info@ewb.ca.  Thank you for your support, and we look forward to your 
+continued involvement in EWB!
+<br/><br/>
+Regards,<br/>
+Engineers Without Borders Canada<br/>

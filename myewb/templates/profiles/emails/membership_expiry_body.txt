@@ -1,0 +1,22 @@
+Hello {{ user.first_name }},
+<br/><br/>
+Your regular membership with Engineers Without Borders Canada has expired, and 
+unfortunately we have not received payment to renew your membership.
+<br/><br/>
+You will still able to access myEWB, and will continue to receive updates about 
+our activities. However, you will not be able to attend our National Conference 
+or vote at our Annual General Meeting until you renew your paid membership.  
+Paid membership is also a great way to show support for the organisation, and 
+we will miss you.
+<br/><br/>
+EWB prides itself in constantly seeking ways to improve, and your feedback 
+would be valuable to us.  Please email us anytime at info@ewb.ca with your 
+comments and suggestions.  If you would like to become a regular member of 
+EWB again, you can do so at any time at 
+<a href="http://my.ewb.ca{% url profile_pay_membership user.username %}">http://my.ewb.ca{% url profile_pay_membership user.username %}</a>
+<br/><br/>
+Thank you for your support, and we hope to see you back as a regular member 
+sometime soon!
+<br/><br/>
+Regards,<br/>
+Engineers Without Borders Canada

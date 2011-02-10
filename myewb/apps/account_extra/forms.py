@@ -103,7 +103,9 @@ class EmailLoginForm(forms.Form):
             # (should this be done somewhere else, probably profiles app, with a signal listener?)
             membership_expiry = self.user.get_profile().membership_expiry
             if membership_expiry:
-                if date.today() + timedelta(days=7) > membership_expiry:
+                if date.today() > membership_expiry:
+                    request.user.message_set.create(message="Your membership has expired.<br/><a href='%s'>Renew it now!</a>" % reverse('profile_pay_membership', kwargs={'username': request.user.username}))
+                elif date.today() + timedelta(days=7) > membership_expiry:
                     request.user.message_set.create(message="Your membership expires within a week.<br/><a href='%s'>Renew it now!</a>" % reverse('profile_pay_membership', kwargs={'username': request.user.username}))
                 elif date.today() + timedelta(days=30) > membership_expiry:
                     request.user.message_set.create(message="Your membership expires within a month.<br/><a href='%s'>Renew it now!</a>" % reverse('profile_pay_membership', kwargs={'username': request.user.username}))
