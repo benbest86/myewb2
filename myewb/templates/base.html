@@ -73,7 +73,9 @@
 					</form>
 					<div class="bkgd-light" style="position: relative; height: 20px; padding: 10px; border-radius: 1em; display: none;" id="mainsearchoptions">
 						<input type="button" value="search content" class="bkgd-light" id="mainsearchcontent" />
-						<input type="button" value="search members" class="bkgd-light" id="mainsearchmembers" />
+						{% if user.is_authenticated %}
+							<input type="button" value="search members" class="bkgd-light" id="mainsearchmembers" />
+						{% endif %}
 					</div>
 				</div>
 
@@ -201,12 +203,14 @@
         	$('#mainsearchcontent').click(function() {
             	$('#mainsearchform').submit();
         	});
+        	{% if user.is_authenticated %}
         	$('#mainsearchmembers').click(function() {
             	$('#mainsearchform').attr('action', '{% url profiles_index %}');
             	$('#mainsearchform').attr('method', 'get');
             	$('#global_search_box').attr('name', 'search');
             	$('#mainsearchform').submit();
         	});
+        	{% endif %}
         	
         </script>
         
