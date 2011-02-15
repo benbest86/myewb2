@@ -67,10 +67,14 @@
 	        	{% block subnav_base %}
 	        	
 				<div id="subnavsearchbox">
-					<form method="get" action="{% url search %}">
-						<input type="text" value="search" style="width: 150px; color: #a0a0a0;" id="global_search_box" name="q"/>
-						<input type="submit" value="search" class="bkgd-light" />
+					<form method="get" action="{% url search %}" id="mainsearchform">
+						<input type="text" value="search" style="width: 200px; color: #a0a0a0; margin-left: 10px;" id="global_search_box" name="q"/>
+						{# <input type="submit" value="search" class="bkgd-light" /> #}
 					</form>
+					<div class="bkgd-light" style="position: relative; height: 20px; padding: 10px; border-radius: 1em; display: none;" id="mainsearchoptions">
+						<input type="button" value="search content" class="bkgd-light" id="mainsearchcontent" />
+						<input type="button" value="search members" class="bkgd-light" id="mainsearchmembers" />
+					</div>
 				</div>
 
 	        	{% block subnav %}&nbsp;{% endblock %}
@@ -164,12 +168,17 @@
         {% endblock %}
         
         <script type="text/javascript">
+        	var is_searching = false;
+        	var is_focused = false;
+        	
         	$('#global_search_box').focus(function() {
         		if ($(this).val() == "search")
         		{
         			$(this).css("color", "#000000");
         			$(this).val("")
         		}
+        		$('#mainsearchoptions').slideDown();
+        		is_focused = true;
         	});
         	$('#global_search_box').blur(function() {
         		if ($(this).val() == "")
@@ -177,15 +186,31 @@
         			$(this).css("color", "#a0a0a0");
         			$(this).val("search")
         		}
+        		if (!is_searching)
+        			$('#mainsearchoptions').slideUp();
+    			is_focused = false;
         	});
+        	$('#subnavsearchbox').hover(function() {
+            	is_searching = true;
+        	}, function() {
+            	is_searching = false;
+            	if (!is_focused)
+        			$('#mainsearchoptions').slideUp();
+        	});
+
+        	$('#mainsearchcontent').click(function() {
+            	$('#mainsearchform').submit();
+        	});
+        	$('#mainsearchmembers').click(function() {
+            	$('#mainsearchform').attr('action', '{% url profiles_index %}');
+            	$('#mainsearchform').attr('method', 'get');
+            	$('#global_search_box').attr('name', 'search');
+            	$('#mainsearchform').submit();
+        	});
+        	
         </script>
         
     </div>
-        
-        
-        
-        
-        
 
         
         
