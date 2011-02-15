@@ -855,7 +855,9 @@ def create_ewbmail_account(request, username):
             else:
                 request.user.message_set.create(message='Unable to create account - the username is probably already in use.')
     else:
-        form = EWBMailForm()
+        initial_username = "%s%s" % (user.first_name, user.last_name)
+        initial_username = initial_username.lower().replace(' ', '')
+        form = EWBMailForm(initial={'username': initial_username})
         
     return render_to_response("profiles/ewbmail.html",
                               {"other_user": user,
