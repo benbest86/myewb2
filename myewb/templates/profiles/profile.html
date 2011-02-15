@@ -352,6 +352,15 @@ Copyright 2009 Engineers Without Borders (Canada) Organisation and/or volunteer 
            	    {# intentional use of is_staff... #}
            	    <a href="{% url profile_impersonate other_user %}">Impersonate user</a>
            	    <br/><br/>
+           	    
+           	    {% if not other_user.google_username %}
+	           	    <a href="{% url profile_ewbmail_account other_user.username %}">Create EWB mail account</a>
+	           	{% else %}
+	           	    <a href="" style='text-decoration: line-through;'>Create EWB mail account</a><br/>
+	           		<em>(already has an EWB email)</em>
+	           	{% endif %}
+           	    <br/><br/>
+	           	
 	            <a href="{% url account_delete other_user %}">Delete user</a><br/>
 
                </div>

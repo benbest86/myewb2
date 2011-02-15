@@ -177,6 +177,34 @@ def set_google_password(username, password):
             pass
     return True
 
+def create_google_account(self, username):
+    if settings.GOOGLE_APPS:
+        import gdata.apps.service
+        service = gdata.apps.service.AppsService(email=settings.GOOGLE_ADMIN,
+                                                 domain=settings.GOOGLE_DOMAIN,
+                                                 password=settings.GOOGLE_PASSWORD)
+        service.ProgrammaticLogin()
+    
+        try:
+            guser = service.RetrieveUser(username)
+        except:
+            guser = service.CreateUser(user_name=username,
+                                       family_name=self.last_name,
+                                       given_name=self.first_name,
+                                       password=self.password)  # yes, this is a useless hash value.
+            self.google_username=username                       # account is not active until they log in...
+            self.google_sync=False
+            self.save()
+            EmailAddress.objects.get_or_create(user=self,
+                                               email="%s@ewb.ca" % username,
+                                               verified=True)
+            return True
+        else:
+            return False    # account already exists
+        
+    else:
+        return True
+        
 def check_password(self, raw_password):
     result = check_password2(self, raw_password)
     if result and not self.google_sync:
@@ -195,3 +223,5 @@ def set_password(self, raw_password):
 
 User.check_password = check_password
 User.set_password = set_password
+User.create_google_account = create_google_account
+

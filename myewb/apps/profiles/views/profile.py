@@ -30,7 +30,7 @@ from siteutils.decorators import owner_required, secure_required
 from siteutils.models import PhoneNumber
 from siteutils.context_processors import timezones
 from profiles.models import MemberProfile, StudentRecord, WorkRecord, ToolbarState
-from profiles.forms import StudentRecordForm, WorkRecordForm, MembershipForm, MembershipFormPreview, PhoneNumberForm, SettingsForm 
+from profiles.forms import StudentRecordForm, WorkRecordForm, MembershipForm, MembershipFormPreview, PhoneNumberForm, SettingsForm, EWBMailForm 
 
 from networks.models import Network
 from networks.helpers import is_exec_over
@@ -837,3 +837,28 @@ def timezone_switch(request):
             return HttpResponseRedirect(redirect)
     
     return HttpResponseForbidden
+
+@staff_member_required   
+def create_ewbmail_account(request, username):
+    user = get_object_or_404(User, username=username)
+    
+    if user.google_username:
+        form = None
+
+    elif request.method == 'POST':
+        form = EWBMailForm(request.POST)
+        
+        if form.is_valid():
+            if user.create_google_account(form.cleaned_data['username']):
+                request.user.message_set.create(message='Account successfully created.')
+                return HttpResponseRedirect(reverse('profile_detail', kwargs={'username': user.username}))
+            else:
+                request.user.message_set.create(message='Unable to create account - the username is probably already in use.')
+    else:
+        form = EWBMailForm()
+        
+    return render_to_response("profiles/ewbmail.html",
+                              {"other_user": user,
+                               'form': form,
+                               'is_me': user.pk == request.user.pk},
+                               context_instance=RequestContext(request))

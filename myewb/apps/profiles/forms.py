@@ -158,3 +158,8 @@ class SettingsForm(forms.ModelForm):
                   'replies_as_emails2',
                   'watchlist_as_emails',
                   'messages_as_emails')
+
+class EWBMailForm(forms.Form):
+    username = forms.SlugField(help_text='This is usually firstnamelastname - do not include @ewb.ca',
+                               required=True)
+    

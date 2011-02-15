@@ -1,0 +1,39 @@
+{% extends "profiles/base.html" %}
+
+{% load i18n %}
+{% load uni_form_tags %}
+
+{% block head_title %}{% trans "EWB Mail" %}{% endblock %}
+
+{% block body %}
+    <h1>{% trans "Create an EWB mail account" %}</h1>
+    
+	{% if form %}
+	    <p>
+	    	This will create a <em>@ewb.ca</em> email account for {{ other_user.visible_name }}.
+	    	Email accounts should only be created for people who are fairly involved in the 
+	    	organization, people who we are comfortable to have speaking on our behalf.
+	    </p>
+	    
+	    <p>
+	    	Typically, this includes APS and JFs, distributed team leads, office staff
+	    	and SCFs, and perhaps chapter presidents.  EWB mail accounts also grant access 
+	    	to various internal resources (overseas library, etc).
+	    </p>
+	    
+	    <p>
+	    	After creating the account, the person will need to sign into myEWB first to 
+	    	synchronize their passwords.  After that, their myEWB password and mail password
+	    	will be linked; they can use the same info to login at
+	    	<a href="http://mail.ewb.ca">http://mail.ewb.ca</a> or
+	    	<a href="http://apps.ewb.ca">http://apps.ewb.ca</a>
+	    </p>
+	    
+	    <form method="POST" action="" class="uniForm">
+	    		{{ form|as_uni_form }}
+	    	<input type="submit" value="{% trans 'Create' %}"/>
+	    </form>
+	{% else %}
+		<strong>This user already has an EWB mail account.</strong>
+	{% endif %}
+{% endblock %}
