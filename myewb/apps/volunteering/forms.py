@@ -30,7 +30,6 @@ class SessionForm(forms.ModelForm):
 
   en_instructions = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
   fr_instructions = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
-  #completed_application = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
   close_email = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
   rejection_email = forms.CharField(widget=forms.Textarea(attrs={'class':'tinymce '}))
   
@@ -42,9 +41,6 @@ class SessionForm(forms.ModelForm):
   
   def clean_fr_instructions(self):
       return html_clean(self.cleaned_data.get('fr_instructions', ''))
-  
-  def clean_completed_applications(self):
-      return html_clean(self.cleaned_data.get('completed_applications', ''))
   
   def clean_close_email(self):
       return html_clean(self.cleaned_data.get('close_email', ''))

@@ -4,7 +4,6 @@
     "model": "volunteering.session", 
     "fields": {
       "due_date": "2009-11-11", 
-      "completed_application": "do things", 
       "close_email": "do things", 
       "email_sent": 1, 
       "en_instructions": "do things", 
