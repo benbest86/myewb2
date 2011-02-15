@@ -1,0 +1,138 @@
+[
+    {
+        "pk": 1, 
+        "model": "base_groups.basegroup", 
+        "fields": {
+            "whiteboard": null, 
+            "description": "Burnaby, BC", 
+            "parent": null, 
+            "creator": 2, 
+            "created": "2009-01-01 00:00:00", 
+            "invite_only": false, 
+            "visibility": "E", 
+            "model": "Network", 
+            "slug": "sfu", 
+            "name": "Simon Fraser University"
+        }
+    },
+	{
+		"pk": 1,
+		"model": "finance.category",
+		"fields": {
+			"name": "Fundraising Event",
+			"type": "IN",
+			"slug": "fundraising_event",
+			"noaccount": 123
+		}
+	},
+	{
+		"pk": 2,
+		"model": "finance.category",
+		"fields": {
+			"name": "Donation",
+			"type": "IN",
+			"slug": "donation",
+			"noaccount": 2
+		}
+	},
+	{
+		"pk": 3,
+		"model": "finance.category",
+		"fields": {
+			"name": "Member Fees",
+			"type": "IN",
+			"slug": "member_fees",
+			"noaccount": 3
+		}
+	},
+	{
+		"pk": 4,
+		"model": "finance.category",
+		"fields": {
+			"name": "Administrative",
+			"type": "EX",
+			"slug": "administrative",
+			"noaccount": 4
+		}
+	},
+	{
+		"pk": 5,
+		"model": "finance.category",
+		"fields": {
+			"name": "Fundraising Event Costs",
+			"type": "EX",
+			"slug": "outreach_event",
+			"noaccount": 5
+		}
+	},
+	{
+		"pk": 6,
+		"model": "finance.category",
+		"fields": {
+			"name": "Conference",
+			"type": "EX",
+			"slug": "conference",
+			"noaccount": 6
+		}
+	},
+	{
+		"pk": 7,
+		"model": "finance.category",
+		"fields": {
+			"name": "Retreats",
+			"type": "EX",
+			"slug": "retreats",
+			"noaccount": 8
+		}
+	},
+	{
+		"pk": 8,
+		"model": "finance.category",
+		"fields": {
+			"name": "School Outreach",
+			"type": "EX",
+			"slug": "school_outreach",
+			"noaccount": 0
+		}
+	},
+	{
+		"pk": 9,
+		"model": "finance.category",
+		"fields": {
+			"name": "African Programs",
+			"type": "EX",
+			"slug": "african_programs",
+			"noaccount": 78
+		}
+	},
+	{
+		"pk": 10,
+		"model": "finance.category",
+		"fields": {
+			"name": "National Office Materials",
+			"type": "EX",
+			"slug": "no_materials",
+			"noaccount": 45
+		}
+	},
+	{
+		"pk": 11,
+		"model": "finance.category",
+		"fields": {
+			"name": "Transfer - Incoming",
+			"type": "IN",
+			"slug": "transfer_in",
+			"noaccount": 3
+		}
+	},
+	{
+		"pk": 12,
+		"model": "finance.category",
+		"fields": {
+			"name": "Transfer - Outgoing",
+			"type": "EX",
+			"slug": "transfer_out",
+			"noaccount": 3
+        }
+    }
+]
