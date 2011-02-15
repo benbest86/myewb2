@@ -377,6 +377,7 @@ class DonationEditForm(ModelForm):
 
 
 class DonationForm(ModelForm):
+    bank_date = forms.DateField(required=True)
     
     class Meta:
         model = Donation
