@@ -137,9 +137,9 @@ def topics(request, group_slug=None, form_class=GroupTopicForm,
         
     if mode == 'featured':
         topics = GroupTopic.objects.featured(topics)
-    elif mode == 'newposts':
+    elif mode == 'newposts' and request.user.is_authenticated():
         topics = GroupTopic.objects.since(request.user.get_profile().previous_login, qs=topics)
-    elif mode == 'newreplies':
+    elif mode == 'newreplies' and request.user.is_authenticated():
         topics = GroupTopic.objects.replies_since(request.user.get_profile().previous_login, qs=topics)
 
     if request.user.is_authenticated():
