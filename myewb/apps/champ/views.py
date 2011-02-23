@@ -184,6 +184,7 @@ def dashboard(request, year=None, month=None, term=None,
                               context,
                               context_instance=RequestContext(request))
 
+"""
 @group_admin_required()
 def new_activity(request, group_slug):
     group = get_object_or_404(Network, slug=group_slug)
@@ -239,6 +240,39 @@ def new_activity(request, group_slug):
                                'metric_forms': metric_forms,
                                'showfields': showfields,
                                'edit': False,
+                               'is_group_admin': True,
+                               'is_president': group.user_is_president(request.user)
+                               },
+                              context_instance=RequestContext(request))
+"""
+
+@group_admin_required()
+def new_activity(request, group_slug):
+    group = get_object_or_404(Network, slug=group_slug)
+    metric_forms = {}
+    showfields = {"all": True}
+    
+    if request.method == 'POST':
+        champ_form = ChampForm(request.POST)
+        
+        if champ_form.is_valid():
+            # save the activity
+            activity = champ_form.save(commit=False)
+            activity.creator = request.user
+            activity.editor = request.user
+            activity.group = group
+            activity.save()
+            
+            request.user.message_set.create(message="Activity recorded")
+            return HttpResponseRedirect(reverse('champ_activity', kwargs={'group_slug': group_slug, 'activity_id': activity.id}))
+            
+    else:
+        champ_form = ChampForm()
+
+    return render_to_response('champ/new_activity.html',
+                              {'group': group,
+                               'champ_form': champ_form,
+                               'showfields': showfields,
                                'is_group_admin': True,
                                'is_president': group.user_is_president(request.user)
                                },

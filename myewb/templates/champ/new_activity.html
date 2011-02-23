@@ -11,6 +11,51 @@
 
 {% block champ_body %}
 
+<h2>New CHAMP activity</h2>
+<h3>{{ group.name }}</h3>
+
+<strong>Basic event information:</strong><br/>
+<form action="" method="POST" class="uniForm">
+	<fieldset class="inlineLabels">
+		{{ champ_form|as_uni_form }}
+	</fieldset>
+	
+	<input type="submit" value="Save and continue"/>
+</form>
+
+{% endblock %}
+
+{% block extra_body %}
+
+	<script type="text/javascript" src="{{STATIC_URL}}js/ui.datepicker.js"></script>
+
+	<style>
+		div.ui-datepicker {z-index:10000000;}
+	</style>
+  
+    <script type="text/javascript">
+        $(document).ready(function() {
+          	{# set up javascript widgets... #}
+            var datepicker123 = $("input#id_date").datepicker({});
+        });
+    </script>
+{% endblock %}
+
+
+{% comment %}
+{% extends "champ/base.html" %}
+
+{% load i18n %}
+{% load uni_form_tags %}
+{% load helpers %}
+
+{% block extra_head %}
+
+ <link type="text/css" href="{{STATIC_URL}}css/ui.timepickr.css" rel="stylesheet" />
+{% endblock %}
+
+{% block champ_body %}
+
 {% if edit %}
 	<h2>Edit CHAMP activity</h2>
 {% else %}
@@ -76,3 +121,4 @@
     </script>
 {% endblock %}
 
+{% endcomment %}
