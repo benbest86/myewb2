@@ -234,11 +234,11 @@ Chapter:
 <tr>
 	<td class="labelcell">Member Learning Hours:</td>
 	{% if group %}
-		<td> {{ ml_hours }} </td>
-		<td> {% if yearplan %} {{ yearplan.ml_total_hours }} {% endif %}</td>
+		<td> {{ ml_hours|number_format }} </td>
+		<td> {% if yearplan %} {{ yearplan.ml_total_hours|number_format }} {% endif %}</td>
 	{% endif %}
-	<td>{{ natl_ml_hours }}</td>
-	<td>{{ national.ml_hours }}</td>
+	<td>{{ natl_ml_hours|number_format }}</td>
+	<td>{{ national.ml_hours|number_format }}</td>
 	<td>
 	    <a href="#" class="champalytics" id="ml_hours">
 	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
@@ -248,11 +248,11 @@ Chapter:
 <tr>
 	<td  class="labelcell">Average Attendance:</td>
 	{% if group %}
-		<td> {{ ml_attendance }}  </td>
-		<td> {% if yearplan %} {{ yearplan.ml_average_attendance }} {% endif %}</td>
+		<td> {{ ml_attendance|number_format }}  </td>
+		<td> {% if yearplan %} {{ yearplan.ml_average_attendance|number_format }} {% endif %}</td>
 	{% endif %}
-	<td>{{ natl_ml_attendance }}</td>
-	<td>{{ national.ml_attendance }}</td>
+	<td>{{ natl_ml_attendance|number_format }}</td>
+	<td>{{ national.ml_attendance|number_format }}</td>
 	<td>
 	    <a href="#" class="champalytics" id="ml_attendance">
 	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
@@ -262,11 +262,11 @@ Chapter:
 <tr>
 	<td  class="labelcell">Number of events:</td>
 	{% if group %}
-		<td> {{ ml_events }}  </td>
-		<td> {% if yearplan %} {{ yearplan.ml_events }} {% endif %}</td>
+		<td> {{ ml_events|number_format }}  </td>
+		<td> {% if yearplan %} {{ yearplan.ml_events|number_format }} {% endif %}</td>
 	{% endif %}
-	<td>{{ natl_ml_events }}</td>
-	<td>{{ national.ml_events }}</td>
+	<td>{{ natl_ml_events|number_format }}</td>
+	<td>{{ national.ml_events|number_format }}</td>
 	<td>
 	    <a href="#" class="champalytics" id="ml_events">
 	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
@@ -278,11 +278,11 @@ Chapter:
 <tr>
 	<td class="labelcell">People reached on campus:</td>
 	{% if group %}
-		<td> {{ pe_people_oncampus }} </td>
-		<td> {% if yearplan %} {{ yearplan.eng_people_reached }} {% endif %}</td>
+		<td> {{ pe_people_oncampus|number_format }} </td>
+		<td> {% if yearplan %} {{ yearplan.eng_people_reached|number_format }} {% endif %}</td>
 	{% endif %}
-	<td>{{ natl_pe_people_oncampus }}</td>
-	<td>{{ national.pe_people_oncampus }}</td>
+	<td>{{ natl_pe_people_oncampus|number_format }}</td>
+	<td>{{ national.pe_people_oncampus|number_format }}</td>
 	<td>
 	    <a href="#" class="champalytics" id="pe_people_oncampus">
 	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
@@ -292,11 +292,11 @@ Chapter:
 <tr>
 	<td class="labelcell">People reached off campus:</td>
 	{% if group %}
-		<td> {{ pe_people_offcampus }} </td>
-		<td> {% if yearplan %} {{ yearplan.eng_people_reached_offcampus }} {% endif %}</td>
+		<td> {{ pe_people_offcampus|number_format }} </td>
+		<td> {% if yearplan %} {{ yearplan.eng_people_reached_offcampus|number_format }} {% endif %}</td>
 	{% endif %}
-	<td>{{ natl_pe_people_offcampus }}</td>
-	<td>{{ national.pe_people_offcampus }}</td>
+	<td>{{ natl_pe_people_offcampus|number_format }}</td>
+	<td>{{ national.pe_people_offcampus|number_format }}</td>
 	<td>
 	    <a href="#" class="champalytics" id="pe_people_offcampus">
 	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
@@ -306,11 +306,11 @@ Chapter:
 <tr>
 	<td class="labelcell">Number of events:</td>
 	{% if group %}
-		<td> {{ pe_events }} </td>
-		<td> {% if yearplan %} {{ yearplan.eng_events }} {% endif %}</td>
+		<td> {{ pe_events|number_format }} </td>
+		<td> {% if yearplan %} {{ yearplan.eng_events|number_format }} {% endif %}</td>
 	{% endif %}
-	<td>{{ natl_pe_events }}</td>
-	<td>{{ national.pe_events }}</td>
+	<td>{{ natl_pe_events|number_format }}</td>
+	<td>{{ national.pe_events|number_format }}</td>
 	<td>
 	    <a href="#" class="champalytics" id="pe_events">
 	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
@@ -322,11 +322,11 @@ Chapter:
 <tr>
 	<td class="labelcell">MP meetings:</td>
 	{% if group %}
-		<td> {{ po_contacts }} </td>
-		<td> {% if yearplan %} {{ yearplan.adv_contacts }} {% endif %}</td>
+		<td> {{ po_contacts|number_format }} </td>
+		<td> {% if yearplan %} {{ yearplan.adv_contacts|number_format }} {% endif %}</td>
 	{% endif %}
-	<td>{{ natl_po_contacts }}</td>
-	<td>{{ national.po_contacts }}</td>
+	<td>{{ natl_po_contacts|number_format }}</td>
+	<td>{{ national.po_contacts|number_format }}</td>
 	<td>
 	    <a href="#" class="champalytics" id="po_contacts">
 	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
@@ -336,11 +336,11 @@ Chapter:
 <tr>
 	<td class="labelcell">Letters to the editor:</td>
 	{% if group %}
-		<td> {{ po_letters }} </td>
-		<td> {% if yearplan %} {{ yearplan.adv_letters }} {% endif %}</td>
+		<td> {{ po_letters|number_format }} </td>
+		<td> {% if yearplan %} {{ yearplan.adv_letters|number_format }} {% endif %}</td>
 	{% endif %}
-	<td>{{ natl_po_letters }}</td>
-	<td>{{ national.po_letters }}</td>
+	<td>{{ natl_po_letters|number_format }}</td>
+	<td>{{ national.po_letters|number_format }}</td>
 	<td>
 	    <a href="#" class="champalytics" id="po_letters">
 	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
@@ -353,11 +353,11 @@ Chapter:
 <tr>
 	<td class="labelcell">Students Reached:</td>
 	{% if group %}
-		<td> {{ ce_students }} </td>
-		<td> {% if yearplan %} {{ yearplan.ce_students }} {% endif %}</td>
+		<td> {{ ce_students|number_format }} </td>
+		<td> {% if yearplan %} {{ yearplan.ce_students|number_format }} {% endif %}</td>
 	{% endif %}
-	<td>{{ natl_ce_students }}</td>
-	<td>{{ national.ce_students }}</td>
+	<td>{{ natl_ce_students|number_format }}</td>
+	<td>{{ national.ce_students|number_format }}</td>
 	<td>
 	    <a href="#" class="champalytics" id="ce_students">
 	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
@@ -367,11 +367,11 @@ Chapter:
 <tr>
 	<td class="labelcell">Total Class Hours:</td>
 	{% if group %}
-		<td> {{ ce_hours }} </td>
-		<td> {% if yearplan %} {{ yearplan.ce_hours }} {% endif %}</td>
+		<td> {{ ce_hours|number_format }} </td>
+		<td> {% if yearplan %} {{ yearplan.ce_hours|number_format }} {% endif %}</td>
 	{% endif %}
-	<td>{{ natl_ce_hours }}</td>
-	<td>{{ national.ce_hours }}</td>
+	<td>{{ natl_ce_hours|number_format }}</td>
+	<td>{{ national.ce_hours|number_format }}</td>
 	<td>
 	    <a href="#" class="champalytics" id="ce_hours">
 	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
@@ -383,11 +383,11 @@ Chapter:
 <tr>
 	<td class="labelcell">Professionals Reached:</td>
 	{% if group %}
-		<td>  {{ wo_professionals }} </td>
-		<td> {% if yearplan %} {{ yearplan.wo_reached }} {% endif %}</td>
+		<td>  {{ wo_professionals|number_format }} </td>
+		<td> {% if yearplan %} {{ yearplan.wo_reached|number_format }} {% endif %}</td>
 	{% endif %}
-	<td>{{ natl_wo_professionals }}</td>
-	<td>{{ national.wo_professionals }}</td>
+	<td>{{ natl_wo_professionals|number_format }}</td>
+	<td>{{ national.wo_professionals|number_format }}</td>
 	<td>
 	    <a href="#" class="champalytics" id="wo_professionals">
 	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
@@ -397,11 +397,11 @@ Chapter:
 <tr>
 	<td class="labelcell">Presentations:</td>
 	{% if group %}
-		<td>  {{ wo_presentations }} </td>
-		<td> {% if yearplan %} {{ yearplan.wo_presentations }} {% endif %}</td>
+		<td>  {{ wo_presentations|number_format }} </td>
+		<td> {% if yearplan %} {{ yearplan.wo_presentations|number_format }} {% endif %}</td>
 	{% endif %}
-	<td>{{ natl_wo_presentations }}</td>
-	<td>{{ national.wo_presentations }}</td>
+	<td>{{ natl_wo_presentations|number_format }}</td>
+	<td>{{ national.wo_presentations|number_format }}</td>
 	<td>
 	    <a href="#" class="champalytics" id="wo_presentations">
 	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
@@ -413,11 +413,11 @@ Chapter:
 <tr>
 	<td class="labelcell">Students Reached:</td>
 	{% if group %}
-		<td>  {{ so_students }} </td>
-		<td> {% if yearplan %} {{ yearplan.so_reached }} {% endif %}</td>
+		<td>  {{ so_students|number_format }} </td>
+		<td> {% if yearplan %} {{ yearplan.so_reached|number_format }} {% endif %}</td>
 	{% endif %}
-	<td>{{ natl_so_students }}</td>
-	<td>{{ national.so_students }}</td>
+	<td>{{ natl_so_students|number_format }}</td>
+	<td>{{ national.so_students|number_format }}</td>
 	<td>
 	    <a href="#" class="champalytics" id="so_students">
 	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
@@ -427,11 +427,11 @@ Chapter:
 <tr>
 	<td class="labelcell">Presentations:</td>
 	{% if group %}
-		<td>  {{ so_presentations }} </td>
-		<td> {% if yearplan %} {{ yearplan.so_presentations }} {% endif %}</td>
+		<td>  {{ so_presentations|number_format }} </td>
+		<td> {% if yearplan %} {{ yearplan.so_presentations|number_format }} {% endif %}</td>
 	{% endif %}
-	<td>{{ natl_so_presentations }}</td>
-	<td>{{ national.so_presentations }}</td>
+	<td>{{ natl_so_presentations|number_format }}</td>
+	<td>{{ national.so_presentations|number_format }}</td>
 	<td>
 	    <a href="#" class="champalytics" id="so_presentations">
 	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
@@ -443,11 +443,11 @@ Chapter:
 <tr>
 	<td class="labelcell">Total Dollars Fundraised:</td>
 	{% if group %}
-		<td>  $ {{ fundraising_dollars|default:0 }} </td>
-		<td> {% if yearplan %} $ {{ yearplan.fund_total|default:0 }} {% endif %}</td>
+		<td>  $ {{ fundraising_dollars|default:0|number_format }} </td>
+		<td> {% if yearplan %} $ {{ yearplan.fund_total|default:0|number_format }} {% endif %}</td>
 	{% endif %}
-	<td>$ {{ natl_fundraising_dollars|default:0 }}</td>
-	<td>$ {{ national.fundraising_dollars }}</td>
+	<td>$ {{ natl_fundraising_dollars|default:0|number_format }}</td>
+	<td>$ {{ national.fundraising_dollars|number_format }}</td>
 	<td>
 	    <a href="#" class="champalytics" id="fundraising_dollars">
 	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
@@ -457,11 +457,11 @@ Chapter:
 <tr>
 	<td class="labelcell">Dollars from one-off events:</td>
 	{% if group %}
-		<td>  $ {{ fundraising_dollars_oneoff|default:0 }} </td>
-		<td> {% if yearplan %} $ {{ yearplan.fund_oneoff|default:0 }} {% endif %}</td>
+		<td>  $ {{ fundraising_dollars_oneoff|default:0|number_format }} </td>
+		<td> {% if yearplan %} $ {{ yearplan.fund_oneoff|default:0|number_format }} {% endif %}</td>
 	{% endif %}
-	<td>$ {{ natl_fundraising_dollars_oneoff|default:0 }}</td>
-	<td>$ {{ national.fundraising_dollars_oneoff }}</td>
+	<td>$ {{ natl_fundraising_dollars_oneoff|default:0|number_format }}</td>
+	<td>$ {{ national.fundraising_dollars_oneoff|number_format }}</td>
 	<td>
 	    <a href="#" class="champalytics" id="fundraising_dollars_oneoff">
 	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
@@ -471,11 +471,11 @@ Chapter:
 <tr>
 	<td class="labelcell">Dollars from recurring activities:</td>
 	{% if group %}
-		<td>  $ {{ fundraising_dollars_recurring|default:0 }} </td>
-		<td> {% if yearplan %} $ {{ yearplan.fund_recurring|default:0 }} {% endif %}</td>
+		<td>  $ {{ fundraising_dollars_recurring|default:0|number_format }} </td>
+		<td> {% if yearplan %} $ {{ yearplan.fund_recurring|default:0|number_format }} {% endif %}</td>
 	{% endif %}
-	<td>$ {{ natl_fundraising_dollars_recurring|default:0 }}</td>
-	<td>$ {{ national.fundraising_dollars_recurring }}</td>
+	<td>$ {{ natl_fundraising_dollars_recurring|default:0|number_format }}</td>
+	<td>$ {{ national.fundraising_dollars_recurring|number_format }}</td>
 	<td>
 	    <a href="#" class="champalytics" id="fundraising_dollars_recurring">
 	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
@@ -485,11 +485,11 @@ Chapter:
 <tr>
 	<td class="labelcell">Dollars from non-event sources:</td>
 	{% if group %}
-		<td>  $ {{ fundraising_dollars_nonevent|default:0 }} </td>
-		<td> {% if yearplan %} $ {{ yearplan.fund_nonevent|default:0 }} {% endif %}</td>
+		<td>  $ {{ fundraising_dollars_nonevent|default:0|number_format }} </td>
+		<td> {% if yearplan %} $ {{ yearplan.fund_nonevent|default:0|number_format }} {% endif %}</td>
 	{% endif %}
-	<td>$ {{ natl_fundraising_dollars_nonevent|default:0 }}</td>
-	<td>$ {{ national.fundraising_dollars_nonevent }}</td>
+	<td>$ {{ natl_fundraising_dollars_nonevent|default:0|number_format }}</td>
+	<td>$ {{ national.fundraising_dollars_nonevent|number_format }}</td>
 	<td>
 	    <a href="#" class="champalytics" id="fundraising_dollars_nonevent">
 	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>
@@ -501,11 +501,11 @@ Chapter:
 <tr>
 	<td class="labelcell">Media Hits:</td>
 	{% if group %}
-		<td>  {{ publicity_hits }} </td>
-		<td> {% if yearplan %} {{ yearplan.pub_media_hits }} {% endif %}</td>
+		<td>  {{ publicity_hits|number_format }} </td>
+		<td> {% if yearplan %} {{ yearplan.pub_media_hits|number_format }} {% endif %}</td>
 	{% endif %}
-	<td>{{ natl_publicity_hits }}</td>
-	<td>{{ national.publicity_hits }}</td>
+	<td>{{ natl_publicity_hits|number_format }}</td>
+	<td>{{ national.publicity_hits|number_format }}</td>
 	<td>
 	    <a href="#" class="champalytics" id="publicity_hits">
 	        <img src="{{ STATIC_URL }}images/icons/Stats.ico" class="champalytics_icon"/>

@@ -144,3 +144,22 @@ def month(month):
     month = int(month)
     d = date(date.today().year, month, date.today().day)
     return d.strftime("%B")
+
+@register.filter()
+@stringfilter
+def number_format(number):
+    try:
+        number = str(int(round(float(number))))
+        count = commas = 0
+        formatted = []
+        for i in range(len(number) - 1, -1, -1):
+            count += 1
+            formatted.append(number[i])
+            if count % 3 == 0 and i > 0:
+                formatted.append(",")
+        formatted.reverse()        
+        return ''.join(formatted)
+    except:
+        return number
+
+#s
