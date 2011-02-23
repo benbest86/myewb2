@@ -366,8 +366,22 @@ def activity_edit(request, group_slug, activity_id):
                                  'activity': activity,
                                  'is_group_admin': True,
                                  'form': form})
+        
+        confirmable = ''
+        if activity.confirmed:
+            confirmable = 'confirmed'
+        else:
+            if group.user_is_admin(request.user):
+                if activity.can_be_confirmed():
+                    confirmable = 'yes'
+                else:
+                    confirmable = 'no'
+            else:
+                confirmable = 'noperms'
+        
         return JsonResponse({'status': status,
                              'html': html,
+                             'confirmable': confirmable,
                              'metricname': 'basic'})
     else:
         form = ChampForm(instance=activity)
@@ -703,12 +717,25 @@ def metric_add(request, group_slug, activity_id):
         metric.activity = activity
         metric.save()
         
+        confirmable = ''
+        if activity.confirmed:
+            confirmable = 'confirmed'
+        else:
+            if group.user_is_admin(request.user):
+                if activity.can_be_confirmed():
+                    confirmable = 'yes'
+                else:
+                    confirmable = 'no'
+            else:
+                confirmable = 'noperms'
+        
         html = render_to_string("champ/metrics.html",
                                 {'group': group,
                                  'activity': activity,
                                  'metric': metric,
                                  'metric_names': ALLMETRICS,
-                                 'is_group_admin': True})
+                                 'is_group_admin': True,
+                                 'confirmable': confirmable})
         return JsonResponse({'status': 'success',
                              'html': html,
                              'metricname': metric.metricname,
@@ -755,9 +782,23 @@ def metric_edit(request, group_slug, activity_id, metric_id):
                                  'metric_names': ALLMETRICS,
                                  'is_group_admin': True,
                                  'form': form})
+
+        confirmable = ''
+        if activity.confirmed:
+            confirmable = 'confirmed'
+        else:
+            if group.user_is_admin(request.user):
+                if activity.can_be_confirmed():
+                    confirmable = 'yes'
+                else:
+                    confirmable = 'no'
+            else:
+                confirmable = 'noperms'
+        
         return JsonResponse({'status': status,
                              'html': html,
-                             'metricname': metric.metricname})
+                             'metricname': metric.metricname,
+                             'confirmable': confirmable})
     else:
         form = METRICFORMS[metric.metricname](instance=metric,
                                               prefix=metric.metricname)
@@ -795,9 +836,22 @@ def metric_remove(request, group_slug, activity_id, metric_id):
             if m == metric.metricname:
                 label = mname
         
+        confirmable = ''
+        if activity.confirmed:
+            confirmable = 'confirmed'
+        else:
+            if group.user_is_admin(request.user):
+                if activity.can_be_confirmed():
+                    confirmable = 'yes'
+                else:
+                    confirmable = 'no'
+            else:
+                confirmable = 'noperms'
+        
         return JsonResponse({'status': 'success',
                              'metricname': metric.metricname,
-                             'metriclabel': label})
+                             'metriclabel': label,
+                             'confirmable': confirmable})
     else:
         return JsonResponse({'status': 'error'})
 

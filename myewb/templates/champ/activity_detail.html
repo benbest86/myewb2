@@ -50,22 +50,19 @@
 <h2>{{ group.name }}</h2>
 <h3>{{ activity.name }}</h3>
 
-<p>
-{% if activity.confirmed %}
+<p id="has_been_confirmed" class="champ_confirmation_message" style="display: none;">
 	This activity has been confirmed.
-{% else %}
-	{% if is_group_admin %}
-		{% if activity.can_be_confirmed %}
-			<a href="{% url champ_confirm_activity group.slug activity.pk %}">
-				<span style="font-size: 16px; background-color: yellow; color: green;">Click here to confirm this activity</span>
-			</a>
-		{% else %}
-			<span style="color: red;">Some values are missing - cannot confirm this activity yet</span>
-		{% endif %}
-	{% else %}
-		This activity has not been confirmed.
-	{% endif %}
-{% endif %}
+</p>
+<p id="click_to_confirm" class="champ_confirmation_message" style="display: none;">
+	<a href="{% url champ_confirm_activity group.slug activity.pk %}">
+		<span style="font-size: 16px; background-color: yellow; color: green;">Click here to confirm this activity</span>
+	</a>
+</p>
+<p id="values_missing" class="champ_confirmation_message" style="display: none;">
+	<span style="color: red;">Some values are missing - cannot confirm this activity yet</span>
+</p>
+<p id="not_confirmed" class="champ_confirmation_message" style="display: none;">
+	This activity has not been confirmed.
 </p>
 
 <table>
@@ -147,6 +144,20 @@
 <script type="text/javascript" src="{{STATIC_URL}}js/colorbox.js"></script>
 <script type="text/javascript">
 	$().ready(function() {
+		{% if activity.confirmed %}
+			$('#has_been_confirmed').show();
+		{% else %}
+			{% if is_group_admin %}
+				{% if activity.can_be_confirmed %}
+					$('#click_to_confirm').show();
+				{% else %}
+					$('#values_missing').show();
+				{% endif %}
+			{% else %}
+				$('#not_confirmed').show();
+			{% endif %}
+		{% endif %}
+
 		bind_editors();
 
 		$('#addmetric').submit(function() {
@@ -186,7 +197,17 @@
 						 	//$.colorbox.close();
 						 	$('#cboxClose').click();
 						 	bind_editors();
-					 	}
+
+						 	$('.champ_confirmation_message').hide();
+							if (data.confirmable == 'confirmed')
+								$('#has_been_confirmed').show();
+							else if (data.confirmable == 'yes')
+								$('#click_to_confirm').show();
+							else if (data.confirmable == 'no')
+								$('#values_missing').show();
+							else
+								$('#not_confirmed').show();
+						 }
 					 	else
 					 	{
 						 	$('#cboxLoadedContent').html(data.html);
@@ -227,6 +248,16 @@
 							 {
 							 	$('.metric-' + data.metricname).remove();
 								$('select[name=metrictype]').append('<option value="' + data.metricname + '">' + data.metriclabel + '</option>');
+
+							 	$('.champ_confirmation_message').hide();
+								if (data.confirmable == 'confirmed')
+									$('#has_been_confirmed').show();
+								else if (data.confirmable == 'yes')
+									$('#click_to_confirm').show();
+								else if (data.confirmable == 'no')
+									$('#values_missing').show();
+								else
+									$('#not_confirmed').show();
 							 }
 						 }); 
 			 }
