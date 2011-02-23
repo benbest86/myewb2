@@ -1,6 +1,7 @@
 {% extends "networks/base.html" %}
 
 {% load i18n %}
+{% load networks_tags %}
 
 {% block head_title %}CHAMP{% endblock %}
 
@@ -23,9 +24,9 @@
         <div class="toolbarcontent" id="box-champ-content">
         	<p>
         		{% if group %}
-        			<a href="{% url champ_dashboard group_slug=group.slug %}">Dashboard</a>
+       				<a href="{% link_to_current_champ_by_group request.user group %}">Dashboard</a><br/>
         		{% else %}
-        			<a href="{% url champ_dashboard %}">Dashboard</a>
+       				<a href="{% link_to_current_champ_national %}">Dashboard</a><br/>
         		{% endif %}
         	</p>
         	

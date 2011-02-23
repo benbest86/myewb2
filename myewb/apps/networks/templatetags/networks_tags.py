@@ -28,6 +28,13 @@ def link_to_current_champ(user):
     else:
         return reverse('champ_dashboard', kwargs={'year': schoolyear.school_year()})
     
+@register.simple_tag
+def link_to_current_champ_by_group(user, group):
+        return reverse('champ_dashboard', kwargs={'group_slug': group.slug,
+                                                  'year': schoolyear.school_year()})
+@register.simple_tag
+def link_to_current_champ_national():
+        return reverse('champ_dashboard', kwargs={'year': schoolyear.school_year()})
     
 @register.simple_tag
 def link_to_current_finance(user):
