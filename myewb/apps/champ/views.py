@@ -11,7 +11,7 @@ define a different template segment for each, then build a list and include/pars
 """
 
 import csv, copy
-from datetime import date
+from datetime import date, datetime
 
 from django.contrib.admin.views.decorators import staff_member_required
 from django.contrib.auth.decorators import login_required
@@ -716,6 +716,8 @@ def metric_add(request, group_slug, activity_id):
         metric = form.Meta.model()
         metric.activity = activity
         metric.save()
+        activity.modified_date = datetime.now()
+        activity.save()
         
         confirmable = ''
         if activity.confirmed:
@@ -769,6 +771,8 @@ def metric_edit(request, group_slug, activity_id, metric_id):
                                               prefix=metric.metricname)
         if form.is_valid():
             metric = form.save()
+            activity.modified_date = datetime.now()
+            activity.save()
             status = 'success'
             template = "champ/metrics.html"
         else:
@@ -830,6 +834,8 @@ def metric_remove(request, group_slug, activity_id, metric_id):
     
     if request.method == 'POST':
         metric.delete()
+        activity.modified_date = datetime.now()
+        activity.save()
         
         label = ''
         for m, mname in ALLMETRICS:
