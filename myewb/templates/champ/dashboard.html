@@ -89,12 +89,12 @@
 	{% if group %}
 	    <a href="{% url champ_dashboard year=nowyear,month=nowmonth,group_slug=group.slug %}" class="more">[current month]</a> 
 	    <a href="{% url champ_dashboard year=nowyear,term=nowterm,group_slug=group.slug %}" class="more">[current term]</a> 
-	    <a href="{% url champ_dashboard year=nowyear,group_slug=group.slug %}" class="more">[current year]</a> 
+	    <a href="{% url champ_dashboard year=nowschoolyear,group_slug=group.slug %}" class="more">[current year]</a> 
 	    <a href="{% url champ_dashboard group_slug=group.slug%}" class="more">[all dates]</a></td>
 	{% else %}
 	    <a href="{% url champ_dashboard year=nowyear,month=nowmonth %}" class="more">[current month]</a> 
 	    <a href="{% url champ_dashboard year=nowyear,term=nowterm %}" class="more">[current term]</a> 
-	    <a href="{% url champ_dashboard year=nowyear %}" class="more">[current year]</a> 
+	    <a href="{% url champ_dashboard year=nowschoolyear %}" class="more">[current year]</a> 
 	    <a href="{% url champ_dashboard %}" class="more">[all dates]</a></td>
     {% endif %}
 <td align="right" valign="middle">

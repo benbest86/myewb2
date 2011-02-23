@@ -156,7 +156,8 @@ def dashboard(request, year=None, month=None, term=None,
     context['month'] = month
     context['term'] = term
     
-    context['nowyear'] = schoolyear.school_year()
+    context['nowyear'] = date.today().year
+    context['nowschoolyear'] = schoolyear.school_year()
     if year:
         context['prevyear'] = int(year) - 1
         context['nextyear'] = int(year) + 1
