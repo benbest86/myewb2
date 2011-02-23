@@ -133,7 +133,9 @@ class CHAMPSearchForm(SearchForm):
 
     def search(self):
         self.clean()
-        if not self.cleaned_data.get('q', None):
+        #if not self.cleaned_data.get('q', None):
+        #    return None
+        if not self.cleaned_data.get('q', None) and not self.cleaned_data.get('rating', None) and not self.cleaned_data.get('metrics', None):
             return None
         
         # First, store the SearchQuerySet received from other processing.
