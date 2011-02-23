@@ -140,8 +140,14 @@ Chapter:
 </select>
 </form>
 </div>
+<br/>
 
-<br/><br/>
+{% if group and is_group_admin %}
+	<div style="text-align: center; padding-bottom: 5px;">
+		<a href="{% url champ_new_activity group.slug %}">add a new CHAMP activity</a>
+	</div>
+{% endif %}
+
 <table class="cellpadding8 standard" {# width="500" #} style="margin: 0 auto; width: 90%;" id="champtable">
 
 <tr>
