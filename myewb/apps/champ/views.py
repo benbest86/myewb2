@@ -73,6 +73,7 @@ def build_filters(year=None, month=None, term=None):
         metric_filters.append({'activity__date__year': year})
         metric_filters.append({'activity__date__month': month})
     elif year and term:
+        term = term.lower()
         if term == 'winter':
             start = date(year, 1, 1)
             end = date(year, 4, 30)
