@@ -88,9 +88,11 @@
 
         {{ topic.intro|safe }}
         
+        {% comment %}
         {% if topic.intro_has_more %}
             <em>(more inside)</em>
         {% endif %}
+        {% endcomment %}
 		
 		<br style="clear:both; height: 1px; line-height: 1px;" />
 	
@@ -98,7 +100,7 @@
 			<tr>
 			<td align="right" valign="top" colspan="2" style="font-size: 10px; padding-right: 10px; line-height:14px;">
 		        {% if num_comments %}
-					<a href="{{ topic.get_absolute_url }}#reply-{{ latest.0.id }}">Latest reply</a> by <a href="{% url profile_detail latest.0.user.username %}" class="nodeco">{{ latest.0.user.visible_name }}</a><br/> {% mktime latest.0.date_submitted %}
+					<a href="{{ topic.get_absolute_url }}#reply-{{ latest.0.id }}">Latest reply</a> by <a href="{% url profile_detail latest.0.user.username %}" class="nodeco">{{ latest.0.user.visible_name }}</a>{#<br/>#}, {% mktime latest.0.date_submitted %}
 
                     {% if topic.num_whiteboard_edits %}<br/>{% endif %}
 				{% endif %}

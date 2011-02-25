@@ -226,11 +226,12 @@ class GroupTopic(Topic):
             return 0
             
     def intro(self):
-        if len(self.body) < 400:
+        if len(self.body) < 250:
             return self.body
 
         # thanks http://stackoverflow.com/questions/250357/smart-truncate-in-python
-        intro = self.body[:400].rsplit(' ', 1)[0]
+        intro = self.body[:250].rsplit(' ', 1)[0]
+        intro += '...'
 
         intro = Cleaner(scripts=False,      # disable it all except page_structure
                         javascript=False,   # as proper cleaning is done on save;
@@ -245,7 +246,6 @@ class GroupTopic(Topic):
                         remove_unknown_tags=False,
                         safe_attrs_only=False).clean_html(intro)
         
-        intro += "..."
         return intro
     
     def intro_has_more(self):
