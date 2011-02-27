@@ -138,6 +138,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "group_topics.context_processors.newposts",
     "communities.context_processors.is_exec",
     "profiles.context_processors.toolbar_states",
+    "stats.context_processors.organization_role",
+    "stats.context_processors.usage_profile",
 )
 
 COMBINED_INBOX_COUNT_SOURCES = (
