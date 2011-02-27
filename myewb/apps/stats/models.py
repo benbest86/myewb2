@@ -11,6 +11,8 @@ from exceptions import ValueError
 from django.db import models
 from django.contrib.auth.models import User
 from profiles.models import MemberProfile
+from group_topics.models import GroupTopic
+from threadedcomments.models import ThreadedComment
 
 class DailyStats(models.Model):
     day = models.DateField(db_index=True)
@@ -59,3 +61,41 @@ def record(action):
     stats.save()
     
 from stats.listeners import *
+
+# will be interesting to segment further: people who reply a lot but don't 
+# post often? people who email a lot but rarely do front-page posts? people 
+# who use champ, events, etc, a lot but rarely post,etc?
+USAGE_PROFILES = ('Power user',         # lots of logins and posts
+                  'Occasional user',    # some logins / posts
+                  'Observer',           # many logins but few posts
+                  'Rare user',          # few logins
+                  #'Past user',          # used to use myewb, but is now a rare/inactive user
+                  'Inactive',           # basically never uses myewb
+                  )
+def usage_profile(user):
+    if not user.is_authenticated() or not user.is_active:
+        return False
+    
+    created = user.date_joined
+    days_active = date.today() - created 
+    
+    logins = user.get_profile().login_count
+    post_count = GroupTopic.objects.get_for_user(user).count()
+    post_count += ThreadedComment.objects.filter(user=user).count()
+    
+    days_per_login = days_active.days / logins
+    days_per_post = days_active.days / post_count
+    
+    if days_per_login > 7 and days_per_post > 31:
+        return 'Power user'
+    
+    if days_per_login > 7:
+        return 'Observer'
+    
+    if days_per_login > 31 and days_per_post > 180:
+        return 'Occasional user'
+    
+    if days_per_login > 60:
+        return 'Rare user'
+    
+    return 'Inactive'
