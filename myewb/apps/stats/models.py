@@ -80,12 +80,12 @@ def usage_profile(user):
     
     created = user.date_joined
     days_active = datetime.now() - created 
+    last_login = user.get_profile().current_login
     
     if not last_login or days_active.days < 14:
         return 'New user'
     
     logins = user.get_profile().login_count
-    last_login = user.get_profile().current_login
     post_count = GroupTopic.objects.get_for_user(user).count()
     post_count += ThreadedComment.objects.filter(user=user).count()
     
