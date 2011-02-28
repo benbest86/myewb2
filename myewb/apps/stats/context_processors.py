@@ -40,7 +40,7 @@ def organization_role(request):
                     ctx['role_is_president'] = True
             
             officelist = get_object_or_none(BaseGroup, slug='natloffice')
-            if officelist and offlicelist.user_is_member(user):
+            if officelist and officelist.user_is_member(user):
                 ctx['role_is_office'] = True
             
             if execlist and not ctx['role_is_exec']:
