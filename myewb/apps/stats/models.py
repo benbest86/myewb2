@@ -89,8 +89,14 @@ def usage_profile(user):
     post_count = GroupTopic.objects.get_for_user(user).count()
     post_count += ThreadedComment.objects.filter(user=user).count()
     
-    days_per_login = days_active.days / logins
-    days_per_post = days_active.days / post_count
+    if logins:
+        days_per_login = days_active.days / logins
+    else:
+        days_per_login = 99999
+    if post_count:
+        days_per_post = days_active.days / post_count
+    else:
+        days_per_post = 99999
     
     #print "logins", logins, "active", days_active.days, "post_count", post_count, "last_login", last_login
     #print "days_per_login", days_per_login, "days_per_post", days_per_post
