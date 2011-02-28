@@ -611,7 +611,7 @@ def profile(request, username, template_name="profiles/profile.html", extra_cont
         "previous_invitations_from": previous_invitations_from,
         "pending_requests": pending_requests,
         "has_visibility": has_visibility,
-        "usage_profile": uprofile,
+        "other_usage_profile": uprofile,
     }, **extra_context), context_instance=RequestContext(request))
 
 @secure_required

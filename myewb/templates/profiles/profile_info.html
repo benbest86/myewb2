@@ -46,9 +46,9 @@
             		Last signed in {{ other_user.get_profile.current_login|timesince }} ago
             		<br/>
             		{{ other_user.get_profile.login_count }} logins
-            		{% if usage_profile %}
+            		{% if other_usage_profile %}
             			<br/>
-            			Usage profile: {{ usage_profile }}
+            			Usage profile: {{ other_usage_profile }}
             		{% endif %}
             		<br/>
             		<a href="{% url topic_list_by_user other_user %}">
