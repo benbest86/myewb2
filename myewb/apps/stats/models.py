@@ -6,7 +6,7 @@ Copyright 2010 Engineers Without Borders (Canada) Organisation and/or volunteer 
 @author Francis Kung
 """
 
-from datetime import date
+from datetime import date, datetime, timedelta
 from exceptions import ValueError
 from django.db import models
 from django.contrib.auth.models import User
@@ -66,10 +66,12 @@ from stats.listeners import *
 # post often? people who email a lot but rarely do front-page posts? people 
 # who use champ, events, etc, a lot but rarely post,etc?
 USAGE_PROFILES = ('Power user',         # lots of logins and posts
-                  'Occasional user',    # some logins / posts
-                  'Observer',           # many logins but few posts
+                  'Medium user',        # some logins / posts
+                  'Occasional user',    # a few logins / posts
+                  'Observer',           # some logins but few posts
                   'Rare user',          # few logins
                   #'Past user',          # used to use myewb, but is now a rare/inactive user
+                  'New user',           # too new, no data...
                   'Inactive',           # basically never uses myewb
                   )
 def usage_profile(user):
@@ -77,25 +79,35 @@ def usage_profile(user):
         return False
     
     created = user.date_joined
-    days_active = date.today() - created 
+    days_active = datetime.now() - created 
+    
+    if days_active.days < 14:
+        return 'New user'
     
     logins = user.get_profile().login_count
+    last_login = user.get_profile().current_login
     post_count = GroupTopic.objects.get_for_user(user).count()
     post_count += ThreadedComment.objects.filter(user=user).count()
     
     days_per_login = days_active.days / logins
     days_per_post = days_active.days / post_count
     
-    if days_per_login > 7 and days_per_post > 31:
+    #print "logins", logins, "active", days_active.days, "post_count", post_count, "last_login", last_login
+    #print "days_per_login", days_per_login, "days_per_post", days_per_post
+    
+    if datetime.now() - last_login > timedelta(days=180):
+        return 'Inactive'
+    
+    if days_per_login < 4 and days_per_post < 7:
         return 'Power user'
     
-    if days_per_login > 7:
-        return 'Observer'
-    
-    if days_per_login > 31 and days_per_post > 180:
+    if days_per_login < 7 and days_per_post < 14:
+        return 'Medium user'
+        
+    if days_per_login < 14 and days_per_post < 31:
         return 'Occasional user'
     
-    if days_per_login > 60:
-        return 'Rare user'
+    if days_per_login < 14:
+        return 'Observer'
     
-    return 'Inactive'
+    return 'Rare user'

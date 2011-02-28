@@ -590,6 +590,14 @@ def profile(request, username, template_name="profiles/profile.html", extra_cont
         previous_invitations_to = None
         previous_invitations_from = None
         has_visibility = False
+        
+    uprofile = False
+    if request.user.has_module_perms("profiles"):
+        try:
+            from stats.models import usage_profile
+            uprofile = usage_profile(other_user)
+        except:
+            pass
     
     return render_to_response(template_name, dict({
         "is_me": is_me,
@@ -603,6 +611,7 @@ def profile(request, username, template_name="profiles/profile.html", extra_cont
         "previous_invitations_from": previous_invitations_from,
         "pending_requests": pending_requests,
         "has_visibility": has_visibility,
+        "usage_profile": uprofile,
     }, **extra_context), context_instance=RequestContext(request))
 
 @secure_required

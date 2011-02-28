@@ -214,7 +214,9 @@ $(document).ready(function(){
     {% endif %}
   {% endif %}
 
-  {# _gaq.push(['_setCustomVar', 2, 'Usage profile', '', 1); #} 
+  {% if usage_profile %}
+    _gaq.push(['_setCustomVar', 2, 'Usage profile', '{{ usage_profile }}', 1);
+  {% endif %} 
 
   {% if user.is_authenticated %}
     _gaq.push(['_setCustomVar', 3, 'Is Guest', 'No', 3);

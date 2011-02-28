@@ -5,6 +5,7 @@ from base_groups.models import GroupMemberRecord
 from communities.models import Community
 from profiles.models import MemberProfile
 from siteutils.shortcuts import get_object_or_none
+from stats.models import usage_profile as calculate_usage_profile
 
 
 def organization_role(request):
@@ -55,4 +56,15 @@ def organization_role(request):
 
 
 def usage_profile(request):
-    return {}
+    user = request.user
+    
+    if user.is_authenticated():
+        cache_key = "usage_profile_%s" % user.username
+        uprofile = cache.get(cache_key)
+        if uprofile is None:
+            uprofile = calculate_usage_profile(user)
+            cache.set(cache_key, uprofile, 5*60)
+            
+        return {'usage_profile': uprofile}
+
+    return {'usage_profile': False}
