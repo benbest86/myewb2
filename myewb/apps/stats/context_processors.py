@@ -44,10 +44,9 @@ def organization_role(request):
                 ctx['role_is_office'] = True
             
             if execlist and not ctx['role_is_exec']:
-                alumni = get_object_or_none(GroupMemberRecord,
-                                            user=user,
-                                            group=execlist)
-                if alumni:
+                alumni = GroupMemberRecord.objects.filter(user=user,
+                                                          group=execlist)
+                if alumni.count():
                     ctx['role_is_alumni'] = True
             
             cache.set(cache_key, ctx, 5*60)
