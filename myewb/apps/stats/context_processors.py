@@ -1,7 +1,7 @@
 from django.contrib.auth.models import User
 from django.core.cache import cache
 
-from base_groups.models import GroupMemberRecord
+from base_groups.models import BaseGroup, GroupMemberRecord
 from communities.models import Community
 from profiles.models import MemberProfile
 from siteutils.shortcuts import get_object_or_none
@@ -39,7 +39,7 @@ def organization_role(request):
                 if preslist and preslist.user_is_member(user):
                     ctx['role_is_president'] = True
             
-            officelist = get_object_or_none(Community, slug='natloffice')
+            officelist = get_object_or_none(BaseGroup, slug='natloffice')
             if officelist and offlicelist.user_is_member(user):
                 ctx['role_is_office'] = True
             
