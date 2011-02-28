@@ -81,7 +81,7 @@ def usage_profile(user):
     created = user.date_joined
     days_active = datetime.now() - created 
     
-    if days_active.days < 14:
+    if not last_login or days_active.days < 14:
         return 'New user'
     
     logins = user.get_profile().login_count
