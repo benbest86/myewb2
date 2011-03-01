@@ -127,7 +127,7 @@
 	{# FIXME: is there any way to use a proper django form, instead of hardcoding? #}
 	{# FIXME: this is also loaded for EVERY comment, which gets really slow if there #}
 	{#        are a lot of comments (esp with the tinymce editor #}
-	<h2>{% trans "Add a reply" %}</h2>
+	<h2 class="clear">{% trans "Add a reply" %}</h2>
 	<div class="post-reply-container">
         <form method="POST" enctype="multipart/form-data" action="{% get_comment_url object %}">
                     <textarea id="id_comment" class="tinymce" rows="8" cols="80" style="width:99%" name="comment"></textarea>
