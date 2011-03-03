@@ -152,6 +152,10 @@ def email_account_reset(request, group_slug):
                 group_slug = 'waterloopro'
             elif group_slug == 'mcmaster':
                 group_slug = 'mac'
+            elif group_slug == 'uwaterloo':
+                group_slug = 'waterloo'
+            elif group_slug == 'usask':
+                group_slug = 'usaskatchewan'
                 
             result = set_google_password(group_slug, request.POST.get("newpass", ""))
             if result:
