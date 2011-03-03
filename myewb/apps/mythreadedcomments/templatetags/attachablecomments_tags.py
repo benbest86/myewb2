@@ -5,6 +5,8 @@ from attachments.models import Attachment
 
 from threadedcomments.models import ThreadedComment
 
+import settings
+
 register = template.Library()
 
 def attachablecomments(context, obj):
@@ -81,3 +83,12 @@ class LatestCommentsForNode(template.Node):
         context[self.context_name] = comments
         return ''
 register.tag('get_latest_comments_for', do_get_latest_comments_for)
+
+@register.simple_tag
+def replies_page_number(numreplies):
+    perpage = getattr(settings, 'PAGINATION_DEFAULT_PAGINATION', 20)
+    if numreplies and numreplies > perpage:
+        pagenum = numreplies / perpage + 1
+        return "?page=%d" % pagenum
+        
+    return ''
