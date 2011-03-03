@@ -276,12 +276,18 @@ def new_topic(request, group_slug=None, bridge=None):
                     sender = None
                     if topic_form.cleaned_data.get('send_as_email', None):
                         sender = topic_form.cleaned_data.get('sender', None)
+
+                    is_large_group = False
+                    if group.get_accepted_members().count() > 1:
+                        is_large_group = True
+        
                     return render_to_response("topics/preview.html",
                                               {"group": group,
                                                "topic": topic,
                                                "is_member": is_member,
                                                "sender": sender,
-                                               "attachments": attachments
+                                               "attachments": attachments,
+                                               "is_large_group": is_large_group,
                                               },
                                               context_instance=RequestContext(request))
         else:

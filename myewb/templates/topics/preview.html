@@ -61,7 +61,23 @@ The {% if group %} checks are left in just in case, and should be removed eventu
             <input type="hidden" name="postid" value="{{ topic.id }}" />
             <input type="hidden" name="sender" value="{{sender}}"/>
             <input type="submit" name="goback" value="{% trans "Go back and edit" %}" />
-            <input type="submit" name="previewed" value="{% trans "Confirm and save" %}" />
+            <input type="submit" name="previewed" id="confirm_and_save" value="{% trans "Confirm and save" %}" />
         </p>
     </form>
 {% endblock %}
+
+
+{% block extra_body %}
+	{{ block.super }}
+	
+	<script type="text/javascript">
+	   	{% if is_large_group %}
+	   		{% if sender %}
+		   		$('#confirm_and_save').click(function() {
+	       			return confirm('Are you sure you want to send this as an email to {{ group.get_accepted_members.count }} people?');
+	   			});
+		   	{% endif %}
+	   	{% endif %}
+	</script>
+{% endblock %}
+    

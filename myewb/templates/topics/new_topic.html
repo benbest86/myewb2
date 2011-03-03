@@ -35,7 +35,7 @@ The {% if group %} checks are left in just in case, and should be removed eventu
 
 	
         
-    <form class="uniForm wideform" method="POST" enctype="multipart/form-data" action="">
+    <form class="uniForm wideform" method="POST" enctype="multipart/form-data" action="" id='new_post_form'>
         <fieldset class="inlineLabels">
             {{ topic_form|as_uni_form }}
             <div id="attachFiles">
@@ -49,8 +49,9 @@ The {% if group %} checks are left in just in case, and should be removed eventu
 				</div>
             </div>
             {% ifequal group.slug "ewb" %}
-            	<p>
-            		This post will be displayed on the front page.  If you are looking to 
+            	<p style='font-size: 14px;'>
+            		<strong>This post will be displayed on the front page.</strong><br/>
+            		If you are looking to 
             		post to a specific chapter or community, find the group under the Chapters
             		or Communities tab, and post from the group page.
             	</p>
@@ -101,8 +102,7 @@ The {% if group %} checks are left in just in case, and should be removed eventu
     		$('#div_id_sender').show();
     	else
     		$('#div_id_sender').hide();
-    
-    
+
     });
     </script>	
 {% endblock %}
