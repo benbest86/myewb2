@@ -264,5 +264,9 @@
 	<script type="text/javascript" src="{{STATIC_URL}}js/colorbox.js"></script>
 	<script type="text/javascript">
 		$('.preview-img').colorbox({transition: "elastic", width:"80%", height:"80%"});
+
+		{% if request.page %}
+			$.scrollTo('#replies');
+		{% endif %}
 	</script>
 {% endblock %}

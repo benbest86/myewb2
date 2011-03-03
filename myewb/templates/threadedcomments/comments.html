@@ -12,7 +12,7 @@
 {% get_threaded_comment_tree for object as responses %}
 {% autopaginate responses %}
 
-<div class="post">
+<div class="post" id="replies">
 
     {% if responses %}
     	<div class="postheader bkgd" style="position: relative;"> <!-- header row -->
