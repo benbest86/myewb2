@@ -265,8 +265,8 @@
 	<script type="text/javascript">
 		$('.preview-img').colorbox({transition: "elastic", width:"80%", height:"80%"});
 
-		{% if request.page %}
+		{% ifnotequal request.page 1 %}
 			$.scrollTo('#replies');
-		{% endif %}
+		{% endifnotequal %}
 	</script>
 {% endblock %}
