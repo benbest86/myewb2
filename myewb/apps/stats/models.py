@@ -40,7 +40,14 @@ class DailyStats(models.Model):
     filesAdded = models.IntegerField(default=0)
     
 def record(action):
-    stats, created = DailyStats.objects.get_or_create(day=date.today())
+    try:
+        stats, created = DailyStats.objects.get_or_create(day=date.today())
+    except DailyStats.MultipleObjectsReturned:
+        stats_objects = DailyStats.objects.filter(day=date.today())
+        stats = stats_objects[0]
+        for s in stats_objects[1:]:
+            s.delete()
+        
     if created:
         stats.day = date.today()
         stats.users = User.objects.filter(is_active=True).count()
