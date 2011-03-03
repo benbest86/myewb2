@@ -3,6 +3,7 @@ from django.template import RequestContext
 from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import permission_required
+from emailconfirmation.models import EmailAddress
 
 from account_extra.models import set_google_password
 from base_groups.models import GroupMember
@@ -12,6 +13,7 @@ from networks.models import Network, ChapterInfo, EmailForward
 from networks.forms import ChapterInfoForm, EmailForwardForm
 from networks import emailforwards
 from networks.views import network_detail
+from siteutils.shortcuts import get_object_or_none 
 
 def chapters_index(request):
     if request.method == 'GET':
@@ -135,7 +137,11 @@ def email_forwards_delete(request, group_slug, fwd_id):
     
     if request.method == "POST":
         fwd = get_object_or_404(EmailForward, id=fwd_id, network=network)
+        email = get_object_or_none(EmailAddress, email=fwd.address)
         fwd.delete()
+        if email:
+            email.delete()
+            
         request.user.message_set.create(message="Deleted")  #should template-ize?
             
     return HttpResponseRedirect(reverse('email_forwards_index', kwargs={'group_slug': group_slug}))

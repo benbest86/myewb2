@@ -21,7 +21,6 @@
     
     {% autosort forwards %}
 {% comment %}    {% autopaginate forwards 10 %} {% endcomment %}
-    {% if forwards %}
         {% comment %}
         <p>{% trans "Order by:" %}
             {% anchor name Name %}
@@ -39,6 +38,7 @@
 	</form>
 	<hr/>
 
+    {% if forwards %}
 	<table border="1" cellpadding=5>
 		<tr>
 			<th>Name</th>
