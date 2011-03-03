@@ -718,6 +718,7 @@ def metric_add(request, group_slug, activity_id):
         metric.activity = activity
         metric.save()
         activity.modified_date = datetime.now()
+        activity.editor = request.user
         activity.save()
         
         confirmable = ''
@@ -773,6 +774,7 @@ def metric_edit(request, group_slug, activity_id, metric_id):
         if form.is_valid():
             metric = form.save()
             activity.modified_date = datetime.now()
+            activity.editor = request.user
             activity.save()
             status = 'success'
             template = "champ/metrics.html"
@@ -836,6 +838,7 @@ def metric_remove(request, group_slug, activity_id, metric_id):
     if request.method == 'POST':
         metric.delete()
         activity.modified_date = datetime.now()
+        activity.editor = request.user
         activity.save()
         
         label = ''
