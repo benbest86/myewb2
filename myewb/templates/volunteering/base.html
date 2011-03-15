@@ -21,7 +21,7 @@
 <li><a href="{% url applications %}">Open Positions</a></li>
 
 <!-- admins -->
-{% if perms.overseas %}
+{% if perms.volunteering %}
 <li><a href="{% url placements %}">APS Placements</a></li>
 <li><a href="{% url sessions %}">Application Sessions</a></li>
 {% endif %}
