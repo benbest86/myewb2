@@ -20,7 +20,7 @@ from django.utils.translation import ugettext_lazy as _
 from volunteering.models import Session, ApplicationQuestion, InterviewQuestion, EvaluationCriterion
 from volunteering.forms import SessionForm, ApplicationQuestionForm, InterviewQuestionForm, EvaluationCriterionForm
 
-@permission_required('overseas')
+@permission_required('volunteering')
 def sessions(request):
     sessions = Session.objects.all()
 
@@ -28,7 +28,7 @@ def sessions(request):
         "session_list": sessions,
     }, context_instance=RequestContext(request))
 
-@permission_required('overseas')
+@permission_required('volunteering')
 def session_detail(request, object_id):
     session = get_object_or_404(Session, id=object_id)
     
@@ -36,7 +36,7 @@ def session_detail(request, object_id):
                               {'session': session},
                               context_instance=RequestContext(request))
 
-@permission_required('overseas')
+@permission_required('volunteering')
 def session_edit(request, object_id=None):
     if object_id:
         session = get_object_or_404(Session, id=object_id)
@@ -70,7 +70,7 @@ def session_edit(request, object_id=None):
                                    'form': form},
                                    context_instance=RequestContext(request))
                                    
-@permission_required('overseas')
+@permission_required('volunteering')
 def session_clone(request, new_id):
     old_session = get_object_or_404(Session, id=new_id)
     
@@ -122,7 +122,7 @@ def session_clone(request, new_id):
                                'form': form},
                                context_instance=RequestContext(request))
 
-@permission_required('overseas')
+@permission_required('volunteering')
 def question_edit(request, object_id):
     question = get_object_or_404(ApplicationQuestion, id=object_id)
         
@@ -141,7 +141,7 @@ def question_edit(request, object_id):
                                'form': form},
                                context_instance=RequestContext(request))
                                    
-@permission_required('overseas')
+@permission_required('volunteering')
 def question_new(request, session_id):
     session = get_object_or_404(Session, id=session_id)
     
@@ -165,7 +165,7 @@ def question_new(request, session_id):
                                  'form': form},
                                 context_instance=RequestContext(request))
 
-@permission_required('overseas')
+@permission_required('volunteering')
 def question_delete(request):
     if request.method == 'POST' and request.POST.get('question_id', None):
         question_id = request.POST.get('question_id', None)
@@ -184,7 +184,7 @@ def question_delete(request):
             
     return HttpResponse("invalid")
 
-@permission_required('overseas')
+@permission_required('volunteering')
 def question_reorder(request):
     if request.method == 'POST' and request.POST.get('question_id', None) and request.POST.get('new_order', None):
         question_id = request.POST.get('question_id', None)
@@ -212,7 +212,7 @@ def question_reorder(request):
             
     return HttpResponse("invalid")
 
-@permission_required('overseas')
+@permission_required('volunteering')
 def interview_question_edit(request, object_id):
     question = get_object_or_404(InterviewQuestion, id=object_id)
         
@@ -231,7 +231,7 @@ def interview_question_edit(request, object_id):
                                'form': form},
                                context_instance=RequestContext(request))
                                    
-@permission_required('overseas')
+@permission_required('volunteering')
 def interview_question_new(request, session_id):
     session = get_object_or_404(Session, id=session_id)
     
@@ -255,7 +255,7 @@ def interview_question_new(request, session_id):
                                  'form': form},
                                 context_instance=RequestContext(request))
 
-@permission_required('overseas')
+@permission_required('volunteering')
 def interview_question_delete(request):
     if request.method == 'POST' and request.POST.get('question_id', None):
         question_id = request.POST.get('question_id', None)
@@ -274,7 +274,7 @@ def interview_question_delete(request):
             
     return HttpResponse("invalid")
 
-@permission_required('overseas')
+@permission_required('volunteering')
 def interview_question_reorder(request):
     if request.method == 'POST' and request.POST.get('question_id', None) and request.POST.get('new_order', None):
         question_id = request.POST.get('question_id', None)
@@ -304,7 +304,7 @@ def interview_question_reorder(request):
 
 # TODO: criteria and question views are almost 100% identical.
 # I should spin them into my own generic views...
-@permission_required('overseas')
+@permission_required('volunteering')
 def criteria_edit(request, object_id):
     criteria = get_object_or_404(EvaluationCriterion, id=object_id)
         
@@ -323,7 +323,7 @@ def criteria_edit(request, object_id):
                                'form': form},
                                context_instance=RequestContext(request))
                                    
-@permission_required('overseas')
+@permission_required('volunteering')
 def criteria_new(request, session_id):
     session = get_object_or_404(Session, id=session_id)
     
@@ -347,7 +347,7 @@ def criteria_new(request, session_id):
                                  'form': form},
                                 context_instance=RequestContext(request))
 
-@permission_required('overseas')
+@permission_required('volunteering')
 def criteria_delete(request):
     if request.method == 'POST' and request.POST.get('criteria_id', None):
         criteria_id = request.POST.get('criteria_id', None)
@@ -366,7 +366,7 @@ def criteria_delete(request):
             
     return HttpResponse("invalid")
 
-@permission_required('overseas')
+@permission_required('volunteering')
 def criteria_reorder(request):
     if request.method == 'POST' and request.POST.get('criteria_id', None) and request.POST.get('new_order', None):
         criteria_id = request.POST.get('criteria_id', None)
