@@ -124,3 +124,17 @@ def usage_profile(user):
         return 'Observer'
     
     return 'Rare user'
+
+class UsageProfile(models.Model):
+    user = models.ForeignKey(User, db_index=True)
+    usage_profile = models.CharField(max_length=25)
+    
+    is_chapter_member = models.BooleanField(default=False)
+    is_exec = models.BooleanField(default=False)
+    is_president = models.BooleanField(default=False)
+    is_jf = models.BooleanField(default=False)
+    is_aps = models.BooleanField(default=False)
+    is_office = models.BooleanField(default=False)
+    is_alumni = models.BooleanField(default=False)
+    
+    last_updated = models.DateTimeField(auto_now=True, db_index=True)

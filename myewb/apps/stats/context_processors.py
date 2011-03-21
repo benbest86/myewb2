@@ -9,8 +9,9 @@ from stats.models import usage_profile as calculate_usage_profile
 
 
 def organization_role(request):
-    user = request.user
+    return get_organization_role(request.user)
     
+def get_organization_role(user):
     ctx = {'role_chapter_member': False,
            'role_is_exec': False,
            'role_is_president': False,
