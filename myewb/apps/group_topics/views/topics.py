@@ -278,7 +278,7 @@ def new_topic(request, group_slug=None, bridge=None):
                         sender = topic_form.cleaned_data.get('sender', None)
 
                     is_large_group = False
-                    if group.get_accepted_members().count() > 1:
+                    if group.members.count() > 50:
                         is_large_group = True
         
                     return render_to_response("topics/preview.html",

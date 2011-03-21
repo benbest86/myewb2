@@ -74,7 +74,7 @@ The {% if group %} checks are left in just in case, and should be removed eventu
 	   	{% if is_large_group %}
 	   		{% if sender %}
 		   		$('#confirm_and_save').click(function() {
-	       			return confirm('Are you sure you want to send this as an email to {{ group.get_accepted_members.count }} people?');
+	       			return confirm('Are you sure you want to send this as an email to {{ group.members.count }} people?');
 	   			});
 		   	{% endif %}
 	   	{% endif %}
