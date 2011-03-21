@@ -8,5 +8,6 @@ Copyright 2010 Engineers Without Borders (Canada)
 from django.conf.urls.defaults import *
 
 urlpatterns = patterns('stats.views',
-    url(r'^dashboard/$', 'main_dashboard', name='stats_dashboard'),    
+    url(r'^dashboard/$', 'main_dashboard', name='stats_dashboard'),
+    url(r'^usage/$', 'usage', name='stats_usage'),    
 )

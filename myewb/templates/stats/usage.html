@@ -1,0 +1,135 @@
+{% extends "topics/base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "Usage Profiles" %}{% endblock %}
+
+{% block body %}
+
+<h1>Usage Profiles</h1>
+
+<h3>Overall usage</h3>
+<table id="stats_total_table" style='display: none;'>
+	{% for label, stat in usage.stats_total.items %}
+		<tr>
+			<td class="label">{{ label }}</td>
+			<td class="stat">{{ stat }}</td>
+		</tr>
+	{% endfor %}
+</table>
+<div id="stats_total" style='height: 250px; width: 500px;'></div>
+
+{# <div id="scatter" style="height: 250px; width: 500px;"></div> #}
+
+{% for role, breakdown in usage.stats_roles.items %}
+	<h3>{{ role }}</h3>
+	<table id="stats_{{role}}_table" style='display: none;'>
+		{% for label, stat in breakdown.items %}
+			<tr>
+				<td class="label">{{ label }}</td>
+				<td class="stat">{{ stat }}</td>
+			</tr>
+		{% endfor %}
+	</table>
+	<div id="stats_{{role}}" style='height: 250px; width: 500px;'></div>
+
+	
+{% endfor %}
+
+{% endblock %}
+
+{% block extra_body %}
+    <script type="text/javascript" src="{{STATIC_URL}}js/raphael/raphael-min.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/raphael/g.raphael-min.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/raphael/g.pie-min.js"></script>
+    <script type="text/javascript" src="{{STATIC_URL}}js/raphael/g.dot-min.js"></script>
+    
+    <script type="text/javascript">
+        $(document).ready(function() {
+        	var r_totals = Raphael("stats_total");
+            var i = 0;
+            var labels = [];
+            var stats = [];
+            var num = 0;
+            var usage_labels = new Array();
+            
+            $('#stats_total_table tr').each(function() {
+                i++;
+                num = parseInt($('.stat', this).text(), 10);
+                labels.push($('.label', this).text() + "(" + num + " user - %%)");
+                stats.push(num);
+                usage_labels[$('.label', this).text()] = i;
+            });
+            
+            // dynamically resize graph area
+            //var boxheight = metrics.length * 50;
+            //$('#graphcontainer').height(boxheight + 'px');
+            //$('#graph').height(boxheight + 'px');
+            //$('#graphlabels').height(boxheight + 'px');
+
+            // draw graph
+            var totals_graph = r_totals.g.piechart(100, 100, 100, stats,
+            									   {legend: labels,
+				   									legendpos: "east"});
+
+            var scatterx = [];
+            var scattery = [];
+            var scatterdata = [];
+            var role_labels = new Array();
+            var usage_idx = 0;
+            {% for role, breakdown in usage.stats_roles.items %}
+	        	var r_{{role}} = Raphael("stats_{{role}}");
+	            i = 0;
+	            labels = [];
+	            stats = [];
+
+	            role_labels[{{forloop.counter}}] = '{{role}}';
+	            
+	            $('#stats_{{role}}_table tr').each(function() {
+	                i++;
+	                num = parseInt($('.stat', this).text(), 10);
+	                labels.push($('.label', this).text() + "(" + num + " user - %%)");
+	                stats.push(num);
+
+	                usage_idx = usage_labels[$('.label', this).text()];
+	                scatterx.push({{forloop.counter}});
+	                scattery.push(usage_idx);
+	                scatterdata.push(num);
+	            });
+	            
+	            // dynamically resize graph area
+	            //var boxheight = metrics.length * 50;
+	            //$('#graphcontainer').height(boxheight + 'px');
+	            //$('#graph').height(boxheight + 'px');
+	            //$('#graphlabels').height(boxheight + 'px');
+	
+	            // draw graph
+	            var totals_graph = r_{{role}}.g.piechart(100, 100, 100, stats,
+	            									   {legend: labels,
+					   									legendpos: "east"});
+
+            {% endfor %}
+
+            {% comment %}
+            var r_scatter = Raphael("scatter"),
+            					xs = scatterx,
+            					ys = scattery,
+            					data = scatterdata,
+            					axisy = usage_labels,
+            					axisx = role_labels;
+			r_scatter.g.dotchart(10, 10, 250, 250, xs, ys, data,
+								 {symbol: "o",
+				 				  max: 10,
+				 				  heat: true,
+				 				  axis: "0 0 1 1",
+				 				  axisxstep: 1,
+				 				  axisystep: 1,
+				 				  axisxlabels: axisx,
+				 				  axisxtype: " ",
+				 				  axisylabels: axisy});
+			{% endcomment %}
+            
+        });
+    </script>
+    
+{% endblock %}

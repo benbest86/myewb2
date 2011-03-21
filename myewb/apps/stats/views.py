@@ -17,7 +17,7 @@ from django.contrib.auth.models import User
 
 from pygooglechart import SimpleLineChart, Axis, PieChart3D, StackedHorizontalBarChart
 
-from stats.models import DailyStats
+from stats.models import DailyStats, UsageProfile, USAGE_PROFILES
 from networks.models import Network
 from siteutils.models import Address
 from profiles.models import MemberProfile
@@ -495,3 +495,31 @@ def group_post_activity(request, group_slug):
 
     return postactivity.get_url()
 
+@staff_member_required
+def usage(request):
+    ctx = {}
+    ctx['stats_total'] = {}
+    
+    ctx['stats_roles'] = {'Chapter_members': {},
+                          'Execs': {},
+                          'Presidents': {},
+                          'JFs': {},
+                          'APS': {},
+                          'Office_members': {},
+                          'Alumni': {}}
+        
+    for profile in USAGE_PROFILES:
+        up = UsageProfile.objects.filter(usage_profile=profile)
+        
+        ctx['stats_total'][profile] = up.count()
+        ctx['stats_roles']['Chapter_members'][profile] = up.filter(is_chapter_member=True).count()
+        ctx['stats_roles']['Execs'][profile] = up.filter(is_exec=True).count()
+        ctx['stats_roles']['Presidents'][profile] = up.filter(is_president=True).count()
+        ctx['stats_roles']['JFs'][profile] = up.filter(is_jf=True).count()
+        ctx['stats_roles']['APS'][profile] = up.filter(is_aps=True).count()
+        ctx['stats_roles']['Office_members'][profile] = up.filter(is_office=True).count()
+        ctx['stats_roles']['Alumni'][profile] = up.filter(is_alumni=True).count()
+        
+    return render_to_response("stats/usage.html",
+                              {'usage': ctx},
+                              context_instance=RequestContext(request))
