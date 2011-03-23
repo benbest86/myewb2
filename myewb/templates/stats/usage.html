@@ -7,6 +7,54 @@
 {% block body %}
 
 <h1>Usage Profiles</h1>
+<p><em>Last updated: {{ last_updated }}</em></p>
+
+<div style='width: 30%; float: right; border: 1px solid; background: #f0f0f0; -moz-border-radius: 1em; -webkit-border-radius: 1em; padding: 1em; margin-right: 3em;'>
+	<h3>Usage definitions</h3>
+
+	<p>
+		<strong>New User</strong><br/>
+		Never signed in, OR<br/>
+		created account less than 2 weeks ago
+	</p>	
+	
+	<p>
+		<strong>Inactive</strong><br/>
+		Last login over 6 months ago
+	</p>
+	
+	<p>
+		<strong>Power user</strong><br/>
+		At least one login per four days, AND<br/>
+		At least one post per week<br/>
+		(average) 
+	</p>
+	
+	<p>
+		<strong>Medium user</strong><br/>
+		At least one login per week, AND
+		At least one post per two weeks<br/>
+		(average)
+	</p>
+	
+	<p>
+		<strong>Occasional user</strong><br/>
+		At least one login per two weeks, AND
+		At least one post per month<br/>
+		(average)
+	</p>
+	
+	<p>
+		<strong>Observer</strong><br/>
+		At least one login per two weeks<br/>
+		(average)
+	</p>
+	
+    <p>
+    	<strong>Rare user</strong><br/>
+    	Less than one login per two weeks
+    </p>    
+</div>
 
 <h3>Overall usage</h3>
 <table id="stats_total_table" style='display: none;'>
