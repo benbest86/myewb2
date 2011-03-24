@@ -3,6 +3,12 @@
 
     <h1>{% trans "Email bulk import for" %} {{ group.name }}</h1>
     <p>{% trans "Please enter the addresses you wish to add, one per line. Do not use commas or other delimiters to separate addresses."%}</p>
+    
+    <p>
+    	Note that not all email addresses will be added immediately: anyone without an existing myEWB account
+    	will be required to confirm their email address first.<br/>
+    	<a href="#" class="explain_inactive">more about this...</a>
+    </p>
     {% if user.is_authenticated %}
         <form class="uniForm" id="import_form" method="POST" action="">
             <fieldset class="inlineLabels">
@@ -14,3 +20,20 @@
             </fieldset>
         </form>
     {% endif %}
+
+
+<div id='explain_inactive_text' style='display: none;'>
+    {% include "base_groups/double-optin.html" %}
+</div>
+
+<link type="text/css" href="{{STATIC_URL}}css/colorbox.css" rel="stylesheet" />
+<script type="text/javascript" src="{{STATIC_URL}}js/colorbox.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$('.explain_inactive').colorbox({width: '75%',
+									 height: '75%',
+									 opacity: '0.5',
+									 html: $('#explain_inactive_text').html()});
+});
+</script>

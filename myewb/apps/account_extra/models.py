@@ -56,6 +56,11 @@ def create_bulk_user_method(self, email, verified=False):
     if emailaddress2.count() > 0:
         return emailaddress2[0]
 
+    # unverified user already exists...
+    emailaddress3 = EmailAddress.objects.filter(email=email)
+    if emailaddress3.count() > 0:
+        return emailaddress3[0].user
+    
     # create random username
     username = User.objects.make_random_password()
     while User.objects.filter(username=username).count() > 0:   # ensure uniqueness

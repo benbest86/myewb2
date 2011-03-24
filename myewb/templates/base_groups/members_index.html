@@ -78,12 +78,27 @@
          {% for member in members %}
             <tr>
                 <td>
-                    <a href="{% url profile_detail member.user.username %}">{{ member.user.visible_name }}</a>
+                	{% ifequal member.user.visible_name "Inactive user" %}
+                		<span style='color: #a0a0a0;'>Inactive user</span><br/>
+	                	<a href="#" class="explain_inactive">(what's this?)</a>
+                	{% else %}
+                    	<a href="{% url profile_detail member.user.username %}">{{ member.user.visible_name }}</a>
+                    {% endifequal %}
                 </td>
                 <td>{% if member.is_admin %}{% trans "Yes" %}{% else %}{% trans "No" %}{% endif %}</td>
                 <td>{% if member.is_admin %}{{ member.admin_title}}{% endif %}</td>
                 {% if is_admin %}
-                    <td>{% if member.user.email %}<a href="mailto:{{ member.user.email }}">{{ member.user.email }}</a>{% endif %}</td>
+                    <td>
+	                	{% ifequal member.user.visible_name "Inactive user" %}
+	                		<span style='color: #a0a0a0;'>{% for e in member.user.emailaddress_set.all %}{{ e.email }}{% endfor %}</span>
+	                		<br/>
+	                		<a href="#" class="explain_inactive">(not receiving emails)</a>
+	                	{% else %}
+	                    	{% if member.user.email %}
+	                    		<a href="mailto:{{ member.user.email }}">{{ member.user.email }}</a>
+	                    	{% endif %}
+	                    {% endifequal %}
+                    </td>
                     <td>{{ member.joined|date }}</td>
                     {% if member.is_admin %}
                         <td><a href="{% groupurl edit_member group username=member.user.username %}">{% trans "Remove from leaders" %}</a></td>
@@ -169,3 +184,18 @@
     {% endwith %}
 {% endif %}
 
+<div id='explain_inactive_text' style='display: none;'>
+    {% include "base_groups/double-optin.html" %}
+</div>
+
+<link type="text/css" href="{{STATIC_URL}}css/colorbox.css" rel="stylesheet" />
+<script type="text/javascript" src="{{STATIC_URL}}js/colorbox.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+	$('.explain_inactive').colorbox({width: '75%',
+									 height: '75%',
+									 opacity: '0.5',
+									 html: $('#explain_inactive_text').html()});
+});
+</script>

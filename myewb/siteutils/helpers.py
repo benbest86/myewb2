@@ -103,8 +103,10 @@ def visible_name(self):
     elif self.email:
         return self.email.split('@')[0] + "@..."
     else:
-        return "Unknown user (%s)" % self.username
+        #return "Unknown user (%s)" % self.username
         #return "Unknown user"
+        return "Inactive user"
+        
 User.add_to_class("visible_name", visible_name)
 
 def wiki_convert(text):
