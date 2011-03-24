@@ -1,0 +1,32 @@
+{% extends "apply/base.html" %}
+
+{% load uni_form_tags %}
+
+{% block head_title %}
+Applications » Sessions »
+{% if session %}
+	Edit » {{ session.name }}
+{% else %}
+	Create
+{% endif %}
+{% endblock %}
+
+{% block body %}
+<h2>
+	{% if session %}
+		Edit session
+	{% else %}
+		Create a new session
+	{% endif %}
+</h2>
+
+<form action="{{ action }}" method="post" class="uniForm">
+	{{ form|as_uni_form }}
+	<input type="submit" name="session" value="Save Session" id="session">
+</form>
+{% endblock %}
+
+{% block extra_body %}
+	{{ block.super }}
+	{% include "tinymce.html" %}
+{% endblock %}

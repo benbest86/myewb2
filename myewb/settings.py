@@ -225,7 +225,7 @@ INSTALLED_APPS = (
     'siteutils',
     
     # MyEWB apps
-    'volunteering',
+    'apply',
     'siteutils',
     'manager_extras',
     'user_search',

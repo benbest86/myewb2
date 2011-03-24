@@ -1,0 +1,46 @@
+{% extends "apply/base.html" %}
+{% load sorting_tags pagination_tags %}
+{% load truncate helpers %}
+{% autosort stipend_list %}
+
+{% block head_title %}
+Applications » Stipends
+{% endblock %}
+
+{% block body %}
+
+	{% new_button "stipend" %}
+
+	{% if stipend_list %}
+		{% autopaginate stipend_list 10 %}
+		{% paginate %}
+		<div class="clear"></div>
+		<table>
+		    <tr>
+		       <th>{% anchor profile Name %}</th>
+		       <th>{% anchor placement Placement %}</th>
+		       <th>{% anchor daily_rate "Daily Rate" %}</th>
+		       <th>{% anchor adjustment "Adjustment" %}</th>
+		       <th>{% anchor repatriation_amount "Repatriation Amount" %}</th>
+					 <th>Notes</th>
+					 <th>Repatriation Notes</th>
+		    </tr>
+		{% for stipend in stipend_list %}
+		<tr>
+			<td><a href="{% url stipend_detail stipend.id %}">{{ stipend.profile.name }}</a></td>
+			<td>{{ stipend.placement.description }}</td>
+		  <td>{{ stipend.daily_rate|floatformat:2 }}</td>
+		  <td>{{ stipend.adjustment|floatformat:2 }}</td>
+		  <td>{{ stipend.repatriation_amount|floatformat:2 }}</td>
+
+		  <td>{{ stipend.notes|truncate_tail:30 }}</td>
+		  <td>{{ stipend.repatriation_notes|truncate_tail:30 }}</td>
+		</tr>
+		{% endfor %}
+		</table>
+	{% else %}
+		<p>No stipends found.</p>
+	{% endif %}
+
+{% endblock %}
+

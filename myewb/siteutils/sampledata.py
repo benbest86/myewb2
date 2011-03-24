@@ -15,9 +15,9 @@
 
 from django.contrib.auth.models import User
 from pinax.apps.profiles.models import Profile
-from volunteering.models import Placement
-from volunteering.models import Sector
-from volunteering.models import Stipend
+from apply.models import Placement
+from apply.models import Sector
+from apply.models import Stipend
 
 from siteutils.countries import COUNTRIES, REVERSE_COUNTRY_MAP
 import time

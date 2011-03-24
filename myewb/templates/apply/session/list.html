@@ -1,0 +1,65 @@
+{% extends "apply/base.html" %}
+{% load sorting_tags pagination_tags %}
+{% load truncate helpers %}
+{% load boolean_icon %}
+{% autosort session_list %}
+
+{% block head_title %}
+Applications » Sessions
+{% endblock %}
+
+{% block body %}
+<style>
+table {
+  width: 100%;
+}
+th {
+  text-align: left;
+  border: 1px solid;
+}
+th, td {
+  padding: 5px;
+}
+</style>
+
+	{% new_button "session" %}
+
+	{% if session_list %}
+		{% autopaginate session_list 10 %}
+		{% paginate %}
+		<div class="clear"></div>
+		<table>
+			<tr>
+			    <th>{% anchor active "Open" %}</th>
+       			<th>{% anchor name Name %}</th>
+       			<th>{% anchor open_date "Open Date" %}</th>
+       			<th>{% anchor close_date "Close Date" %}</th>
+       			<th>{% anchor due_date "Due Date" %}</th>
+       			<th>{% anchor complete_applications.count "Complete applications" %}</th>
+       			<th>{% anchor draft_applications.count "Draft applications" %}</th>
+       			<th>&nbsp;</th>
+       			<th>&nbsp;</th>
+			</tr>
+			
+			{% for session in session_list %}
+				<tr style="{% cycle 'background: #ffffff;' 'background: #eee;' %}">
+					<td>{{ session.active|boolean_icon }}</td>
+					<td>{% if session.active %}<strong>{% endif %}{{ session.name }}{% if session.active %}</strong>{% endif %}</td>
+					<td>{{ session.open_date|date:"d M Y"}}</td>
+					<td>{{ session.close_date|date:"d M Y"}}</td>
+					<td>{{ session.due_date|date:"d M Y"}}</td>
+					<td><a href="{% url evaluation_list session.id %}">{{ session.complete_applications.count }} (view)</a></td>
+					<td><a href="{% url evaluation_list session.id %}#draft">{{ session.draft_applications.count }} (view)</a></td>
+					<td>
+						<a href="{% url session_detail session.id %}">session details</a>
+						(<a href="{% url session_edit session.id %}">edit</a>)
+					</td>
+					<td><a href="{% url session_new session.id %}">clone</a></td>
+				</tr>
+			{% endfor %}
+		</table>
+		
+	{% else %}
+		<p>No sessions found.</p>
+	{% endif %}
+{% endblock %}

@@ -31,7 +31,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^$', 'group_topics.views.topics.topics', {'template_name': 'frontpage.html'}, name="home"),
 
-    (r'^volunteering/', include('volunteering.urls')),
+    (r'^apply/', include('apply.urls')),
 
     
     (r'^about/', include('about.urls')),

@@ -1,0 +1,25 @@
+{% extends "apply/base.html" %}
+
+{% block head_title %}
+Volunteering » Sectors »
+{% if sector %}
+	Edit » {{ sector.name }}
+{% else %}
+	Create
+{% endif %}
+{% endblock %}
+
+{% block body %}
+{% if object %}
+<h2>Edit a sector</h2>
+{% else %}
+<h2>Create a sector</h2>
+{% endif %}
+
+<form action="{{ action }}" method="post">
+	<table>
+	{{ form.as_p }}
+	</table>
+	<input type="submit" name="sector" value="Save Sector" id="sector">
+</form>
+{% endblock %}
