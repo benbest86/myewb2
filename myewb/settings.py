@@ -237,6 +237,7 @@ INSTALLED_APPS = (
     'mailchimp',
     'finance',
     'confcomm',
+    'jobboard',
 
     # our own third-party libs
     'contrib.django_evolution',

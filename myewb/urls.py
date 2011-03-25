@@ -79,6 +79,7 @@ urlpatterns = patterns('',
     (r'^mailchimp/', include('mailchimp.urls')),
 	(r'^finance/', include('finance.urls')),
 	(r'^confcomm/', include('confcomm.legacy_urls')),
+    (r'^jobboard/', include('jobboard.urls')),
     
     url(r'^unsubscribe/$', 'networks.views.network.unsubscribe', name='network_unsubscribe',),
     
