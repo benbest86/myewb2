@@ -11,4 +11,22 @@ from jobboard.models import JobPosting
 from siteutils.shortcuts import get_object_or_none
 
 def list(request):
-    return HttpResponse("job board")
+    open_jobs = JobPosting.objects.open()
+    my_jobs = JobPosting.objects.accepted(request.user)
+    my_postings = JobPosting.objects.owned_by(request.user)
+    
+    # is this necessary? why doesn't autosort do this for me..??
+    if request.GET.get('sort', None):
+        if request.GET.get('dir', 'desc') == 'asc':
+            open_jobs = open_jobs.order_by(request.GET['sort'])
+        else:
+            open_jobs = open_jobs.order_by('-%s' % request.GET['sort'])
+            
+    return render_to_response("jobboard/list.html",
+                              {"my_postings": my_postings,
+                               "my_jobs": my_jobs,
+                               "open_jobs": open_jobs},
+                              context_instance=RequestContext(request))
+
+def detail(request, id):
+    return HttpResponse("not implemented")

@@ -17,14 +17,14 @@
 
 {% block subnav %}
 <ul class="subnav">
-<!-- user/guest -->
-<li><a href="{% url applications %}">Open Positions</a></li>
-
-<!-- admins -->
-{% if perms.applications %}
-<li><a href="{% url placements %}">APS Placements</a></li>
-<li><a href="{% url sessions %}">Application Sessions</a></li>
-{% endif %}
+	<li><a href="{% url applications %}">Open Positions</a></li>
+	
+	{% if perms.applications %}
+		<li><a href="{% url placements %}">APS Placements</a></li>
+		<li><a href="{% url sessions %}">Application Sessions</a></li>
+	{% endif %}
+	
+	<li><a href="{% url jobboard_list %}">Volunteering Opportunities</a></li>
 
 </ul>
 {% endblock %}

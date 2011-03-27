@@ -24,40 +24,27 @@ class JobPostingManager(models.Manager):
         
         query = query.filter(active=True)
         query = query.filter(Q(deadline__gt=date.today()) | Q(deadline__isnull=True))
-        query = query.order_by('-posted_date')
 
         return query
     
     def owned_by(self, user):
         query = self.get_query_set()
-        
         query = query.filter(owner=user)
-        query = query.order_by('-posted_date')
-
         return query
         
     def accepted(self, user):
         query = self.get_query_set()
-        
         query = query.filter(accepted_users=user)
-        query = query.order_by('-posted_date')
-
         return query
         
     def bid(self, user):
         query = self.get_query_set()
-        
         query = query.filter(bid_users=user)
-        query = query.order_by('-posted_date')
-
         return query
 
     def following(self, user):
         query = self.get_query_set()
-        
         query = query.filter(following_users=user)
-        query = query.order_by('-posted_date')
-
         return query
         
     
@@ -81,6 +68,9 @@ class JobPosting(models.Model):
     following_users = models.ManyToManyField(User, related_name='following_jobs', blank=True)
     
     objects = JobPostingManager()
+    
+    class Meta:
+        ordering = ['-posted_date']
     
     def __unicode__(self):
         return "%s (%s)" % (self.name, self.owner.visible_name())

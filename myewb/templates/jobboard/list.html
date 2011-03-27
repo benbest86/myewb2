@@ -1,0 +1,58 @@
+{% extends "jobboard/base.html" %}
+
+{% load sorting_tags %}
+{% load pagination_tags %}
+{% load truncate helpers %}
+{% load boolean_icon %}
+{% autosort open_jobs %}
+
+{% block body %}
+<style>
+table {
+  width: 100%;
+}
+th {
+  text-align: left;
+  border: 1px solid;
+}
+th, td {
+  padding: 5px;
+}
+</style>
+
+	{% new_button "session" %}
+
+	{% if open_jobs %}
+		{% autopaginate open_jobs 10 %}
+		{% paginate %}
+		<div class="clear"></div>
+		<table>
+			<tr>
+			    <th>{% anchor name "Name" %}</th>
+       			<th>{% anchor owner "Posted by" %}</th>
+       			<th>{% anchor posted_date "Posted Date" %}</th>
+       			<th>{% anchor deadline "Deadline" %}</th>
+       			<th>{% anchor urgency "Urgency" %}</th>
+       			<th>{% anchor skills "Skills Required" %}</th>
+       			<th>{% anchor time_required "Time Required" %}</th>
+       			<th>&nbsp;</th>
+			</tr>
+			
+			{% for job in open_jobs %}
+				<tr style="{% cycle 'background: #ffffff;' 'background: #eee;' %}">
+					<td>{{ job.name }}</td>
+					<td>{{ job.owner.visible_name }}</td>
+					<td>{{ job.posted_date|date:"d M Y"}}</td>
+					<td>{{ job.deadline|date:"d M Y"}}</td>
+					<td>{{ job.urgency }}</td>
+					<td>{{ job.skills.all|join:", " }}</td>
+					<td>{{ job.time_required }}</td>
+					<td><a href="{% url jobboard_detail job.id %}">details</a></td>
+				</tr>
+			{% endfor %}
+		</table>
+		
+	{% else %}
+		<p>No open jobs.</p>
+	{% endif %}
+{% endblock %}
