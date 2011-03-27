@@ -81,7 +81,13 @@ class JobPosting(models.Model):
     following_users = models.ManyToManyField(User, related_name='following_jobs', blank=True)
     
     objects = JobPostingManager()
+    
+    def __unicode__(self):
+        return "%s (%s)" % (self.name, self.owner.visible_name())
 
 class Skill(models.Model):
     name = models.CharField(max_length=255, db_index=True)
+    
+    def __unicode__(self):
+        return self.name
     
