@@ -20,7 +20,11 @@ th, td {
 }
 </style>
 
-	{% new_button "session" %}
+	{% if user.is_authenticated %}
+		<ul class="segmented">
+			<li><a href="{% url jobboard_new %}">Add a job</a></li>
+		</ul>
+	{% endif %}
 
 	{% if open_jobs %}
 		{% autopaginate open_jobs 10 %}

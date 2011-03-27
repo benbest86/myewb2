@@ -58,7 +58,7 @@ class JobPosting(models.Model):
     deadline = models.DateField(blank=True, null=True)
 
     urgency = models.CharField(max_length=10, choices=URGENCY_CHOICES.items())
-    skills = models.ManyToManyField('jobboard.Skill')
+    skills = models.ManyToManyField('jobboard.Skill', blank=True)
     time_required = models.CharField(max_length=10, choices=TIME_CHOICES.items())
     
     active = models.BooleanField(default=True)

@@ -4,6 +4,14 @@
 	<h1>Job Board</h1>
 	
 	<h3>{{ job.name }}</h3>
+	
+	{% if perms.jobboard %}
+		<p><a href="{% url jobboard_edit job.id %}">Edit this posting</a></p>
+	{% else %}
+		{% ifequal user job.owner %}
+			<p><a href="{% url jobboard_edit job.id %}">Edit this posting</a></p>
+		{% endifequal %} 
+	{% endif %}
 
 	<div style='border: 1px solid; background: #f0f0f0; padding: 10px; margin: 10px; width: 50%;	'>
 		<strong>Posted by: </strong> {{ job.owner.visible_name}}<br/>
@@ -18,4 +26,7 @@
 	<br/>
 	
 	<div>{{ job.description|linebreaks}} </div>
+	
+	<hr/>
+	<p><a href="{% url jobboard_list %}">Back to job board</a></p>
 {% endblock %}

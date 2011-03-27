@@ -1,0 +1,21 @@
+{% extends "jobboard/base.html" %}
+{% load uni_form_tags %}
+
+{% block body %}
+	<h1>Job Board</h1>
+	
+	{% if job %}
+		<h3>Edit: {{ job.name }}</h3>
+	{% else %}
+		<h3>Add A New Posting</h3>
+	{% endif %}
+	
+    <form class="uniForm" method="POST" action="">
+        <fieldset class="inlineLabels">
+            {{ form|as_uni_form }}
+            <input type="submit" value="Create" />
+            <p class="form_block">
+            </p>
+        </fieldset>
+    </form>
+{% endblock %}

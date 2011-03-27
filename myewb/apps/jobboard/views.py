@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.template import RequestContext, Context, loader
 from django.utils.translation import ugettext_lazy as _
 
+from jobboard.forms import JobPostingForm
 from jobboard.models import JobPosting
 from siteutils.shortcuts import get_object_or_none
 
@@ -33,4 +34,36 @@ def detail(request, id):
     
     return render_to_response("jobboard/detail.html",
                               {"job": job},
+                              context_instance=RequestContext(request))
+
+@login_required
+def edit(request, id=None):
+    if id:
+        job = get_object_or_404(JobPosting, id=id)
+    else:
+        job = None
+        
+    if request.method == 'POST':
+        if job:
+            form = JobPostingForm(request.POST, instance=job)
+        else:
+            form = JobPostingForm(request.POST, instance=job)
+        
+        if form.is_valid():
+            job = form.save(commit=False)
+            job.owner = request.user
+            job.save()
+            
+            request.user.message_set.create(message='Posting updated!')
+            return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
+        
+    else:
+        if job:
+            form = JobPostingForm(instance=job)
+        else:
+            form = JobPostingForm()
+        
+    return render_to_response("jobboard/edit.html",
+                              {"form": form,
+                               "job": job},
                               context_instance=RequestContext(request))
