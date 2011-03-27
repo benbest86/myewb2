@@ -6,16 +6,16 @@ from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
 
-URGENCY_CHOICES = (('critical', 'Critical'),
-                   ('important', 'Important'),
-                   ('normal', 'Normal'),
-                   ('low', 'Low'))
+URGENCY_CHOICES = {'4critical': 'Critical',
+                   '3important': 'Important',
+                   '2normal': 'Normal',
+                   '1low': 'Low'}
 
-TIME_CHOICES = (('a', 'Under 1 hour per week'),
-                ('b', '1 - 2 hours per week'),
-                ('c', '2 - 5 hours per week'),
-                ('d', '5 - 10 hours per week'),
-                ('e', '10+ hours per week')) 
+TIME_CHOICES = {'a': 'Under 1 hour per week',
+                'b': '1 - 2 hours per week',
+                'c': '2 - 5 hours per week',
+                'd': '5 - 10 hours per week',
+                'e': '10+ hours per week'} 
 
 
 class JobPostingManager(models.Manager):
@@ -57,9 +57,9 @@ class JobPosting(models.Model):
     last_updated = models.DateTimeField(auto_now=True)
     deadline = models.DateField(blank=True, null=True)
 
-    urgency = models.CharField(max_length=10, choices=URGENCY_CHOICES)
+    urgency = models.CharField(max_length=10, choices=URGENCY_CHOICES.items())
     skills = models.ManyToManyField('jobboard.Skill')
-    time_required = models.CharField(max_length=10, choices=TIME_CHOICES)
+    time_required = models.CharField(max_length=10, choices=TIME_CHOICES.items())
     
     active = models.BooleanField(default=True)
     
@@ -74,6 +74,12 @@ class JobPosting(models.Model):
     
     def __unicode__(self):
         return "%s (%s)" % (self.name, self.owner.visible_name())
+    
+    def urgency_verbose(self):
+        return URGENCY_CHOICES[self.urgency]
+    
+    def time_required_verbose(self):
+        return TIME_CHOICES[self.time_required]
 
 class Skill(models.Model):
     name = models.CharField(max_length=255, db_index=True)

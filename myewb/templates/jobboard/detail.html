@@ -10,8 +10,8 @@
 		<strong>Posted on: </strong> {{ job.posted_date|date:"d M Y" }}<br/>
 		<strong>Deadline: </strong> {{ job.deadline|date:"d M Y" }}<br/>
 		<br/>
-		<strong>Est. time required: </strong> {{ job.time_required }}<br/>
-		<strong>Urgency: </strong> {{ job.urgency }}<br/>
+		<strong>Est. time required: </strong> {{ job.time_required_verbose }}<br/>
+		<strong>Urgency: </strong> {{ job.urgency_verbose }}<br/>
 		<br/>
 		<strong>Skills: </strong> {{ job.skills.all|join:", " }}
 	</div>

@@ -44,9 +44,9 @@ th, td {
 					<td>{{ job.owner.visible_name }}</td>
 					<td>{{ job.posted_date|date:"d M Y"}}</td>
 					<td>{{ job.deadline|date:"d M Y"}}</td>
-					<td>{{ job.urgency }}</td>
+					<td>{{ job.urgency_verbose }}</td>
 					<td>{{ job.skills.all|join:", " }}</td>
-					<td>{{ job.time_required }}</td>
+					<td>{{ job.time_required_verbose }}</td>
 					<td><a href="{% url jobboard_detail job.id %}">details</a></td>
 				</tr>
 			{% endfor %}
