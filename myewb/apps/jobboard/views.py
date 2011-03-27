@@ -29,4 +29,8 @@ def list(request):
                               context_instance=RequestContext(request))
 
 def detail(request, id):
-    return HttpResponse("not implemented")
+    job = get_object_or_404(JobPosting, id=id)
+    
+    return render_to_response("jobboard/detail.html",
+                              {"job": job},
+                              context_instance=RequestContext(request))

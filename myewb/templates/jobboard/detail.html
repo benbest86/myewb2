@@ -1,0 +1,21 @@
+{% extends "jobboard/base.html" %}
+
+{% block body %}
+	<h1>Job Board</h1>
+	
+	<h3>{{ job.name }}</h3>
+
+	<div style='border: 1px solid; background: #f0f0f0; padding: 10px; margin: 10px; width: 50%;	'>
+		<strong>Posted by: </strong> {{ job.owner.visible_name}}<br/>
+		<strong>Posted on: </strong> {{ job.posted_date|date:"d M Y" }}<br/>
+		<strong>Deadline: </strong> {{ job.deadline|date:"d M Y" }}<br/>
+		<br/>
+		<strong>Est. time required: </strong> {{ job.time_required }}<br/>
+		<strong>Urgency: </strong> {{ job.urgency }}<br/>
+		<br/>
+		<strong>Skills: </strong> {{ job.skills.all|join:", " }}
+	</div>
+	<br/>
+	
+	<div>{{ job.description|linebreaks}} </div>
+{% endblock %}
