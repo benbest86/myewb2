@@ -1,5 +1,8 @@
+from datetime import date, datetime
+
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models import Q
 from django.utils.translation import ugettext_lazy as _
 
 
@@ -16,7 +19,47 @@ TIME_CHOICES = (('a', 'Under 1 hour per week'),
 
 
 class JobPostingManager(models.Manager):
-    pass
+    def open(self):
+        query = self.get_query_set()
+        
+        query = query.filter(active=True)
+        query = query.filter(Q(deadline__gt=date.today()) | Q(deadline__isnull=True))
+        query = query.order_by('-posted_date')
+
+        return query
+    
+    def owned_by(self, user):
+        query = self.get_query_set()
+        
+        query = query.filter(owner=user)
+        query = query.order_by('-posted_date')
+
+        return query
+        
+    def accepted(self, user):
+        query = self.get_query_set()
+        
+        query = query.filter(accepted_users=user)
+        query = query.order_by('-posted_date')
+
+        return query
+        
+    def bid(self, user):
+        query = self.get_query_set()
+        
+        query = query.filter(bid_users=user)
+        query = query.order_by('-posted_date')
+
+        return query
+
+    def following(self, user):
+        query = self.get_query_set()
+        
+        query = query.filter(following_users=user)
+        query = query.order_by('-posted_date')
+
+        return query
+        
     
 class JobPosting(models.Model):
     name = models.CharField(max_length=255)
@@ -33,9 +76,9 @@ class JobPosting(models.Model):
     
     active = models.BooleanField(default=True)
     
-    accepted_users = models.ManyToManyField(User, related_name='accepted_jobs')
-    bid_users = models.ManyToManyField(User, related_name='bid_jobs')
-    following_users = models.ManyToManyField(User, related_name='following_jobs')
+    accepted_users = models.ManyToManyField(User, related_name='accepted_jobs', blank=True)
+    bid_users = models.ManyToManyField(User, related_name='bid_jobs', blank=True)
+    following_users = models.ManyToManyField(User, related_name='following_jobs', blank=True)
     
     objects = JobPostingManager()
 
