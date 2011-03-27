@@ -25,6 +25,7 @@ from account.views import signup as pinaxsignup
 from account.forms import AddEmailForm
 from base_groups.models import LogisticalGroup
 
+from emailconfirmation.signals import email_confirmed
 from siteutils import online_middleware
 
 def login(request, form_class=EmailLoginForm, 
@@ -110,6 +111,29 @@ def email(request, form_class=AddEmailForm, template_name="account/email.html",
                     EmailConfirmation.objects.send_confirmation(email_address)
                 except EmailAddress.DoesNotExist:
                     pass
+            elif request.POST["action"] == 'manual_verify':
+                if request.user.has_module_perms("profiles"):
+                    email = request.POST["email"]
+                    try:
+                        email_address = EmailAddress.objects.get(
+                            user=user,
+                            email=email,
+                        )
+
+                        email_address.verified = True
+                        email_address.set_as_primary(conditional=True)
+                        email_address.save()
+                        email_confirmed.send(sender=EmailAddress, email_address=email_address)
+
+                        request.user.message_set.create(
+                            message=_("Confirmed %(email)s as a valid email") % {
+                                'email': email,
+                            })
+                    except EmailAddress.DoesNotExist:
+                        pass
+                else:
+                    request.user.message_set.create(message=_("You don't have permission to do this!"))
+                
             elif request.POST["action"] == "remove":
                 email = request.POST["email"]
                 try:

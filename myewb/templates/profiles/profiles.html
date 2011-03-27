@@ -56,6 +56,12 @@
             	<div style="float: left;">{% avatar user 40 %}</div>
             	<div style="padding: 5px; margin-left: 50px;">
 	                <a href="{% url profile_detail user.username %}">{{ user.visible_name }}</a>
+	                {% if perms.profiles %}
+	                	{% if not user.is_active and user.is_bulk and user.emailaddress_set.count %}
+	                		<em>({{user.emailaddress_set.all.0.email }})</em> 
+	                	{% endif %}
+	                {% endif %}
+	                </a>
 	            </div>
         	</div>
     	{% endfor %}

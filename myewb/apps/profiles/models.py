@@ -159,7 +159,10 @@ class MemberProfile(Profile):
         return self.country == "CA"
     
     def email_addresses(self):
-        return EmailAddress.objects.filter(verified=True, user=self.user)
+        return EmailAddress.objects.filter(verified=True, user=self.user).order_by('-primary')
+    
+    def unverified_email_addresses(self):
+        return EmailAddress.objects.filter(verified=False, user=self.user)
     
     def save(self, force_insert=False, force_update=False):
         if self.first_name or self.last_name:

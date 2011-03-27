@@ -19,8 +19,13 @@
 		}
 	</style>
 	
-    <h1>{% trans "My Email Addresses" %}</h1>
+	{% ifequal user other_user %}
+	    <h1>{% trans "My Email Addresses" %}</h1>
+	{% else %}
+		<h1>{{ other_user.visible_name }} - Email Addresses</h1>
+	{% endifequal %}
     
+	{% ifequal user other_user %}
     {% if user.nomail %}
 	    <div style="border: 1px solid #ff0000; margin: 10px; background: #ffbbbb; padding: 0 15px 0px;">
 	    	{% if user.bouncing %}
@@ -70,6 +75,7 @@
 	    	{% endif %}
 	    </div>
     {% endif %}
+    {% endifequal %}
    	
    	
     {% if emails %}
@@ -101,6 +107,16 @@
                             </form>
                             -
                             <a href="#" onclick="$('#send_{{ forloop.counter }}').submit();">{% trans "re-send verification email" %}</a>
+
+							{% if perms.profiles %}
+								- 
+	                            <form style="display: none;" id="manual_verify_{{ forloop.counter }}" method="post" action="">
+	                                <input type="hidden" name="email" value="{{ emailaddress.email }}"/>
+	                                <input type="hidden" name="action" value="manual_verify"/>
+	                            </form>
+	                            <a href="#" onclick="$('#manual_verify_{{ forloop.counter }}').submit()">{% trans "manually verify" %}</a>
+                            {% endif %}
+
                         </td>
                     {% endif %}
                     <td>

@@ -56,19 +56,23 @@ def profiles(request, template_name="profiles/profiles.html"):
             
         # people with profile super-permissions get more results
         else:
-            # include email addresses in search
-            qry2 = Q(emailaddress__email__icontains=search_terms.split()[0])
-            for term in search_terms.split()[1:]:
-                qry2 = qry2 & Q(emailaddress__email__icontains=term)
-            qry = qry | qry2
-            
             # also include usernames... why not...
             qry2 = Q(username__icontains=search_terms.split()[0])
             for term in search_terms.split()[1:]:
                 qry2 = qry2 & Q(username__icontains=term)
             qry = qry | qry2
             
-            users = User.objects.filter(is_active=True).filter(qry)
+            # up until now, searches on name/username should only return active users
+            qry = qry & Q(is_active=True)
+            
+            # include email addresses in search now
+            # (done after is_active since bulk unverified users are is_bulk=True & is_active=False
+            qry2 = Q(emailaddress__email__icontains=search_terms.split()[0])
+            for term in search_terms.split()[1:]:
+                qry2 = qry2 & Q(emailaddress__email__icontains=term)
+            qry = qry | qry2
+
+            users = User.objects.filter(qry)
             
         users = users.distinct().order_by("profile__name")
     else:
@@ -445,7 +449,9 @@ def profile_by_id(request, profile_id):
 def profile(request, username, template_name="profiles/profile.html", extra_context=None):
     other_user = get_object_or_404(User, username=username)
 
-    if not other_user.is_active:
+    if not other_user.is_active \
+       and not other_user.emailaddress_set.count() \
+       and request.user.has_module_perms("profiles"):
         return render_to_response('profiles/deleted.html', {}, context_instance=RequestContext(request)) 
 
     """

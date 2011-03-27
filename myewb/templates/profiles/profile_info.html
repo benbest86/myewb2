@@ -124,7 +124,15 @@
             <th>{% trans "Emails" %}</th>
             <td>
     			{% for address in other_user.get_profile.email_addresses %}
-    				<br/>{{ address.email }}
+    				<br/>
+    				{% if address.primary %}
+    					<strong>{{ address.email }}</strong>
+    				{% else %}
+    					{{ address.email }}
+    				{% endif %}
+    			{% endfor %}
+    			{% for address in other_user.get_profile.unverified_email_addresses %}
+    				<br/><span style='color: #a0a0a0; font-style: italic;'>{{ address.email }} (unverified)</span>
     			{% endfor %}
     			
     			{% if is_me %}
