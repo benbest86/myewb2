@@ -34,7 +34,11 @@
 		<strong>Est. time required: </strong> {{ job.time_required_verbose }}<br/>
 		<strong>Urgency: </strong> {{ job.urgency_verbose }}<br/>
 		<br/>
-		<strong>Skills: </strong> {{ job.skills.all|join:", " }}
+		<strong>Skills: </strong> {{ job.skills.all|join:", " }}<br/>
+		<br/>
+		<strong>People on this job: </strong> {{ job.accepted_users.count }}<br/>
+		<strong>Bids for this job: </strong> {{ job.bid_users.count }}<br/>
+		<strong>Watching this job: </strong> {{ job.following_users.count }}
 	</div>
 	<br/>
 	
