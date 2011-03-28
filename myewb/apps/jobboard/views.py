@@ -191,3 +191,25 @@ def open(request, id):
     
     request.user.message_set.create(message='Job re-opened.')
     return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
+
+@login_required
+def accept(request, id, username):
+    job = get_object_or_404(JobPosting, id=id, owner=request.user)
+    user = get_object_or_404(User, username=username)
+    
+    job.bid_users.remove(user)
+    job.accepted_users.add(user)
+    
+    request.user.message_set.create(message="You have accepted %s for the job." % user.visible_name())
+    return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
+    
+@login_required
+def accept_cancel(request, id, username):
+    job = get_object_or_404(JobPosting, id=id, owner=request.user)
+    user = get_object_or_404(User, username=username)
+    
+    job.accepted_users.remove(user)
+    job.bid_users.add(user)
+    
+    request.user.message_set.create(message="You have removed %s from the job." % user.visible_name())
+    return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
