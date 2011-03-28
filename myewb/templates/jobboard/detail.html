@@ -1,4 +1,5 @@
 {% extends "jobboard/base.html" %}
+{% load ifinlist %}
 
 {% block body %}
 	<h1>Job Board</h1>
@@ -29,4 +30,25 @@
 	
 	<hr/>
 	<p><a href="{% url jobboard_list %}">Back to job board</a></p>
+{% endblock %}
+
+{% block toolbar_right %}
+<div class="toolbarheader bkgd" id="box-jobboard-action">Actions</div>
+<div class="toolbarcontent">
+	{% if user|in_list:job.accepted_users.all %}
+		<p><strong>You have been accepted for job.</strong></p>
+	{% else %}
+		{% if user|in_list:job.bid_users.all %}
+			<p><strong>You have bid on this job.</strong> (<a href="{% url jobboard_bid_cancel job.id %}">cancel</a>)</p>
+		{% else %}
+			<p><a href="{% url jobboard_bid job.id %}">Bid on this job</a></p>
+
+			{% if user|in_list:job.following_users.all %}
+				<p><strong>You are watching this job.</strong> (<a href="{% url jobboard_watch_cancel job.id %}">cancel</a>)</p>
+			{% else %}			
+				<p><a href="{% url jobboard_watch job.id %}">Watch this job</a></p>
+			{% endif %}
+		{% endif %}
+	{% endif %}
+</div>
 {% endblock %}

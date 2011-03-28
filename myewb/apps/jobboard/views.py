@@ -31,6 +31,8 @@ def add_filter(request, open_jobs, field, filters):
 def list(request):
     open_jobs = JobPosting.objects.open()
     my_jobs = JobPosting.objects.accepted(request.user)
+    bid_jobs = JobPosting.objects.bid(request.user)
+    watching_jobs = JobPosting.objects.following(request.user)
     my_postings = JobPosting.objects.owned_by(request.user)
     
     # work with filters
@@ -77,6 +79,8 @@ def list(request):
                               {"my_postings": my_postings,
                                "my_jobs": my_jobs,
                                "open_jobs": open_jobs,
+                               "bid_jobs": bid_jobs,
+                               "watching_jobs": watching_jobs,
                                "URGENCY_CHOICES": URGENCY_CHOICES,
                                "TIME_CHOICES": TIME_CHOICES,
                                "allskills": allskills,
@@ -122,3 +126,39 @@ def edit(request, id=None):
                               {"form": form,
                                "job": job},
                               context_instance=RequestContext(request))
+
+@login_required
+def bid(request, id):
+    job = get_object_or_404(JobPosting, id=id)
+    
+    job.bid_users.add(request.user)
+    
+    request.user.message_set.create(message='You have bid for this job.')
+    return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
+
+@login_required
+def watch(request, id):
+    job = get_object_or_404(JobPosting, id=id)
+    
+    job.following_users.add(request.user)
+    
+    request.user.message_set.create(message='You are now watching this job.')
+    return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
+
+@login_required
+def bid_cancel(request, id):
+    job = get_object_or_404(JobPosting, id=id)
+    
+    job.bid_users.remove(request.user)
+    
+    request.user.message_set.create(message='You have cancelled your bid.')
+    return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
+
+@login_required
+def watch_cancel(request, id):
+    job = get_object_or_404(JobPosting, id=id)
+    
+    job.following_users.remove(request.user)
+    
+    request.user.message_set.create(message='You are now longer watching this job.')
+    return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))

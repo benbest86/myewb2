@@ -29,22 +29,22 @@ class JobPostingManager(models.Manager):
     
     def owned_by(self, user):
         query = self.get_query_set()
-        query = query.filter(owner=user)
+        query = query.filter(owner=user, active=True)
         return query
         
     def accepted(self, user):
         query = self.get_query_set()
-        query = query.filter(accepted_users=user)
+        query = query.filter(accepted_users=user, active=True)
         return query
         
     def bid(self, user):
         query = self.get_query_set()
-        query = query.filter(bid_users=user)
+        query = query.filter(bid_users=user, active=True)
         return query
 
     def following(self, user):
         query = self.get_query_set()
-        query = query.filter(following_users=user)
+        query = query.filter(following_users=user, active=True)
         return query
         
     
