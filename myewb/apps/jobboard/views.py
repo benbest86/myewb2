@@ -8,15 +8,65 @@ from django.template import RequestContext, Context, loader
 from django.utils.translation import ugettext_lazy as _
 
 from jobboard.forms import JobPostingForm
-from jobboard.models import JobPosting
+from jobboard.models import JobPosting, Skill, URGENCY_CHOICES, TIME_CHOICES
 from siteutils.shortcuts import get_object_or_none
 
+def add_filter(request, open_jobs, field, filters):
+    if request.GET.get(field, None):
+        comparison = request.GET[field]
+        value = request.GET.get("%s2" % field, '')
+        
+        if (comparison == 'lt' or comparison == 'gt') and True:     # validate value too!
+            filters[field] = (comparison, value)
+            
+            kwargs = {}
+            if comparison == 'lt':
+                kwargs["%s__lte" % field] = value
+            else:
+                kwargs["%s__gte" % field] = value
+            open_jobs = open_jobs.filter(**kwargs)
+
+    return open_jobs, filters
+    
 def list(request):
     open_jobs = JobPosting.objects.open()
     my_jobs = JobPosting.objects.accepted(request.user)
     my_postings = JobPosting.objects.owned_by(request.user)
     
-    # is this necessary? why doesn't autosort do this for me..??
+    # work with filters
+    filters = {'deadline': ('', ''),
+               'urgency': ('', ''),
+               'time': ('', ''),
+               'skills': ('', {})}
+    
+    open_jobs, filters = add_filter(request, open_jobs, 'deadline', filters)
+    open_jobs, filters = add_filter(request, open_jobs, 'urgency', filters)
+    open_jobs, filters = add_filter(request, open_jobs, 'time', filters)
+
+    if request.GET.get('skills', None):
+        comparison = request.GET['skills']
+        value = request.GET.getlist('skills2')
+        
+        if (comparison == 'any' or comparison == 'all' or comparison == 'none') and True:     # validate deadline2 too!
+            filters['skills'] = (comparison, value)
+            
+            if comparison == 'any':
+                open_jobs = open_jobs.filter(skills__in=value).distinct()
+            elif comparison == 'all':
+                for skill in value:
+                    open_jobs = open_jobs.filter(skills__id=skill)
+            else:
+                open_jobs = open_jobs.exclude(skills__in=value)
+
+    
+    allskills = Skill.objects.all()
+    filters_active = False
+    for f1, f2 in filters.items():
+        if f2[0]:
+            filters_active = True
+
+    # sorting
+    # (is this necessary? why doesn't autosort do this for me..??)
     if request.GET.get('sort', None):
         if request.GET.get('dir', 'desc') == 'asc':
             open_jobs = open_jobs.order_by(request.GET['sort'])
@@ -26,7 +76,12 @@ def list(request):
     return render_to_response("jobboard/list.html",
                               {"my_postings": my_postings,
                                "my_jobs": my_jobs,
-                               "open_jobs": open_jobs},
+                               "open_jobs": open_jobs,
+                               "URGENCY_CHOICES": URGENCY_CHOICES,
+                               "TIME_CHOICES": TIME_CHOICES,
+                               "allskills": allskills,
+                               "filters": filters,
+                               "filters_active": filters_active},
                               context_instance=RequestContext(request))
 
 def detail(request, id):

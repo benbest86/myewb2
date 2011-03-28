@@ -18,6 +18,16 @@ th {
 th, td {
   padding: 5px;
 }
+
+table#filter_options {
+	width: auto;
+	border: 1px solid #a0a0a0;
+}
+table#filter_options td {
+	padding: 10px;
+	border: 1px solid #a0a0a0;
+}
+
 </style>
 
 	{% if user.is_authenticated %}
@@ -30,6 +40,93 @@ th, td {
 		{% autopaginate open_jobs 10 %}
 		{% paginate %}
 		<div class="clear"></div>
+		
+		<div style='padding: 5px 0;'>
+			<a href="#" id='toggle_filters'>Advanced search options...</a>
+			<br/>
+			<form id='filters' method="GET" action="" style='display: none;'>
+			<table id='filter_options'><tr>
+				<td>Deadline is:</td>
+				<td>
+					<select name='deadline' id='deadline' class='part1'>
+						<option value=''>any</option>
+						<option value='gt' {% ifequal filters.deadline.0 'gt' %}selected='selected'{% endifequal %}>before</option>
+						<option value='lt' {% ifequal filters.deadline.0 'lt' %}selected='selected'{% endifequal %}>after</option>
+					</select>
+				</td>
+				<td>					
+					<input type='text' id='deadline2' name='deadline2' value="{{ filters.deadline.1 }}"/>
+				</td>
+			</tr>
+				
+			<tr>
+				<td>Urgency is:</td>
+				<td>
+					<select name='urgency' id='urgency' class='part1'>
+						<option value=''>any</option>
+						<option value='gt' {% ifequal filters.urgency.0 'gt' %}selected='selected'{% endifequal %}>at least</option>
+						<option value='lt' {% ifequal filters.urgenct.0 'lt' %}selected='selected'{% endifequal %}>at most</option>
+					</select>
+				</td>
+				<td>
+					<select name='urgency2' id='urgency2'>
+						{% for u, uname in URGENCY_CHOICES.items %}
+							<option value="{{u}}" {% ifequal filters.urgency.1 u %}selected='selected'{% endifequal %}>{{uname}}</option>
+						{% endfor %}
+					</select>
+				</td>
+			</tr>
+
+			<tr>
+				<td>Time required is:</td>
+				<td>
+					<select name='time' id='time' class='part1'>
+						<option value=''>any</option>
+						<option value='gt' {% ifequal filters.time.0 'gt' %}selected='selected'{% endifequal %}>at least</option>
+						<option value='lt' {% ifequal filters.time.0 'lt' %}selected='selected'{% endifequal %}>at most</option>
+					</select>
+				</td>
+				<td>
+					<select name='time2' id='time2'>
+						{% for t, tname in TIME_CHOICES.items %}
+							<option value="{{t}}" {% ifequal filters.time.1 t %}selected='selected'{% endifequal %}>{{tname}}</option>
+						{% endfor %}
+					</select>
+				</td>
+			</tr>
+
+			<tr>
+				<td valign='top'>Skills include:</td>
+				<td valign='top'>
+					<select name='skills' id='skills' class='part1'>
+						<option value=''>any</option>
+						<option value='all' {% ifequal filters.skills.0 'all' %}selected='selected'{% endifequal %}>all of</option>
+						<option value='any' {% ifequal filters.skills.0 'any' %}selected='selected'{% endifequal %}>any of</option>
+						<option value='none' {% ifequal filters.skills.0 'none' %}selected='selected'{% endifequal %}>none of</option>
+					</select>
+				</td>
+				<td>
+					<select name='skills2' id='skills2' multiple size=5>
+						{% for skill in allskills %}
+							{% with skill.id as skillid %}
+								<option value="{{skillid}}" {% if filters.skills.1.skillid %}selected='selected'{% endif %}>{{skill.name}}</option>
+							{% endwith %}
+						{% endfor %}
+					</select>
+				</td>
+			</tr>
+				
+			<tr>
+				<td colspan='3' align='center'>
+					<input type="submit" value="Filter"/>
+					or
+					<a href="{% url jobboard_list %}">clear all filters and hide</a>
+				</td>
+			</tr></table>
+			<br/>
+			</form> 
+		</div>
+		
 		<table>
 			<tr>
 			    <th>{% anchor name "Name" %}</th>
@@ -59,4 +156,33 @@ th, td {
 	{% else %}
 		<p>No open jobs.</p>
 	{% endif %}
+{% endblock %}
+
+{% block extra_body %}
+	<script type='text/javascript'>
+		$(document).ready(function() {
+			$('#toggle_filters').click(function() {
+				$('#filters').slideDown();
+				$(this).hide();
+				return false;
+			});
+
+			$('.part1').change(function() {
+				var next_element = $('#' + $(this).attr('id') + '2');
+				if ($(this).val() == '')
+				{
+					next_element.attr('disabled', 'disabled');
+				}
+				else
+				{
+					next_element.attr('disabled', '');
+				}
+			});
+			$('.part1').change();		// fire event to set initial states
+
+			{% if filters_active %}
+				$('#toggle_filters').click();
+			{% endif %}
+		});
+	</script>
 {% endblock %}
