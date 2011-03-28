@@ -34,6 +34,7 @@ def list(request):
     bid_jobs = JobPosting.objects.bid(request.user)
     watching_jobs = JobPosting.objects.following(request.user)
     my_postings = JobPosting.objects.owned_by(request.user)
+    closed_jobs = JobPosting.objects.closed(request.user)
     
     # work with filters
     filters = {'deadline': ('', ''),
@@ -81,6 +82,7 @@ def list(request):
                                "open_jobs": open_jobs,
                                "bid_jobs": bid_jobs,
                                "watching_jobs": watching_jobs,
+                               "closed_jobs": closed_jobs,
                                "URGENCY_CHOICES": URGENCY_CHOICES,
                                "TIME_CHOICES": TIME_CHOICES,
                                "allskills": allskills,
@@ -161,4 +163,31 @@ def watch_cancel(request, id):
     job.following_users.remove(request.user)
     
     request.user.message_set.create(message='You are now longer watching this job.')
+    return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
+
+@login_required
+def close(request, id):
+    if request.user.has_module_perms('jobboard'):
+        job = get_object_or_404(JobPosting, id=id)    
+    else:
+        job = get_object_or_404(JobPosting, id=id, owner=request.user)
+        
+    job.active=False
+    job.save()
+    
+    request.user.message_set.create(message='Job closed.')
+    return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
+
+
+@login_required
+def open(request, id):
+    if request.user.has_module_perms('jobboard'):
+        job = get_object_or_404(JobPosting, id=id)    
+    else:
+        job = get_object_or_404(JobPosting, id=id, owner=request.user)
+        
+    job.active=True
+    job.save()
+    
+    request.user.message_set.create(message='Job re-opened.')
     return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))

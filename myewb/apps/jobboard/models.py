@@ -46,7 +46,11 @@ class JobPostingManager(models.Manager):
         query = self.get_query_set()
         query = query.filter(following_users=user, active=True)
         return query
-        
+    
+    def closed(self, user):
+        query = self.get_query_set()
+        query = query.filter(owner=user, active=False)
+        return query
     
 class JobPosting(models.Model):
     name = models.CharField(max_length=255)

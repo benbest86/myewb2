@@ -6,11 +6,23 @@
 	
 	<h3>{{ job.name }}</h3>
 	
+	{% if not job.active %}
+		<h3 style='color: #ff0000;'>This job is closed.</h3>
+	{% endif %}
+	
 	{% if perms.jobboard %}
-		<p><a href="{% url jobboard_edit job.id %}">Edit this posting</a></p>
+		{% if job.active %} 
+			<p><a href="{% url jobboard_edit job.id %}">Edit this posting</a></p>
+		{% else %}
+			<p><a href="{% url jobboard_open job.id %}">Re-open this posting</a></p>
+		{% endif %}
 	{% else %}
 		{% ifequal user job.owner %}
-			<p><a href="{% url jobboard_edit job.id %}">Edit this posting</a></p>
+			{% if job.active %} 
+				<p><a href="{% url jobboard_edit job.id %}">Edit this posting</a></p>
+			{% else %}
+				<p><a href="{% url jobboard_open job.id %}">Re-open this posting</a></p>
+			{% endif %}
 		{% endifequal %} 
 	{% endif %}
 
@@ -33,22 +45,35 @@
 {% endblock %}
 
 {% block toolbar_right %}
-<div class="toolbarheader bkgd" id="box-jobboard-action">Actions</div>
-<div class="toolbarcontent">
-	{% if user|in_list:job.accepted_users.all %}
-		<p><strong>You have been accepted for job.</strong></p>
-	{% else %}
-		{% if user|in_list:job.bid_users.all %}
-			<p><strong>You have bid on this job.</strong> (<a href="{% url jobboard_bid_cancel job.id %}">cancel</a>)</p>
+{% if job.active %}
+	<div class="toolbarheader bkgd" id="box-jobboard-action">Actions</div>
+	<div class="toolbarcontent">
+		{% ifequal job.owner user %}
+			<p><strong>This is your posting.</strong></p>
+			
+			<p><a href="{% url jobboard_close job.id %}">Close this job</a></p>
+			
 		{% else %}
-			<p><a href="{% url jobboard_bid job.id %}">Bid on this job</a></p>
-
-			{% if user|in_list:job.following_users.all %}
-				<p><strong>You are watching this job.</strong> (<a href="{% url jobboard_watch_cancel job.id %}">cancel</a>)</p>
-			{% else %}			
-				<p><a href="{% url jobboard_watch job.id %}">Watch this job</a></p>
+			{% if user|in_list:job.accepted_users.all %}
+				<p><strong>You have been accepted for job.</strong></p>
+			{% else %}
+				{% if user|in_list:job.bid_users.all %}
+					<p><strong>You have bid on this job.</strong> (<a href="{% url jobboard_bid_cancel job.id %}">cancel</a>)</p>
+				{% else %}
+					<p><a href="{% url jobboard_bid job.id %}">Bid on this job</a></p>
+		
+					{% if user|in_list:job.following_users.all %}
+						<p><strong>You are watching this job.</strong> (<a href="{% url jobboard_watch_cancel job.id %}">cancel</a>)</p>
+					{% else %}			
+						<p><a href="{% url jobboard_watch job.id %}">Watch this job</a></p>
+					{% endif %}
+				{% endif %}
 			{% endif %}
-		{% endif %}
-	{% endif %}
-</div>
+	
+			{% if perms.jobboard %}
+				<p><a href="{% url jobboard_close job.id %}">Close this job</a></p>
+			{% endif %}
+		{% endifequal %}
+	</div>
+{% endif %}
 {% endblock %}

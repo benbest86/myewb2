@@ -223,6 +223,13 @@ table#filter_options td {
 		<br/>
 	{% endif %}
 	
+	{% if closed_jobs %}
+		<strong>My closed postings</strong><br/>
+		{% for job in closed_jobs %}
+			<a href="{% url jobboard_detail job.id %}">{{ job.name }}</a><br/>
+		{% endfor %} 
+		<br/>
+	{% endif %}
 	
 </div>
 {% endblock %}
