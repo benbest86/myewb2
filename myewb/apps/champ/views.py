@@ -264,6 +264,9 @@ def new_activity(request, group_slug):
             activity.group = group
             activity.save()
             
+            # and add the default Event Impact metric
+            ImpactMetrics.objects.create(activity=activity)
+            
             request.user.message_set.create(message="Activity recorded")
             return HttpResponseRedirect(reverse('champ_activity', kwargs={'group_slug': group_slug, 'activity_id': activity.id}))
             
