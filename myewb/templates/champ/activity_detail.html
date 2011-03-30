@@ -247,6 +247,7 @@
 							 if (data.status == 'success')
 							 {
 							 	$('.metric-' + data.metricname).remove();
+							 	$('.metricspace-' + data.metricname).remove();
 							 	$('select[name=metrictype]').append('<option value="' + data.metricname + '">' + data.metriclabel + '</option>');
 
 							 	$('.champ_confirmation_message').hide();
