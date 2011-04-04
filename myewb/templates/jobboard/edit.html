@@ -1,4 +1,7 @@
-{% extends "jobboard/base.html" %}
+{# {% extends "jobboard/base.html" %} #}
+{# this should only be loaded via ajax in a popup ... #}
+{% extends 'ajaxbase.html' %}
+
 {% load uni_form_tags %}
 
 {% block body %}
@@ -13,7 +16,7 @@
     <form class="uniForm" method="POST" action="">
         <fieldset class="inlineLabels">
             {{ form|as_uni_form }}
-            <input type="submit" value="Create" />
+            <input type="submit" value="Save" />
             <p class="form_block">
             </p>
         </fieldset>

@@ -1,0 +1,66 @@
+table {
+  width: 100%;
+}
+th {
+  text-align: left;
+  border: 1px solid;
+}
+th, td {
+  padding: 5px;
+}
+
+table#filter_options {
+	width: auto;
+	border: 0px solid #a0a0a0;
+}
+table#filter_options td {
+	padding: 10px;
+	border: 0px;
+	border-top: 1px solid #a0a0a0;
+}
+
+#toolbarcolumn_right {
+	width: 260px;
+	margin-top: 75px; 
+	border: 1px solid #d0d0d0;
+	border-width: 1px 0 1px 1px;
+	padding: 10px 0 10px 10px;
+}
+
+#toolbarcolumn_right .padded {
+	display: block;
+	margin-bottom: 5px;
+}
+
+a.jobposting, a.jobposting div {
+	text-decoration: none;
+	color: #000000;	
+}
+.urgency-1low {
+	background: #d0d0d0; 
+}
+.urgency-2normal {
+	background: #505050; 
+}
+.urgency-3important {
+	background: #ff9900;
+}
+.urgency-4critical {
+	background: #ff0000;
+}
+#bodybackground .detail-1low {
+	border: 1px solid #c0c0c0;
+	background: #ffffff;
+}
+#bodybackground .detail-2normal {
+	border: 1px solid #000000;
+	background: #f0f0f0;
+}
+#bodybackground .detail-3important {
+	border: 1px solid #ff2233;
+	background: #ffdd99;
+}
+#bodybackground .detail-4critical {
+	border: 1px solid #ff0000;
+	background: #ffff44;
+}

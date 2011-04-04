@@ -1,5 +1,12 @@
-{% extends "jobboard/base.html" %}
+{# {% extends "jobboard/base.html" %} #}
+{# this should only be loaded via ajax in a popup ... #}
+{% extends 'ajaxbase.html' %}
+
 {% load ifinlist %}
+
+{% block extra_head %}
+	<link rel="stylesheet" href="{{ STATIC_URL }}css/jobboard.css" />
+{% endblock %}
 
 {% block body %}
 	<h1>Job Board</h1>
@@ -26,7 +33,7 @@
 		{% endifequal %} 
 	{% endif %}
 
-	<div style='border: 1px solid; background: #f0f0f0; padding: 10px; margin: 10px; width: 50%;	'>
+	<div style='padding: 10px; margin: 10px; width: 50%;' class='jobposting detail-{{ job.urgency }}'>
 		<strong>Posted by: </strong> {{ job.owner.visible_name}}<br/>
 		<strong>Posted on: </strong> {{ job.posted_date|date:"d M Y" }}<br/>
 		<strong>Deadline: </strong> {{ job.deadline|date:"d M Y" }}<br/>
@@ -45,10 +52,14 @@
 	<div>{{ job.description|linebreaks}} </div>
 	
 	{% ifequal job.owner user %}
-		<hr/>
+	
+		{% if job.accepted_users.all or job.bid_users.all %}
+			<hr/>
+		{% endif %}
+		
 		{% if job.accepted_users.all %}
 			<p>
-				<strong>Accepted users</strong><br/>
+				<h2>Accepted users</h2>
 				{% for u in job.accepted_users.all %}
 					<a href="{% url profile_detail u %}">{{ u.visible_name }}</a>
 					(<a href="{% url jobboard_accept_cancel job.id u.username %}">cancel</a>)
@@ -59,7 +70,7 @@
 
 		{% if job.bid_users.all %}
 			<p>
-				<strong>Bidding users</strong><br/>
+				<h2>Bidding users</h2>
 				{% for u in job.bid_users.all %}
 					<a href="{% url profile_detail u %}">{{ u.visible_name }}</a>
 					(<a href="{% url jobboard_accept job.id u.username %}">accept</a>)
@@ -70,39 +81,48 @@
 	{% endifequal %}
 	
 	<hr/>
-	<p><a href="{% url jobboard_list %}">Back to job board</a></p>
+	<p><a href="{% url jobboard_list %}" id='back_to_board'>Back to job board</a></p>
 {% endblock %}
 
 {% block toolbar_right %}
-{% if job.active %}
-	<div class="toolbarheader bkgd" id="box-jobboard-action">Actions</div>
-	<div class="toolbarcontent">
-		{% ifequal job.owner user %}
-			<p><strong>This is your posting.</strong></p>
-			
-			<p><a href="{% url jobboard_close job.id %}">Close this job</a></p>
-			
-		{% else %}
-			{% if user|in_list:job.accepted_users.all %}
-				<p><strong>You have been accepted for job.</strong></p>
-			{% else %}
-				{% if user|in_list:job.bid_users.all %}
-					<p><strong>You have bid on this job.</strong> (<a href="{% url jobboard_bid_cancel job.id %}">cancel</a>)</p>
-				{% else %}
-					<p><a href="{% url jobboard_bid job.id %}">Bid on this job</a></p>
+{% if job.active and user.is_authenticated %}
+	{% ifequal job.owner user %}
+		<p><strong>This is your posting.</strong></p>
 		
-					{% if user|in_list:job.following_users.all %}
-						<p><strong>You are watching this job.</strong> (<a href="{% url jobboard_watch_cancel job.id %}">cancel</a>)</p>
-					{% else %}			
-						<p><a href="{% url jobboard_watch job.id %}">Watch this job</a></p>
-					{% endif %}
+		<p><a href="{% url jobboard_close job.id %}">Close this job</a></p>
+		
+	{% else %}
+		{% if user|in_list:job.accepted_users.all %}
+			<p><strong>You have been accepted for job.</strong></p>
+		{% else %}
+			{% if user|in_list:job.bid_users.all %}
+				<p><strong>You have bid on this job.</strong> (<a href="{% url jobboard_bid_cancel job.id %}">cancel</a>)</p>
+			{% else %}
+				<p><a href="{% url jobboard_bid job.id %}">Bid on this job</a></p>
+	
+				{% if user|in_list:job.following_users.all %}
+					<p><strong>You are watching this job.</strong> (<a href="{% url jobboard_watch_cancel job.id %}">cancel</a>)</p>
+				{% else %}			
+					<p><a href="{% url jobboard_watch job.id %}">Watch this job</a></p>
 				{% endif %}
 			{% endif %}
-	
-			{% if perms.jobboard %}
-				<p><a href="{% url jobboard_close job.id %}">Close this job</a></p>
-			{% endif %}
-		{% endifequal %}
-	</div>
+		{% endif %}
+
+		{% if perms.jobboard %}
+			<p><a href="{% url jobboard_close job.id %}">Close this job</a></p>
+		{% endif %}
+	{% endifequal %}
 {% endif %}
+{% endblock %}
+
+{% block extra_body %}
+<script type='text/javascript'>
+	$(document).ready(function() {
+		$('#back_to_board').click(function() {
+			$('#cboxClose', parent.document).click();	// ... doesn't seem to work??
+			parent.location.reload(true);
+			return false;
+		});
+	});
+</script>
 {% endblock %}
