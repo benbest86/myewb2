@@ -189,47 +189,49 @@ table#filter_options td {
 
 
 {% block toolbar_right %}
-<div class="toolbarheader bkgd" id="box-jobboard-dashboard">Actions</div>
-<div class="toolbarcontent">
-	{% if my_postings %}
-		<strong>My Postings</strong><br/>
-		{% for job in my_postings %}
-			<a href="{% url jobboard_detail job.id %}">{{ job.name }}</a><br/>
-		{% endfor %}
-		<br/>
+	{% if user.is_authenticated %}
+		<div class="toolbarheader bkgd" id="box-jobboard-dashboard">Actions</div>
+		<div class="toolbarcontent">
+			{% if my_postings %}
+				<strong>My Postings</strong><br/>
+				{% for job in my_postings %}
+					<a href="{% url jobboard_detail job.id %}">{{ job.name }}</a><br/>
+				{% endfor %}
+				<br/>
+			{% endif %}
+			
+			{% if my_jobs %}
+				<strong>Accepted Jobs</strong><br/>
+				{% for job in my_jobs %}
+					<a href="{% url jobboard_detail job.id %}">{{ job.name }}</a><br/>
+				{% endfor %} 
+				<br/>
+			{% endif %}
+			
+			{% if bid_jobs %}
+				<strong>My Bids</strong><br/>
+				{% for job in bid_jobs %}
+					<a href="{% url jobboard_detail job.id %}">{{ job.name }}</a><br/>
+				{% endfor %} 
+				<br/>
+			{% endif %}
+			
+			{% if watching_jobs %}
+				<strong>Watching</strong><br/>
+				{% for job in watching_jobs %}
+					<a href="{% url jobboard_detail job.id %}">{{ job.name }}</a><br/>
+				{% endfor %} 
+				<br/>
+			{% endif %}
+			
+			{% if closed_jobs %}
+				<strong>My closed postings</strong><br/>
+				{% for job in closed_jobs %}
+					<a href="{% url jobboard_detail job.id %}">{{ job.name }}</a><br/>
+				{% endfor %} 
+				<br/>
+			{% endif %}
+			
+		</div>
 	{% endif %}
-	
-	{% if my_jobs %}
-		<strong>Accepted Jobs</strong><br/>
-		{% for job in my_jobs %}
-			<a href="{% url jobboard_detail job.id %}">{{ job.name }}</a><br/>
-		{% endfor %} 
-		<br/>
-	{% endif %}
-	
-	{% if bid_jobs %}
-		<strong>My Bids</strong><br/>
-		{% for job in bid_jobs %}
-			<a href="{% url jobboard_detail job.id %}">{{ job.name }}</a><br/>
-		{% endfor %} 
-		<br/>
-	{% endif %}
-	
-	{% if watching_jobs %}
-		<strong>Watching</strong><br/>
-		{% for job in watching_jobs %}
-			<a href="{% url jobboard_detail job.id %}">{{ job.name }}</a><br/>
-		{% endfor %} 
-		<br/>
-	{% endif %}
-	
-	{% if closed_jobs %}
-		<strong>My closed postings</strong><br/>
-		{% for job in closed_jobs %}
-			<a href="{% url jobboard_detail job.id %}">{{ job.name }}</a><br/>
-		{% endfor %} 
-		<br/>
-	{% endif %}
-	
-</div>
 {% endblock %}
