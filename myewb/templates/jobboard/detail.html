@@ -74,7 +74,7 @@
 {% endblock %}
 
 {% block toolbar_right %}
-{% if job.active %}
+{% if job.active and user.is_authenticated %}
 	<div class="toolbarheader bkgd" id="box-jobboard-action">Actions</div>
 	<div class="toolbarcontent">
 		{% ifequal job.owner user %}
