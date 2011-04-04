@@ -20,14 +20,7 @@
 		If you are looking for full-time employment or volunteering opportunities,
 		visit the <a href="{% url applications %}">applications</a> page.
 	</p>
-
-	{% if user.is_authenticated %}
-		<ul class="segmented">
-			<li><a href="{% url jobboard_new %}">Post a job</a></li>
-		</ul>
-	{% else %}
-		<br/>
-	{% endif %}
+	<br/>
 
 	{% if open_jobs %}
 		{% autopaginate open_jobs 10 %}
@@ -247,48 +240,51 @@
 
 {% block toolbar_right %}
 	{% if user.is_authenticated %}
-		<div class="toolbarheader bkgd" id="box-jobboard-dashboard">Actions</div>
-		<div class="toolbarcontent">
-			{% if my_postings %}
-				<strong>My Postings</strong><br/>
-				{% for job in my_postings %}
-					<a href="{% url jobboard_detail job.id %}">{{ job.name }}</a><br/>
-				{% endfor %}
-				<br/>
-			{% endif %}
-			
-			{% if my_jobs %}
-				<strong>Accepted Jobs</strong><br/>
-				{% for job in my_jobs %}
-					<a href="{% url jobboard_detail job.id %}">{{ job.name }}</a><br/>
-				{% endfor %} 
-				<br/>
-			{% endif %}
-			
-			{% if bid_jobs %}
-				<strong>My Bids</strong><br/>
-				{% for job in bid_jobs %}
-					<a href="{% url jobboard_detail job.id %}">{{ job.name }}</a><br/>
-				{% endfor %} 
-				<br/>
-			{% endif %}
-			
-			{% if watching_jobs %}
-				<strong>Watching</strong><br/>
-				{% for job in watching_jobs %}
-					<a href="{% url jobboard_detail job.id %}">{{ job.name }}</a><br/>
-				{% endfor %} 
-				<br/>
-			{% endif %}
-			
-			{% if closed_jobs %}
-				<strong>My closed postings</strong><br/>
-				{% for job in closed_jobs %}
-					<a href="{% url jobboard_detail job.id %}">{{ job.name }}</a><br/>
-				{% endfor %} 
-				<br/>
-			{% endif %}
-			
+		<br/><div>
+		<a href="{% url jobboard_new %}" style='font-size: 16px; font-weight: bold; text-decoration: none; border: 1px solid #a0a0a0; background: #f0f0f0; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; padding: 0.5em 1em; margin: 1em 0;'>
+			Post a job
+		</a>
 		</div>
+		<br/><br/>
+		
+		{% if my_postings %}
+			<h2>My Postings</h2>
+			{% for job in my_postings %}
+				<a href="{% url jobboard_detail job.id %}" class="padded">{{ job.name }}</a>
+			{% endfor %}
+			<br/>
+		{% endif %}
+		
+		{% if my_jobs %}
+			<h2>Accepted Jobs</h2>
+			{% for job in my_jobs %}
+				<a href="{% url jobboard_detail job.id %}" class="padded">{{ job.name }}</a>
+			{% endfor %} 
+			<br/>
+		{% endif %}
+		
+		{% if bid_jobs %}
+			<h2>My Bids</h2>
+			{% for job in bid_jobs %}
+				<a href="{% url jobboard_detail job.id %}" class="padded">{{ job.name }}</a>
+			{% endfor %} 
+			<br/>
+		{% endif %}
+		
+		{% if watching_jobs %}
+			<h2>Watching</h2>
+			{% for job in watching_jobs %}
+				<a href="{% url jobboard_detail job.id %}" class="padded">{{ job.name }}</a>
+			{% endfor %} 
+			<br/>
+		{% endif %}
+		
+		{% if closed_jobs %}
+			<h2>My closed postings</h2>
+			{% for job in closed_jobs %}
+				<a href="{% url jobboard_detail job.id %}" class="padded">{{ job.name }}</a>
+			{% endfor %} 
+			<br/>
+		{% endif %}
 	{% endif %}
 {% endblock %}

@@ -19,6 +19,15 @@ table#filter_options td {
 	border-top: 1px solid #a0a0a0;
 }
 
+#toolbarcolumn_right {
+	width: 260px;
+}
+
+#toolbarcolumn_right .padded {
+	display: block;
+	margin-bottom: 5px;
+}
+
 a.jobposting, a.jobposting div {
 	text-decoration: none;
 	color: #000000;	
