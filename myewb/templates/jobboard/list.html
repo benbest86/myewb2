@@ -79,8 +79,19 @@
 	
 	<div style='display: none;'>
 		<form id='filters' method="GET" action="" style='margin: 15px;'>
+		<div style='width: 200px; float: right; border-left: 1px solid #d0d0d0; padding-left: 10px;'>
+			<h2>Saved filters</h2>
+			
+			{% for filter in saved_filters %}
+				<div id="filter-{{ filter.id }}">
+					<a href="{% url jobboard_filters_load filter.id %}" class="filterload">{{ filter.name }}</a>
+					[<a href="{% url jobboard_filters_delete filter.id %}" class="filterdelete" id="filter-delete-{{ filter.id }}">x</a>]
+				</div>
+			{% endfor %}
+		</div>
+		
 		<p><strong>Filter postings...</strong></p>
-		<table id='filter_options'><tr>
+		<table id='filter_options' style='margin-right: 210px;'><tr>
 			<td>Deadline is:</td>
 			<td>
 				<select name='deadline' id='deadline' class='part1'>
@@ -249,7 +260,15 @@
 									$('.postittop', $(this)).attr('src', '{{ STATIC_URL}}images/post-it-top.png');
 								});
 
-			$('#save_filters').colorbox({opacity: '0.5'}); 
+			$('#save_filters').colorbox({opacity: '0.5'});
+
+			$('.filterdelete').click(function() {
+				$.get($(this).attr('href'));
+				var filter_id = $(this).attr('id').substring(14);
+				$('#filter-' + filter_id).slideUp();
+				
+				return false;
+			}); 
 		});
 	</script>
 {% endblock %}

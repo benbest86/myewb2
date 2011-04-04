@@ -36,6 +36,7 @@ def list(request):
     watching_jobs = JobPosting.objects.following(request.user)
     my_postings = JobPosting.objects.owned_by(request.user)
     closed_jobs = JobPosting.objects.closed(request.user)
+    saved_filters = JobFilter.objects.filter(user=request.user)
     
     # work with filters
     filters = {'deadline': ('', ''),
@@ -88,7 +89,8 @@ def list(request):
                                "TIME_CHOICES": TIME_CHOICES,
                                "allskills": allskills,
                                "filters": filters,
-                               "filters_active": filters_active},
+                               "filters_active": filters_active,
+                               "saved_filters": saved_filters},
                               context_instance=RequestContext(request))
 
 def detail(request, id):
@@ -272,3 +274,32 @@ def filters_save(request):
         return render_to_response("jobboard/filters_save.html",
                                   {},
                                   context_instance=RequestContext(request))
+
+@login_required
+def filters_load(request, id):
+    filter = get_object_or_404(JobFilter, user=request.user, id=id)
+    
+    url = reverse('jobboard_list') + '?'
+
+    if filter.deadline_comparison:
+        url = url + "deadline=%s&deadline2=%s&" % (filter.deadline_comparison, filter.deadline)
+    if filter.urgency_comparison:
+        url = url + "urgency=%s&urgency2=%s&" % (filter.urgency_comparison, filter.urgency)
+    if filter.time_required_comparison:
+        url = url + "time_required=%s&time_required2=%s&" % (filter.time_required_comparison, filter.time_required)
+    
+    if filter.skills_comparison:
+        url = url + "skills=%s&" % filter.skills_comparison
+        for s in filter.skills.all():
+            url = url + "skills2=%d&" % s.id 
+
+    url = url.rstrip('&')
+    
+    return HttpResponseRedirect(url)
+
+@login_required
+def filters_delete(request, id):
+    filter = get_object_or_404(JobFilter, user=request.user, id=id)
+
+    filter.delete()
+    return HttpResponse("success")
