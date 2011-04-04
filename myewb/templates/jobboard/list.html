@@ -22,145 +22,146 @@
 	</p>
 	<br/>
 
+	<div class="clear"></div>
+	
+	Showing
+	{% if filters.deadline.0 %}
+		postings due
+		<strong>
+		{% ifequal filters.deadline.0 'gt' %}before{% else %}after{% endifequal %}
+		{{ filters.deadline.1 }}
+		</strong>
+	{% endif %}
+	
+	{% if filters.urgency.0 %}
+		{% if filters.deadline.0 %} and {% endif %}
+		all postings marked
+		<strong>
+		{% ifequal filters.urgency.0 'gt' %}at least{% else %}at most{% endifequal %}
+		{% for u, uname in URGENCY_CHOICES.items %}
+			{% ifequal filters.urgency.1 u %}{{ uname }}{% endifequal %}
+		{% endfor %}
+		</strong>
+	{% endif %}
+	
+	{% if filters.time_required.0 %}
+		{% if filters.deadline.0 or filters.urgency.0 %} and {% endif %}
+		all postings requiring
+		<strong>
+		{% ifequal filters.time_required.0 'gt' %}at least{% else %}at most{% endifequal %}
+		{% for t, tname in TIME_CHOICES.items %}
+			{% ifequal filters.time_required.1 t %}{{tname}}{% endifequal %}
+		{% endfor %}
+		</strong>
+	{% endif %}
+	
+	{% if filters.skills.0 %}
+		{% if filters.deadline.0 or filters.urgency.0 or filters.time_required.0 %} and {% endif %}
+		all postings with
+		<strong>
+			{% ifequal filters.skills.0 'all' %}all of{% endifequal %}
+			{% ifequal filters.skills.0 'any' %}any of{% endifequal %}
+			{% ifequal filters.skills.0 'none' %}none of{% endifequal %}
+			{% for skill in allskills %}
+				{% if skill.id|in_list:filters.skills.1 %}{{ skill.name }},{% endif %}
+			{% endfor %}
+		</strong>
+	{% endif %}
+	
+	{% if not filters.deadline.0 and not filters.urgency.0 and not filters.time_required.0 and not filters.skills.0 %}
+		all open postings
+	{% else %}
+		(<a href="{% url jobboard_list %}">clear all filters</a>)
+	{% endif %}
+	(<a href="#" id='toggle_filters'>{% if filters_active %}edit{% else %}add{% endif %} filters...</a>)
+	<br/>
+	
+	<div style='display: none;'>
+		<form id='filters' method="GET" action="" style='margin: 15px;'>
+		<p><strong>Filter postings...</strong></p>
+		<table id='filter_options'><tr>
+			<td>Deadline is:</td>
+			<td>
+				<select name='deadline' id='deadline' class='part1'>
+					<option value=''>any</option>
+					<option value='gt' {% ifequal filters.deadline.0 'gt' %}selected='selected'{% endifequal %}>before</option>
+					<option value='lt' {% ifequal filters.deadline.0 'lt' %}selected='selected'{% endifequal %}>after</option>
+				</select>
+			</td>
+			<td>					
+				<input type='text' id='deadline2' name='deadline2' value="{{ filters.deadline.1 }}"/>
+			</td>
+		</tr>
+			
+		<tr>
+			<td>Urgency is:</td>
+			<td>
+				<select name='urgency' id='urgency' class='part1'>
+					<option value=''>any</option>
+					<option value='gt' {% ifequal filters.urgency.0 'gt' %}selected='selected'{% endifequal %}>at least</option>
+					<option value='lt' {% ifequal filters.urgency.0 'lt' %}selected='selected'{% endifequal %}>at most</option>
+				</select>
+			</td>
+			<td>
+				<select name='urgency2' id='urgency2'>
+					{% for u, uname in URGENCY_CHOICES.items %}
+						<option value="{{u}}" {% ifequal filters.urgency.1 u %}selected='selected'{% endifequal %}>{{uname}}</option>
+					{% endfor %}
+				</select>
+			</td>
+		</tr>
+
+		<tr>
+			<td>Time required is:</td>
+			<td>
+				<select name='time_required' id='time_required' class='part1'>
+					<option value=''>any</option>
+					<option value='gt' {% ifequal filters.time_required.0 'gt' %}selected='selected'{% endifequal %}>at least</option>
+					<option value='lt' {% ifequal filters.time_required.0 'lt' %}selected='selected'{% endifequal %}>at most</option>
+				</select>
+			</td>
+			<td>
+				<select name='time_required2' id='time_required2'>
+					{% for t, tname in TIME_CHOICES.items %}
+						<option value="{{t}}" {% ifequal filters.time_required.1 t %}selected='selected'{% endifequal %}>{{tname}}</option>
+					{% endfor %}
+				</select>
+			</td>
+		</tr>
+
+		<tr>
+			<td valign='top'>Skills include:</td>
+			<td valign='top'>
+				<select name='skills' id='skills' class='part1'>
+					<option value=''>any</option>
+					<option value='all' {% ifequal filters.skills.0 'all' %}selected='selected'{% endifequal %}>all of</option>
+					<option value='any' {% ifequal filters.skills.0 'any' %}selected='selected'{% endifequal %}>any of</option>
+					<option value='none' {% ifequal filters.skills.0 'none' %}selected='selected'{% endifequal %}>none of</option>
+				</select>
+			</td>
+			<td>
+				<select name='skills2' id='skills2' multiple size=5>
+					{% for skill in allskills %}
+						<option value="{{skill.id}}" {% if skill.id|in_list:filters.skills.1 %}selected='selected'{% endif %}>{{skill.name}}</option>
+					{% endfor %}
+				</select>
+			</td>
+		</tr>
+			
+		<tr>
+			<td colspan='3' align='center'>
+				<input type="submit" value="Filter"/>
+				or
+				<a href="{% url jobboard_list %}">clear all filters</a>
+			</td>
+		</tr></table>
+		<br/>
+		</form> 
+	</div>
+		
 	{% if open_jobs %}
 		{% autopaginate open_jobs 10 %}
 		{% paginate %}
-		<div class="clear"></div>
-		
-		Showing
-		{% if filters.deadline.0 %}
-			postings due
-			<strong>
-			{% ifequal filters.deadline.0 'gt' %}before{% else %}after{% endifequal %}
-			{{ filters.deadline.1 }}
-			</strong>
-		{% endif %}
-		
-		{% if filters.urgency.0 %}
-			{% if filters.deadline.0 %} and {% endif %}
-			all postings marked
-			<strong>
-			{% ifequal filters.urgency.0 'gt' %}at least{% else %}at most{% endifequal %}
-			{% for u, uname in URGENCY_CHOICES.items %}
-				{% ifequal filters.urgency.1 u %}{{ uname }}{% endifequal %}
-			{% endfor %}
-			</strong>
-		{% endif %}
-		
-		{% if filters.time_required.0 %}
-			{% if filters.deadline.0 or filters.urgency.0 %} and {% endif %}
-			all postings requiring
-			<strong>
-			{% ifequal filters.time_required.0 'gt' %}at least{% else %}at most{% endifequal %}
-			{% for t, tname in TIME_CHOICES.items %}
-				{% ifequal filters.time_required.1 t %}{{tname}}{% endifequal %}
-			{% endfor %}
-			</strong>
-		{% endif %}
-		
-		{% if filters.skills.0 %}
-			{% if filters.deadline.0 or filters.urgency.0 or filters.time_required.0 %} and {% endif %}
-			all postings with
-			<strong>
-				{% ifequal filters.skills.0 'all' %}all of{% endifequal %}
-				{% ifequal filters.skills.0 'any' %}any of{% endifequal %}
-				{% ifequal filters.skills.0 'none' %}none of{% endifequal %}
-				{% for skill in allskills %}
-					{% if skill.id|in_list:filters.skills.1 %}{{ skill.name }},{% endif %}
-				{% endfor %}
-			</strong>
-		{% endif %}
-		
-		{% if not filters.deadline.0 and not filters.urgency.0 and not filters.time_required.0 and not filters.skills.0 %}
-			all open postings
-		{% else %}
-			(<a href="{% url jobboard_list %}">clear all filters</a>)
-		{% endif %}
-		(<a href="#" id='toggle_filters'>{% if filters_active %}edit{% else %}add{% endif %} filters...</a>)
-		<br/>
-		
-		<div style='display: none;'>
-			<form id='filters' method="GET" action="" style='margin: 15px;'>
-			<p><strong>Filter postings...</strong></p>
-			<table id='filter_options'><tr>
-				<td>Deadline is:</td>
-				<td>
-					<select name='deadline' id='deadline' class='part1'>
-						<option value=''>any</option>
-						<option value='gt' {% ifequal filters.deadline.0 'gt' %}selected='selected'{% endifequal %}>before</option>
-						<option value='lt' {% ifequal filters.deadline.0 'lt' %}selected='selected'{% endifequal %}>after</option>
-					</select>
-				</td>
-				<td>					
-					<input type='text' id='deadline2' name='deadline2' value="{{ filters.deadline.1 }}"/>
-				</td>
-			</tr>
-				
-			<tr>
-				<td>Urgency is:</td>
-				<td>
-					<select name='urgency' id='urgency' class='part1'>
-						<option value=''>any</option>
-						<option value='gt' {% ifequal filters.urgency.0 'gt' %}selected='selected'{% endifequal %}>at least</option>
-						<option value='lt' {% ifequal filters.urgency.0 'lt' %}selected='selected'{% endifequal %}>at most</option>
-					</select>
-				</td>
-				<td>
-					<select name='urgency2' id='urgency2'>
-						{% for u, uname in URGENCY_CHOICES.items %}
-							<option value="{{u}}" {% ifequal filters.urgency.1 u %}selected='selected'{% endifequal %}>{{uname}}</option>
-						{% endfor %}
-					</select>
-				</td>
-			</tr>
-
-			<tr>
-				<td>Time required is:</td>
-				<td>
-					<select name='time_required' id='time_required' class='part1'>
-						<option value=''>any</option>
-						<option value='gt' {% ifequal filters.time_required.0 'gt' %}selected='selected'{% endifequal %}>at least</option>
-						<option value='lt' {% ifequal filters.time_required.0 'lt' %}selected='selected'{% endifequal %}>at most</option>
-					</select>
-				</td>
-				<td>
-					<select name='time_required2' id='time_required2'>
-						{% for t, tname in TIME_CHOICES.items %}
-							<option value="{{t}}" {% ifequal filters.time_required.1 t %}selected='selected'{% endifequal %}>{{tname}}</option>
-						{% endfor %}
-					</select>
-				</td>
-			</tr>
-
-			<tr>
-				<td valign='top'>Skills include:</td>
-				<td valign='top'>
-					<select name='skills' id='skills' class='part1'>
-						<option value=''>any</option>
-						<option value='all' {% ifequal filters.skills.0 'all' %}selected='selected'{% endifequal %}>all of</option>
-						<option value='any' {% ifequal filters.skills.0 'any' %}selected='selected'{% endifequal %}>any of</option>
-						<option value='none' {% ifequal filters.skills.0 'none' %}selected='selected'{% endifequal %}>none of</option>
-					</select>
-				</td>
-				<td>
-					<select name='skills2' id='skills2' multiple size=5>
-						{% for skill in allskills %}
-							<option value="{{skill.id}}" {% if skill.id|in_list:filters.skills.1 %}selected='selected'{% endif %}>{{skill.name}}</option>
-						{% endfor %}
-					</select>
-				</td>
-			</tr>
-				
-			<tr>
-				<td colspan='3' align='center'>
-					<input type="submit" value="Filter"/>
-					or
-					<a href="{% url jobboard_list %}">clear all filters</a>
-				</td>
-			</tr></table>
-			<br/>
-			</form> 
-		</div>
 
 		<p>
 			Sort by: 		
@@ -203,7 +204,12 @@
 		{% endfor %}
 		
 	{% else %}
-		<p>No open jobs.</p>
+		<br/><hr/>
+		{% if filters_active %}
+			<h2>There are no open postings that match your filters.</h2>
+		{% else %}
+			<h2>There are no open postings at this time.</h2>
+		{% endif %}
 	{% endif %}
 {% endblock %}
 
