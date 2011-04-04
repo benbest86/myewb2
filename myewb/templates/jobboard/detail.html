@@ -49,10 +49,14 @@
 	<div>{{ job.description|linebreaks}} </div>
 	
 	{% ifequal job.owner user %}
-		<hr/>
+	
+		{% if job.accepted_users.all or job.bid_users.all %}
+			<hr/>
+		{% endif %}
+		
 		{% if job.accepted_users.all %}
 			<p>
-				<strong>Accepted users</strong><br/>
+				<h2>Accepted users</h2>
 				{% for u in job.accepted_users.all %}
 					<a href="{% url profile_detail u %}">{{ u.visible_name }}</a>
 					(<a href="{% url jobboard_accept_cancel job.id u.username %}">cancel</a>)
@@ -63,7 +67,7 @@
 
 		{% if job.bid_users.all %}
 			<p>
-				<strong>Bidding users</strong><br/>
+				<h2>Bidding users</h2>
 				{% for u in job.bid_users.all %}
 					<a href="{% url profile_detail u %}">{{ u.visible_name }}</a>
 					(<a href="{% url jobboard_accept job.id u.username %}">accept</a>)
