@@ -292,5 +292,11 @@
 			{% endfor %} 
 			<br/>
 		{% endif %}
+	{% else %}
+		<style>
+			#toolbarcolumn_right {
+				display: none;
+			}
+		</style>
 	{% endif %}
 {% endblock %}

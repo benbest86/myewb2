@@ -112,6 +112,12 @@
 			<p><a href="{% url jobboard_close job.id %}">Close this job</a></p>
 		{% endif %}
 	{% endifequal %}
+{% else %}
+	<style>
+		#toolbarcolumn_right {
+			display: none;
+		}
+	</style>
 {% endif %}
 {% endblock %}
 
