@@ -4,6 +4,7 @@
 {% load pagination_tags %}
 {% load truncate helpers %}
 {% load boolean_icon %}
+{% load ifinlist %}
 {% autosort open_jobs %}
 
 {% block body %}
@@ -21,19 +22,31 @@ th, td {
 
 table#filter_options {
 	width: auto;
-	border: 1px solid #a0a0a0;
+	border: 0px solid #a0a0a0;
 }
 table#filter_options td {
 	padding: 10px;
-	border: 1px solid #a0a0a0;
+	border: 0px;
+	border-top: 1px solid #a0a0a0;
 }
 
 </style>
 
+	<h1>Job Postings</h1>
+	
+	<p style='border: 1px solid #d0d0d0; text-align: center; margin: 10px auto; width: 75%; padding: 15px;'>
+		Job postings are specific volunteer opportunities within EWB: generally
+		short-term, part-time projects requiring specific skillsets.<br/>
+		If you are looking for full-time employment or volunteering opportunities,
+		visit the <a href="{% url applications %}">applications</a> page.
+	</p>
+
 	{% if user.is_authenticated %}
 		<ul class="segmented">
-			<li><a href="{% url jobboard_new %}">Add a job</a></li>
+			<li><a href="{% url jobboard_new %}">Post a job</a></li>
 		</ul>
+	{% else %}
+		<br/>
 	{% endif %}
 
 	{% if open_jobs %}
@@ -41,10 +54,59 @@ table#filter_options td {
 		{% paginate %}
 		<div class="clear"></div>
 		
-		<div style='padding: 5px 0;'>
-			<a href="#" id='toggle_filters'>Advanced search options...</a>
-			<br/>
-			<form id='filters' method="GET" action="" style='display: none;'>
+		Showing
+		{% if filters.deadline.0 %}
+			postings due
+			<strong>
+			{% ifequal filters.deadline.0 'gt' %}before{% else %}after{% endifequal %}
+			{{ filters.deadline.1 }}
+			</strong>
+		{% endif %}
+		
+		{% if filters.urgency.0 %}
+			{% if filters.deadline.0 %} and {% endif %}
+			all postings marked
+			<strong>
+			{% ifequal filters.urgency.0 'gt' %}at least{% else %}at most{% endifequal %}
+			{% for u, uname in URGENCY_CHOICES.items %}
+				{% ifequal filters.urgency.1 u %}{{ uname }}{% endifequal %}
+			{% endfor %}
+			</strong>
+		{% endif %}
+		
+		{% if filters.time.0 %}
+			{% if filters.deadline.0 or filters.urgency.0 %} and {% endif %}
+			all postings requiring
+			<strong>
+			{% ifequal filters.time.0 'gt' %}at least{% else %}at most{% endifequal %}
+			{{ filters.time.1 }}
+			</strong>
+		{% endif %}
+		
+		{% if filters.skills.0 %}
+			{% if filters.deadline.0 or filters.urgency.0 or filters.time.0 %} and {% endif %}
+			all postings with
+			<strong>
+				{% ifequal filters.skills.0 'all' %}all of{% endifequal %}
+				{% ifequal filters.skills.0 'any' %}any of{% endifequal %}
+				{% ifequal filters.skills.0 'none' %}none of{% endifequal %}
+				{% for skill in allskills %}
+					{% if skill.id|in_list:filters.skills.1 %}{{ skill.name }},{% endif %}
+				{% endfor %}
+			</strong>
+		{% endif %}
+		
+		{% if not filters.deadline.0 and not filters.urgency.0 and not filters.time.0 and not filters.skills.0 %}
+			all open postings
+		{% else %}
+			(<a href="{% url jobboard_list %}">clear all filters</a>)
+		{% endif %}
+		(<a href="#" id='toggle_filters'>add filters...</a>)
+		<br/><br/>
+		
+		<div style='display: none;'>
+			<form id='filters' method="GET" action="" style='margin: 15px;'>
+			<p><strong>Filter postings...</strong></p>
 			<table id='filter_options'><tr>
 				<td>Deadline is:</td>
 				<td>
@@ -65,7 +127,7 @@ table#filter_options td {
 					<select name='urgency' id='urgency' class='part1'>
 						<option value=''>any</option>
 						<option value='gt' {% ifequal filters.urgency.0 'gt' %}selected='selected'{% endifequal %}>at least</option>
-						<option value='lt' {% ifequal filters.urgenct.0 'lt' %}selected='selected'{% endifequal %}>at most</option>
+						<option value='lt' {% ifequal filters.urgency.0 'lt' %}selected='selected'{% endifequal %}>at most</option>
 					</select>
 				</td>
 				<td>
@@ -108,9 +170,7 @@ table#filter_options td {
 				<td>
 					<select name='skills2' id='skills2' multiple size=5>
 						{% for skill in allskills %}
-							{% with skill.id as skillid %}
-								<option value="{{skillid}}" {% if filters.skills.1.skillid %}selected='selected'{% endif %}>{{skill.name}}</option>
-							{% endwith %}
+							<option value="{{skillid}}" {% if skill.id|in_list:filters.skills.1 %}selected='selected'{% endif %}>{{skill.name}}</option>
 						{% endfor %}
 					</select>
 				</td>
@@ -120,7 +180,7 @@ table#filter_options td {
 				<td colspan='3' align='center'>
 					<input type="submit" value="Filter"/>
 					or
-					<a href="{% url jobboard_list %}">clear all filters and hide</a>
+					<a href="{% url jobboard_list %}">clear all filters</a>
 				</td>
 			</tr></table>
 			<br/>
@@ -159,12 +219,21 @@ table#filter_options td {
 {% endblock %}
 
 {% block extra_body %}
+	<link type="text/css" href="{{STATIC_URL}}css/colorbox.css" rel="stylesheet" />
+	<script type="text/javascript" src="{{STATIC_URL}}js/colorbox.js"></script>
 	<script type='text/javascript'>
 		$(document).ready(function() {
+			/*
 			$('#toggle_filters').click(function() {
 				$('#filters').slideDown();
 				$(this).hide();
 				return false;
+			});
+			*/
+
+			$('#toggle_filters').colorbox({opacity: '0.5',
+										   inline: true,
+										   href: '#filters'
 			});
 
 			$('.part1').change(function() {
@@ -180,9 +249,11 @@ table#filter_options td {
 			});
 			$('.part1').change();		// fire event to set initial states
 
+			/*
 			{% if filters_active %}
 				$('#toggle_filters').click();
 			{% endif %}
+			*/
 		});
 	</script>
 {% endblock %}

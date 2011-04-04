@@ -8,4 +8,9 @@ register = template.Library()
 # thankyou http://djangosnippets.org/snippets/177/
 @register.filter
 def in_list(value,arg):
-    return value in arg
+    if value in arg:
+        return True
+    
+    if str(value) in arg:
+        return True
+    
