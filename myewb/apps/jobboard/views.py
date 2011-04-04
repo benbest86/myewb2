@@ -112,13 +112,13 @@ def edit(request, id=None):
         
         if form.is_valid():
             job = form.save(commit=False)
-            
-            # is my django-foo dropping? why is this needed?
-            job.skills = form.cleaned_data['skills']
-                
             job.owner = request.user
             job.save()
             
+            # is my django-foo dropping? why is this needed?
+            job.skills = form.cleaned_data['skills']
+            job.save()
+                
             request.user.message_set.create(message='Posting updated!')
             return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
         

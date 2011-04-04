@@ -175,12 +175,12 @@
 				<div style='position: relative; margin-top: 48px;'>
 					<img src="{{ STATIC_URL }}images/post-it-bottom.png" style='height: 100%; width: 100%; position: absolute; top: 0px; left: 0; border: 0px;'/>
 					<div style='padding: 0px 25px 35px; z-index: 20; position: relative; min-height: 125px;'>
-						<div style='font-weight: bold; font-size: 1.3em;'>
-							{{ job.name }}
-						</div>
  						<div style='font-style: italic; color: #808080;'>
 							{{ job.owner.visible_name }}, 
-							{{ job.posted_date|date:"d M Y"}}
+							{{ job.posted_date|date:"M j, Y"}}
+						</div>
+						<div style='font-weight: bold; font-size: 1.3em;'>
+							{{ job.name }}
 						</div>
 						<br/>
 
@@ -193,7 +193,7 @@
 				
 						<div>{{ job.time_required_verbose }}</div>
 						{% if job.deadline %}
-							<div>Due {{ job.deadline|date:"d M Y"}}</div>
+							<div style='font-weight: bold;'>Due: {{ job.deadline|date:"M j, Y"}}</div>
 						{% endif %}
 					</div>
 				</div>
