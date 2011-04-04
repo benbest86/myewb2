@@ -91,3 +91,20 @@ class Skill(models.Model):
     def __unicode__(self):
         return self.name
     
+class JobFilter(models.Model):
+    name = models.CharField(max_length=100, blank=True, null=True)
+    user = models.ForeignKey(User)
+    email = models.BooleanField(default=False)
+    
+    deadline = models.DateField(blank=True, null=True)
+    deadline_comparison = models.CharField(max_length=10, blank=True, null=True)
+    
+    urgency = models.CharField(max_length=10, choices=URGENCY_CHOICES.items(), blank=True, null=True)
+    urgency_comparison = models.CharField(max_length=10, blank=True, null=True)
+    
+    skills = models.ManyToManyField('jobboard.Skill', blank=True)
+    skills_comparison = models.CharField(max_length=10, blank=True, null=True)
+
+    time_required = models.CharField(max_length=10, choices=TIME_CHOICES.items(), blank=True, null=True)
+    time_required_comparison = models.CharField(max_length=10, blank=True, null=True)
+    

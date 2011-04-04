@@ -69,11 +69,12 @@
 	{% endif %}
 	
 	{% if not filters.deadline.0 and not filters.urgency.0 and not filters.time_required.0 and not filters.skills.0 %}
-		all open postings
+		all open postings<br/>
 	{% else %}
-		(<a href="{% url jobboard_list %}">clear all filters</a>)
+		<br/>(<a href="{% url jobboard_list %}">clear all filters</a>)
 	{% endif %}
-	(<a href="#" id='toggle_filters'>{% if filters_active %}edit{% else %}add{% endif %} filters...</a>)
+	(<a href="#" id='toggle_filters'>{% if filters_active %}edit{% else %}add{% endif %} filters</a>)
+	{% if filters_active %}(<a href="{% url jobboard_filters_save %}" id="save_filters">save this filter or email me when new jobs are posted</a>){% endif %}
 	<br/>
 	
 	<div style='display: none;'>
@@ -247,6 +248,8 @@
 								function() {
 									$('.postittop', $(this)).attr('src', '{{ STATIC_URL}}images/post-it-top.png');
 								});
+
+			$('#save_filters').colorbox({opacity: '0.5'}); 
 		});
 	</script>
 {% endblock %}

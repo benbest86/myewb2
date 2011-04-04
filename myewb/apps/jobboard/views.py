@@ -8,8 +8,9 @@ from django.template import RequestContext, Context, loader
 from django.utils.translation import ugettext_lazy as _
 
 from jobboard.forms import JobPostingForm
-from jobboard.models import JobPosting, Skill, URGENCY_CHOICES, TIME_CHOICES
+from jobboard.models import JobPosting, Skill, URGENCY_CHOICES, TIME_CHOICES, JobFilter
 from siteutils.shortcuts import get_object_or_none
+from siteutils.http import JsonResponse
 
 def add_filter(request, open_jobs, field, filters):
     if request.GET.get(field, None):
@@ -217,3 +218,57 @@ def accept_cancel(request, id, username):
     
     request.user.message_set.create(message="You have removed %s from the job." % user.visible_name())
     return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
+
+@login_required
+def filters_save(request):
+    if request.method == 'POST':
+        kwargs = {}
+        kwargs['user'] = request.user
+        
+        if request.POST.get('deadline', None) and request.POST.get('deadline2', None):
+            kwargs['deadline_comparison'] = request.POST['deadline']
+            kwargs['deadline'] = request.POST['deadline2']
+        
+        if request.POST.get('urgency', None) and request.POST.get('urgency2', None):
+            kwargs['urgency_comparison'] = request.POST['urgency']
+            kwargs['urgency'] = request.POST['urgency2']
+        
+        if request.POST.get('skills', None) and request.POST.get('skills2', None):
+            kwargs['skills_comparison'] = request.POST['skills']
+            
+        if request.POST.get('deadline', None) and request.POST.get('deadline2', None):
+            kwargs['time_required_comparison'] = request.POST['time_required']
+            kwargs['time_required'] = request.POST['time_required2']
+            
+        filter = JobFilter.objects.filter(**kwargs)
+        skills = []
+        for s in request.POST.getlist('skills2'):
+            skill = get_object_or_none(Skill, id=s)
+            if skill:
+                skills.append(skill)
+                filter = filter.filter(skills=skill)
+
+        if request.POST.get('skills', None) and request.POST.get('skills2', None):
+            filter = filter.exclude(~Q(skills__in=skills))
+            
+        if filter.count():
+            filter = filter[0]
+        else:
+            filter = JobFilter.objects.create(**kwargs)
+            for s in skills:
+                filter.skills.add(s)
+
+        filter.name = request.POST.get('name', '')
+        if request.POST.get('email', None):
+            filter.email = True
+        else:
+            filter.email = False
+        
+        filter.save()
+        
+        return HttpResponse("success")
+    
+    else:
+        return render_to_response("jobboard/filters_save.html",
+                                  {},
+                                  context_instance=RequestContext(request))
