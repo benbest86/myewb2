@@ -1,6 +1,10 @@
 {% extends "jobboard/base.html" %}
 {% load ifinlist %}
 
+{% block extra_head %}
+	<link rel="stylesheet" href="{{ STATIC_URL }}css/jobboard.css" />
+{% endblock %}
+
 {% block body %}
 	<h1>Job Board</h1>
 	
@@ -26,7 +30,7 @@
 		{% endifequal %} 
 	{% endif %}
 
-	<div style='border: 1px solid; background: #f0f0f0; padding: 10px; margin: 10px; width: 50%;	'>
+	<div style='padding: 10px; margin: 10px; width: 50%;' class='jobposting detail-{{ job.urgency }}'>
 		<strong>Posted by: </strong> {{ job.owner.visible_name}}<br/>
 		<strong>Posted on: </strong> {{ job.posted_date|date:"d M Y" }}<br/>
 		<strong>Deadline: </strong> {{ job.deadline|date:"d M Y" }}<br/>
