@@ -196,49 +196,77 @@ class SampleMultiUserSearchForm(forms.Form):
 
 class AutocompleteField(forms.CharField):
     
-    def __init__(self, model, create, chars=1, *args, **kwargs):
+    def __init__(self, model, create, chars=1, multi=False, *args, **kwargs):
         self.model = model
         self.create = create
         self.chars = chars
+        self.multi = multi
         
-        self.widget = AutocompleteWidget(model=model, create=create, chars=chars)    
+        self.widget = AutocompleteWidget(model=model, create=create, chars=chars, multi=multi)    
         super(AutocompleteField, self).__init__(*args, **kwargs)
 
     def clean(self, value):
         value = super(AutocompleteField, self).clean(value)
         
-        obj = get_object_or_none(self.model, name=value)
-        if obj:
-            return obj
+        if self.multi:
+            objects = []
+            for v in value.split(','):
+                v = v.strip()
+                obj = get_object_or_none(self.model, name=v)
+                if obj:
+                    objects.append(obj)
+                
+                if self.create:
+                    obj = self.model(name=v)
+                    obj.save()
+                    objects.append(obj)
+                else:
+                    raise forms.ValidationError("Invalid choice")
+                
+            return objects
         
-        if self.create:
-            obj = self.model(name=value)
-            obj.save()
-            return obj
         else:
-            raise forms.ValidationError("Invalid choice")
+            obj = get_object_or_none(self.model, name=value)
+            if obj:
+                return obj
+            
+            if self.create:
+                obj = self.model(name=value)
+                obj.save()
+                return obj
+            else:
+                raise forms.ValidationError("Invalid choice")
 
 class AutocompleteWidget(forms.TextInput):
-    def __init__(self, model, create, chars, options={}, attrs={}):
+    def __init__(self, model, create, chars, multi, options={}, attrs={}):
         self.model = model
         self.mustmatch = not create
         self.chars = chars
         self.options = options
+        self.multi = multi
 
         self.attrs = {'autocomplete': 'off'}
         self.attrs.update(attrs)
 
     def render_js(self, field_id):
         ctype = ContentType.objects.get_for_model(self.model)
+        
+        if self.multi:
+            multiple = "true"
+        else:
+            multiple = "false"
+        
         return u"""$('#%s').autocomplete('%s',
                                          {max: 30,
                                          mustMatch: %s,
-                                         minChars: %s});""" % (field_id,
+                                         minChars: %s,
+                                         multiple: %s});""" % (field_id,
                                                                reverse('form_widget_autocomplete',
                                                                        kwargs={'app': ctype.app_label,
                                                                                'model': ctype.model}),
                                                                str(self.mustmatch).lower(), 
-                                                               self.chars)
+                                                               self.chars,
+                                                               multiple)
     
     def render(self, name, value=None, attrs=None):
         final_attrs = self.build_attrs(attrs, name=name)
@@ -253,4 +281,3 @@ class AutocompleteWidget(forms.TextInput):
                 %(js)s
                 </script>''' % {'attrs': flatatt(final_attrs),
                                 'js': self.render_js(final_attrs['id'])})
-                

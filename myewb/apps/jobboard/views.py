@@ -112,6 +112,7 @@ def edit(request, id=None):
         
         if form.is_valid():
             job = form.save(commit=False)
+            print "skills", job.skills
             job.owner = request.user
             job.save()
             

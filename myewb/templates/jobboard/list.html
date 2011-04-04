@@ -171,10 +171,10 @@
 	    
 		{% for job in open_jobs %}
 			<a href="{% url jobboard_detail job.id %}" style="display: block; width: 230px; margin: 10px; float: left; position: relative; border: 0px;" class="urgency-{{ job.urgency }} jobposting joblink" id="job-{{ job.id }}">
-				<img src="{{ STATIC_URL }}images/post-it-top.png" style='width: 100%; position: absolute; top: 0; left: 0; border: 0px;'/>
+				<img src="{{ STATIC_URL }}images/post-it-top.png" style='width: 100%; position: absolute; top: 0; left: 0; border: 0px;' class='postittop'/>
 				<div style='position: relative; margin-top: 48px;'>
 					<img src="{{ STATIC_URL }}images/post-it-bottom.png" style='height: 100%; width: 100%; position: absolute; top: 0px; left: 0; border: 0px;'/>
-					<div style='padding: 0px 25px 35px; z-index: 20; position: relative;'>
+					<div style='padding: 0px 25px 35px; z-index: 20; position: relative; min-height: 125px;'>
 						<div style='font-weight: bold; font-size: 1.3em;'>
 							{{ job.name }}
 						</div>
@@ -232,60 +232,19 @@
 									iframe: true,
 									width: '75%',
 									height: '75%'});
-			
-			/*
-			{% if filters_active %}
-				$('#toggle_filters').click();
-			{% endif %}
-			*/
+
+			$('.joblink').hover(function() {
+									$('.postittop', $(this)).attr('src', '{{ STATIC_URL}}images/post-it-top2.png');
+								},
+								function() {
+									$('.postittop', $(this)).attr('src', '{{ STATIC_URL}}images/post-it-top.png');
+								});
 		});
 	</script>
 {% endblock %}
 
 
 {% block toolbar_right %}
-<<<<<<< HEAD:myewb/templates/jobboard/list.html
-<div class="toolbarheader bkgd" id="box-jobboard-dashboard">My Postings</div>
-<div class="toolbarcontent">
-	{% if my_postings %}
-		<strong>My Postings</strong><br/>
-		{% for job in my_postings %}
-			<a href="{% url jobboard_detail job.id %}">{{ job.name }}</a><br/>
-		{% endfor %}
-		<br/>
-	{% endif %}
-	
-	{% if my_jobs %}
-		<strong>Accepted Jobs</strong><br/>
-		{% for job in my_jobs %}
-			<a href="{% url jobboard_detail job.id %}">{{ job.name }}</a><br/>
-		{% endfor %} 
-		<br/>
-	{% endif %}
-	
-	{% if bid_jobs %}
-		<strong>My Bids</strong><br/>
-		{% for job in bid_jobs %}
-			<a href="{% url jobboard_detail job.id %}">{{ job.name }}</a><br/>
-		{% endfor %} 
-		<br/>
-	{% endif %}
-	
-	{% if watching_jobs %}
-		<strong>Watching</strong><br/>
-		{% for job in watching_jobs %}
-			<a href="{% url jobboard_detail job.id %}">{{ job.name }}</a><br/>
-		{% endfor %} 
-		<br/>
-	{% endif %}
-	
-	{% if closed_jobs %}
-		<strong>My closed postings</strong><br/>
-		{% for job in closed_jobs %}
-			<a href="{% url jobboard_detail job.id %}">{{ job.name }}</a><br/>
-		{% endfor %} 
-		<br/>
-=======
 	{% if user.is_authenticated %}
 		<br/><div>
 		<a href="{% url jobboard_new %}" style='font-size: 16px; font-weight: bold; text-decoration: none; border: 1px solid #a0a0a0; background: #f0f0f0; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; padding: 0.5em 1em; margin: 1em 0;' class="joblink">
@@ -333,6 +292,5 @@
 			{% endfor %} 
 			<br/>
 		{% endif %}
->>>>>>> e393e560b8fcaedd2b9d2a75bccab60ab4de1271:myewb/templates/jobboard/list.html
 	{% endif %}
 {% endblock %}
