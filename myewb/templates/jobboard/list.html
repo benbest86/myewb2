@@ -170,10 +170,10 @@
 	    </p>
 	    
 		{% for job in open_jobs %}
-			<a href="{% url jobboard_detail job.id %}" style="display: block; width: 230px; margin: 10px; float: left; position: relative;" class="urgency-{{ job.urgency }} jobposting" id="job-{{ job.id }}">
-				<img src="{{ STATIC_URL }}images/post-it-top.png" style='width: 100%; position: absolute; top: 0; left: 0;'/>
+			<a href="{% url jobboard_detail job.id %}" style="display: block; width: 230px; margin: 10px; float: left; position: relative; border: 0px;" class="urgency-{{ job.urgency }} jobposting joblink" id="job-{{ job.id }}">
+				<img src="{{ STATIC_URL }}images/post-it-top.png" style='width: 100%; position: absolute; top: 0; left: 0; border: 0px;'/>
 				<div style='position: relative; margin-top: 48px;'>
-					<img src="{{ STATIC_URL }}images/post-it-bottom.png" style='height: 100%; width: 100%; position: absolute; top: 0px; left: 0;'/>
+					<img src="{{ STATIC_URL }}images/post-it-bottom.png" style='height: 100%; width: 100%; position: absolute; top: 0px; left: 0; border: 0px;'/>
 					<div style='padding: 0px 25px 35px; z-index: 20; position: relative;'>
 						<div style='font-weight: bold; font-size: 1.3em;'>
 							{{ job.name }}
@@ -228,6 +228,11 @@
 			});
 			$('.part1').change();		// fire event to set initial states
 
+			$('.joblink').colorbox({opacity: '0.5',
+									iframe: true,
+									width: '75%',
+									height: '75%'});
+			
 			/*
 			{% if filters_active %}
 				$('#toggle_filters').click();
@@ -241,7 +246,7 @@
 {% block toolbar_right %}
 	{% if user.is_authenticated %}
 		<br/><div>
-		<a href="{% url jobboard_new %}" style='font-size: 16px; font-weight: bold; text-decoration: none; border: 1px solid #a0a0a0; background: #f0f0f0; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; padding: 0.5em 1em; margin: 1em 0;'>
+		<a href="{% url jobboard_new %}" style='font-size: 16px; font-weight: bold; text-decoration: none; border: 1px solid #a0a0a0; background: #f0f0f0; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; padding: 0.5em 1em; margin: 1em 0;' class="joblink">
 			Post a job
 		</a>
 		</div>
@@ -250,7 +255,7 @@
 		{% if my_postings %}
 			<h2>My Postings</h2>
 			{% for job in my_postings %}
-				<a href="{% url jobboard_detail job.id %}" class="padded">{{ job.name }}</a>
+				<a href="{% url jobboard_detail job.id %}" class="padded joblink">{{ job.name }}</a>
 			{% endfor %}
 			<br/>
 		{% endif %}
@@ -258,7 +263,7 @@
 		{% if my_jobs %}
 			<h2>Accepted Jobs</h2>
 			{% for job in my_jobs %}
-				<a href="{% url jobboard_detail job.id %}" class="padded">{{ job.name }}</a>
+				<a href="{% url jobboard_detail job.id %}" class="padded joblink">{{ job.name }}</a>
 			{% endfor %} 
 			<br/>
 		{% endif %}
@@ -266,7 +271,7 @@
 		{% if bid_jobs %}
 			<h2>My Bids</h2>
 			{% for job in bid_jobs %}
-				<a href="{% url jobboard_detail job.id %}" class="padded">{{ job.name }}</a>
+				<a href="{% url jobboard_detail job.id %}" class="padded joblink">{{ job.name }}</a>
 			{% endfor %} 
 			<br/>
 		{% endif %}
@@ -274,7 +279,7 @@
 		{% if watching_jobs %}
 			<h2>Watching</h2>
 			{% for job in watching_jobs %}
-				<a href="{% url jobboard_detail job.id %}" class="padded">{{ job.name }}</a>
+				<a href="{% url jobboard_detail job.id %}" class="padded joblink">{{ job.name }}</a>
 			{% endfor %} 
 			<br/>
 		{% endif %}
@@ -282,7 +287,7 @@
 		{% if closed_jobs %}
 			<h2>My closed postings</h2>
 			{% for job in closed_jobs %}
-				<a href="{% url jobboard_detail job.id %}" class="padded">{{ job.name }}</a>
+				<a href="{% url jobboard_detail job.id %}" class="padded joblink">{{ job.name }}</a>
 			{% endfor %} 
 			<br/>
 		{% endif %}

@@ -1,4 +1,7 @@
-{% extends "jobboard/base.html" %}
+{# {% extends "jobboard/base.html" %} #}
+{# this should only be loaded via ajax in a popup ... #}
+{% extends 'ajaxbase.html' %}
+
 {% load ifinlist %}
 
 {% block extra_head %}
@@ -78,39 +81,48 @@
 	{% endifequal %}
 	
 	<hr/>
-	<p><a href="{% url jobboard_list %}">Back to job board</a></p>
+	<p><a href="{% url jobboard_list %}" id='back_to_board'>Back to job board</a></p>
 {% endblock %}
 
 {% block toolbar_right %}
 {% if job.active and user.is_authenticated %}
-	<div class="toolbarheader bkgd" id="box-jobboard-action">Actions</div>
-	<div class="toolbarcontent">
-		{% ifequal job.owner user %}
-			<p><strong>This is your posting.</strong></p>
-			
-			<p><a href="{% url jobboard_close job.id %}">Close this job</a></p>
-			
-		{% else %}
-			{% if user|in_list:job.accepted_users.all %}
-				<p><strong>You have been accepted for job.</strong></p>
-			{% else %}
-				{% if user|in_list:job.bid_users.all %}
-					<p><strong>You have bid on this job.</strong> (<a href="{% url jobboard_bid_cancel job.id %}">cancel</a>)</p>
-				{% else %}
-					<p><a href="{% url jobboard_bid job.id %}">Bid on this job</a></p>
+	{% ifequal job.owner user %}
+		<p><strong>This is your posting.</strong></p>
 		
-					{% if user|in_list:job.following_users.all %}
-						<p><strong>You are watching this job.</strong> (<a href="{% url jobboard_watch_cancel job.id %}">cancel</a>)</p>
-					{% else %}			
-						<p><a href="{% url jobboard_watch job.id %}">Watch this job</a></p>
-					{% endif %}
+		<p><a href="{% url jobboard_close job.id %}">Close this job</a></p>
+		
+	{% else %}
+		{% if user|in_list:job.accepted_users.all %}
+			<p><strong>You have been accepted for job.</strong></p>
+		{% else %}
+			{% if user|in_list:job.bid_users.all %}
+				<p><strong>You have bid on this job.</strong> (<a href="{% url jobboard_bid_cancel job.id %}">cancel</a>)</p>
+			{% else %}
+				<p><a href="{% url jobboard_bid job.id %}">Bid on this job</a></p>
+	
+				{% if user|in_list:job.following_users.all %}
+					<p><strong>You are watching this job.</strong> (<a href="{% url jobboard_watch_cancel job.id %}">cancel</a>)</p>
+				{% else %}			
+					<p><a href="{% url jobboard_watch job.id %}">Watch this job</a></p>
 				{% endif %}
 			{% endif %}
-	
-			{% if perms.jobboard %}
-				<p><a href="{% url jobboard_close job.id %}">Close this job</a></p>
-			{% endif %}
-		{% endifequal %}
-	</div>
+		{% endif %}
+
+		{% if perms.jobboard %}
+			<p><a href="{% url jobboard_close job.id %}">Close this job</a></p>
+		{% endif %}
+	{% endifequal %}
 {% endif %}
+{% endblock %}
+
+{% block extra_body %}
+<script type='text/javascript'>
+	$(document).ready(function() {
+		$('#back_to_board').click(function() {
+			$('#cboxClose', parent.document).click();	// ... doesn't seem to work??
+			parent.location.reload(true);
+			return false;
+		});
+	});
+</script>
 {% endblock %}
