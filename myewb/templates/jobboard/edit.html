@@ -4,6 +4,11 @@
 
 {% load uni_form_tags %}
 
+{% block extra_head %}
+	<link rel="stylesheet" href="{{ STATIC_URL }}css/autocomplete.css" />
+    <script type="text/javascript" src="{{STATIC_URL}}jquery.autocomplete.min.js"></script>
+{% endblock %}
+
 {% block body %}
 	<h1>Job Board</h1>
 	

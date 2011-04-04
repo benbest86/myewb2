@@ -14,3 +14,6 @@ class JobPostingForm(forms.ModelForm):
     class Meta:
         model = JobPosting
         fields = ('name', 'description', 'deadline', 'urgency', 'time_required', 'skills')
+
+    def clean_skills(self):
+        return self.cleaned_data['skills']

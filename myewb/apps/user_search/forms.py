@@ -212,16 +212,18 @@ class AutocompleteField(forms.CharField):
             objects = []
             for v in value.split(','):
                 v = v.strip()
-                obj = get_object_or_none(self.model, name=v)
-                if obj:
-                    objects.append(obj)
                 
-                if self.create:
-                    obj = self.model(name=v)
-                    obj.save()
-                    objects.append(obj)
-                else:
-                    raise forms.ValidationError("Invalid choice")
+                if v:
+                    obj = get_object_or_none(self.model, name=v)
+                    if obj:
+                        objects.append(obj)
+                    
+                    elif self.create:
+                        obj = self.model(name=v)
+                        obj.save()
+                        objects.append(obj)
+                    else:
+                        raise forms.ValidationError("Invalid choice")
                 
             return objects
         
@@ -271,6 +273,9 @@ class AutocompleteWidget(forms.TextInput):
     def render(self, name, value=None, attrs=None):
         final_attrs = self.build_attrs(attrs, name=name)
         if value:
+            if self.multi:
+                value = ", ".join([str(self.model.objects.get(id=v)) for v in value])
+                
             final_attrs['value'] = escape(smart_unicode(value))
             
         if not self.attrs.has_key('id'):

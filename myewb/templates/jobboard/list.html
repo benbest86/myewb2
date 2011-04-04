@@ -143,7 +143,7 @@
 				<td>
 					<select name='skills2' id='skills2' multiple size=5>
 						{% for skill in allskills %}
-							<option value="{{skillid}}" {% if skill.id|in_list:filters.skills.1 %}selected='selected'{% endif %}>{{skill.name}}</option>
+							<option value="{{skill.id}}" {% if skill.id|in_list:filters.skills.1 %}selected='selected'{% endif %}>{{skill.name}}</option>
 						{% endfor %}
 					</select>
 				</td>

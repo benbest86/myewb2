@@ -112,7 +112,10 @@ def edit(request, id=None):
         
         if form.is_valid():
             job = form.save(commit=False)
-            print "skills", job.skills
+            
+            # is my django-foo dropping? why is this needed?
+            job.skills = form.cleaned_data['skills']
+                
             job.owner = request.user
             job.save()
             
