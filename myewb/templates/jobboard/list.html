@@ -47,17 +47,19 @@
 			</strong>
 		{% endif %}
 		
-		{% if filters.time.0 %}
+		{% if filters.time_required.0 %}
 			{% if filters.deadline.0 or filters.urgency.0 %} and {% endif %}
 			all postings requiring
 			<strong>
-			{% ifequal filters.time.0 'gt' %}at least{% else %}at most{% endifequal %}
-			{{ filters.time.1 }}
+			{% ifequal filters.time_required.0 'gt' %}at least{% else %}at most{% endifequal %}
+			{% for t, tname in TIME_CHOICES.items %}
+				{% ifequal filters.time_required.1 t %}{{tname}}{% endifequal %}
+			{% endfor %}
 			</strong>
 		{% endif %}
 		
 		{% if filters.skills.0 %}
-			{% if filters.deadline.0 or filters.urgency.0 or filters.time.0 %} and {% endif %}
+			{% if filters.deadline.0 or filters.urgency.0 or filters.time_required.0 %} and {% endif %}
 			all postings with
 			<strong>
 				{% ifequal filters.skills.0 'all' %}all of{% endifequal %}
@@ -69,12 +71,12 @@
 			</strong>
 		{% endif %}
 		
-		{% if not filters.deadline.0 and not filters.urgency.0 and not filters.time.0 and not filters.skills.0 %}
+		{% if not filters.deadline.0 and not filters.urgency.0 and not filters.time_required.0 and not filters.skills.0 %}
 			all open postings
 		{% else %}
 			(<a href="{% url jobboard_list %}">clear all filters</a>)
 		{% endif %}
-		(<a href="#" id='toggle_filters'>add filters...</a>)
+		(<a href="#" id='toggle_filters'>{% if filters_active %}edit{% else %}add{% endif %} filters...</a>)
 		<br/>
 		
 		<div style='display: none;'>
@@ -115,16 +117,16 @@
 			<tr>
 				<td>Time required is:</td>
 				<td>
-					<select name='time' id='time' class='part1'>
+					<select name='time_required' id='time_required' class='part1'>
 						<option value=''>any</option>
-						<option value='gt' {% ifequal filters.time.0 'gt' %}selected='selected'{% endifequal %}>at least</option>
-						<option value='lt' {% ifequal filters.time.0 'lt' %}selected='selected'{% endifequal %}>at most</option>
+						<option value='gt' {% ifequal filters.time_required.0 'gt' %}selected='selected'{% endifequal %}>at least</option>
+						<option value='lt' {% ifequal filters.time_required.0 'lt' %}selected='selected'{% endifequal %}>at most</option>
 					</select>
 				</td>
 				<td>
-					<select name='time2' id='time2'>
+					<select name='time_required2' id='time_required2'>
 						{% for t, tname in TIME_CHOICES.items %}
-							<option value="{{t}}" {% ifequal filters.time.1 t %}selected='selected'{% endifequal %}>{{tname}}</option>
+							<option value="{{t}}" {% ifequal filters.time_required.1 t %}selected='selected'{% endifequal %}>{{tname}}</option>
 						{% endfor %}
 					</select>
 				</td>

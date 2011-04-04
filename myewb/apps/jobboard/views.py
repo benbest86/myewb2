@@ -39,12 +39,12 @@ def list(request):
     # work with filters
     filters = {'deadline': ('', ''),
                'urgency': ('', ''),
-               'time': ('', ''),
+               'time_required': ('', ''),
                'skills': ('', {})}
     
     open_jobs, filters = add_filter(request, open_jobs, 'deadline', filters)
     open_jobs, filters = add_filter(request, open_jobs, 'urgency', filters)
-    open_jobs, filters = add_filter(request, open_jobs, 'time', filters)
+    open_jobs, filters = add_filter(request, open_jobs, 'time_required', filters)
 
     if request.GET.get('skills', None):
         comparison = request.GET['skills']
