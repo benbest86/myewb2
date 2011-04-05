@@ -21,6 +21,7 @@ from lxml.html.clean import clean_html, autolink_html
 
 from friends.models import Friendship
 from base_groups.models import BaseGroup, GroupMember
+from jobboard.models import JobPosting
 
 class ComposeForm(OriginalComposeForm):
     """
@@ -55,13 +56,29 @@ class ComposeForm(OriginalComposeForm):
         if not self.sender.has_module_perms("profiles"):
             recipients = self.cleaned_data.get('recipient', [])
             for r in recipients:
-                if not Friendship.objects.are_friends(self.sender, r):
+                allowed = False
+                if Friendship.objects.are_friends(self.sender, r):
+                    allowed = True
+                    
+                if not allowed:
                     # should be in BaseGroup manager, not here and also account_extra.models (ie, User.get_groups())
                     grps = BaseGroup.objects.filter(member_users=self.sender, is_active=True).exclude(model="LogisticalGroup").values_list('pk', flat=True)
                     # should probably also be in a BaseGroup manager somewhere...!
-                    gm = GroupMember.objects.filter(user=r, group__in=list(grps)).count()
-                    if gm == 0:
-                        raise forms.ValidationError('You can only send messages to friends or people in the same chapter')
+                    if GroupMember.objects.filter(user=r, group__in=list(grps)).count():
+                        allowed = True
+                        
+                if not allowed:
+                    # does user have an open job posting? then they're fair game...
+                    if JobPosting.objects.owned_by(r).count():
+                        allowed = True
+                        
+                if not allowed:
+                    # or if they've bid on a job and the poster is contacting them
+                    if JobPosting.objects.connected(self.sender, r).count():
+                        allowed=True
+                        
+                if not allowed:
+                    raise forms.ValidationError('You can only send messages to friends or people in the same chapter')
             
         return self.cleaned_data
     

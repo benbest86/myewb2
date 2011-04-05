@@ -17,6 +17,13 @@
 		<br/>
 		Posted by<br/>
 		<span style='font-size: 1.2em; font-weight: bold;'>{{ job.owner.visible_name }}</span>
+		<br/>
+		
+		{% ifnotequal user job.owner %}
+			<form method="GET" action="{% url messages_compose_to job.owner.username %}" target="_parent">
+				<input type="submit" value="Send a message" style='background: #e0e0e0; border: 1px solid #c0c0c0; -moz-border-radius: 1em; -webkit-border-radius: 1em;'/>
+			</form>
+		{% endifnotequal %}
 	</div> 
 
 	<div style='padding: 10px; margin: 0 5%; width: 50%;' class='jobposting detail-{{ job.urgency }}'>
@@ -24,26 +31,6 @@
 			<h3 style='color: #ff0000;'>This job is closed.</h3>
 		{% endif %}
 		
-		{% if perms.jobboard %}
-			<div style='font-weight: bold; padding-bottom: 10px;'>
-				{% if job.active %} 
-					<a href="{% url jobboard_edit job.id %}">Edit this posting</a>
-				{% else %}
-					<a href="{% url jobboard_open job.id %}">Re-open this posting</a>
-				{% endif %}
-			</div>
-		{% else %}
-			<div style='font-weight: bold; padding-bottom: 10px;'>
-				{% ifequal user job.owner %}
-					{% if job.active %} 
-						<p style='font-weight: bold;'><a href="{% url jobboard_edit job.id %}">Edit this posting</a></p>
-					{% else %}
-						<p style='font-weight: bold;'><a href="{% url jobboard_open job.id %}">Re-open this posting</a></p>
-					{% endif %}
-				{% endifequal %}
-			</div> 
-		{% endif %}
-
 		<strong>Posted on: </strong> {{ job.posted_date|date:"d M Y" }}<br/>
 		<strong>Deadline: </strong> {{ job.deadline|date:"d M Y" }}<br/>
 		<br/>
@@ -55,6 +42,26 @@
 		<strong>People on this job: </strong> {{ job.accepted_users.count }}<br/>
 		<strong>Bids for this job: </strong> {{ job.bid_users.count }}<br/>
 		<strong>Watching this job: </strong> {{ job.following_users.count }}
+
+		<div style='font-weight: bold; padding-top: 10px;'>
+			{% if perms.jobboard %}
+					{% if job.active %} 
+						<a href="{% url jobboard_edit job.id %}">Edit this posting</a>
+					{% else %}
+						<a href="{% url jobboard_open job.id %}">Re-open this posting</a>
+					{% endif %}
+			{% else %}
+					{% ifequal user job.owner %}
+						{% if job.active %} 
+							<a href="{% url jobboard_edit job.id %}">Edit this posting</a>
+						{% else %}
+							<a href="{% url jobboard_open job.id %}">Re-open this posting</a>
+						{% endif %}
+					{% else %}
+						&nbsp;
+					{% endifequal %}
+			{% endif %}
+		</div>
 	</div>
 	<br style='clear: both;'/>
 	
@@ -83,6 +90,7 @@
 						<img src="{% avatar_url u 50 %}" title="{{u.visible_name}}" alt="{{u.visible_name}}" style='height: 50px; width: 50px;'/><br/>
 						{{ u.visible_name }}
 					</a>
+					<a href="{% url messages_compose_to u.username %}" target="_parent">send message</a><br/>
 					<a href="{% url jobboard_accept_cancel job.id u.username %}">cancel</a>
 				</div>
 			{% endfor %}
@@ -98,6 +106,7 @@
 						{{ u.visible_name }}
 					</a>
 					<a href="{% url jobboard_statement job.id u.username %}" class="view_statement">view statement</a><br/>
+					<a href="{% url messages_compose_to u.username %}" target="_parent">send message</a><br/>
 					<a href="{% url jobboard_accept job.id u.username %}">accept</a>
 				</div>
 			{% endfor %}
