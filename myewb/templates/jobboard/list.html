@@ -74,7 +74,7 @@
 		<br/>(<a href="{% url jobboard_list %}">clear all filters</a>)
 	{% endif %}
 	(<a href="#" id='toggle_filters'>{% if filters_active %}edit{% else %}add{% endif %} filters</a>)
-	{% if filters_active %}(<a href="{% url jobboard_filters_save %}" id="save_filters">save this filter or email me when new jobs are posted</a>){% endif %}
+	{% if filters_active %}(<a href="{% url jobboard_filters_save %}" id="save_filters">save this filter</a>){% endif %}
 	<br/>
 	
 	<div style='display: none;'>

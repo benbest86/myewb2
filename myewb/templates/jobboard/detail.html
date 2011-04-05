@@ -73,6 +73,7 @@
 				<h2>Bidding users</h2>
 				{% for u in job.bid_users.all %}
 					<a href="{% url profile_detail u %}">{{ u.visible_name }}</a>
+					(<a href="{% url jobboard_statement job.id u.username %}" class="view_statement">view statement</a>)
 					(<a href="{% url jobboard_accept job.id u.username %}">accept</a>)
 					<br/> 
 				{% endfor %}
@@ -98,7 +99,19 @@
 			{% if user|in_list:job.bid_users.all %}
 				<p><strong>You have bid on this job.</strong> (<a href="{% url jobboard_bid_cancel job.id %}">cancel</a>)</p>
 			{% else %}
-				<p><a href="{% url jobboard_bid job.id %}">Bid on this job</a></p>
+				<p><a href="{% url jobboard_bid job.id %}" id="bid_on_job">Bid on this job</a></p>
+				
+				<div style='display: none;'>
+					<form id="bid_form" method="post" action="{% url jobboard_bid job.id %}">
+						<h2>You are indicating interest in this posting.</h2>
+						
+						If you like, you can include a message:<br/>
+						<textarea name="statement" cols="50" rows="10"></textarea>
+						<br/><br/>
+						
+						<input type="submit" value="Bid!"/> 
+					</form>
+				</div>
 	
 				{% if user|in_list:job.following_users.all %}
 					<p><strong>You are watching this job.</strong> (<a href="{% url jobboard_watch_cancel job.id %}">cancel</a>)</p>
@@ -122,6 +135,8 @@
 {% endblock %}
 
 {% block extra_body %}
+<link type="text/css" href="{{STATIC_URL}}css/colorbox.css" rel="stylesheet" />
+<script type="text/javascript" src="{{STATIC_URL}}js/colorbox.js"></script>
 <script type='text/javascript'>
 	$(document).ready(function() {
 		$('#back_to_board').click(function() {
@@ -129,6 +144,15 @@
 			parent.location.reload(true);
 			return false;
 		});
+
+		$('#bid_on_job').colorbox({opacity: '0.5',
+								   inline: true,
+								   href: '#bid_form'});
+
+		$('.view_statement').colorbox({opacity: '0.5',
+									   width: '75%',
+									   height: '75%'});
+
 	});
 </script>
 {% endblock %}

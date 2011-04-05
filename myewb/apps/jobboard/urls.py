@@ -17,6 +17,7 @@ urlpatterns = patterns('jobboard.views',
 
     url(r'^(?P<id>\d+)/accept/(?P<username>[\w\._-]+)/$', view='accept', name="jobboard_accept"),
     url(r'^(?P<id>\d+)/accept/(?P<username>[\w\._-]+)/cancel/$', view='accept_cancel', name="jobboard_accept_cancel"),
+    url(r'^(?P<id>\d+)/statement/(?P<username>[\w\._-]+)/$', view='statement', name="jobboard_statement"),
     
     url(r'^filters/save/$', view='filters_save', name='jobboard_filters_save'),
     url(r'^filters/(?P<id>\d+)/load/$', view='filters_load', name='jobboard_filters_load'),

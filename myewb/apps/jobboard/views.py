@@ -8,7 +8,7 @@ from django.template import RequestContext, Context, loader
 from django.utils.translation import ugettext_lazy as _
 
 from jobboard.forms import JobPostingForm
-from jobboard.models import JobPosting, Skill, URGENCY_CHOICES, TIME_CHOICES, JobFilter
+from jobboard.models import JobPosting, Skill, URGENCY_CHOICES, TIME_CHOICES, JobFilter, JobInterest
 from siteutils.shortcuts import get_object_or_none
 from siteutils.http import JsonResponse
 
@@ -140,7 +140,11 @@ def edit(request, id=None):
 def bid(request, id):
     job = get_object_or_404(JobPosting, id=id)
     
-    job.bid_users.add(request.user)
+    bid, created = JobInterest.objects.get_or_create(user=request.user, job=job)
+    
+    if request.POST.get('statement', None):
+        bid.statement = request.POST['statement']
+        bid.save()
     
     request.user.message_set.create(message='You have bid for this job.')
     return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
@@ -158,7 +162,9 @@ def watch(request, id):
 def bid_cancel(request, id):
     job = get_object_or_404(JobPosting, id=id)
     
-    job.bid_users.remove(request.user)
+    bids = JobInterest.objects.filter(user=request.user, job=job)
+    for b in bids:
+        b.delete()
     
     request.user.message_set.create(message='You have cancelled your bid.')
     return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
@@ -204,9 +210,11 @@ def accept(request, id, username):
     job = get_object_or_404(JobPosting, id=id, owner=request.user)
     user = get_object_or_404(User, username=username)
     
-    job.bid_users.remove(user)
-    job.accepted_users.add(user)
-    
+    bids = JobInterest.objects.filter(user=user, job=job)
+    for b in bids:
+        b.accepted=True
+        b.save()
+
     request.user.message_set.create(message="You have accepted %s for the job." % user.visible_name())
     return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
     
@@ -215,12 +223,24 @@ def accept_cancel(request, id, username):
     job = get_object_or_404(JobPosting, id=id, owner=request.user)
     user = get_object_or_404(User, username=username)
     
-    job.accepted_users.remove(user)
-    job.bid_users.add(user)
-    
+    bids = JobInterest.objects.filter(user=user, job=job)
+    for b in bids:
+        b.accepted=False
+        b.save()
+
     request.user.message_set.create(message="You have removed %s from the job." % user.visible_name())
     return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
 
+@login_required
+def statement(request, id, username):
+    job = get_object_or_404(JobPosting, id=id, owner=request.user)
+    user = get_object_or_404(User, username=username)
+    
+    bids = JobInterest.objects.filter(user=user, job=job)
+    bid = bids[0]
+
+    return HttpResponse(bid.statement)
+    
 @login_required
 def filters_save(request):
     if request.method == 'POST':

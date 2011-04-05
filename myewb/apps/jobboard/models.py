@@ -34,12 +34,12 @@ class JobPostingManager(models.Manager):
         
     def accepted(self, user):
         query = self.get_query_set()
-        query = query.filter(accepted_users=user, active=True)
+        query = query.filter(jobinterest__user=user, jobinterest__accepted=True, active=True)
         return query
         
     def bid(self, user):
         query = self.get_query_set()
-        query = query.filter(bid_users=user, active=True)
+        query = query.filter(jobinterest__user=user, jobinterest__accepted=False, active=True)
         return query
 
     def following(self, user):
@@ -67,8 +67,8 @@ class JobPosting(models.Model):
     
     active = models.BooleanField(default=True)
     
-    accepted_users = models.ManyToManyField(User, related_name='accepted_jobs', blank=True)
-    bid_users = models.ManyToManyField(User, related_name='bid_jobs', blank=True)
+    #accepted_users = models.ManyToManyField(User, related_name='accepted_jobs', blank=True)
+    interested_users = models.ManyToManyField(User, related_name='interested_jobs', blank=True, through="JobInterest")
     following_users = models.ManyToManyField(User, related_name='following_jobs', blank=True)
     
     objects = JobPostingManager()
@@ -84,12 +84,27 @@ class JobPosting(models.Model):
     
     def time_required_verbose(self):
         return TIME_CHOICES[self.time_required]
+    
+    def accepted_users(self):
+        return User.objects.filter(jobinterest__job=self, jobinterest__accepted=True)
+
+    def bid_users(self):
+        return User.objects.filter(jobinterest__job=self, jobinterest__accepted=False)
 
 class Skill(models.Model):
     name = models.CharField(max_length=255, db_index=True)
     
     def __unicode__(self):
         return self.name
+    
+class JobInterest(models.Model):
+    job = models.ForeignKey(JobPosting)
+    user = models.ForeignKey(User)
+    accepted = models.BooleanField(default=False)
+    time = models.DateTimeField(auto_now_add=True)
+    
+    statement = models.TextField(blank=True, null=True)
+
     
 class JobFilter(models.Model):
     name = models.CharField(max_length=100, blank=True, null=True)
