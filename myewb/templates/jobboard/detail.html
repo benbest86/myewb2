@@ -3,6 +3,7 @@
 {% extends 'ajaxbase.html' %}
 
 {% load ifinlist %}
+{% load avatar_tags %}
 
 {% block extra_head %}
 	<link rel="stylesheet" href="{{ STATIC_URL }}css/jobboard.css" />
@@ -33,8 +34,14 @@
 		{% endifequal %} 
 	{% endif %}
 
+	<div style='width: 30%; float: right; margin-right: 10%; text-align: center;'>
+		<img src="{% avatar_url job.owner 125 %}" title="{{job.owner.visible_name}}" alt="{{job.owner.visible_name}}" style='height: 125px; width: 125px; padding-bottom: 10px;'/>
+		<br/>
+		Posted by<br/>
+		<span style='font-size: 1.2em; font-weight: bold;'>{{ job.owner.visible_name }}</span>
+	</div> 
+
 	<div style='padding: 10px; margin: 10px; width: 50%;' class='jobposting detail-{{ job.urgency }}'>
-		<strong>Posted by: </strong> {{ job.owner.visible_name}}<br/>
 		<strong>Posted on: </strong> {{ job.posted_date|date:"d M Y" }}<br/>
 		<strong>Deadline: </strong> {{ job.deadline|date:"d M Y" }}<br/>
 		<br/>
@@ -47,7 +54,7 @@
 		<strong>Bids for this job: </strong> {{ job.bid_users.count }}<br/>
 		<strong>Watching this job: </strong> {{ job.following_users.count }}
 	</div>
-	<br/>
+	<br style='clear: both;'/>
 	
 	<div>{{ job.description|linebreaks}} </div>
 	
@@ -58,26 +65,32 @@
 		{% endif %}
 		
 		{% if job.accepted_users.all %}
-			<p>
-				<h2>Accepted users</h2>
-				{% for u in job.accepted_users.all %}
-					<a href="{% url profile_detail u %}">{{ u.visible_name }}</a>
-					(<a href="{% url jobboard_accept_cancel job.id u.username %}">cancel</a>)
-					<br/> 
-				{% endfor %}
-			</p>
+			<h2>Accepted users</h2>
+			{% for u in job.accepted_users.all %}
+				<div style='width: 125px; text-align: center; float: left; line-height: 1.5em; background: #f0f0f0; margin: 0 10px 20px 10px; padding: 10px;'>
+					<a href="{% url profile_detail u %}" style='display: block; margin-bottom: 5px;'>
+						<img src="{% avatar_url u 50 %}" title="{{u.visible_name}}" alt="{{u.visible_name}}" style='height: 50px; width: 50px;'/><br/>
+						{{ u.visible_name }}
+					</a>
+					<a href="{% url jobboard_accept_cancel job.id u.username %}">cancel</a>
+				</div>
+			{% endfor %}
+			<br style='clear: left;'/>
 		{% endif %}
-
+	
 		{% if job.bid_users.all %}
-			<p>
-				<h2>Bidding users</h2>
-				{% for u in job.bid_users.all %}
-					<a href="{% url profile_detail u %}">{{ u.visible_name }}</a>
-					(<a href="{% url jobboard_statement job.id u.username %}" class="view_statement">view statement</a>)
-					(<a href="{% url jobboard_accept job.id u.username %}">accept</a>)
-					<br/> 
-				{% endfor %}
-			</p>
+			<h2>Bidding users</h2>
+			{% for u in job.bid_users.all %}
+				<div style='width: 125px; text-align: center; float: left; line-height: 1.5em; background: #f0f0f0; margin: 0 10px 20px 10px; padding: 10px;'>
+					<a href="{% url profile_detail u %}" style='display: block; margin-bottom: 5px;'>
+						<img src="{% avatar_url u 50 %}" title="{{u.visible_name}}" alt="{{u.visible_name}}" style='height: 50px; width: 50px;'/><br/>
+						{{ u.visible_name }}
+					</a>
+					<a href="{% url jobboard_statement job.id u.username %}" class="view_statement">view statement</a><br/>
+					<a href="{% url jobboard_accept job.id u.username %}">accept</a>
+				</div>
+			{% endfor %}
+			<br style='clear: left;'/>
 		{% endif %}
 	{% endifequal %}
 	

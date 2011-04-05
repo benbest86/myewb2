@@ -5,6 +5,7 @@
 {% load truncate helpers %}
 {% load boolean_icon %}
 {% load ifinlist %}
+{% load avatar_tags %}
 {% autosort open_jobs %}
 
 {% block extra_head %}
@@ -188,12 +189,9 @@
 			<a href="{% url jobboard_detail job.id %}" style="display: block; width: 230px; margin: 10px; float: left; position: relative; border: 0px;" class="urgency-{{ job.urgency }} jobposting joblink" id="job-{{ job.id }}">
 				<img src="{{ STATIC_URL }}images/post-it-top.png" style='width: 100%; position: absolute; top: 0; left: 0; border: 0px;' class='postittop'/>
 				<div style='position: relative; margin-top: 48px;'>
+
 					<img src="{{ STATIC_URL }}images/post-it-bottom.png" style='height: 100%; width: 100%; position: absolute; top: 0px; left: 0; border: 0px;'/>
 					<div style='padding: 0px 25px 35px; z-index: 20; position: relative; min-height: 125px;'>
- 						<div style='font-style: italic; color: #808080;'>
-							{{ job.owner.visible_name }}, 
-							{{ job.posted_date|date:"M j, Y"}}
-						</div>
 						<div style='font-weight: bold; font-size: 1.3em;'>
 							{{ job.name }}
 						</div>
@@ -210,6 +208,12 @@
 						{% if job.deadline %}
 							<div style='font-weight: bold;'>Due: {{ job.deadline|date:"M j, Y"}}</div>
 						{% endif %}
+						
+ 						<div style='font-style: italic; color: #808080; padding: 20px 0 0 0;'>
+            				<img src="{% avatar_url job.owner 25 %}" title="{{job.owner.visible_name}}" alt="{{job.owner.visible_name}}" style='float: left; height: 25px; width: 25px; padding: 0 10px 0 5px;'/>
+							Posted by {{ job.owner.visible_name }}<br/> 
+							{{ job.posted_date|date:"M j, Y"}}
+						</div>
 					</div>
 				</div>
 			</a>
