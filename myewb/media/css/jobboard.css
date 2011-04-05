@@ -8,6 +8,9 @@ th {
 th, td {
   padding: 5px;
 }
+a, img {
+  border: 0;
+}
 
 table#filter_options {
 	width: auto;
