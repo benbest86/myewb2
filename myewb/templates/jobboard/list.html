@@ -80,16 +80,18 @@
 	
 	<div style='display: none;'>
 		<form id='filters' method="GET" action="" style='margin: 15px;'>
-		<div style='width: 200px; float: right; border-left: 1px solid #d0d0d0; padding-left: 10px;'>
-			<h2>Saved filters</h2>
-			
-			{% for filter in saved_filters %}
-				<div id="filter-{{ filter.id }}">
-					<a href="{% url jobboard_filters_load filter.id %}" class="filterload">{{ filter.name }}</a>
-					[<a href="{% url jobboard_filters_delete filter.id %}" class="filterdelete" id="filter-delete-{{ filter.id }}">x</a>]
-				</div>
-			{% endfor %}
-		</div>
+		{% if user.is_authenticated %}
+			<div style='width: 200px; float: right; border-left: 1px solid #d0d0d0; padding-left: 10px;'>
+				<h2>Saved filters</h2>
+				
+				{% for filter in saved_filters %}
+					<div id="filter-{{ filter.id }}">
+						<a href="{% url jobboard_filters_load filter.id %}" class="filterload">{{ filter.name }}</a>
+						[<a href="{% url jobboard_filters_delete filter.id %}" class="filterdelete" id="filter-delete-{{ filter.id }}">x</a>]
+					</div>
+				{% endfor %}
+			</div>
+		{% endif %}
 		
 		<p><strong>Filter postings...</strong></p>
 		<table id='filter_options' style='margin-right: 210px;'><tr>

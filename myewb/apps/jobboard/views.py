@@ -36,7 +36,10 @@ def list(request):
     watching_jobs = JobPosting.objects.following(request.user)
     my_postings = JobPosting.objects.owned_by(request.user)
     closed_jobs = JobPosting.objects.closed(request.user)
-    saved_filters = JobFilter.objects.filter(user=request.user)
+    if request.user.is_authenticated():
+        saved_filters = JobFilter.objects.filter(user=request.user)
+    else:
+        saved_filters = []
     
     # work with filters
     filters = {'deadline': ('', ''),

@@ -1,0 +1,36 @@
+<form action="{% url jobboard_filters_save %}" method="POST" id="filter_save_form">
+	Name this filter: <input name="name" type="text"/><br/>
+	
+	<input type="checkbox" name="email"/>
+	email me when new postings match this filter
+	<br/><br/>
+	
+	<input type="submit" value="Submit"/>
+</form>
+
+<script type='text/javascript'>
+	$(document).ready(function() {
+		$('#filter_save_form').submit(function() {
+			$('#filter_save_form').append($('#filters').html());
+
+			/*
+			$.post('{% url jobboard_filters_save %}',
+				   $(this).serialize(),
+                   function(data) {
+                       if (data == "success")
+                       {
+                           window.location.reload();
+                       }
+                       else
+                       {
+                           alert('unable to save');
+                       }
+                   });
+			return false;
+			*/
+			return true;
+		});
+
+		
+	});
+</script>
