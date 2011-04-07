@@ -188,51 +188,7 @@ $(document).ready(function(){
 </ul>
 
 {% include "feedbackform.html" %}
-
-<script type="text/javascript">
-
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-907833-2']);
-  
-  {% if role_is_office %}
-    _gaq.push(['_setCustomVar', 1, 'Role', 'National Office', 1]);
-  {% else %}
-    {% if role_is_president %}
-	  _gaq.push(['_setCustomVar', 1, 'Role', 'Chapter president', 1]);
-    {% else %}
-      {% if role_is_exec %}
-	    _gaq.push(['_setCustomVar', 1, 'Role', 'Chapter exec', 1]);
-      {% else %}
-        {% if role_is_alumni %}
-  	      _gaq.push(['_setCustomVar', 1, 'Role', 'Alumni', 1]);
-        {% else %}
-          {% if role_chapter_member %}
-      	    _gaq.push(['_setCustomVar', 1, 'Role', 'Chapter member', 1]);
-          {% endif %}
-        {% endif %}  
-      {% endif %}  
-    {% endif %}
-  {% endif %}
-
-  {% if usage_profile %}
-    _gaq.push(['_setCustomVar', 2, 'Usage profile', '{{ usage_profile }}', 1]);
-  {% endif %} 
-
-  {% if user.is_authenticated %}
-    _gaq.push(['_setCustomVar', 3, 'Is Guest', 'No', 3]);
-  {% else %}
-    _gaq.push(['_setCustomVar', 3, 'Is Guest', 'Yes', 3]);
-  {% endif %}
-  
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-
-</script>
+{% include "google_analytics.html" %}
 
 {% endblock %}
 
