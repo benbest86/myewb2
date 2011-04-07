@@ -152,7 +152,16 @@ def edit(request, id=None):
         if job:
             form = JobPostingForm(instance=job)
         else:
-            form = JobPostingForm()
+            help = """When writing a description for your project/task consider the 5 main dimensions people consider when picking up an opportunity in EWB:
+
+    * National vs local
+    * Strategy (more entrepreneurial) vs support (more execution)
+    * Constrained vs open-ended
+    * Team (shared) responsibility vs solo responsibility
+    * Programmatic (GE,YE) vs skill focused (coaching, editing, programming)
+ 
+And remember top EWBers love 3 main things: impact, challenges and working with other EWBers. """
+            form = JobPostingForm(initial={'description': help})
         
     return render_to_response("jobboard/edit.html",
                               {"form": form,
