@@ -227,6 +227,7 @@
 		    {% anchor time_required "Time Required" %}
 	    </p>
 	    
+	    <div id="job-list">
 		{% for job in open_jobs %}
 			<a href="{% url jobboard_detail job.id %}" style="display: block; width: 230px; margin: 10px; float: left; position: relative; border: 0px;" class="urgency-{{ job.urgency }} jobposting joblink" id="job-{{ job.id }}">
 				<img src="{{ STATIC_URL }}images/post-it-top.png" style='width: 100%; position: absolute; top: 0; left: 0; border: 0px;' class='postittop'/>
@@ -263,6 +264,7 @@
 				</div>
 			</a>
 		{% endfor %}
+		</div>
 		
 	{% else %}
 		<br/><hr/>
@@ -318,6 +320,9 @@
 				
 				return false;
 			}); 
+
+			var perrow = Math.floor($('#job-list').innerWidth() / 250);
+			$('.jobposting:nth-child(' + perrow + 'n)').after('<br style="clear: left;"/>');
 		});
 	</script>
 {% endblock %}
