@@ -13,7 +13,6 @@
 		$('#filter_save_form').submit(function() {
 			$('#filter_save_form').append($('#filters').html());
 
-			/*
 			$.post('{% url jobboard_filters_save %}',
 				   $(this).serialize(),
                    function(data) {
@@ -27,8 +26,6 @@
                        }
                    });
 			return false;
-			*/
-			return true;
 		});
 
 		

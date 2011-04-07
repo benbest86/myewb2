@@ -57,7 +57,7 @@ class JobPostingManager(models.Manager):
         query = self.get_query_set()
         query = query.filter(owner=user, active=True, interested_users=user2)
         return query
-    
+
 class JobPosting(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
@@ -138,3 +138,5 @@ class JobFilter(models.Model):
     
     location = models.ManyToManyField('jobboard.Location', blank=True)
     location_comparison = models.CharField(max_length=10, blank=True, null=True)
+
+    search = models.CharField(max_length=255, blank=True, null=True)

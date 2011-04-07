@@ -6,6 +6,7 @@ from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidde
 from django.db.models import Q
 from django.template import RequestContext, Context, loader
 from django.utils.translation import ugettext_lazy as _
+from urllib import quote_plus
 
 from jobboard.forms import JobPostingForm
 from jobboard.models import JobPosting, Skill, URGENCY_CHOICES, TIME_CHOICES, JobFilter, JobInterest, Location
@@ -46,7 +47,8 @@ def list(request):
                'urgency': ('', ''),
                'time_required': ('', ''),
                'skills': ('', {}),
-               'location': ('', {})}
+               'location': ('', {}),
+               'search': ('', '')}
     
     open_jobs, filters = add_filter(request, open_jobs, 'deadline', filters)
     open_jobs, filters = add_filter(request, open_jobs, 'urgency', filters)
@@ -74,6 +76,14 @@ def list(request):
         if comparison == 'oneof':     # validate deadline2 too!
             filters['location'] = (comparison, value)
             open_jobs = open_jobs.filter(location__in=value).distinct()
+
+    if request.GET.get('search', None):
+        value = request.GET['search']
+        filters['search'] = (value, '')
+        open_jobs = open_jobs.filter(Q(description__icontains=value) | Q(name__icontains=value))
+        
+    if request.GET.get('skills', None) or request.GET.get('location', None) or request.GET.get('search', None): 
+        open_jobs = open_jobs.distinct()
 
     allskills = Skill.objects.all()
     alllocations = Location.objects.all()
@@ -278,6 +288,9 @@ def filters_save(request):
             kwargs['time_required_comparison'] = request.POST['time_required']
             kwargs['time_required'] = request.POST['time_required2']
             
+        if request.POST.get('search', None):
+            kwargs['search'] = request.POST['search']
+            
         filter = JobFilter.objects.filter(**kwargs)
         
         skills = []
@@ -346,6 +359,9 @@ def filters_load(request, id):
         url = url + "location=%s&" % filter.location_comparison
         for l in filter.location.all():
             url = url + "location2=%d&" % l.id 
+
+    if filter.search:
+        url = url + "search=%s&" % quote_plus(filter.search)
 
     url = url.rstrip('&')
     

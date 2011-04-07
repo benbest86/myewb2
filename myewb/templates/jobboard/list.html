@@ -79,7 +79,13 @@
 		</strong>
 	{% endif %}
 	
-	{% if not filters.deadline.0 and not filters.urgency.0 and not filters.time_required.0 and not filters.skills.0 and not filters.location.0 %}
+	{% if filters.search.0 %}
+		{% if filters.deadline.0 or filters.urgency.0 or filters.time_required.0 or filters.location.0 or filters.skills.0 %} and {% endif %}
+		all postings containing 
+		<strong><em>{{ filters.search.0 }}</em></strong>
+	{% endif %}
+	
+	{% if not filters.deadline.0 and not filters.urgency.0 and not filters.time_required.0 and not filters.skills.0 and not filters.location.0 and not filters.search.0 %}
 		all open postings<br/>
 	{% else %}
 		<br/>(<a href="{% url jobboard_list %}">clear all filters</a>)
@@ -190,6 +196,13 @@
 			</td>
 		</tr>
 			
+		<tr>
+			<td colspan=2 >Description contains:</td>
+			<td>
+				<input type='text' id='search' name='search' value="{{ filters.search.0 }}"/>
+			</td>
+		</tr>
+
 		<tr>
 			<td colspan='3' align='center'>
 				<input type="submit" value="Filter"/>
