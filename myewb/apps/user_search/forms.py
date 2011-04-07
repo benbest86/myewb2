@@ -275,6 +275,8 @@ class AutocompleteWidget(forms.TextInput):
         if value:
             if self.multi:
                 value = ", ".join([str(self.model.objects.get(id=v)) for v in value])
+            else:
+                value = str(self.model.objects.get(id=value))
                 
             final_attrs['value'] = escape(smart_unicode(value))
             

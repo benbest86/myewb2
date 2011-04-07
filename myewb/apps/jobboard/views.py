@@ -8,7 +8,7 @@ from django.template import RequestContext, Context, loader
 from django.utils.translation import ugettext_lazy as _
 
 from jobboard.forms import JobPostingForm
-from jobboard.models import JobPosting, Skill, URGENCY_CHOICES, TIME_CHOICES, JobFilter, JobInterest
+from jobboard.models import JobPosting, Skill, URGENCY_CHOICES, TIME_CHOICES, JobFilter, JobInterest, Location
 from siteutils.shortcuts import get_object_or_none
 from siteutils.http import JsonResponse
 
@@ -45,7 +45,8 @@ def list(request):
     filters = {'deadline': ('', ''),
                'urgency': ('', ''),
                'time_required': ('', ''),
-               'skills': ('', {})}
+               'skills': ('', {}),
+               'location': ('', {})}
     
     open_jobs, filters = add_filter(request, open_jobs, 'deadline', filters)
     open_jobs, filters = add_filter(request, open_jobs, 'urgency', filters)
@@ -55,7 +56,7 @@ def list(request):
         comparison = request.GET['skills']
         value = request.GET.getlist('skills2')
         
-        if (comparison == 'any' or comparison == 'all' or comparison == 'none') and True:     # validate deadline2 too!
+        if (comparison == 'any' or comparison == 'all' or comparison == 'none'):     # validate deadline2 too!
             filters['skills'] = (comparison, value)
             
             if comparison == 'any':
@@ -66,8 +67,16 @@ def list(request):
             else:
                 open_jobs = open_jobs.exclude(skills__in=value)
 
-    
+    if request.GET.get('location', None):
+        comparison = request.GET['location']
+        value = request.GET.getlist('location2')
+        
+        if comparison == 'oneof':     # validate deadline2 too!
+            filters['location'] = (comparison, value)
+            open_jobs = open_jobs.filter(location__in=value).distinct()
+
     allskills = Skill.objects.all()
+    alllocations = Location.objects.all()
     filters_active = False
     for f1, f2 in filters.items():
         if f2[0]:
@@ -91,6 +100,7 @@ def list(request):
                                "URGENCY_CHOICES": URGENCY_CHOICES,
                                "TIME_CHOICES": TIME_CHOICES,
                                "allskills": allskills,
+                               "alllocations": alllocations,
                                "filters": filters,
                                "filters_active": filters_active,
                                "saved_filters": saved_filters},
@@ -261,11 +271,15 @@ def filters_save(request):
         if request.POST.get('skills', None) and request.POST.get('skills2', None):
             kwargs['skills_comparison'] = request.POST['skills']
             
-        if request.POST.get('deadline', None) and request.POST.get('deadline2', None):
+        if request.POST.get('location', None) and request.POST.get('location2', None):
+            kwargs['location_comparison'] = request.POST['location']
+            
+        if request.POST.get('time_required', None) and request.POST.get('time_required2', None):
             kwargs['time_required_comparison'] = request.POST['time_required']
             kwargs['time_required'] = request.POST['time_required2']
             
         filter = JobFilter.objects.filter(**kwargs)
+        
         skills = []
         for s in request.POST.getlist('skills2'):
             skill = get_object_or_none(Skill, id=s)
@@ -276,12 +290,24 @@ def filters_save(request):
         if request.POST.get('skills', None) and request.POST.get('skills2', None):
             filter = filter.exclude(~Q(skills__in=skills))
             
+        locations = []
+        for l in request.POST.getlist('location2'):
+            location = get_object_or_none(Location, id=l)
+            if location:
+                locations.append(location)
+                filter = filter.filter(location=location)
+
+        if request.POST.get('location', None) and request.POST.get('location2', None):
+            filter = filter.exclude(~Q(location__in=locations))
+            
         if filter.count():
             filter = filter[0]
         else:
             filter = JobFilter.objects.create(**kwargs)
             for s in skills:
                 filter.skills.add(s)
+            for l in locations:
+                filter.location.add(l)
 
         filter.name = request.POST.get('name', '')
         if request.POST.get('email', None):
@@ -315,6 +341,11 @@ def filters_load(request, id):
         url = url + "skills=%s&" % filter.skills_comparison
         for s in filter.skills.all():
             url = url + "skills2=%d&" % s.id 
+
+    if filter.location_comparison:
+        url = url + "location=%s&" % filter.location_comparison
+        for l in filter.location.all():
+            url = url + "location2=%d&" % l.id 
 
     url = url.rstrip('&')
     

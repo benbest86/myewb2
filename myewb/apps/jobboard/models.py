@@ -63,15 +63,16 @@ class JobPosting(models.Model):
     description = models.TextField()
     owner = models.ForeignKey(User)
     
-    posted_date = models.DateTimeField(auto_now_add=True)
-    last_updated = models.DateTimeField(auto_now=True)
-    deadline = models.DateField(blank=True, null=True)
+    posted_date = models.DateTimeField(auto_now_add=True, db_index=True)
+    last_updated = models.DateTimeField(auto_now=True, db_index=True)
+    deadline = models.DateField(blank=True, null=True, db_index=True)
 
-    urgency = models.CharField(max_length=10, choices=URGENCY_CHOICES.items())
-    skills = models.ManyToManyField('jobboard.Skill', blank=True)
-    time_required = models.CharField(max_length=10, choices=TIME_CHOICES.items())
+    urgency = models.CharField(max_length=10, choices=URGENCY_CHOICES.items(), db_index=True)
+    skills = models.ManyToManyField('jobboard.Skill', blank=True, db_index=True)
+    time_required = models.CharField(max_length=10, choices=TIME_CHOICES.items(), db_index=True)
+    location = models.ForeignKey('jobboard.Location', blank=True, null=True)
     
-    active = models.BooleanField(default=True)
+    active = models.BooleanField(default=True, db_index=True)
     
     #accepted_users = models.ManyToManyField(User, related_name='accepted_jobs', blank=True)
     interested_users = models.ManyToManyField(User, related_name='interested_jobs', blank=True, through="JobInterest")
@@ -103,6 +104,12 @@ class Skill(models.Model):
     def __unicode__(self):
         return self.name
     
+class Location(models.Model):
+    name = models.CharField(max_length=255, db_index=True)
+    
+    def __unicode__(self):
+        return self.name
+    
 class JobInterest(models.Model):
     job = models.ForeignKey(JobPosting)
     user = models.ForeignKey(User)
@@ -129,3 +136,5 @@ class JobFilter(models.Model):
     time_required = models.CharField(max_length=10, choices=TIME_CHOICES.items(), blank=True, null=True)
     time_required_comparison = models.CharField(max_length=10, blank=True, null=True)
     
+    location = models.ManyToManyField('jobboard.Location', blank=True)
+    location_comparison = models.CharField(max_length=10, blank=True, null=True)
