@@ -279,6 +279,11 @@
 
 {% block extra_body %}
 	<link type="text/css" href="{{STATIC_URL}}css/colorbox.css" rel="stylesheet" />
+	<style>
+		div.ui-datepicker {z-index:10000000;}
+	</style>
+	
+	<script type="text/javascript" src="{{STATIC_URL}}js/ui.datepicker.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/colorbox.js"></script>
 	<script type='text/javascript'>
 		$(document).ready(function() {
@@ -324,6 +329,8 @@
 
 			var perrow = Math.floor($('#job-list').innerWidth() / 250);
 			$('.jobposting:nth-child(' + perrow + 'n)').after('<br style="clear: left;"/>');
+
+			var datepicker1234 = $("input#deadline2").datepicker({});
 		});
 	</script>
 {% endblock %}
