@@ -227,7 +227,7 @@ class AutocompleteField(forms.CharField):
                 
             return objects
         
-        else:
+        elif value:
             obj = get_object_or_none(self.model, name=value)
             if obj:
                 return obj
@@ -238,6 +238,8 @@ class AutocompleteField(forms.CharField):
                 return obj
             else:
                 raise forms.ValidationError("Invalid choice")
+            
+        return None
 
 class AutocompleteWidget(forms.TextInput):
     def __init__(self, model, create, chars, multi, options={}, attrs={}):
