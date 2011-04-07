@@ -23,6 +23,19 @@
         <div id="body">
 			<div id="content">
 	
+            {% if messages %}
+                <div id="messages" class="roundtop">
+                    <div class="message-header">Messages</div>
+                    <div class="message-close"><a href="#" onclick="$('#messages').slideUp(); return false;">x</a></div>
+                    <div class="message">
+                        {% for message in messages %}
+                            <div class="message">{{ message|safe }}</div>
+                            {% if not forloop.last %}<hr/>{% endif %}
+                        {% endfor %}
+                    </div>
+                </div>
+            {% endif %}
+            
             <div id="toolbarcolumn_left">{% spaceless %}
                 {% block toolbar_left %}
                     {% comment %}
