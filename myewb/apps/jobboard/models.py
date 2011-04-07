@@ -10,12 +10,14 @@ URGENCY_CHOICES = {'4critical': 'Critical',
                    '3important': 'Important',
                    '2normal': 'Normal',
                    '1low': 'Low'}
+URGENCY_CHOICES_ITEMS = sorted(URGENCY_CHOICES.iteritems(), key=lambda item: item[0])
 
 TIME_CHOICES = {'a': 'Under 1 hour per week',
                 'b': '1 - 2 hours per week',
                 'c': '2 - 5 hours per week',
                 'd': '5 - 10 hours per week',
                 'e': '10+ hours per week'} 
+TIME_CHOICES_ITEMS = sorted(TIME_CHOICES.iteritems(), key=lambda item: item[0])
 
 
 class JobPostingManager(models.Manager):
@@ -67,9 +69,9 @@ class JobPosting(models.Model):
     last_updated = models.DateTimeField(auto_now=True, db_index=True)
     deadline = models.DateField(blank=True, null=True, db_index=True)
 
-    urgency = models.CharField(max_length=10, choices=URGENCY_CHOICES.items(), db_index=True)
+    urgency = models.CharField(max_length=10, choices=URGENCY_CHOICES_ITEMS, db_index=True)
     skills = models.ManyToManyField('jobboard.Skill', blank=True, db_index=True)
-    time_required = models.CharField(max_length=10, choices=TIME_CHOICES.items(), db_index=True)
+    time_required = models.CharField(max_length=10, choices=TIME_CHOICES_ITEMS, db_index=True)
     location = models.ForeignKey('jobboard.Location', blank=True, null=True)
     
     active = models.BooleanField(default=True, db_index=True)
