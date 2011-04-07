@@ -1,0 +1,35 @@
+{% extends "apply/base.html" %}
+{% load sorting_tags pagination_tags %}
+{% load truncate helpers %}
+{% autosort casestudy_list %}
+
+{% block head_title %}
+Applications » Case Studies
+{% endblock %}
+
+{% block body %}
+
+	{% new_button "casestudy" "case study" %}
+
+	{% if casestudy_list %}
+		{% autopaginate casestudy_list 10 %}
+		{% paginate %}
+		<div class="clear"></div>
+		<table>
+		    <tr>
+		       <th>{% anchor name Name %}</th>
+		       <th>{% anchor html HTML %}</th>
+		    </tr>
+		{% for casestudy in casestudy_list %}
+		<tr>
+			<td><a href="{% url casestudy_detail casestudy.id %}">{{ casestudy.name }}</a></td>
+			<td>{{ casestudy.html|truncate_tail:20 }}</td>
+		</tr>
+		{% endfor %}
+		</table>
+	{% else %}
+		<p>No case studies found.</p>
+	{% endif %}
+
+{% endblock %}
+

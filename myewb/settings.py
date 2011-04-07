@@ -225,7 +225,7 @@ INSTALLED_APPS = (
     'siteutils',
     
     # MyEWB apps
-    'volunteering',
+    'apply',
     'siteutils',
     'manager_extras',
     'user_search',
@@ -237,6 +237,7 @@ INSTALLED_APPS = (
     'mailchimp',
     'finance',
     'confcomm',
+    'jobboard',
 
     # our own third-party libs
     'contrib.django_evolution',

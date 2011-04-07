@@ -1,0 +1,438 @@
+{% extends "apply/base.html" %}
+
+{% load avatar_tags %}
+
+{% block head_title %}
+Applications » Evaluations
+{% endblock %}
+
+{% block body %}
+<style>
+select {
+    display: inline;
+}
+#submit_link {
+    color: red;
+    margin-left: 25px;
+}
+table#evaluations {
+    border: 0px;
+    width: 100%;
+}
+table#evaluations td {
+    vertical-align: top;
+}
+div.eval {
+    width: 40%;
+    float: right;
+}
+div.eval textarea, div.intanswer textarea {
+    width: 100%;
+    margin-bottom: 3px;
+}
+hr.clear {
+    clear: both;
+}
+div.leftpanel {
+    width: 55%;
+}
+.htmlbox {
+    margin-left: 25px;
+    border: 1px solid;
+    padding: 10px;
+/*    background: #f0f0f0;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px; */
+}
+.inputbox {
+    border: 0px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+    margin: 3px;
+    padding: 3px;
+    background: #f0f0f0;
+    color: #000000;
+}
+.loading {
+    background:url("{{ STATIC_URL}}images/ajax-loader.gif") no-repeat scroll right center;
+    padding-right: 10px;
+}
+.loading-topleft {
+    background:url("{{ STATIC_URL}}images/ajax-loader.gif") no-repeat scroll left top;
+}
+span.ui-icon {
+	float: left;
+}
+</style>
+
+<div id="" class="eval" style="padding-bottom: 5px;">
+    <h3>Evaluation (click to edit)</h3>
+
+    {% for c in application.session.evaluationcriterion_set.all %}
+    	{% with c.id as cid %}
+        	<input type="text" style="width: 50px;" value="{% for k, v in evaluation.criteria.items %}{% ifequal k cid %}{{v}}{% endifequal %}{% endfor %}" id="criteria_{{ cid }}" />&nbsp;&nbsp;
+        {% endwith %}
+        <label>{{ c.criteria }}</label><br/>
+    {% endfor %}
+</div>
+
+<div id="" class="leftpanel">
+    <div style="float: left; width: 125px; height: 125px;">
+    	<a href="{% avatar_url application.profile.user2 500 %}" id="avatar">
+        	{% avatar application.profile.user2 110 %}
+        </a>
+    </div>
+
+	<div style="height: 125px;">
+    	<h2>{{ application.profile.first_name }} {{ application.profile.last_name }}</h2>
+    	<h3>{{ application.session.name }}</h3>
+
+    	<p>Application created: {{ application.created|date }}<br/>
+    	Application modified: {{ application.updated|date }}</p>
+    </div>
+    <div style="height: 2em;"></div>
+</div>
+
+<div id="eval-tabs" style="clear: both; position: relative; border-top: 1px solid;">
+	<ul style="width: 55%; position: absolute; top: -2.7em;">
+		<li><a href="#profile">Profile</a></li>
+		<li><a href="#info">General</a></li>
+		<li><a href="#questions">Questions</a></li>
+		{% if application.complete %}
+			<li><a href="#interview">Interview</a></li>
+			<li><a href="#notes">Notes</a></li>
+			<li><a href="#summary">Summary</a></li>
+		{% endif %}
+	</ul>
+
+	<div id="profile">
+		{% with application.profile.user2 as other_user %}
+			{% include "profiles/profile_info.html" %}
+		{% endwith %}
+	</div>
+
+    <div id="info">
+        <div class="eval">
+            <textarea name="language">{% for k, c in evaluation.comments.items %}{% ifequal k "language" %}{{c}}{% endifequal %}{% endfor %}</textarea>
+        </div>
+
+        <div class="leftpanel">
+            <strong style="width: 10em;">English language</strong>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            Reading: {{ application.en_reading }}
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            Writing: {{ application.en_writing }}
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            Speaking: {{ application.en_speaking }}
+            <br/>
+            
+            <strong>French language</strong>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            Reading: {{ application.fr_reading }}
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            Writing: {{ application.fr_writing }}
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            Speaking: {{ application.fr_speaking }}
+            <br/>
+            
+            <strong>GPA</strong>
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            {{ application.gpa }}
+        </div>
+        
+        <hr class="clear"/>
+
+        <div class="eval">
+            <h3>&nbsp;</h3>
+            <textarea name="schooling">{% for k, c in evaluation.comments.items %}{% ifequal k "schooling" %}{{c}}{% endifequal %}{% endfor %}</textarea>
+        </div>
+
+        <div class="leftpanel">
+            <h3>Schooling</h3>
+            <div class="htmlbox">
+                {{ application.schooling|safe }}
+            </div>
+        </div>
+
+        <hr class="clear"/>
+
+        <div class="eval">
+            <h3>&nbsp;</h3>
+            <textarea name="resume">{% for k, c in evaluation.comments.items %}{% ifequal k "resume" %}{{c}}{% endifequal %}{% endfor %}</textarea>
+        </div>
+
+        <div class="leftpanel">
+            <h3>Resume</h3>
+            <div class="htmlbox">
+                {{ application.resume_text|safe }}
+            </div>
+        </div>
+
+        <hr class="clear"/>
+
+        <div class="eval">
+            <h3>&nbsp;</h3>
+            <textarea name="references">{% for k, c in evaluation.comments.items %}{% ifequal k "references" %}{{c}}{% endifequal %}{% endfor %}</textarea>
+        </div>
+
+        <div class="leftpanel">
+            <h3>References</h3>
+            <div class="htmlbox">
+                {{ application.references|safe }}
+            </div>
+        </div>
+    </div>
+    
+    <div id="questions">
+    	{% if application.complete %}
+        	<a href="#" id="q_display_all">show all answers</a> | 
+        	<a href="#" id="q_hide_all">hide all answers</a> 
+        	<hr/>
+        {% endif %}
+        
+        {% for q in application.session.application_questions %}
+            <div class="eval {% if application.complete %}question-{{q.id}}{% endif %}">
+                <h3>&nbsp;</h3>
+                <textarea name="{{q.id}}">{% for k, c in evaluation.comments.items %}{% ifequal k q.strid %}{{c}}{% endifequal %}{% endfor %}</textarea>
+            </div>
+
+            <div class="leftpanel">
+				<a href="#" class="q_toggle" id="toggle_question-{{q.id}}">
+	            	<span class="ui-icon ui-icon-circle-triangle-s"></span>
+	            </a>
+            	
+                <h3>{{ q.question|linebreaksbr }}</h3>
+                <div class="htmlbox question-{{q.id}}">
+                    {% for qid, ans in application.get_answers.items %}
+                        {% ifequal q.id qid %}
+                            {{ans|linebreaksbr}}
+                        {% endifequal %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            <hr class="clear"/>
+
+        {% endfor %}
+    </div>
+    
+    {% if application.complete %}
+	    <div id="interview">
+        	<a href="#" id="q_display_all">show all answers</a> | 
+        	<a href="#" id="q_hide_all">hide all answers</a> 
+        	<hr/>
+        
+	        {% for q in application.session.interview_questions %}
+	            <div class="eval question-{{q.id}}">
+	                <h3>&nbsp;</h3>
+	                <textarea name="{{q.id}}">{% for k, c in evaluation.comments.items %}{% ifequal k q.strid %}{{c}}{% endifequal %}{% endfor %}</textarea>
+	            </div>
+	
+	            <div class="leftpanel">
+					<a href="#" class="q_toggle" id="toggle_question-{{q.id}}">
+		            	<span class="ui-icon ui-icon-circle-triangle-s"></span>
+		            </a>
+	            	
+	                <h3>{{ q.question|linebreaksbr }}</h3>
+		            <div class="intanswer question-{{q.id}}">
+		                <textarea name="{{q.id}}">{% for qid, ans in application.get_answers.items %}{% ifequal q.id qid %}{{ans|safe}}{% endifequal %}{% endfor %}</textarea>
+		            </div>
+		            
+		            {% comment %}
+	                <div class="htmlbox question-{{q.id}}">
+	                    {% for qid, ans in application.get_answers.items %}
+	                        {% ifequal q.id qid %}
+	                            {{ans|linebreaksbr}}
+	                        {% endifequal %}
+	                    {% endfor %}
+	                </div>
+	                {% endcomment %}
+	            </div>
+	
+	            <hr class="clear"/>
+	
+	        {% endfor %}
+	    </div>
+	    
+	    <div id="notes">
+	        <div class="eval" style="width: 100%;">
+	        	<strong>General notes</strong> (click to edit):<br/>
+	            <textarea name="notes" id="notes">{% for k, c in evaluation.comments.items %}{% ifequal k "notes" %}{{c}}{% endifequal %}{% endfor %}</textarea>
+	        </div>
+	    </div>
+	    
+	    <div id="summary">
+	    	<div id="summary-content">
+	    	</div>
+	    </div>
+	{% endif %}
+    
+</div>
+
+{% endblock %}
+
+{% block extra_body %}
+<script type="text/javascript" src="{{STATIC_URL}}js/autoresize.jquery.min.js"></script>
+<script type="text/javascript">
+	$().ready(function() {
+		{% if not application.complete %}
+			$('.eval').hide();
+		{% endif %}
+		
+		$("#eval-tabs").tabs({
+			show: function(event, ui) {
+				// needs to happen each time, since hidden textarea's don't get resized
+		    	$('.eval textarea').trigger('change');
+
+	    		// ajax-load the summary tab when selected
+				if (ui.panel.id == 'summary')
+				{
+					$('#summary-content').addClass('loading-topleft');
+					$.getJSON('{% url evaluation_comment application.id %}',
+							function(data) {
+								var html = "";
+								for (k in data)
+								{
+									html = html + "<p>";
+									var content = data[k]['fields']['comment'];
+									html = html + content.replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br/>$2');
+									html = html + "</p>";
+								}
+								$('#summary-content').removeClass('loading-topleft');
+								$('#summary-content').html(html);
+							});
+				}
+			}
+		});
+
+		// set proper URL handlers for all the criteria elements
+	    {% for c in application.session.evaluationcriterion_set.all %}
+	    	$('#criteria_{{ c.id }}').data('url', '{% url evaluation_criteria application.id c.id %}');
+		{% endfor %}
+		
+		// replace <input type=text> with labels, and handle in-place editing
+    	function inplace_save()
+    	{
+	        var myself = $(this);
+	        var original_text = $(this).data('original_text');
+            myself.unbind('blur');
+	        if (original_text != myself.val())
+	        {
+    	        myself.addClass('loading');
+   	        	$.post($(this).data('url'),
+   	               	  {'value': myself.val()},
+   	               	  function(data) {
+           	            myself.removeClass('loading');
+       	               	if (data != "invalid")
+       	               	{
+            	            myself.val(data);
+            	            //window.alert("success");
+       	               	}
+       	               	else
+       	               	{
+           	               	window.alert("invalid value");
+       	               	}
+       	 		    	myself.addClass('inputbox');
+       			    	myself.click(inplace_edit);
+           	       	  });
+	        }
+	        else
+	        {
+		    	myself.addClass('inputbox');
+		    	myself.click(inplace_edit);
+	        }
+    	}
+    	function inplace_edit()
+    	{
+			$(this).data('original_text', $(this).val());
+	        $(this).removeClass('inputbox');
+	        $(this).unbind('click');
+		    $(this).blur(inplace_save);
+    	}
+    	// install the initial listener...
+    	$('.eval input[type=text]').addClass('inputbox');
+		$('.eval input[type=text]').click(inplace_edit);
+
+		// replace <textarea> with labels, and handle in-place editing		
+	    function inplace_save2()
+	    {
+	        var myself = $(this);
+	        var original_text = $(this).data('original_text');
+	        myself.unbind('blur');
+	        if (original_text != myself.val())
+	        {
+       	        myself.addClass('loading');
+       	        $.post('{% url evaluation_comment application.id %}',
+       	               {'key': myself.attr('name'),
+       	                'comment': myself.val()},
+       	               function(data) {
+               	            myself.removeClass('loading');
+                            myself.addClass('inputbox');
+               	       });
+            }
+            else
+                myself.addClass('inputbox');
+	    }
+    	function inplace_edit2()
+    	{
+		    $(this).data('original_text', $(this).val());
+	        $(this).removeClass('inputbox');
+	        $(this).unbind('click');
+	        $(this).blur(inplace_save2);
+    	}
+    	$('.eval textarea').addClass('inputbox').autoResize().trigger('change');
+    	$('.eval textarea').click(inplace_edit2);
+
+    	$('.intanswer textarea').addClass('inputbox').autoResize().trigger('change');
+    	$('.intanswer textarea').click(function() {
+		    var original_text = $(this).val();
+	        $(this).removeClass('inputbox');
+		    $(this).blur(function() {
+		        var myself = $(this);
+		        if (original_text != myself.val())
+		        {
+        	        myself.addClass('loading');
+        	        $.post('{% url evaluation_interview_answer application.id %}',
+        	               {'key': myself.attr('name'),
+        	                'comment': myself.val()},
+        	               function(data) {
+                	            myself.removeClass('loading');
+                	            myself.addClass('inputbox');
+                	            myself.unbind('blur');
+                	       });
+                }
+                else
+                    myself.addClass('inputbox');
+		    });
+    	});
+
+    	// display toggles
+		$('#q_display_all').click(function() {
+			$('div#questions .htmlbox, div#questions .eval').slideDown();
+		    $('div#questions span.ui-icon').removeClass('ui-icon-circle-triangle-s');
+			$('div#questions span.ui-icon').addClass('ui-icon-circle-triangle-n');
+			return false;
+		});
+		$('#q_hide_all').click(function() {
+			$('div#questions .htmlbox, div#questions .eval').slideUp();
+		    $('div#logistics span.ui-icon').removeClass('ui-icon-circle-triangle-n');
+			$('div#logistics span.ui-icon').addClass('ui-icon-circle-triangle-s');
+			return false;
+		});
+
+		$('a.q_toggle').click(function() {
+			var divname = $(this).attr('id').replace('toggle_', '');
+			$('.' + divname).slideToggle();
+		    $(this).children('span.ui-icon').toggleClass('ui-icon-circle-triangle-s');
+		    $(this).children('span.ui-icon').toggleClass('ui-icon-circle-triangle-n');
+			//$('div#logistics span.ui-icon').addClass('ui-icon-minus');
+			return false;
+		});
+
+	});
+		
+</script>
+{% endblock %}

@@ -1,0 +1,386 @@
+{% extends "jobboard/base.html" %}
+
+{% load sorting_tags %}
+{% load pagination_tags %}
+{% load truncate helpers %}
+{% load boolean_icon %}
+{% load ifinlist %}
+{% load avatar_tags %}
+{% autosort open_jobs %}
+
+{% block extra_head %}
+	<link rel="stylesheet" href="{{ STATIC_URL }}css/jobboard.css" />
+{% endblock %}
+
+{% block body %}
+	<h1>Job Postings</h1>
+	
+	<p style='border: 1px solid #d0d0d0; text-align: center; margin: 10px auto; width: 75%; padding: 15px;'>
+		Job postings are specific volunteer opportunities within EWB:<br/>
+		generally short-term, part-time projects requiring specific skillsets.<br/>
+		If you are looking for full-time employment or volunteering opportunities,
+		visit the <a href="{% url applications %}">applications</a> page.
+	</p>
+	<br/>
+
+	<div class="clear"></div>
+	
+	Showing
+	{% if filters.deadline.0 %}
+		postings due
+		<strong>
+		{% ifequal filters.deadline.0 'gt' %}before{% else %}after{% endifequal %}
+		{{ filters.deadline.1 }}
+		</strong>
+	{% endif %}
+	
+	{% if filters.urgency.0 %}
+		{% if filters.deadline.0 %} and {% endif %}
+		all postings marked
+		<strong>
+		{% ifequal filters.urgency.0 'gt' %}at least{% else %}at most{% endifequal %}
+		{% for u, uname in URGENCY_CHOICES.items %}
+			{% ifequal filters.urgency.1 u %}{{ uname }}{% endifequal %}
+		{% endfor %}
+		</strong>
+	{% endif %}
+	
+	{% if filters.time_required.0 %}
+		{% if filters.deadline.0 or filters.urgency.0 %} and {% endif %}
+		all postings requiring
+		<strong>
+		{% ifequal filters.time_required.0 'gt' %}at least{% else %}at most{% endifequal %}
+		{% for t, tname in TIME_CHOICES.items %}
+			{% ifequal filters.time_required.1 t %}{{tname}}{% endifequal %}
+		{% endfor %}
+		</strong>
+	{% endif %}
+	
+	{% if filters.location.0 %}
+		{% if filters.deadline.0 or filters.urgency.0 or filters.time_required.0 %} and {% endif %}
+		all postings located in
+		<strong>
+			{% for location in alllocations %}
+				{% if location.id|in_list:filters.location.1 %}{{ location.name }},{% endif %}
+			{% endfor %}
+		</strong>
+	{% endif %}
+	
+	{% if filters.skills.0 %}
+		{% if filters.deadline.0 or filters.urgency.0 or filters.time_required.0 or filters.location.0 %} and {% endif %}
+		all postings with
+		<strong>
+			{% ifequal filters.skills.0 'all' %}all of{% endifequal %}
+			{% ifequal filters.skills.0 'any' %}any of{% endifequal %}
+			{% ifequal filters.skills.0 'none' %}none of{% endifequal %}
+			{% for skill in allskills %}
+				{% if skill.id|in_list:filters.skills.1 %}{{ skill.name }},{% endif %}
+			{% endfor %}
+		</strong>
+	{% endif %}
+	
+	{% if filters.search.0 %}
+		{% if filters.deadline.0 or filters.urgency.0 or filters.time_required.0 or filters.location.0 or filters.skills.0 %} and {% endif %}
+		all postings containing 
+		<strong><em>{{ filters.search.0 }}</em></strong>
+	{% endif %}
+	
+	{% if not filters.deadline.0 and not filters.urgency.0 and not filters.time_required.0 and not filters.skills.0 and not filters.location.0 and not filters.search.0 %}
+		all open postings<br/>
+	{% else %}
+		<br/>(<a href="{% url jobboard_list %}">clear all filters</a>)
+	{% endif %}
+	(<a href="#" id='toggle_filters'>{% if filters_active %}edit{% else %}add{% endif %} filters</a>)
+	{% if filters_active %}(<a href="{% url jobboard_filters_save %}" id="save_filters">save this filter</a>){% endif %}
+	<br/>
+	
+	<div style='display: none;'>
+		<form id='filters' method="GET" action="" style='margin: 15px;'>
+		{% if user.is_authenticated %}
+			<div style='width: 200px; float: right; border-left: 1px solid #d0d0d0; padding-left: 10px;'>
+				<h2>Saved filters</h2>
+				
+				{% for filter in saved_filters %}
+					<div id="filter-{{ filter.id }}">
+						<a href="{% url jobboard_filters_load filter.id %}" class="filterload">{{ filter.name }}</a>
+						[<a href="{% url jobboard_filters_delete filter.id %}" class="filterdelete" id="filter-delete-{{ filter.id }}">x</a>]
+					</div>
+				{% endfor %}
+			</div>
+		{% endif %}
+		
+		<p><strong>Filter postings...</strong></p>
+		<table id='filter_options' style='margin-right: 210px;'><tr>
+			<td>Deadline is:</td>
+			<td>
+				<select name='deadline' id='deadline' class='part1'>
+					<option value=''>any</option>
+					<option value='gt' {% ifequal filters.deadline.0 'gt' %}selected='selected'{% endifequal %}>before</option>
+					<option value='lt' {% ifequal filters.deadline.0 'lt' %}selected='selected'{% endifequal %}>after</option>
+				</select>
+			</td>
+			<td>					
+				<input type='text' id='deadline2' name='deadline2' value="{{ filters.deadline.1 }}"/>
+			</td>
+		</tr>
+			
+		<tr>
+			<td>Urgency is:</td>
+			<td>
+				<select name='urgency' id='urgency' class='part1'>
+					<option value=''>any</option>
+					<option value='gt' {% ifequal filters.urgency.0 'gt' %}selected='selected'{% endifequal %}>at least</option>
+					<option value='lt' {% ifequal filters.urgency.0 'lt' %}selected='selected'{% endifequal %}>at most</option>
+				</select>
+			</td>
+			<td>
+				<select name='urgency2' id='urgency2'>
+					{% for u, uname in URGENCY_CHOICES.items %}
+						<option value="{{u}}" {% ifequal filters.urgency.1 u %}selected='selected'{% endifequal %}>{{uname}}</option>
+					{% endfor %}
+				</select>
+			</td>
+		</tr>
+
+		<tr>
+			<td>Time required is:</td>
+			<td>
+				<select name='time_required' id='time_required' class='part1'>
+					<option value=''>any</option>
+					<option value='gt' {% ifequal filters.time_required.0 'gt' %}selected='selected'{% endifequal %}>at least</option>
+					<option value='lt' {% ifequal filters.time_required.0 'lt' %}selected='selected'{% endifequal %}>at most</option>
+				</select>
+			</td>
+			<td>
+				<select name='time_required2' id='time_required2'>
+					{% for t, tname in TIME_CHOICES.items %}
+						<option value="{{t}}" {% ifequal filters.time_required.1 t %}selected='selected'{% endifequal %}>{{tname}}</option>
+					{% endfor %}
+				</select>
+			</td>
+		</tr>
+
+		<tr>
+			<td>Location is:</td>
+			<td>
+				<select name='location' id='location' class='part1'>
+					<option value=''>any</option>
+					<option value='oneof' {% ifequal filters.location.0 'oneof' %}selected='selected'{% endifequal %}>one of</option>
+				</select>
+			</td>
+			<td>
+				<select name='location2' id='location2'>
+					{% for location in alllocations %}
+						<option value="{{location.id}}" {% if location.id|in_list:filters.location.1 %}selected='selected'{% endif %}>{{location.name}}</option>
+					{% endfor %}
+				</select>
+			</td>
+		</tr>
+
+		<tr>
+			<td valign='top'>Skills include:</td>
+			<td valign='top'>
+				<select name='skills' id='skills' class='part1'>
+					<option value=''>any</option>
+					<option value='all' {% ifequal filters.skills.0 'all' %}selected='selected'{% endifequal %}>all of</option>
+					<option value='any' {% ifequal filters.skills.0 'any' %}selected='selected'{% endifequal %}>any of</option>
+					<option value='none' {% ifequal filters.skills.0 'none' %}selected='selected'{% endifequal %}>none of</option>
+				</select>
+			</td>
+			<td>
+				<select name='skills2' id='skills2' multiple size=5>
+					{% for skill in allskills %}
+						<option value="{{skill.id}}" {% if skill.id|in_list:filters.skills.1 %}selected='selected'{% endif %}>{{skill.name}}</option>
+					{% endfor %}
+				</select>
+			</td>
+		</tr>
+			
+		<tr>
+			<td colspan=2 >Description contains:</td>
+			<td>
+				<input type='text' id='search' name='search' value="{{ filters.search.0 }}"/>
+			</td>
+		</tr>
+
+		<tr>
+			<td colspan='3' align='center'>
+				<input type="submit" value="Filter"/>
+				or
+				<a href="{% url jobboard_list %}">clear all filters</a>
+			</td>
+		</tr></table>
+		<br/>
+		</form> 
+	</div>
+		
+	{% if open_jobs %}
+		{% autopaginate open_jobs 10 %}
+		{% paginate %}
+
+		<p>
+			Sort by: 		
+		    {% anchor name "Name" %} |
+		    {% anchor posted_date "Posted Date" %} |
+		    {% anchor deadline "Deadline" %} |
+		    {% anchor urgency "Urgency" %} |
+		    {% anchor time_required "Time Required" %}
+	    </p>
+	    
+	    <div id="job-list">
+		{% for job in open_jobs %}
+			<a href="{% url jobboard_detail job.id %}" style="display: block; width: 230px; margin: 10px; float: left; position: relative; border: 0px;" class="urgency-{{ job.urgency }} jobposting joblink" id="job-{{ job.id }}">
+				<img src="{{ STATIC_URL }}images/post-it-top.png" style='width: 100%; position: absolute; top: 0; left: 0; border: 0px;' class='postittop'/>
+				<div style='position: relative; margin-top: 48px;'>
+
+					<img src="{{ STATIC_URL }}images/post-it-bottom.png" style='height: 100%; width: 100%; position: absolute; top: 0px; left: 0; border: 0px;'/>
+					<div style='padding: 0px 25px 35px; z-index: 20; position: relative; min-height: 125px;'>
+						<div style='font-weight: bold; font-size: 1.3em;'>
+							{{ job.name }}
+						</div>
+						<br/>
+
+						{% if job.skills.all %}				
+							<div>
+								{{ job.skills.all|join:", "}}
+							</div>
+							<br/>
+						{% endif %}
+				
+						{% if job.location %}
+							<div>Location: {{ job.location }}</div>
+						{% endif %}
+						<div>{{ job.time_required_verbose }}</div>
+						{% if job.deadline %}
+							<div style='font-weight: bold;'>Due: {{ job.deadline|date:"M j, Y"}}</div>
+						{% endif %}
+						
+ 						<div style='font-style: italic; color: #808080; padding: 20px 0 0 0;'>
+            				<img src="{% avatar_url job.owner 25 %}" title="{{job.owner.visible_name}}" alt="{{job.owner.visible_name}}" style='float: left; height: 25px; width: 25px; padding: 0 10px 0 5px;'/>
+							Posted by {{ job.owner.visible_name }}<br/> 
+							{{ job.posted_date|date:"M j, Y"}}
+						</div>
+					</div>
+				</div>
+			</a>
+		{% endfor %}
+		</div>
+		
+	{% else %}
+		<br/><hr/>
+		{% if filters_active %}
+			<h2>There are no open postings that match your filters.</h2>
+		{% else %}
+			<h2>There are no open postings at this time.</h2>
+		{% endif %}
+	{% endif %}
+{% endblock %}
+
+{% block extra_body %}
+	<link type="text/css" href="{{STATIC_URL}}css/colorbox.css" rel="stylesheet" />
+	<script type="text/javascript" src="{{STATIC_URL}}js/colorbox.js"></script>
+	<script type='text/javascript'>
+		$(document).ready(function() {
+			$('#toggle_filters').colorbox({opacity: '0.5',
+										   inline: true,
+										   href: '#filters'
+			});
+
+			$('.part1').change(function() {
+				var next_element = $('#' + $(this).attr('id') + '2');
+				if ($(this).val() == '')
+				{
+					next_element.attr('disabled', 'disabled');
+				}
+				else
+				{
+					next_element.attr('disabled', '');
+				}
+			});
+			$('.part1').change();		// fire event to set initial states
+
+			$('.joblink').colorbox({opacity: '0.5',
+									iframe: true,
+									width: '90%',
+									height: '90%'});
+
+			$('.joblink').hover(function() {
+									$('.postittop', $(this)).attr('src', '{{ STATIC_URL}}images/post-it-top2.png');
+								},
+								function() {
+									$('.postittop', $(this)).attr('src', '{{ STATIC_URL}}images/post-it-top.png');
+								});
+
+			$('#save_filters').colorbox({opacity: '0.5'});
+
+			$('.filterdelete').click(function() {
+				$.get($(this).attr('href'));
+				var filter_id = $(this).attr('id').substring(14);
+				$('#filter-' + filter_id).slideUp();
+				
+				return false;
+			}); 
+
+			var perrow = Math.floor($('#job-list').innerWidth() / 250);
+			$('.jobposting:nth-child(' + perrow + 'n)').after('<br style="clear: left;"/>');
+		});
+	</script>
+{% endblock %}
+
+
+{% block toolbar_right %}
+	{% if user.is_authenticated %}
+		<br/><div>
+		<a href="{% url jobboard_new %}" style='font-size: 16px; font-weight: bold; text-decoration: none; border: 1px solid #a0a0a0; background: #f0f0f0; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; padding: 0.5em 1em; margin: 1em 0;' class="joblink">
+			Post a job
+		</a>
+		</div>
+		<br/><br/>
+		
+		{% if my_postings %}
+			<h2>My Postings</h2>
+			{% for job in my_postings %}
+				<a href="{% url jobboard_detail job.id %}" class="padded joblink">{{ job.name }}</a>
+			{% endfor %}
+			<br/>
+		{% endif %}
+		
+		{% if my_jobs %}
+			<h2>Accepted Jobs</h2>
+			{% for job in my_jobs %}
+				<a href="{% url jobboard_detail job.id %}" class="padded joblink">{{ job.name }}</a>
+			{% endfor %} 
+			<br/>
+		{% endif %}
+		
+		{% if bid_jobs %}
+			<h2>My Bids</h2>
+			{% for job in bid_jobs %}
+				<a href="{% url jobboard_detail job.id %}" class="padded joblink">{{ job.name }}</a>
+			{% endfor %} 
+			<br/>
+		{% endif %}
+		
+		{% if watching_jobs %}
+			<h2>Watching</h2>
+			{% for job in watching_jobs %}
+				<a href="{% url jobboard_detail job.id %}" class="padded joblink">{{ job.name }}</a>
+			{% endfor %} 
+			<br/>
+		{% endif %}
+		
+		{% if closed_jobs %}
+			<h2>My closed postings</h2>
+			{% for job in closed_jobs %}
+				<a href="{% url jobboard_detail job.id %}" class="padded joblink">{{ job.name }}</a>
+			{% endfor %} 
+			<br/>
+		{% endif %}
+	{% else %}
+		<style>
+			#toolbarcolumn_right {
+				display: none;
+			}
+		</style>
+	{% endif %}
+{% endblock %}

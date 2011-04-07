@@ -1,0 +1,30 @@
+{% extends "site_base.html" %}
+
+{% block extra_head %}
+<!-- 		<link href="/media/css/base.css" rel="stylesheet" type="text/css" media="screen" />  -->
+<!-- 		<link href="/media/css/forms.css" rel="stylesheet" type="text/css" media="screen" />  -->
+{% comment %}
+		<script type="text/javascript" src="/admin/jsi18n/"></script>
+		<script type="text/javascript" src="{{STATIC_URL}}js/core.js"></script>
+		<script type="text/javascript" src="{{STATIC_URL}}js/admin/RelatedObjectLookups.js"></script> 
+{% endcomment %}
+		{{ form.media }} 
+{% endblock %}
+
+{% block body_class %}volunteering purple{% endblock %}
+
+{% block head_title %}Apply to EWB{% endblock %}
+
+{% block subnav %}
+<ul class="subnav">
+	<li><a href="{% url applications %}">Open Positions</a></li>
+	
+	{% if perms.applications %}
+		<li><a href="{% url placements %}">APS Placements</a></li>
+		<li><a href="{% url sessions %}">Application Sessions</a></li>
+	{% endif %}
+	
+	{#<li><a href="{% url jobboard_list %}">Volunteering Opportunities</a></li> #}
+
+</ul>
+{% endblock %}

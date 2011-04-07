@@ -1,0 +1,25 @@
+{% extends "apply/base.html" %}
+
+{% block head_title %}
+Applications » Insurance Instance » 
+{% if insuranceinstance %}
+	Edit » {{ insuranceinstance.placement.profile.name }}
+{% else %}
+	Create
+{% endif %}
+{% endblock %}
+
+{% block body %}
+{% if object %}
+<h2>Edit a insurance instance</h2>
+{% else %}
+<h2>Create a insurance instance</h2>
+{% endif %}
+
+<form action="{{ action }}" method="post">
+	<table>
+	{{ form.as_p }}
+	</table>
+	<input type="submit" name="insuranceinstance" value="Save Insurance Instance" id="insuranceinstance">
+</form>
+{% endblock %}

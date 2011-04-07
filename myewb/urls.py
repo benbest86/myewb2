@@ -31,7 +31,7 @@ admin.autodiscover()
 urlpatterns = patterns('',
     url(r'^$', 'group_topics.views.topics.topics', {'template_name': 'frontpage.html'}, name="home"),
 
-    (r'^volunteering/', include('volunteering.urls')),
+    (r'^apply/', include('apply.urls')),
 
     
     (r'^about/', include('about.urls')),
@@ -79,6 +79,7 @@ urlpatterns = patterns('',
     (r'^mailchimp/', include('mailchimp.urls')),
 	(r'^finance/', include('finance.urls')),
 	(r'^confcomm/', include('confcomm.legacy_urls')),
+    (r'^jobboard/', include('jobboard.urls')),
     
     url(r'^unsubscribe/$', 'networks.views.network.unsubscribe', name='network_unsubscribe',),
     
@@ -106,7 +107,7 @@ urlpatterns = patterns('',
     (r'^chapter/', include('legacy_urls.chapter')),
     (r'^mailing/', include('legacy_urls.mailing')),
     (r'^events/', include('legacy_urls.eventsurls')),
-    #(r'^volunteering/', include('legacy_urls.volunteering')),
+    (r'^volunteering/', include('legacy_urls.volunteering')),
     (r'^api/', include('legacy_urls.api')),
     (r'^cal/', include('legacy_urls.cal')),
     (r'^actions/', include('legacy_urls.actions')),
