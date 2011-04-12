@@ -24,7 +24,7 @@ from siteutils.shortcuts import get_object_or_none
 from apply.models import Session, EvaluationCriterion, Evaluation, Application, EvaluationComment, EvaluationResponse, InterviewQuestion, Answer
 from apply.forms import SessionForm, EvaluationCriterionForm, EmailForm
 
-@permission_required('applications.admin')
+@permission_required('apply.admin')
 def evaluation_list(request, session_id):
     session = get_object_or_404(Session, id=session_id)
     
@@ -37,7 +37,7 @@ def evaluation_list(request, session_id):
                                'draft': draft},
                               context_instance=RequestContext(request)) 
 
-@permission_required('applications.admin')
+@permission_required('apply.admin')
 def evaluation_detail(request, app_id):
     application = get_object_or_404(Application, id=app_id)
     evaluation, created = Evaluation.objects.get_or_create(application=application)
@@ -49,7 +49,7 @@ def evaluation_detail(request, app_id):
                               },
                               context_instance=RequestContext(request))
 
-@permission_required('applications.admin')
+@permission_required('apply.admin')
 def evaluation_comment(request, app_id):
     application = get_object_or_404(Application, id=app_id)
     
@@ -78,7 +78,7 @@ def evaluation_comment(request, app_id):
         return response
     return HttpResponse("invalid")
 
-@permission_required('applications.admin')
+@permission_required('apply.admin')
 def evaluation_interview_answer(request, app_id):
     application = get_object_or_404(Application, id=app_id)
     
@@ -108,7 +108,7 @@ def evaluation_interview_answer(request, app_id):
         return response
     return HttpResponse("invalid")
 
-@permission_required('applications.admin')
+@permission_required('apply.admin')
 def evaluation_criteria(request, app_id, criteria_id):
     application = get_object_or_404(Application, id=app_id)
     criteria = get_object_or_404(EvaluationCriterion, id=criteria_id, session=application.session)
@@ -127,7 +127,7 @@ def evaluation_criteria(request, app_id, criteria_id):
             pass
     return HttpResponse("invalid")
 
-@permission_required('applications.admin')
+@permission_required('apply.admin')
 def evaluation_bulkedit(request, session_id):
     session = get_object_or_404(Session, id=session_id)
     
@@ -179,7 +179,7 @@ def evaluation_bulkedit(request, session_id):
     request.user.message_set.create(message='Evaluations updated')
     return HttpResponseRedirect(reverse('evaluation_list', kwargs={'session_id': session_id}))
 
-@permission_required('applications.admin')
+@permission_required('apply.admin')
 def evaluation_emailform(request, session_id):
     """
     Display new email form
@@ -204,7 +204,7 @@ def evaluation_emailform(request, session_id):
                                'session': session},
                               context_instance=RequestContext(request))
 
-@permission_required('applications.admin')
+@permission_required('apply.admin')
 def evaluation_emailpreview(request, session_id):
     """
     Preview email - including HTML body, and ability to edit email
@@ -237,7 +237,7 @@ def evaluation_emailpreview(request, session_id):
     else:
         return HttpResponseForbidden()
     
-@permission_required('applications.admin')
+@permission_required('apply.admin')
 def evaluation_emailsend(request, session_id):
     session = get_object_or_404(Session, id=session_id)
 

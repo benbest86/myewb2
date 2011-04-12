@@ -22,7 +22,7 @@ from siteutils.decorators import secure_required
 from apply.models import Placement, Sector
 from apply.forms import PlacementForm
 
-@permission_required('overseas')
+@permission_required('apply')
 @secure_required
 def placements(request):
     placements = Placement.objects.filter(deleted=False)
@@ -34,7 +34,7 @@ def placements(request):
         "countries": EWB_PLACEMENTS,
     }, context_instance=RequestContext(request))
 
-@permission_required('overseas')
+@permission_required('apply')
 @secure_required
 def detail(request, placement_id):
     placement = get_object_or_404(Placement, id=placement_id)
@@ -43,7 +43,7 @@ def detail(request, placement_id):
                               {'placement': placement},
                               context_instance=RequestContext(request))
     
-@permission_required('overseas')
+@permission_required('apply')
 @secure_required
 def new(request):
     if request.method == 'POST':

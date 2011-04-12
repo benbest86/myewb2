@@ -19,7 +19,7 @@
 <ul class="subnav">
 	<li><a href="{% url applications %}">Open Positions</a></li>
 	
-	{% if perms.applications %}
+	{% if perms.apply %}
 		<li><a href="{% url placements %}">APS Placements</a></li>
 		<li><a href="{% url sessions %}">Application Sessions</a></li>
 	{% endif %}
