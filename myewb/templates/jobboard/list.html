@@ -13,18 +13,20 @@
 {% endblock %}
 
 {% block body %}
-	<h1>Job Postings</h1>
+	<h1>Volunteer Zone</h1>
 	
 	<p style='border: 1px solid #d0d0d0; text-align: center; margin: 10px auto; width: 75%; padding: 15px;'>
-		Job postings are specific volunteer opportunities within EWB:<br/>
-		generally short-term, part-time projects requiring specific skillsets.<br/>
-		If you are looking for full-time employment or volunteering opportunities,
+		Postings here are specific volunteer opportunities within EWB:<br/>
+		generally short-term, part-time projects requiring specific skills.<br/><br/>
+		
+		If you are looking for full-time employment or volunteering opportunities,<br/>
 		visit the <a href="{% url applications %}">applications</a> page.
 	</p>
 	<br/>
 
 	<div class="clear"></div>
-	
+
+	<div style='font-size: 1.2em;'>	
 	Showing
 	{% if filters.deadline.0 %}
 		postings due
@@ -85,14 +87,20 @@
 		<strong><em>{{ filters.search.0 }}</em></strong>
 	{% endif %}
 	
-	{% if not filters.deadline.0 and not filters.urgency.0 and not filters.time_required.0 and not filters.skills.0 and not filters.location.0 and not filters.search.0 %}
-		all open postings<br/>
-	{% else %}
-		<br/>(<a href="{% url jobboard_list %}">clear all filters</a>)
+	{% if not filters_active %}
+		all open postings
 	{% endif %}
-	(<a href="#" id='toggle_filters'>{% if filters_active %}edit{% else %}add{% endif %} filters</a>)
-	{% if filters_active %}(<a href="{% url jobboard_filters_save %}" id="save_filters">save this filter</a>){% endif %}
-	<br/>
+	</div>
+	
+	<div style='padding-left: 15px;'>
+	{% if filters_active %}
+		(<a href="{% url jobboard_list %}">clear all filters</a>)
+		(<a href="#" id='toggle_filters'>edit filters</a>)
+		(<a href="{% url jobboard_filters_save %}" id="save_filters">save this filter</a>)
+	{% else %}	
+		(<a href="#" id='toggle_filters'>add filters</a>)
+	{% endif %}
+	</div>
 	
 	<div style='display: none;'>
 		<form id='filters' method="GET" action="" style='margin: 15px;'>
@@ -218,7 +226,7 @@
 		{% autopaginate open_jobs 10 %}
 		{% paginate %}
 
-		<p>
+		<p style='font-size: 1.2em'>
 			Sort by: 		
 		    {% anchor name "Name" %} |
 		    {% anchor posted_date "Posted Date" %} |
@@ -258,7 +266,7 @@
 						
  						<div style='font-style: italic; color: #808080; padding: 20px 0 0 0;'>
             				<img src="{% avatar_url job.owner 25 %}" title="{{job.owner.visible_name}}" alt="{{job.owner.visible_name}}" style='float: left; height: 25px; width: 25px; padding: 0 10px 0 5px;'/>
-							Posted by {{ job.owner.visible_name }}<br/> 
+							By {{ job.owner.visible_name }}<br/> 
 							{{ job.posted_date|date:"M j, Y"}}
 						</div>
 					</div>
@@ -308,7 +316,11 @@
 			$('.joblink').colorbox({opacity: '0.5',
 									iframe: true,
 									width: '90%',
-									height: '90%'});
+									height: '90%',
+									onCleanup: function() {
+										window.location.reload(true);
+									}
+			});
 
 			$('.joblink').hover(function() {
 									$('.postittop', $(this)).attr('src', '{{ STATIC_URL}}images/post-it-top2.png');
@@ -340,7 +352,7 @@
 	{% if user.is_authenticated %}
 		<br/><div>
 		<a href="{% url jobboard_new %}" style='font-size: 16px; font-weight: bold; text-decoration: none; border: 1px solid #a0a0a0; background: #f0f0f0; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; padding: 0.5em 1em; margin: 1em 0;' class="joblink">
-			Post a job
+			New posting
 		</a>
 		</div>
 		<br/><br/>
