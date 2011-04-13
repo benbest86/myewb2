@@ -56,16 +56,16 @@
 		<div style='font-weight: bold; padding-top: 10px;'>
 			{% if perms.jobboard %}
 					{% if job.active %} 
-						<a href="{% url jobboard_edit job.id %}">Edit this posting</a>
+						<a href="{% url jobboard_edit job.id %}" class="modified">Edit this posting</a>
 					{% else %}
-						<a href="{% url jobboard_open job.id %}">Re-open this posting</a>
+						<a href="{% url jobboard_open job.id %}" class="modified">Re-open this posting</a>
 					{% endif %}
 			{% else %}
 					{% ifequal user job.owner %}
 						{% if job.active %} 
-							<a href="{% url jobboard_edit job.id %}">Edit this posting</a>
+							<a href="{% url jobboard_edit job.id %}" class="modified">Edit this posting</a>
 						{% else %}
-							<a href="{% url jobboard_open job.id %}">Re-open this posting</a>
+							<a href="{% url jobboard_open job.id %}" class="modified">Re-open this posting</a>
 						{% endif %}
 					{% else %}
 						&nbsp;
@@ -86,7 +86,7 @@
 	{% ifequal job.owner user %}
 		<p><strong>This is your posting.</strong></p>
 		
-		<p><a href="{% url jobboard_close job.id %}">Close this posting</a></p>
+		<p><a href="{% url jobboard_close job.id %}" class="modified">Close this posting</a></p>
 		
 		{% if job.accepted_users.all or job.bid_users.all %}
 			<hr/>
@@ -129,9 +129,9 @@
 			<p><strong>You have been accepted for posting.</strong></p>
 		{% else %}
 			{% if user|in_list:job.bid_users.all %}
-				<p><strong>You have bid on this posting.</strong> (<a href="{% url jobboard_bid_cancel job.id %}">cancel</a>)</p>
+				<p><strong>You have bid on this posting.</strong> (<a href="{% url jobboard_bid_cancel job.id %}" class="modified">cancel</a>)</p>
 			{% else %}
-				<p><a href="{% url jobboard_bid job.id %}" id="bid_on_job">Bid on this posting</a></p>
+				<p><a href="{% url jobboard_bid job.id %}" id="bid_on_job" class="modified">Bid on this posting</a></p>
 				
 				<div style='display: none;'>
 					<form id="bid_form" method="post" action="{% url jobboard_bid job.id %}">
@@ -146,15 +146,15 @@
 				</div>
 	
 				{% if user|in_list:job.following_users.all %}
-					<p><strong>You are watching this posting.</strong> (<a href="{% url jobboard_watch_cancel job.id %}">cancel</a>)</p>
+					<p><strong>You are watching this posting.</strong> (<a href="{% url jobboard_watch_cancel job.id %}" class="modified">cancel</a>)</p>
 				{% else %}			
-					<p><a href="{% url jobboard_watch job.id %}">Watch this posting</a></p>
+					<p><a href="{% url jobboard_watch job.id %}" class="modified">Watch this posting</a></p>
 				{% endif %}
 			{% endif %}
 		{% endif %}
 
 		{% if perms.jobboard %}
-			<p><a href="{% url jobboard_close job.id %}">Close this posting</a></p>
+			<p><a href="{% url jobboard_close job.id %}" class="modified">Close this posting</a></p>
 		{% endif %}
 	{% endifequal %}
 {% else %}
@@ -172,8 +172,7 @@
 <script type='text/javascript'>
 	$(document).ready(function() {
 		$('#back_to_board').click(function() {
-			$('#cboxClose', parent.document).click();	// ... doesn't seem to work??
-			parent.location.reload(true);
+			parent.$.fn.colorbox.close();
 			return false;
 		});
 
@@ -184,6 +183,10 @@
 		$('.view_statement').colorbox({opacity: '0.5',
 									   width: '75%',
 									   height: '75%'});
+
+		$('a.modified').click(function() {
+			parent.jobs_modified = true;
+		});
 
 	});
 </script>

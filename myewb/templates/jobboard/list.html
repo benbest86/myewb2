@@ -294,6 +294,7 @@
 	<script type="text/javascript" src="{{STATIC_URL}}js/ui.datepicker.js"></script>
 	<script type="text/javascript" src="{{STATIC_URL}}js/colorbox.js"></script>
 	<script type='text/javascript'>
+		var jobs_modified = false;
 		$(document).ready(function() {
 			$('#toggle_filters').colorbox({opacity: '0.5',
 										   inline: true,
@@ -318,7 +319,10 @@
 									width: '90%',
 									height: '90%',
 									onCleanup: function() {
-										window.location.reload(true);
+										if (jobs_modified) {
+											window.location.reload(true);
+											jobs_modified = false;
+										}
 									}
 			});
 
