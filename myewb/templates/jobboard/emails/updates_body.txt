@@ -12,7 +12,9 @@ Location: {{ job.location|default:"Any" }}<br/>
 Est. time required: {{ job.time_required_verbose }}<br/>
 Urgency: {{ job.urgency_verbose }}<br/>
 Skills: {{ job.skills.all|join:", " }}<br/>
-People working/bidding/watching: {{ job.accepted_users.count }} / {{ job.bid_users.count }} / {{ job.following_users.count }}
+People working/bidding/watching: {{ job.accepted_users.count }} / {{ job.bid_users.count }} / {{ job.following_users.count }}<br/>
+<br/>
+<a href="http://my.ewb.ca{% url jobboard_detail job.id %}">http://my.ewb.ca{% url jobboard_detail job.id %}</a>
 <br/><hr/>
 {% endfor %}
 <br/><br/>

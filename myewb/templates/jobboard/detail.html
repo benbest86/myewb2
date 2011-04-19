@@ -73,6 +73,11 @@
 			{% endif %}
 		</div>
 	</div>
+
+	<div style='margin: 5px 5%'>
+		<strong>Share this job at: <a href="{% url jobboard_detail job.id %}" target="_top">http://my.ewb.ca{% url jobboard_detail job.id %}</a></strong>
+	</div>
+	
 	<br style='clear: both;'/>
 	
 	<div>{{ job.description|linebreaks}} </div>

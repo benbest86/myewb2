@@ -122,6 +122,9 @@ def detail(request, id):
     return render_to_response("jobboard/detail.html",
                               {"job": job},
                               context_instance=RequestContext(request))
+    
+def detail_redirect(request, id):
+    return HttpResponseRedirect("%s#job%s" % (reverse('jobboard_list'), id))
 
 @login_required
 def edit(request, id=None):

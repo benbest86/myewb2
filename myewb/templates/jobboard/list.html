@@ -237,7 +237,7 @@
 	    
 	    <div id="job-list">
 		{% for job in open_jobs %}
-			<a href="{% url jobboard_detail job.id %}" style="display: block; width: 230px; margin: 10px; float: left; position: relative; border: 0px;" class="urgency-{{ job.urgency }} jobposting joblink" id="job-{{ job.id }}">
+			<a href="{% url jobboard_detail_ajax job.id %}" style="display: block; width: 230px; margin: 10px; float: left; position: relative; border: 0px;" class="urgency-{{ job.urgency }} jobposting joblink" id="job-{{ job.id }}">
 				<img src="{{ STATIC_URL }}images/post-it-top.png" style='width: 100%; position: absolute; top: 0; left: 0; border: 0px;' class='postittop'/>
 				<div style='position: relative; margin-top: 48px;'>
 
@@ -296,6 +296,30 @@
 	<script type='text/javascript'>
 		var jobs_modified = false;
 		$(document).ready(function() {
+			var hash = location.hash;
+			if (hash)
+			{
+				if (hash.substring(0, 4) == '#job')
+				{
+					var jobid = hash.substring(4);
+					
+					$.fn.colorbox({opacity: '0.5',
+						iframe: true,
+						width: '90%',
+						height: '90%',
+						href: '{% url jobboard_list %}' + jobid + '/ajax/',
+						open: true,
+						onCleanup: function() {
+							if (jobs_modified) {
+								window.location.reload(true);
+								jobs_modified = false;
+							}
+						}
+					});
+				}
+				location.hash = '';
+			}
+			
 			$('#toggle_filters').colorbox({opacity: '0.5',
 										   inline: true,
 										   href: '#filters'
@@ -364,7 +388,7 @@
 		{% if my_postings %}
 			<h2>My Postings</h2>
 			{% for job in my_postings %}
-				<a href="{% url jobboard_detail job.id %}" class="padded joblink">{{ job.name }}</a>
+				<a href="{% url jobboard_detail_ajax job.id %}" class="padded joblink">{{ job.name }}</a>
 			{% endfor %}
 			<br/>
 		{% endif %}
@@ -372,7 +396,7 @@
 		{% if my_jobs %}
 			<h2>Accepted Jobs</h2>
 			{% for job in my_jobs %}
-				<a href="{% url jobboard_detail job.id %}" class="padded joblink">{{ job.name }}</a>
+				<a href="{% url jobboard_detail_ajax job.id %}" class="padded joblink">{{ job.name }}</a>
 			{% endfor %} 
 			<br/>
 		{% endif %}
@@ -380,7 +404,7 @@
 		{% if bid_jobs %}
 			<h2>My Bids</h2>
 			{% for job in bid_jobs %}
-				<a href="{% url jobboard_detail job.id %}" class="padded joblink">{{ job.name }}</a>
+				<a href="{% url jobboard_detail_ajax job.id %}" class="padded joblink">{{ job.name }}</a>
 			{% endfor %} 
 			<br/>
 		{% endif %}
@@ -388,7 +412,7 @@
 		{% if watching_jobs %}
 			<h2>Watching</h2>
 			{% for job in watching_jobs %}
-				<a href="{% url jobboard_detail job.id %}" class="padded joblink">{{ job.name }}</a>
+				<a href="{% url jobboard_detail_ajax job.id %}" class="padded joblink">{{ job.name }}</a>
 			{% endfor %} 
 			<br/>
 		{% endif %}
@@ -396,7 +420,7 @@
 		{% if closed_jobs %}
 			<h2>My closed postings</h2>
 			{% for job in closed_jobs %}
-				<a href="{% url jobboard_detail job.id %}" class="padded joblink">{{ job.name }}</a>
+				<a href="{% url jobboard_detail_ajax job.id %}" class="padded joblink">{{ job.name }}</a>
 			{% endfor %} 
 			<br/>
 		{% endif %}
