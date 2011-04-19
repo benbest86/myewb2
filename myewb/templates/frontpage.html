@@ -10,6 +10,7 @@
 {% load champ_tags %}
 {% load perspectives %}
 {% load networks_tags %}
+{% load jobboard_tags %}
 
 {% block extra_head %}
     {{ block.super }}
@@ -362,7 +363,17 @@ $(document).ready(function() {
             </form>
         </div>
     {% endif %}
-            
+    
+   	<div class="toolbarheader bkgd" id="box-frontpage-jobboard">{% trans "Volunteer Zone" %}</div>
+   	<div class="toolbarcontent" style="line-height: 1.5em;">
+   		<strong><a href="{% url jobboard_list %}">{% jobboard_count %} opportunities open</a></strong>
+   		<br/><br/>
+   		{% jobboard_upcoming for user as jobs %}
+   		{% for job in jobs %}
+   			<a href="{% url jobboard_detail job.id %}">{{ job.name|truncatewords:4 }}</a><br/>
+   		{% endfor %}
+	</div>
+        
     <div class="toolbarheader bkgd"  id="box-happening">{% trans "Happening in EWB" %}</div>
     <div class="toolbarcontent" style="padding: 2px; overflow: none;">
         {% events_widget user %}
