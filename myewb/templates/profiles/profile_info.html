@@ -215,8 +215,28 @@
             </tr>
         {% endif %}
                 
-                
-
+		{% if perms.jobboard or is_me %}
+			{% if other_user.interested_jobs.all or other_user.jobposting_set.all %}
+		        <tr>
+		            <th>Volunteer Zone</th>
+		            <td>
+		            	{% if other_user.jobposting_set.all %}
+		            		<strong>Posted</strong><br/>
+		            		{% for job in other_user.jobposting_set.all %}
+		            			{{ job.name }}<br/>
+		            		{% endfor %}
+		            	{% endif %}
+		            	{% if other_user.interested_jobs.all %}
+		            		<strong>Interested</strong><br/>
+		            		{% for job in other_user.interested_jobs.all %}
+		            			{{ job.name }}<br/>
+		            		{% endfor %}
+		            	{% endif %}
+		            </td>
+		        </tr>
+		    {% endif %}
+		{% endif %}
+	
     </tbody>
 </table>
 
