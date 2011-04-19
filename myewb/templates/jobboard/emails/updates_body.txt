@@ -1,0 +1,20 @@
+Hello {{ user.first_name }},<br/><br/>
+
+There's been some action in the myEWB Volunteer Zone!<br/><br/>
+
+The following opportunities have been posted or updated in the last day, and match your saved searches:<br/><br/>
+{% for job in jobs %}
+<strong>{{ job.name }}</strong><br/><br/>
+
+Posted by: {{ job.owner.username }}<br/>
+Deadline: {{ job.deadline|date:"d M Y" }}<br/>
+Location: {{ job.location|default:"Any" }}<br/>
+Est. time required: {{ job.time_required_verbose }}<br/>
+Urgency: {{ job.urgency_verbose }}<br/>
+Skills: {{ job.skills.all|join:", " }}<br/>
+People working/bidding/watching: {{ job.accepted_users.count }} / {{ job.bid_users.count }} / {{ job.following_users.count }}
+<br/><hr/>
+{% endfor %}
+<br/><br/>
+Regards,<br/>
+Engineers Without Borders Canada<br/>
