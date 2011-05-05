@@ -87,7 +87,7 @@ def members_csv(request, group_slug, regular=False):
     writer = csv.writer(response)
 
     # headings
-    row = ['First Name', 'Last Name', 'Email', 'Exec title', 'Chapter', 'Date joined this list']
+    row = ['First Name', 'Last Name', 'Email', 'Exec title', 'Chapter', 'Date joined this list', 'Last login', 'Has picture', 'Has address', 'Has workplace']
     if regular:
         row.append('Membership expiry')
     writer.writerow(row)
@@ -111,7 +111,17 @@ def members_csv(request, group_slug, regular=False):
                 chaptername = ""
                 title = ""
             
-            row = [u.first_name, u.last_name, u.email, title, chaptername, m.joined]
+            has_picture = False
+            if u.avatar_set.count():
+                has_picture = True
+            has_address = False
+            if u.get_profile().addresses.count():
+                has_address = True
+            has_workplace = False
+            if u.workrecord_set.count():
+                has_workplace=True
+            
+            row = [u.first_name, u.last_name, u.email, title, chaptername, m.joined, u.last_login, has_picture, has_address, has_workplace]
             
             if regular:
                 row.append(u.get_profile().membership_expiry)
