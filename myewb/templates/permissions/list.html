@@ -3,6 +3,17 @@
 {% load i18n %}
 
 {% block body %}
+	<h2>myEWB admins (all permissions)</h2>
+	({{ admin_count }} users)
+	--
+	<a href="{% url permissions_admin_detail %}">edit</a>
+	
+	<br/>
+	Full control over ... everything!  Adding/removing people from the 
+	National Office group admins will auto-update this list as well.
+	
+	<hr/>
+
 	{% for group in groups %}
 		<h2>{{ group }}</h2>
 		({{ group.user_set.count }} users)

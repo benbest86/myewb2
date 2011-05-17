@@ -25,9 +25,11 @@ from permissions.models import PermissionGroup
 @staff_member_required
 def permissions_index(request):
     groups = PermissionGroup.objects.all()
+    admin_count = User.objects.filter(is_staff=True).count()
     
     return render_to_response("permissions/list.html", {
         "groups": groups,
+        "admin_count": admin_count,
     }, context_instance=RequestContext(request))
  
 @staff_member_required   
@@ -57,6 +59,33 @@ def permissions_detail(request, groupid):
     }, context_instance=RequestContext(request))
 
 @staff_member_required   
+def permissions_admin_detail(request):
+    admins = User.objects.filter(is_staff=True)
+    
+    if request.POST:
+        form = AddPermissionForm(request.POST)
+        if form.is_valid():
+            users = form.cleaned_data['user']
+            
+            for user in users:
+                user.is_staff = True
+                user.is_superuser = True
+                user.save()
+                request.user.message_set.create(message="Added %s" % user.visible_name())
+                
+            # reset form...
+            form = AddPermissionForm()
+            
+            # FIXME: change so we redirect on success, to avoid double-submit-on-refresh
+    else:
+        form = AddPermissionForm()
+
+    return render_to_response("permissions/admin_detail.html", {
+        "admins": admins,                                                        
+        "form": form,
+    }, context_instance=RequestContext(request))
+
+@staff_member_required   
 def permissions_remove(request, groupid, userid):
     group = get_object_or_404(PermissionGroup, pk=groupid)
     user = get_object_or_404(User, pk=userid)
@@ -65,4 +94,15 @@ def permissions_remove(request, groupid, userid):
     request.user.message_set.create(message="Removed %s" % user.visible_name())
 
     return HttpResponseRedirect(reverse("permissions_detail", kwargs={'groupid': group.pk}))
+    
+@staff_member_required   
+def permissions_admin_remove(request, userid):
+    user = get_object_or_404(User, pk=userid)
+
+    user.is_staff = False
+    user.is_superuser = False
+    user.save()
+    request.user.message_set.create(message="Removed %s" % user.visible_name())
+
+    return HttpResponseRedirect(reverse("permissions_admin_detail", kwargs={}))
     
