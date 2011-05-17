@@ -1,0 +1,52 @@
+{% extends "profiles/base.html" %}
+
+{% load i18n %}
+{% load uni_form_tags %}
+{% load user_search_tags %}
+
+{% block extra_head %}
+	{{ block.super }}
+	{{ form.media }}
+{% endblock %}
+
+{% block body %}
+	<h2>myEWB global admins</h2>
+	{{ admins.count }} users
+	<br/><br/>
+	
+	Full control over ... everything!  Adding/removing people from the 
+	National Office group admins will auto-update this list as well.
+	<br/><br/>
+	
+	<br/>
+	<strong>Users</strong><br/>
+	{# {% url permissions_add group.pk %} #}
+	Add a user to this permission group:
+	{# I think the HTML below doesn't validate, with the form / endform... #}
+    <form action="" method="post" class="uniForm">
+        <fieldset class="inlineLabels">
+            {{ form|as_uni_form }}
+            <div class="form_block">
+                <input type="submit" value="{% trans "Add" %} &raquo;"/>
+            </div>
+        </fieldset>
+    </form>
+	<ul>
+		{% for user in admins %}
+			<li>
+				{{ user.visible_name }}
+				{# FIXME: this should POST if we're to be RESTful... #}
+				(<a href="{% url permissions_admin_remove user.pk %}">remove</a>)
+			</li>
+		{% endfor %}
+	</ul>
+	
+{% endblock %}
+
+{% block extra_body %}
+    {{ block.super }}
+    <script type="text/javascript">
+        function getUserSelectionUrl() { return '{% url selected_user %}'; }
+        function getUserSearchUrl() { return '{% url profile_user_search %}'; }
+    </script>
+{% endblock %}
