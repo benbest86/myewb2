@@ -15,6 +15,15 @@
 <form class="uniForm" id="edit-member" method="POST" action="">
     <fieldset class="inlineLabels">
         {{ form|as_uni_form }}
+
+		{% ifequal group.slug 'natloffice' %}
+	        <div class="form_block">
+	        	<p><em>Making this person an admin of the National Office list 
+	        	will also give them full myEWB permissions (and removing their admin 
+	        	status will also remove their myEWB permissions)</em></p>
+	        </div>
+		{% endifequal %}
+		
         <div class="form_block">
             <input type="hidden" name="action" value="update" />
             <input type="submit" value="{% trans "update" %}"/>

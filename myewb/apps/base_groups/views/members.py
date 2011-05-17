@@ -361,6 +361,16 @@ def edit_member(request, group_slug, username, group_model=None, form_class=None
         # if all's good, save and redirect
         if form.is_valid():
             member = form.save()
+            
+            if group.slug == 'natloffice':
+                if member.is_admin:
+                    other_user.is_staff = True
+                    other_user.is_superuser = True
+                else:
+                    other_user.is_staff = False
+                    other_user.is_superuser = False
+                other_user.save()
+                    
             return HttpResponseRedirect(reverse('%s_members_index' % group.model.lower(), kwargs={'group_slug': group_slug}))    
 
     # just load up the info and put it in a new form
