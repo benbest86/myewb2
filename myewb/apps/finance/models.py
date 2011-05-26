@@ -205,7 +205,11 @@ class IncomeForm(ModelForm):
     class Meta:
         model = Income
         exclude = ('enter_date', 'type', 'monthlyreport','submitted','account', 'group', 'creator', 'editor')
-    
+
+    def __init__(self, *args, **kwargs):
+        super(IncomeForm, self).__init__(*args, **kwargs)
+        self.fields['category'].queryset = Category.objects.filter(type='IN')
+        
     def clean_bank_date(self):
         bank_date = self.cleaned_data['bank_date']
         tdate = datetime.date.today()
@@ -237,7 +241,11 @@ class IncomeEditForm(ModelForm):
     class Meta:
         model = Income
         exclude = ('enter_date','monthlyreport', 'type', 'submitted','account', 'amount', 'bank_date', 'group', 'creator', 'editor')
-    
+ 
+    def __init__(self, *args, **kwargs):
+        super(IncomeEditForm, self).__init__(*args, **kwargs)
+        self.fields['category'].queryset = Category.objects.filter(type='IN')
+           
     def clean_bank_date(self):
         bank_date = self.cleaned_data['bank_date']
         tdate = datetime.date.today()
@@ -266,7 +274,11 @@ class IncomeStaffForm(ModelForm):
     class Meta:
         model = Income
         exclude = ('enter_date','type', 'group', 'creator', 'editor')
-    
+        
+    def __init__(self, *args, **kwargs):
+        super(IncomeStaffForm, self).__init__(*args, **kwargs)
+        self.fields['category'].queryset = Category.objects.filter(type='IN')
+        
     def clean_category(self):
         category = self.cleaned_data['category']
         
@@ -285,7 +297,11 @@ class ExpenditureForm(ModelForm):
     class Meta:
         model = Expenditure
         exclude = ('enter_date','monthlyreport', 'type', 'submitted','account', 'group', 'creator', 'editor')
-    
+ 
+    def __init__(self, *args, **kwargs):
+        super(ExpenditureForm, self).__init__(*args, **kwargs)
+        self.fields['category'].queryset = Category.objects.filter(type='EX')
+        
     def clean_bank_date(self):
         bank_date = self.cleaned_data['bank_date']
         tdate = datetime.date.today()
@@ -316,7 +332,11 @@ class ExpenditureEditForm(ModelForm):
     class Meta:
         model = Expenditure
         exclude = ('enter_date','monthlyreport', 'type', 'submitted','account', 'amount', 'bank_date', 'group', 'creator', 'editor')
-    
+  
+    def __init__(self, *args, **kwargs):
+        super(ExpenditureEditForm, self).__init__(*args, **kwargs)
+        self.fields['category'].queryset = Category.objects.filter(type='EX')
+           
     def clean_bank_date(self):
         bank_date = self.cleaned_data['bank_date']
         tdate = datetime.date.today()
@@ -345,7 +365,11 @@ class ExpenditureStaffForm(ModelForm):
     class Meta:
         model = Expenditure
         exclude = ('enter_date','type', 'group', 'creator', 'editor')
-    
+  
+    def __init__(self, *args, **kwargs):
+        super(ExpenditureStaffForm, self).__init__(*args, **kwargs)
+        self.fields['category'].queryset = Category.objects.filter(type='EX')
+            
     def clean_category(self):
         category = self.cleaned_data['category']
         
