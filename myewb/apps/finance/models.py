@@ -227,7 +227,7 @@ class IncomeForm(ModelForm):
         
         if category.type != "IN":
             raise forms.ValidationError ("Not an income category.")
-        if category.name == "donation":
+        if category.slug == "donation":
             raise forms.ValidationError ("You must enter donations in the donation entry form (see left).")
         
         return category
@@ -263,6 +263,8 @@ class IncomeEditForm(ModelForm):
         
         if category.type != "IN":
             raise forms.ValidationError ("Not an income category.")
+        if category.slug == "donation":
+            raise forms.ValidationError ("You must enter donations in the donation entry form (see left).")
         
         return category
 
@@ -284,6 +286,8 @@ class IncomeStaffForm(ModelForm):
         
         if category.type != "IN":
             raise forms.ValidationError ("Not an income category.")
+        if category.slug == "donation":
+            raise forms.ValidationError ("You must enter donations in the donation entry form (see left).")
         
         return category
     
