@@ -969,13 +969,13 @@ def edit_id(request, id, group_slug):
                 t = get_object_or_404(Donation, pk=id)
 #                if the user is staff, they should always be able to change all fields
                 if user.is_staff:
-                    form = DonationStaffForm(request.POST, instance=t)
+                    form = DonationStaffForm(request.POST, request.FILES, instance=t)
                 else:
 #            if it has already been submitted, limit fields
                     if t.submitted == "N":
-                        form = DonationForm(request.POST, instance=t)
+                        form = DonationForm(request.POST, request.FILES, instance=t)
                     else:
-                        form = DonationEditForm(request.POST, instance=t) # A form bound to the POST data
+                        form = DonationEditForm(request.POST, request.FILES, instance=t) # A form bound to the POST data
             else:
 #                if the user is staff, they should always be able to change all fields
                 if user.is_staff:
@@ -2007,8 +2007,9 @@ def upload_noreport(request):
                 if r[0] == "EX":
                     try:
                         c = Category.objects.get(id=r[3])
+#                        g = BaseGroup.objects.get(id=r[10])
                         g = BaseGroup.objects.get(id=r[10])
-
+                        
                         exp = Expenditure()
                         exp.type = "EX"
                         exp.bank_date = datetime.date(year=int(r[11]), month=int(r[12]), day=int(r[13]))
@@ -2040,7 +2041,7 @@ def upload_noreport(request):
                     try:
                         c = Category.objects.get(id=r[3])
                         g = BaseGroup.objects.get(id=r[10])
-
+                        #blah
                         income = Income()
                         income.type = "IN"
                         income.bank_date = datetime.date(year=int(r[11]), month=int(r[12]), day=int(r[13]))
