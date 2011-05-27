@@ -5,6 +5,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.db.models import Avg, Max, Min, Count, Sum
 from django.forms.formsets import formset_factory
+from django.core.exceptions import ObjectDoesNotExist
 #import functionality
 import datetime
 import csv
@@ -84,6 +85,9 @@ def create_income(request, group_slug):
                 income = form.save(commit=False) #save it to the db 
                 income.type = 'IN'
                 income.group = group
+                if income.submitted  == 'Y':
+                    income.monthlyreport = MonthlyReport.objects.get(group=group, type=income.account, date__month=income.bank_date.month, date__year=income.bank_date.year)
+                
                 income.creator = request.user
                 income.editor = request.user
                 income.save()
@@ -92,7 +96,7 @@ def create_income(request, group_slug):
     else:
 #       if the user is staff, they should always be able to change all fields
         if request.user.is_staff:
-            form = IncomeStaffForm()
+            form = IncomeStaffForm(initial={'group':group.id})
         else:
             form = IncomeForm() # A blank unbound form
         
@@ -125,20 +129,21 @@ def create_expenditure(request, group_slug):
         #validate fields
         if form.is_valid(): # check if fields validated
                 cleaned_data = form.cleaned_data
-                 
                 # Process the data in form.cleaned_data
                 exp = form.save(commit=False) #save it to the db 
                 exp.type = 'EX'
                 exp.group = group
+                if exp.submitted  == 'Y':
+                    exp.monthlyreport = MonthlyReport.objects.get(group=group, type=exp.account, date__month=exp.bank_date.month, date__year=exp.bank_date.year)
                 exp.creator = request.user
                 exp.editor = request.user
                 exp.save()
-    
+                
                 return HttpResponseRedirect(reverse('summary', kwargs={'group_slug': group.slug}) ) # Redirect after POST
     else:
 #        if the user is staff, then be able to see all the fields
         if request.user.is_staff:
-            form = ExpenditureStaffForm() # A blank unbound form
+            form = ExpenditureStaffForm(initial={'group':group.id}) # A blank unbound form
         else:
             form = ExpenditureForm() # A blank unbound form
         
@@ -177,6 +182,8 @@ def create_donation(request, group_slug):
                 donation.category = donation_category
                 donation.type = 'IN'
                 donation.group = group
+                if donation.submitted  == 'Y':
+                    donation.monthlyreport = MonthlyReport.objects.get(group=group, type=donation.account, date__month=donation.bank_date.month, date__year=donation.bank_date.year)
                 donation.creator = request.user
                 donation.editor = request.user
                 donation.save()
@@ -184,7 +191,7 @@ def create_donation(request, group_slug):
                 return HttpResponseRedirect(reverse('summary', kwargs={'group_slug': group.slug}) ) # Redirect after POST
     else:
         if request.user.is_staff:
-            form = DonationStaffForm()
+            form = DonationStaffForm(initial={'group':group.id})
         else:
             form = DonationForm() # A blank unbound form
         
