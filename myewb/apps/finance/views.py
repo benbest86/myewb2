@@ -26,7 +26,7 @@ from networks.decorators import chapter_president_required
 from networks.models import Network
 from finance.models import Transaction, Income, Expenditure, Donation, MonthlyReport, Budget, BudgetItem, Category
 from finance.models import IncomeForm, ExpenditureForm, TransactionForm, DonationForm, IncomeEditForm, ExpenditureEditForm, DonationEditForm, IncomeStaffForm, ExpenditureStaffForm, DonationStaffForm 
-from finance.models import UploadCommitmentForm, CreateNOReports, BudgetItemForm, BudgetForm, AccountingForm  #get the form to display
+from finance.models import UploadCommitmentForm, CreateNOReports, BudgetItemForm, BudgetForm, DateRangeForm  #get the form to display
 from siteutils import schoolyear
 from siteutils.helpers import fix_encoding
 
@@ -1707,6 +1707,58 @@ def csv_monthlyreport(request, id, group_slug):
     return response
 
 @staff_member_required
+def donationreport(request, group_slug=None):
+#======================================================
+# donation report
+#======================================================
+    #    get chapter
+    if group_slug:
+        group = get_object_or_404(Network, slug=group_slug)
+        trans_chap, income_chap, donations_chap, expenditure_chap, monthly_chap = create_chapter_filters(group_slug)
+        donations = donations_chap.order_by('bank_date')
+    else:    
+        donations = Donation.objects.all().order_by('bank_date')
+    
+    template_data = dict()
+    
+    if request.method == 'POST':
+        form = DateRangeForm(request.POST)
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+                # Process the data in form.cleaned_data
+            
+            from_date = cleaned_data['from_date']
+            to_date = cleaned_data['to_date']
+            
+            donations = donations.filter(bank_date__gte=from_date, bank_date__lte=to_date)
+            
+            response = HttpResponse(mimetype='text/csv')
+            response['Content-Disposition'] = 'attachment; filename=donation_report.csv'
+            writer = csv.writer(response)
+            
+            row = ["Donation Report"]
+            writer.writerow([fix_encoding(s) for s in row])
+        #    TODO: make this actually look like the report
+            row = ["Chapter", "Account", "Type", "Bank Date", "Cheque Date", "Cheque Number", "Tax Receipt Required?", "Category", "Donor", "Address", "City", "Province", "Country", "Postal Code", "Description", "Amount"]
+            writer.writerow([fix_encoding(s) for s in row])
+            
+            for t in donations:
+                row = [t.group.name, t.account, t.type, t.bank_date, t.cheque_date, t.cheque_num, t.taxreceipt, t.donation_category, t.donor, t.address, t.city, t.province, t.country, t.postal, t.description, t.amount]
+                writer.writerow([fix_encoding(s) for s in row])
+            
+            return response
+    
+    else:
+        form = DateRangeForm()
+        
+    template_data['form'] = form
+    
+    return render_to_response('finance/donation_report.htm', template_data, context_instance=RequestContext(request))
+
+    
+    
+
+@staff_member_required
 def csv_donationreport(request, group_slug=None):
 #======================================================
 # donation report
@@ -1741,16 +1793,14 @@ def accountingreport(request):
     template_data = dict()
     
     if request.method == 'POST':
-        form = AccountingForm(request.POST)
+        form = DateRangeForm(request.POST)
         if form.is_valid():
             cleaned_data = form.cleaned_data
                 # Process the data in form.cleaned_data
             
             from_date = cleaned_data['from_date']
-#            from_year = cleaned_data['from_date'].year
             to_date = cleaned_data['to_date']
-#            to_year = cleaned_data['from_date'].year
-#            return HttpResponseRedirect(reverse('csv_accountingreport', kwargs={'from_date': from_date, 'to_date': to_date}))
+
             income = Income.objects.filter(account="CH", bank_date__gte=from_date, bank_date__lte=to_date).exclude(category="Donation").order_by('group')
             donation = Donation.objects.filter(account="CH", bank_date__gte=from_date, bank_date__lte=to_date).order_by('group')
             expenditure = Expenditure.objects.filter(account="CH", bank_date__gte=from_date, bank_date__lte=to_date).order_by('group')
@@ -1777,7 +1827,7 @@ def accountingreport(request):
             
             return response
     else:
-        form = AccountingForm()
+        form = DateRangeForm()
     
     template_data['form'] = form
     

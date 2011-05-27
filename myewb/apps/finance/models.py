@@ -183,7 +183,7 @@ class UploadCommitmentForm(forms.Form):
 class CreateNOReports(forms.Form):
     month = forms.DateField()
 
-class AccountingForm(forms.Form):
+class DateRangeForm(forms.Form):
     from_date = forms.DateField(help_text='YYYY-MM-DD')
     to_date = forms.DateField(help_text='YYYY-MM-DD')
 
