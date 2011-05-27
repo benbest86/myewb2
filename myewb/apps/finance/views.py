@@ -26,7 +26,7 @@ from networks.decorators import chapter_president_required
 from networks.models import Network
 from finance.models import Transaction, Income, Expenditure, Donation, MonthlyReport, Budget, BudgetItem, Category
 from finance.models import IncomeForm, ExpenditureForm, TransactionForm, DonationForm, IncomeEditForm, ExpenditureEditForm, DonationEditForm, IncomeStaffForm, ExpenditureStaffForm, DonationStaffForm 
-from finance.models import UploadCommitmentForm, CreateNOReports, BudgetItemForm, BudgetForm  #get the form to display
+from finance.models import UploadCommitmentForm, CreateNOReports, BudgetItemForm, BudgetForm, AccountingForm  #get the form to display
 from siteutils import schoolyear
 from siteutils.helpers import fix_encoding
 
@@ -1736,36 +1736,52 @@ def csv_donationreport(request, group_slug=None):
     return response
 
 @staff_member_required
-def csv_accountingreport(request):
-#======================================================
-# accounting report
-#======================================================
-
-    income = Income.objects.filter(account="CH", bank_date__isnull=False).exclude(category="Donation").order_by('group')
-    donation = Donation.objects.filter(account="CH", bank_date__isnull=False).order_by('group')
-    expenditure = Expenditure.objects.filter(account="CH", bank_date__isnull=False).order_by('group')
+def accountingreport(request):
     
-    response = HttpResponse(mimetype='text/csv')
-    response['Content-Disposition'] = 'attachment; filename=accounting_report.csv'
-    writer = csv.writer(response)
+    template_data = dict()
     
-    row = ["Accounting Report"]
-    writer.writerow([fix_encoding(s) for s in row])
-#    TODO: make this actually look like the report
-    row = ["Chapter","Account", "Type", "Bank Date", "Category", "Description", "Amount", "Payee", "Cheque Number", "HST", "Donation Category", "Donor"]
-    writer.writerow([fix_encoding(s) for s in row])
+    if request.method == 'POST':
+        form = AccountingForm(request.POST)
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+                # Process the data in form.cleaned_data
+            
+            from_date = cleaned_data['from_date']
+#            from_year = cleaned_data['from_date'].year
+            to_date = cleaned_data['to_date']
+#            to_year = cleaned_data['from_date'].year
+#            return HttpResponseRedirect(reverse('csv_accountingreport', kwargs={'from_date': from_date, 'to_date': to_date}))
+            income = Income.objects.filter(account="CH", bank_date__gte=from_date, bank_date__lte=to_date).exclude(category="Donation").order_by('group')
+            donation = Donation.objects.filter(account="CH", bank_date__gte=from_date, bank_date__lte=to_date).order_by('group')
+            expenditure = Expenditure.objects.filter(account="CH", bank_date__gte=from_date, bank_date__lte=to_date).order_by('group')
+            
+            response = HttpResponse(mimetype='text/csv')
+            response['Content-Disposition'] = 'attachment; filename=accounting_report.csv'
+            writer = csv.writer(response)
+            
+            row = ["Accounting Report"]
+            writer.writerow([fix_encoding(s) for s in row])
+        #    TODO: make this actually look like the report
+            row = ["Chapter","Account", "Type", "Bank Date", "Category", "Description", "Amount", "Payee", "Cheque Number", "HST", "Donation Category", "Donor"]
+            writer.writerow([fix_encoding(s) for s in row])
+            
+            for t in donation:
+                row = [t.group.name, t.account, t.type, t.bank_date, t.category, t.description, t.amount, "","" ,"" ,t.donation_category, t.donor]
+                writer.writerow([fix_encoding(s) for s in row])
+            for t in income:
+                row = [t.group.name, t.account, t.type, t.bank_date, t.category, t.description, t.amount, "","" ,"" ,"", "", ""]
+                writer.writerow([fix_encoding(s) for s in row])
+            for t in expenditure:
+                row = [t.group.name, t.account, t.type, t.bank_date, t.category, t.description, t.amount, t.payee, t.cheque_num, t.hst, "", ""]
+                writer.writerow([fix_encoding(s) for s in row])
+            
+            return response
+    else:
+        form = AccountingForm()
     
-    for t in donation:
-        row = [t.group.name, t.account, t.type, t.bank_date, t.category, t.description, t.amount, "","" ,"" ,t.donation_category, t.donor]
-        writer.writerow([fix_encoding(s) for s in row])
-    for t in income:
-        row = [t.group.name, t.account, t.type, t.bank_date, t.category, t.description, t.amount, "","" ,"" ,"", "", ""]
-        writer.writerow([fix_encoding(s) for s in row])
-    for t in expenditure:
-        row = [t.group.name, t.account, t.type, t.bank_date, t.category, t.description, t.amount, t.payee, t.cheque_num, t.hst, "", ""]
-        writer.writerow([fix_encoding(s) for s in row])
+    template_data['form'] = form
     
-    return response
+    return render_to_response('finance/accounting_report.htm', template_data, context_instance=RequestContext(request))
 
 @staff_member_required
 def noview_commitments(request):
