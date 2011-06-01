@@ -79,7 +79,7 @@ class Activity(models.Model):
         for m, mname in ALLMETRICS:
             found = False
             for n in results:
-                if m == n.metricname:
+                if m == n.metricname and not found:
                     results2.append(n)
                     found = True
             if pad and not found:
