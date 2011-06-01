@@ -63,6 +63,35 @@ def do_get_admins(parser, token):
 
 register.tag('get_admins', do_get_admins)
 
+class RandomAdminsNode(template.Node):
+    def __init__(self, num, group_name, context_name):
+        self.num = num
+        self.group = template.Variable(group_name)
+        self.context_name = context_name
+
+    def render(self, context):
+        try:
+            group = self.group.resolve(context)
+        except template.VariableDoesNotExist:
+            return u''
+            
+        admins = group.members.filter(is_admin=True).order_by('?')[:self.num]
+        context[self.context_name] = admins
+        return u''
+
+def do_get_random_admins(parser, token):
+    """
+    Provides the template tag {% get_admins NUM GROUP as VARIABLE %}
+    """
+    try:
+        _tagname, num, group_name, _as, context_name = token.split_contents()
+    except ValueError:
+        raise template.TemplateSyntaxError(u'%(tagname)r tag syntax is as follows: '
+            '{%% %(tagname)r NUM GROUP as VARIABLE %%}' % {'tagname': _tagname})
+    return RandomAdminsNode(num, group_name, context_name)
+
+register.tag('get_random_admins', do_get_random_admins)
+
 class MembershipNode(template.Node):
     def __init__(self, group, user, context_name):
         self.group = template.Variable(group)

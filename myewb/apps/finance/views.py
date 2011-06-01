@@ -2066,7 +2066,7 @@ def upload_noreport(request):
                         errors.append("Error with row " + str(rownumber) + " (" + r[4] + "), category does not exist")
                     except BaseGroup.DoesNotExist:
                         errors.append("Error with row " + str(rownumber) + " (" + r[4] + "), group does not exist")
-                    except BaseGroup.DoesNotExist:
+                    except:
                         errors.append("Error with row " + str(rownumber) + " (" + r[4] + ")")
                 elif r[0] == "DN":
                     try:
@@ -2100,7 +2100,7 @@ def upload_noreport(request):
                         errors.append("Error with row " + str(rownumber) + " (" + r[4] + "), category does not exist")
                     except BaseGroup.DoesNotExist:
                         errors.append("Error with row " + str(rownumber) + " (" + r[4] + "), group does not exist")
-                    except BaseGroup.DoesNotExist:
+                    except:
                         errors.append("Error with row " + str(rownumber) + " (" + r[4] + ")")
 
             if errors:

@@ -37,6 +37,7 @@ def list(request):
     watching_jobs = JobPosting.objects.following(request.user)
     my_postings = JobPosting.objects.owned_by(request.user)
     closed_jobs = JobPosting.objects.closed(request.user)
+    all_jobs = JobPosting.objects.all()
     if request.user.is_authenticated():
         saved_filters = JobFilter.objects.filter(user=request.user)
     else:
@@ -107,6 +108,7 @@ def list(request):
                                "bid_jobs": bid_jobs,
                                "watching_jobs": watching_jobs,
                                "closed_jobs": closed_jobs,
+                               "all_jobs": all_jobs,
                                "URGENCY_CHOICES": URGENCY_CHOICES,
                                "TIME_CHOICES": TIME_CHOICES,
                                "allskills": allskills,

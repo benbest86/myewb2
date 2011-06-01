@@ -10,8 +10,8 @@ from base_groups.models import BaseGroup
 
 urlpatterns = patterns('legacy_urls.actions',
     url(r'^ModifyListMembership/(?P<group_id>\d+)$', 'modify_list_membership'),
-    url(r'^ModifyListMembership/(?P<group_slug>[\w\._-]+)$', 'modify_list_membership_slug'),
-    url(r'^DoSilentMainListSignup/(?P<email>[\.-_@:\+\w]+)$', 'silent_signup'),
+    url(r'^ModifyListMembership/(?P<group_slug>[\w\._\-]+)$', 'modify_list_membership_slug'),
+    url(r'^DoSilentMainListSignup/(?P<email>[\.\-_@:\+\w]+)$', 'silent_signup'),
     )
 
 def modify_list_membership_slug(request, group_slug):

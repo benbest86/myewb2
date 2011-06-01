@@ -47,6 +47,7 @@ def record(action):
         stats = stats_objects[0]
         for s in stats_objects[1:]:
             s.delete()
+        created = False
         
     if created:
         stats.day = date.today()

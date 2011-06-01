@@ -39,6 +39,7 @@ from base_groups.forms import GroupBulkImportForm
 from creditcard.forms import PaymentForm
 from creditcard.models import Payment, Product
 from friends_app.forms import InviteFriendForm
+from group_topics.models import GroupTopic
 
 @login_required
 def profiles(request, template_name="profiles/profiles.html"):
@@ -605,6 +606,19 @@ def profile(request, username, template_name="profiles/profile.html", extra_cont
         except:
             pass
     
+    if request.user == other_user:
+        # user can always see their own post, regardless of group visibility
+        # (ie, if I write some posts to a private group then leave the group, 
+        #  those posts should still show in this listing)
+        topics = GroupTopic.objects.get_for_user(other_user)
+        
+    else:
+        # start with all visible topics
+        topics = GroupTopic.objects.visible(request.user)
+            
+        # then restrict further to only ones by the given user
+        topics = GroupTopic.objects.get_for_user(other_user, topics)
+            
     return render_to_response(template_name, dict({
         "is_me": is_me,
         "is_friend": is_friend,
@@ -618,6 +632,7 @@ def profile(request, username, template_name="profiles/profile.html", extra_cont
         "pending_requests": pending_requests,
         "has_visibility": has_visibility,
         "other_usage_profile": uprofile,
+        "topics": topics
     }, **extra_context), context_instance=RequestContext(request))
 
 @secure_required

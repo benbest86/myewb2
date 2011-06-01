@@ -363,12 +363,15 @@ def edit_member(request, group_slug, username, group_model=None, form_class=None
             member = form.save()
             
             if group.slug == 'natloffice':
+                #request.user.message_set.create(message='is natl group')
                 if member.is_admin:
                     other_user.is_staff = True
                     other_user.is_superuser = True
+                    #request.user.message_set.create(message='is admin')
                 else:
                     other_user.is_staff = False
                     other_user.is_superuser = False
+                    #request.user.message_set.create(message='not admin')
                 other_user.save()
                     
             return HttpResponseRedirect(reverse('%s_members_index' % group.model.lower(), kwargs={'group_slug': group_slug}))    
