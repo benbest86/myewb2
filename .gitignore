@@ -1,0 +1,64 @@
+# git ignore file for myewb project
+
+# ignore python compiled files
+*.pyc
+
+# ignore vim swp files and gedit temp files
+*.swp
+*.*~
+
+# ignore db files
+*.db
+*.sqlite
+
+# ignore local_settings and files
+myewb/local_settings.py
+myewb/settings.php
+myewb/site_media
+myewb/media/attachments
+myewb/media/avatars
+myewb/media/workspace
+
+# ignore search index
+myewb/myewb_index
+
+# ignore any diff/patch files
+*.diff
+*.patch
+*.log
+
+# eclipse settings files
+.project
+.pydevproject
+.settings
+
+# ignore Mac folder settings files
+.DS_Store
+
+# ignore code coverage results (but keep the folder)
+myewb/coverage_report/*
+
+# cron logs, etc
+myewb/cron/running.txt
+myewb/cron/notrunning.txt
+myewb/cron/lasterror.txt
+myewb/cron/Mail/bad.txt
+myewb/cron/Mail/banned.txt
+myewb/cron/Mail/error.txt
+
+# this is updated on the live site, keep it out of the repo...
+myewb/templates/myewbstatus.html
+myewb/templates/about/status.html
+
+# and some random server stuff
+.bash_history
+.bashrc
+.lesshst
+.mysql_history
+.ssh
+.subversion
+.toprc
+.viminfo
+myewb/errors.log
+myewb/out.log
+pinax
