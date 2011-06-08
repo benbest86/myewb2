@@ -7,7 +7,7 @@
             Please correct the error{{ form.errors|pluralize }} below.
         </p>
     {% endif %}
-	<form action="{% url edit_id id=t.id  group_slug=group.slug %}" method="post">
+	<form  enctype="multipart/form-data" action="{% url edit_id id=t.id  group_slug=group.slug %}" method="post">
 		<table class="standard nogradients">
 			{{ form.as_table }}
 		</table>

@@ -5,6 +5,7 @@ from django.http import HttpResponseRedirect, HttpResponse
 from django.core.urlresolvers import reverse
 from django.db.models import Avg, Max, Min, Count, Sum
 from django.forms.formsets import formset_factory
+from django.core.exceptions import ObjectDoesNotExist
 #import functionality
 import datetime
 import csv
@@ -25,7 +26,7 @@ from networks.decorators import chapter_president_required
 from networks.models import Network
 from finance.models import Transaction, Income, Expenditure, Donation, MonthlyReport, Budget, BudgetItem, Category
 from finance.models import IncomeForm, ExpenditureForm, TransactionForm, DonationForm, IncomeEditForm, ExpenditureEditForm, DonationEditForm, IncomeStaffForm, ExpenditureStaffForm, DonationStaffForm 
-from finance.models import UploadCommitmentForm, CreateNOReports, BudgetItemForm, BudgetForm  #get the form to display
+from finance.models import UploadCommitmentForm, CreateNOReports, BudgetItemForm, BudgetForm, DateRangeForm  #get the form to display
 from siteutils import schoolyear
 from siteutils.helpers import fix_encoding
 
@@ -84,6 +85,9 @@ def create_income(request, group_slug):
                 income = form.save(commit=False) #save it to the db 
                 income.type = 'IN'
                 income.group = group
+                if income.submitted  == 'Y':
+                    income.monthlyreport = MonthlyReport.objects.get(group=group, type=income.account, date__month=income.bank_date.month, date__year=income.bank_date.year)
+                
                 income.creator = request.user
                 income.editor = request.user
                 income.save()
@@ -92,7 +96,7 @@ def create_income(request, group_slug):
     else:
 #       if the user is staff, they should always be able to change all fields
         if request.user.is_staff:
-            form = IncomeStaffForm()
+            form = IncomeStaffForm(initial={'group':group.id})
         else:
             form = IncomeForm() # A blank unbound form
         
@@ -125,20 +129,21 @@ def create_expenditure(request, group_slug):
         #validate fields
         if form.is_valid(): # check if fields validated
                 cleaned_data = form.cleaned_data
-                 
                 # Process the data in form.cleaned_data
                 exp = form.save(commit=False) #save it to the db 
                 exp.type = 'EX'
                 exp.group = group
+                if exp.submitted  == 'Y':
+                    exp.monthlyreport = MonthlyReport.objects.get(group=group, type=exp.account, date__month=exp.bank_date.month, date__year=exp.bank_date.year)
                 exp.creator = request.user
                 exp.editor = request.user
                 exp.save()
-    
+                
                 return HttpResponseRedirect(reverse('summary', kwargs={'group_slug': group.slug}) ) # Redirect after POST
     else:
 #        if the user is staff, then be able to see all the fields
         if request.user.is_staff:
-            form = ExpenditureStaffForm() # A blank unbound form
+            form = ExpenditureStaffForm(initial={'group':group.id}) # A blank unbound form
         else:
             form = ExpenditureForm() # A blank unbound form
         
@@ -177,6 +182,8 @@ def create_donation(request, group_slug):
                 donation.category = donation_category
                 donation.type = 'IN'
                 donation.group = group
+                if donation.submitted  == 'Y':
+                    donation.monthlyreport = MonthlyReport.objects.get(group=group, type=donation.account, date__month=donation.bank_date.month, date__year=donation.bank_date.year)
                 donation.creator = request.user
                 donation.editor = request.user
                 donation.save()
@@ -184,7 +191,7 @@ def create_donation(request, group_slug):
                 return HttpResponseRedirect(reverse('summary', kwargs={'group_slug': group.slug}) ) # Redirect after POST
     else:
         if request.user.is_staff:
-            form = DonationStaffForm()
+            form = DonationStaffForm(initial={'group':group.id})
         else:
             form = DonationForm() # A blank unbound form
         
@@ -974,13 +981,13 @@ def edit_id(request, id, group_slug):
                 t = get_object_or_404(Donation, pk=id)
 #                if the user is staff, they should always be able to change all fields
                 if user.is_staff:
-                    form = DonationStaffForm(request.POST, instance=t)
+                    form = DonationStaffForm(request.POST, request.FILES, instance=t)
                 else:
 #            if it has already been submitted, limit fields
                     if t.submitted == "N":
-                        form = DonationForm(request.POST, instance=t)
+                        form = DonationForm(request.POST, request.FILES, instance=t)
                     else:
-                        form = DonationEditForm(request.POST, instance=t) # A form bound to the POST data
+                        form = DonationEditForm(request.POST, request.FILES, instance=t) # A form bound to the POST data
             else:
 #                if the user is staff, they should always be able to change all fields
                 if user.is_staff:
@@ -1705,6 +1712,58 @@ def csv_monthlyreport(request, id, group_slug):
     return response
 
 @staff_member_required
+def donationreport(request, group_slug=None):
+#======================================================
+# donation report
+#======================================================
+    #    get chapter
+    if group_slug:
+        group = get_object_or_404(Network, slug=group_slug)
+        trans_chap, income_chap, donations_chap, expenditure_chap, monthly_chap = create_chapter_filters(group_slug)
+        donations = donations_chap.order_by('bank_date')
+    else:    
+        donations = Donation.objects.all().order_by('bank_date')
+    
+    template_data = dict()
+    
+    if request.method == 'POST':
+        form = DateRangeForm(request.POST)
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+                # Process the data in form.cleaned_data
+            
+            from_date = cleaned_data['from_date']
+            to_date = cleaned_data['to_date']
+            
+            donations = donations.filter(bank_date__gte=from_date, bank_date__lte=to_date)
+            
+            response = HttpResponse(mimetype='text/csv')
+            response['Content-Disposition'] = 'attachment; filename=donation_report.csv'
+            writer = csv.writer(response)
+            
+            row = ["Donation Report"]
+            writer.writerow([fix_encoding(s) for s in row])
+        #    TODO: make this actually look like the report
+            row = ["Chapter", "Account", "Type", "Bank Date", "Cheque Date", "Cheque Number", "Tax Receipt Required?", "Category", "Donor", "Address", "City", "Province", "Country", "Postal Code", "Description", "Amount"]
+            writer.writerow([fix_encoding(s) for s in row])
+            
+            for t in donations:
+                row = [t.group.name, t.account, t.type, t.bank_date, t.cheque_date, t.cheque_num, t.taxreceipt, t.donation_category, t.donor, t.address, t.city, t.province, t.country, t.postal, t.description, t.amount]
+                writer.writerow([fix_encoding(s) for s in row])
+            
+            return response
+    
+    else:
+        form = DateRangeForm()
+        
+    template_data['form'] = form
+    
+    return render_to_response('finance/donation_report.htm', template_data, context_instance=RequestContext(request))
+
+    
+    
+
+@staff_member_required
 def csv_donationreport(request, group_slug=None):
 #======================================================
 # donation report
@@ -1734,36 +1793,50 @@ def csv_donationreport(request, group_slug=None):
     return response
 
 @staff_member_required
-def csv_accountingreport(request):
-#======================================================
-# accounting report
-#======================================================
+def accountingreport(request):
+    
+    template_data = dict()
+    
+    if request.method == 'POST':
+        form = DateRangeForm(request.POST)
+        if form.is_valid():
+            cleaned_data = form.cleaned_data
+                # Process the data in form.cleaned_data
+            
+            from_date = cleaned_data['from_date']
+            to_date = cleaned_data['to_date']
 
-    income = Income.objects.filter(account="CH", bank_date__isnull=False).exclude(category="Donation").order_by('group')
-    donation = Donation.objects.filter(account="CH", bank_date__isnull=False).order_by('group')
-    expenditure = Expenditure.objects.filter(account="CH", bank_date__isnull=False).order_by('group')
+            income = Income.objects.filter(account="CH", bank_date__gte=from_date, bank_date__lte=to_date).exclude(category="Donation").order_by('group')
+            donation = Donation.objects.filter(account="CH", bank_date__gte=from_date, bank_date__lte=to_date).order_by('group')
+            expenditure = Expenditure.objects.filter(account="CH", bank_date__gte=from_date, bank_date__lte=to_date).order_by('group')
+            
+            response = HttpResponse(mimetype='text/csv')
+            response['Content-Disposition'] = 'attachment; filename=accounting_report.csv'
+            writer = csv.writer(response)
+            
+            row = ["Accounting Report"]
+            writer.writerow([fix_encoding(s) for s in row])
+        #    TODO: make this actually look like the report
+            row = ["Chapter","Account", "Type", "Bank Date", "Category", "Description", "Amount", "Payee", "Cheque Number", "HST", "Donation Category", "Donor"]
+            writer.writerow([fix_encoding(s) for s in row])
+            
+            for t in donation:
+                row = [t.group.name, t.account, t.type, t.bank_date, t.category, t.description, t.amount, "","" ,"" ,t.donation_category, t.donor]
+                writer.writerow([fix_encoding(s) for s in row])
+            for t in income:
+                row = [t.group.name, t.account, t.type, t.bank_date, t.category, t.description, t.amount, "","" ,"" ,"", "", ""]
+                writer.writerow([fix_encoding(s) for s in row])
+            for t in expenditure:
+                row = [t.group.name, t.account, t.type, t.bank_date, t.category, t.description, t.amount, t.payee, t.cheque_num, t.hst, "", ""]
+                writer.writerow([fix_encoding(s) for s in row])
+            
+            return response
+    else:
+        form = DateRangeForm()
     
-    response = HttpResponse(mimetype='text/csv')
-    response['Content-Disposition'] = 'attachment; filename=accounting_report.csv'
-    writer = csv.writer(response)
+    template_data['form'] = form
     
-    row = ["Accounting Report"]
-    writer.writerow([fix_encoding(s) for s in row])
-#    TODO: make this actually look like the report
-    row = ["Chapter","Account", "Type", "Bank Date", "Category", "Description", "Amount", "Payee", "Cheque Number", "HST", "Donation Category", "Donor"]
-    writer.writerow([fix_encoding(s) for s in row])
-    
-    for t in donation:
-        row = [t.group.name, t.account, t.type, t.bank_date, t.category, t.description, t.amount, "","" ,"" ,t.donation_category, t.donor]
-        writer.writerow([fix_encoding(s) for s in row])
-    for t in income:
-        row = [t.group.name, t.account, t.type, t.bank_date, t.category, t.description, t.amount, "","" ,"" ,"", "", ""]
-        writer.writerow([fix_encoding(s) for s in row])
-    for t in expenditure:
-        row = [t.group.name, t.account, t.type, t.bank_date, t.category, t.description, t.amount, t.payee, t.cheque_num, t.hst, "", ""]
-        writer.writerow([fix_encoding(s) for s in row])
-    
-    return response
+    return render_to_response('finance/accounting_report.htm', template_data, context_instance=RequestContext(request))
 
 @staff_member_required
 def noview_commitments(request):
@@ -2012,8 +2085,9 @@ def upload_noreport(request):
                 if r[0] == "EX":
                     try:
                         c = Category.objects.get(id=r[3])
+#                        g = BaseGroup.objects.get(id=r[10])
                         g = BaseGroup.objects.get(id=r[10])
-
+                        
                         exp = Expenditure()
                         exp.type = "EX"
                         exp.bank_date = datetime.date(year=int(r[11]), month=int(r[12]), day=int(r[13]))
@@ -2045,7 +2119,7 @@ def upload_noreport(request):
                     try:
                         c = Category.objects.get(id=r[3])
                         g = BaseGroup.objects.get(id=r[10])
-
+                        #blah
                         income = Income()
                         income.type = "IN"
                         income.bank_date = datetime.date(year=int(r[11]), month=int(r[12]), day=int(r[13]))

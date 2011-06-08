@@ -18,14 +18,18 @@ class TransactionAdmin(admin.ModelAdmin):
 class MonthlyReportAdmin(admin.ModelAdmin):
     list_display = ('date', 'type', 'enter_date', 'group')
     list_filter = ['group']
+
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = ('name', 'type', 'slug')
+    list_filter = ['type']
     
 
 admin.site.register(MonthlyReport, MonthlyReportAdmin)
 admin.site.register(Transaction, TransactionAdmin)
+admin.site.register(Category, CategoryAdmin)
 admin.site.register(Income)
 admin.site.register(Expenditure)
 admin.site.register(Donation)
-admin.site.register(Category)
 admin.site.register(Budget)
 admin.site.register(BudgetItem)
 

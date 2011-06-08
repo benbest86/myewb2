@@ -4,13 +4,16 @@ from django.forms import ModelForm  #used for creating forms at bottom of page
 from django.forms import forms
 from django import forms
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 
 #import python utility
 import datetime
 
 #import from myewb
 from base_groups.models import BaseGroup
+from networks.models import Network
 from siteutils.shortcuts import get_object_or_none
+
 
 from django import template
 import locale
@@ -59,6 +62,8 @@ DONATION_CHOICES = (
 class MonthlyReport(models.Model):
     date = models.DateField()
     enter_date = models.DateField('Enter Date', auto_now_add=True)
+    
+#    this should be changed to Network, not BaseGroup
     group = models.ForeignKey(BaseGroup)
     type = models.CharField(max_length = 2, default = 'NO')
     creator= models.ForeignKey(User, related_name="monthlyreport_created")
@@ -90,11 +95,13 @@ class Transaction(models.Model):
  
 #    linked objects
 #    event = models.ForeignKey(Event, null=True, blank=True) #used to link to an event
+
+#    this should be changed to Network, not BaseGroup
     group = models.ForeignKey(BaseGroup)
     monthlyreport = models.ForeignKey(MonthlyReport, null=True, blank=True)
     category = models.ForeignKey(Category)
     creator = models.ForeignKey(User, related_name="transactions_created")
-    editor = models.ForeignKey(User, related_name="transactions_edited")   
+    editor = models.ForeignKey(User, related_name="transactions_edited")
 
     def __unicode__(self):
         return u'%s %s' %(self.enter_date, self.amount)
@@ -176,6 +183,10 @@ class UploadCommitmentForm(forms.Form):
 class CreateNOReports(forms.Form):
     month = forms.DateField()
 
+class DateRangeForm(forms.Form):
+    from_date = forms.DateField(help_text='YYYY-MM-DD')
+    to_date = forms.DateField(help_text='YYYY-MM-DD')
+
 #=======================================================================================
 # TRANSACTION FORM
 #=======================================================================================
@@ -205,7 +216,11 @@ class IncomeForm(ModelForm):
     class Meta:
         model = Income
         exclude = ('enter_date', 'type', 'monthlyreport','submitted','account', 'group', 'creator', 'editor')
-    
+
+    def __init__(self, *args, **kwargs):
+        super(IncomeForm, self).__init__(*args, **kwargs)
+        self.fields['category'].queryset = Category.objects.filter(type='IN')
+        
     def clean_bank_date(self):
         bank_date = self.cleaned_data['bank_date']
         tdate = datetime.date.today()
@@ -223,7 +238,7 @@ class IncomeForm(ModelForm):
         
         if category.type != "IN":
             raise forms.ValidationError ("Not an income category.")
-        if category.name == "donation":
+        if category.slug == "donation":
             raise forms.ValidationError ("You must enter donations in the donation entry form (see left).")
         
         return category
@@ -237,7 +252,11 @@ class IncomeEditForm(ModelForm):
     class Meta:
         model = Income
         exclude = ('enter_date','monthlyreport', 'type', 'submitted','account', 'amount', 'bank_date', 'group', 'creator', 'editor')
-    
+ 
+    def __init__(self, *args, **kwargs):
+        super(IncomeEditForm, self).__init__(*args, **kwargs)
+        self.fields['category'].queryset = Category.objects.filter(type='IN')
+           
     def clean_bank_date(self):
         bank_date = self.cleaned_data['bank_date']
         tdate = datetime.date.today()
@@ -255,6 +274,8 @@ class IncomeEditForm(ModelForm):
         
         if category.type != "IN":
             raise forms.ValidationError ("Not an income category.")
+        if category.slug == "donation":
+            raise forms.ValidationError ("You must enter donations in the donation entry form (see left).")
         
         return category
 
@@ -265,16 +286,35 @@ class IncomeStaffForm(ModelForm):
     
     class Meta:
         model = Income
-        exclude = ('enter_date','type', 'group', 'creator', 'editor')
-    
+        exclude = ('enter_date','type', 'monthlyreport', 'creator', 'editor')
+        
+    def __init__(self, *args, **kwargs):
+        super(IncomeStaffForm, self).__init__(*args, **kwargs)
+        self.fields['category'].queryset = Category.objects.filter(type='IN')
+        
     def clean_category(self):
         category = self.cleaned_data['category']
         
         if category.type != "IN":
             raise forms.ValidationError ("Not an income category.")
+        if category.slug == "donation":
+            raise forms.ValidationError ("You must enter donations in the donation entry form (see left).")
         
         return category
     
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        submitted = self.cleaned_data['submitted']
+        group = self.cleaned_data['group']
+        bank_date = self.cleaned_data['bank_date']
+        account = self.cleaned_data['account']
+        if submitted == 'Y':
+            try:
+                monthlyreport = MonthlyReport.objects.get(group=group, type=account, date__month=bank_date.month, date__year=bank_date.year)
+            except ObjectDoesNotExist:
+                    raise forms.ValidationError("There is no existing monthly report for specified chapter, account, month and year. Please put submitted to No or submit the monthly report first.")
+        
+        return cleaned_data
     
 #=======================================================================================
 # EXPENDITURE FORM
@@ -285,7 +325,12 @@ class ExpenditureForm(ModelForm):
     class Meta:
         model = Expenditure
         exclude = ('enter_date','monthlyreport', 'type', 'submitted','account', 'group', 'creator', 'editor')
-    
+ 
+    def __init__(self, *args, **kwargs):
+        super(ExpenditureForm, self).__init__(*args, **kwargs)
+        self.fields['category'].queryset = Category.objects.filter(type='EX')
+        
+        
     def clean_bank_date(self):
         bank_date = self.cleaned_data['bank_date']
         tdate = datetime.date.today()
@@ -316,7 +361,11 @@ class ExpenditureEditForm(ModelForm):
     class Meta:
         model = Expenditure
         exclude = ('enter_date','monthlyreport', 'type', 'submitted','account', 'amount', 'bank_date', 'group', 'creator', 'editor')
-    
+  
+    def __init__(self, *args, **kwargs):
+        super(ExpenditureEditForm, self).__init__(*args, **kwargs)
+        self.fields['category'].queryset = Category.objects.filter(type='EX')
+           
     def clean_bank_date(self):
         bank_date = self.cleaned_data['bank_date']
         tdate = datetime.date.today()
@@ -335,7 +384,7 @@ class ExpenditureEditForm(ModelForm):
             raise forms.ValidationError ("Not an expenditure category.")
         
         return category
-    
+ 
 
 #=======================================================================================
 # EXPENDTIURE STAFF FORM
@@ -344,8 +393,12 @@ class ExpenditureStaffForm(ModelForm):
     
     class Meta:
         model = Expenditure
-        exclude = ('enter_date','type', 'group', 'creator', 'editor')
-    
+        exclude = ('enter_date','type', 'monthlyreport', 'creator', 'editor')
+  
+    def __init__(self, *args, **kwargs):
+        super(ExpenditureStaffForm, self).__init__(*args, **kwargs)
+        self.fields['category'].queryset = Category.objects.filter(type='EX')
+            
     def clean_category(self):
         category = self.cleaned_data['category']
         
@@ -353,7 +406,21 @@ class ExpenditureStaffForm(ModelForm):
             raise forms.ValidationError ("Not an expenditure category.")
         
         return category
-
+    
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        submitted = self.cleaned_data['submitted']
+        group = self.cleaned_data['group']
+        bank_date = self.cleaned_data['bank_date']
+        account = self.cleaned_data['account']
+        if submitted == 'Y':
+            try:
+                monthlyreport = MonthlyReport.objects.get(group=group, type=account, date__month=bank_date.month, date__year=bank_date.year)
+            except ObjectDoesNotExist:
+                    raise forms.ValidationError("There is no existing monthly report for specified chapter, account, month and year. Please put submitted to No or submit the monthly report first.")
+        
+        return cleaned_data
+    
 #=======================================================================================
 # DONATION FORM
 #=======================================================================================
@@ -362,7 +429,7 @@ class DonationEditForm(ModelForm):
     
     class Meta:
         model = Expenditure
-        exclude = ('enter_date','monthlyreport', 'type', 'submitted','account', 'amount', 'bank_date', 'group', 'creator', 'editor')
+        exclude = ('enter_date','monthlyreport', 'type', 'submitted','account', 'amount', 'bank_date', 'category', 'group', 'creator', 'editor')
     
     def clean_bank_date(self):
         bank_date = self.cleaned_data['bank_date']
@@ -402,4 +469,19 @@ class DonationStaffForm(ModelForm):
     
     class Meta:
         model = Donation
-        exclude = ('enter_date','type', 'group', 'creator', 'editor')
+        exclude = ('enter_date','type', 'monthlyreport', 'category', 'creator', 'editor')
+    
+    
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        submitted = self.cleaned_data['submitted']
+        group = self.cleaned_data['group']
+        bank_date = self.cleaned_data['bank_date']
+        account = self.cleaned_data['account']
+        if submitted == 'Y':
+            try:
+                monthlyreport = MonthlyReport.objects.get(group=group, type=account, date__month=bank_date.month, date__year=bank_date.year)
+            except ObjectDoesNotExist:
+                    raise forms.ValidationError("There is no existing monthly report for specified chapter, account, month and year. Please put submitted to No or submit the monthly report first.")
+        
+        return cleaned_data
