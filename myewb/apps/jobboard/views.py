@@ -286,7 +286,7 @@ def accept(request, id, username):
         b.accepted=True
         b.save()
 
-    request.user.message_set.create(message="You have accepted %s for the job." % user.visible_name())
+    request.user.message_set.create(message="You have accepted %s for the job.  You should get in touch with them to work out next steps! =)" % user.visible_name())
     if request.is_ajax:
         return HttpResponseRedirect(reverse('jobboard_detail_ajax', kwargs={'id': job.id}))
     else:
