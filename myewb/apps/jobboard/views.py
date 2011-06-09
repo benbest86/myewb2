@@ -5,11 +5,13 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.http import HttpResponseRedirect, HttpResponse, HttpResponseForbidden
 from django.db.models import Q
 from django.template import RequestContext, Context, loader
+from django.template.loader import render_to_string
 from django.utils.translation import ugettext_lazy as _
 from urllib import quote_plus
 
 from jobboard.forms import JobPostingForm
 from jobboard.models import JobPosting, Skill, URGENCY_CHOICES, TIME_CHOICES, JobFilter, JobInterest, Location
+from mailer.sendmail import send_mail
 from siteutils.shortcuts import get_object_or_none
 from siteutils.http import JsonResponse
 
@@ -182,6 +184,19 @@ def bid(request, id):
     if request.POST.get('statement', None):
         bid.statement = request.POST['statement']
         bid.save()
+        
+    context = {"user": request.user,
+               "job": job,
+               "bid": bid}
+    subject = render_to_string("jobboard/emails/bid_subject.txt", context)
+    body = render_to_string("jobboard/emails/bid_body.txt", context)
+
+    subject = "".join(subject.splitlines())
+    send_mail(subject=subject,
+              htmlMessage=body,
+              fromemail='"Engineers Without Borders" <info@ewb.ca>',
+              recipients=[job.owner.email],
+              use_template=False)
     
     request.user.message_set.create(message='You have bid for this job.')
     if request.is_ajax:
