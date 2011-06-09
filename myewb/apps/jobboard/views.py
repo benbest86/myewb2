@@ -315,8 +315,11 @@ def statement(request, id, username):
     
     bids = JobInterest.objects.filter(user=user, job=job)
     bid = bids[0]
+    
+    statement = bid.statement
+    statement = statement.replace("\n", "<br/>")
 
-    return HttpResponse(bid.statement)
+    return HttpResponse(statement)
     
 @login_required
 def filters_save(request):
