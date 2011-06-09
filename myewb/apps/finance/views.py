@@ -1516,7 +1516,7 @@ def monthlyreports_submit(request, group_slug, year=None, month=None):
 
         else:
 #            error since not month AND year
-            return HttpResponseForbidden()
+            return HttpResponse("I'm really confused... I got a year and not a month.  This shouldn't happen.")
             
     else:
         trans = trans_chap.filter(submitted = "N", account = "CH", bank_date__isnull=False).order_by('bank_date')
