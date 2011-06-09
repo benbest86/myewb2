@@ -184,7 +184,10 @@ def bid(request, id):
         bid.save()
     
     request.user.message_set.create(message='You have bid for this job.')
-    return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
+    if request.is_ajax:
+        return HttpResponseRedirect(reverse('jobboard_detail_ajax', kwargs={'id': job.id}))
+    else:
+        return HttpResponseRedirect(reverse('jobboard_detail_ajax', kwargs={'id': job.id}))
 
 @login_required
 def watch(request, id):
@@ -193,7 +196,11 @@ def watch(request, id):
     job.following_users.add(request.user)
     
     request.user.message_set.create(message='You are now watching this job.')
-    return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
+    
+    if request.is_ajax:
+        return HttpResponseRedirect(reverse('jobboard_detail_ajax', kwargs={'id': job.id}))
+    else:
+        return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
 
 @login_required
 def bid_cancel(request, id):
@@ -204,7 +211,10 @@ def bid_cancel(request, id):
         b.delete()
     
     request.user.message_set.create(message='You have cancelled your bid.')
-    return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
+    if request.is_ajax:
+        return HttpResponseRedirect(reverse('jobboard_detail_ajax', kwargs={'id': job.id}))
+    else:
+        return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
 
 @login_required
 def watch_cancel(request, id):
@@ -213,7 +223,10 @@ def watch_cancel(request, id):
     job.following_users.remove(request.user)
     
     request.user.message_set.create(message='You are now longer watching this job.')
-    return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
+    if request.is_ajax:
+        return HttpResponseRedirect(reverse('jobboard_detail_ajax', kwargs={'id': job.id}))
+    else:
+        return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
 
 @login_required
 def close(request, id):
@@ -226,7 +239,10 @@ def close(request, id):
     job.save()
     
     request.user.message_set.create(message='Job closed.')
-    return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
+    if request.is_ajax:
+        return HttpResponseRedirect(reverse('jobboard_detail_ajax', kwargs={'id': job.id}))
+    else:
+        return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
 
 
 @login_required
@@ -240,7 +256,10 @@ def open(request, id):
     job.save()
     
     request.user.message_set.create(message='Job re-opened.')
-    return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
+    if request.is_ajax:
+        return HttpResponseRedirect(reverse('jobboard_detail_ajax', kwargs={'id': job.id}))
+    else:
+        return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
 
 @login_required
 def accept(request, id, username):
@@ -253,7 +272,10 @@ def accept(request, id, username):
         b.save()
 
     request.user.message_set.create(message="You have accepted %s for the job." % user.visible_name())
-    return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
+    if request.is_ajax:
+        return HttpResponseRedirect(reverse('jobboard_detail_ajax', kwargs={'id': job.id}))
+    else:
+        return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
     
 @login_required
 def accept_cancel(request, id, username):
@@ -266,7 +288,10 @@ def accept_cancel(request, id, username):
         b.save()
 
     request.user.message_set.create(message="You have removed %s from the job." % user.visible_name())
-    return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
+    if request.is_ajax:
+        return HttpResponseRedirect(reverse('jobboard_detail_ajax', kwargs={'id': job.id}))
+    else:
+        return HttpResponseRedirect(reverse('jobboard_detail', kwargs={'id': job.id}))
 
 @login_required
 def statement(request, id, username):
