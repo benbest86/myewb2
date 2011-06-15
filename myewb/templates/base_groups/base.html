@@ -61,12 +61,14 @@
 	<ul>
 		<li><a href="#group-info">About</a></li>
 
-		<li><a href="#group-posts">Posts</a></li>
-		<li><a href="#group-events">Events</a></li>
-		<li><a href="#group-whiteboard">Whiteboard</a></li>
-        {% if is_admin or member %}
-        	{% if is_admin or member.is_accepted %}
-				<li><a href="#group-workspace">Workspace</a></li>
+		{% if not limited_visibility %}
+			<li><a href="#group-posts">Posts</a></li>
+			<li><a href="#group-events">Events</a></li>
+			<li><a href="#group-whiteboard">Whiteboard</a></li>
+	        {% if is_admin or member %}
+	        	{% if is_admin or member.is_accepted %}
+					<li><a href="#group-workspace">Workspace</a></li>
+				{% endif %}
 			{% endif %}
 		{% endif %}
 	</ul>
@@ -76,6 +78,8 @@
             {# OVERRIDE ME! #}
         {% endblock %}
 	</div>
+
+	{% if not limited_visibility %}
 	<div id="group-posts">
 
 		<h2>{% trans "Discussions" %}{% if group.topics.all.count %} ({{ group.topics.all.count }}){% endif %}</h2>
@@ -147,6 +151,7 @@
 				{% show_workspace group request.user %}
 			</div>
 		{% endif %}
+	{% endif %}
 	{% endif %}
 	
 </div>
@@ -245,19 +250,6 @@
 						</form>
 					</div>
 		        {% endif %}
-                {# Dropping these here from further up the page. @@@ might need formatting. #}
-                
-				{% if member and member.is_invited %}
-					<div class="bkgd-light" style="border: 1px; width: 75%; margin: 0 auto; padding: 5px;">
-						{% trans "You have been invited to join this group." %}<br/>
-						<form method="POST" action="{% groupurl accept_invitation group username=member.user.username %}">
-							<input type="submit" value="{% trans "Join group" %}" style="float: left;"/>
-						</form>            			
-						<form method="POST" action="{% groupurl delete_member group username=member.user.username %}">
-							&nbsp;&nbsp;&nbsp;<input type="submit" value="{% trans "Decline" %}" />
-						</form>
-					</div>
-				{% endif %}
 
 				{% if requests_outstanding %}
 					<div class="bkgd-light" style="border: 1px; width: 75%; margin: 0 auto; padding: 5px;">

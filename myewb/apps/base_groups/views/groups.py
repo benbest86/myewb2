@@ -202,7 +202,8 @@ def group_detail(request, group_slug, model=None, member_model=None,
             'children': group.get_visible_children(request.user),
             'is_admin': group.user_is_admin(request.user),
             'requests_outstanding': requests_outstanding,
-            'joinform': GroupAddEmailForm()
+            'joinform': GroupAddEmailForm(),
+            'limited_visibility': not group.is_visible(request.user)
         },
         context_instance=RequestContext(request)
     )

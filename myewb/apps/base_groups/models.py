@@ -115,6 +115,17 @@ class BaseGroup(Group):
     def user_is_pending_member(self, user):
         return user.is_authenticated() and self.pending_members.filter(user=user).count() > 0
     
+    def user_is_invited(self, user):
+        if not user.is_authenticated():
+            return False
+        
+        invitation = InvitationToJoinGroup.objects.filter(user=user, group=self)
+        
+        if invitation.count():
+            return True
+        
+        return False
+    
     # setting admin_override = False means that site admins and parent group admins 
     # are not automatically admins of the group (need explicit permission)
     def user_is_admin(self, user, admin_override = True):

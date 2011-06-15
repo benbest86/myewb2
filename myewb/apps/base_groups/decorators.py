@@ -84,7 +84,8 @@ class visibility_required(object):
             group_slug = kwargs.get('group_slug', None) or (len(args) > 0 and args[0])
 
             group = get_object_or_404(BaseGroup, slug=group_slug)
-            if group_slug == 'ewb' or group.is_visible(user):
+            if group_slug == 'ewb' or group.is_visible(user) or group.user_is_invited(user):
+            #if group_slug == 'ewb' or group.is_visible(user):
                 return f(request, *args, **kwargs)
             else:
                 # deny access
