@@ -25,6 +25,11 @@ def group_join(sender, instance, created, **kwargs):
     if created:
         user = instance.user
         group = instance.group
+
+        # work around a really weird bug on the production server...
+        group = BaseGroup.objects.get(slug=group.slug)
+        # apparently, if group is a Network/Community it doesn't inherit the 
+        # BaseGroup.add_to_class attributes (like mailchimp_name)
         
         if group.mailchimp_name:
             GroupEvent.objects.join(user, group)
@@ -32,6 +37,11 @@ def group_join(sender, instance, created, **kwargs):
 def group_leave(sender, instance, **kwargs):
     user = instance.user
     group = instance.group
+    
+    # work around a really weird bug on the production server...
+    group = BaseGroup.objects.get(slug=group.slug)
+    # apparently, if group is a Network/Community it doesn't inherit the 
+    # BaseGroup.add_to_class attributes (like mailchimp_name)
     
     if group.mailchimp_name or group.mailchimp_past_name:
         GroupEvent.objects.leave(user, group)
