@@ -2,6 +2,7 @@ import os
 
 from django import template
 from django.conf import settings
+from siteutils.helpers import fix_encoding
 
 register = template.Library()
 
@@ -42,6 +43,7 @@ def filesize_for_filename(attachment_path):
     """
 
     path = os.path.join(settings.MEDIA_ROOT, attachment_path)
+    path = fix_encoding(path)
     size = os.path.getsize(path)
     formatted_size = bytestr(size)
     
