@@ -71,7 +71,7 @@
 						<input type="text" value="search" style="width: 200px; color: #a0a0a0; margin-left: 10px;" id="global_search_box" name="q"/>
 						{# <input type="submit" value="search" class="bkgd-light" /> #}
 					</form>
-					<div class="bkgd-light" style="position: relative; height: 20px; padding: 10px; border-radius: 1em; display: none;" id="mainsearchoptions">
+					<div class="bkgd-light" style="position: relative; height: 20px; padding: 10px; border-radius: 1em; display: none; z-index: 10;" id="mainsearchoptions">
 						<input type="button" value="search content" class="bkgd-light" id="mainsearchcontent" />
 						{% if user.is_authenticated %}
 							<input type="button" value="search members" class="bkgd-light" id="mainsearchmembers" />
