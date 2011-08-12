@@ -2324,24 +2324,32 @@ def input_budgetitems(request, group_slug, budget):
         for form in formset.forms:
 #            separate the income from expenditure categories
             if categories[count].type == "IN":
+                found = False
                 if trans:
                     for t in trans:
-                        if t['category'] == i.category_id:
+#                        if t['category'] == i.category_id:
+                        if t['category'] == categories[count].id:
 #                            set table to category name, budgeted amount, previous years' amount
                             income.append((categories[count].name, form, t['sum']))
-                        else:
-                            income.append((categories[count].name, form, 0))
-                else:
+                            found = True
+#                        else:
+#                            income.append((categories[count].name, form, 0))
+#                else:
+                if not found:
                     income.append((categories[count].name, form, 0))
                         
             else:
+                found = False
                 if trans:
                     for t in trans:
-                        if t['category'] == i.category_id:
+#                        if t['category'] == i.category_id:
+                        if t['category'] == categories[count].id:
                             expenditure.append((categories[count].name, form, t['sum']))
-                        else:
-                            expenditure.append((categories[count].name, form, 0))
-                else:
+                            found = True
+#                        else:
+#                            expenditure.append((categories[count].name, form, 0))
+#                else:
+                if not found:
                     expenditure.append((categories[count].name, form, 0))
 
             count = count + 1
