@@ -107,7 +107,7 @@ def main_dashboard(request):
     accountChangesChart.set_legend_position('b')
 
     #yaxis = range(0, 25, 2)    # this will make limited test data look better
-    yaxis = range(0, max(listsignups), max(listsignups)/10)
+    yaxis = range(0, min(max(listsignups), 10), max(max(listsignups)/10, 1))
     yaxis[0] = ''
     accountChangesChart.set_axis_labels(Axis.LEFT, yaxis)
     accountChangesChart.set_axis_labels(Axis.BOTTOM, xaxis)
