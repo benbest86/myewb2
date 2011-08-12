@@ -6,6 +6,7 @@
 # ignore vim swp files and gedit temp files
 *.swp
 *.*~
+.vim
 
 # ignore db files
 *.db
