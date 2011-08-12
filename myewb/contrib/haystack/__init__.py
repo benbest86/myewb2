@@ -4,10 +4,14 @@ import os
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from haystack.sites import site
+try:
+    from django.utils import importlib
+except ImportError:
+    from haystack.utils import importlib
 
 
 __author__ = 'Daniel Lindsley'
-__version__ = (1, 0, 1, 'final')
+__version__ = (1, 2, 4)
 __all__ = ['backend']
 
 
@@ -26,18 +30,36 @@ if not hasattr(settings, "HAYSTACK_SEARCH_ENGINE"):
 
 # Load the search backend.
 def load_backend(backend_name=None):
+    """
+    Loads a backend for interacting with the search engine.
+    
+    Optionally accepts a ``backend_name``. If provided, it should be a string
+    of one of the following (built-in) options::
+    
+      * solr
+      * xapian
+      * whoosh
+      * simple
+      * dummy
+    
+    If you've implemented a custom backend, you can provide the "short" portion
+    of the name (before the ``_backend``) and Haystack will attempt to load
+    that backend instead.
+    
+    If not provided, the ``HAYSTACK_SEARCH_ENGINE`` setting is used.
+    """
     if not backend_name:
         backend_name = settings.HAYSTACK_SEARCH_ENGINE
     
     try:
-        # Most of the time, the search backend will be one of the  
+        # Most of the time, the search backend will be one of the
         # backends that ships with haystack, so look there first.
-        return __import__('haystack.backends.%s_backend' % backend_name, {}, {}, [''])
+        return importlib.import_module('haystack.backends.%s_backend' % backend_name)
     except ImportError, e:
-        # If the import failed, we might be looking for a search backend 
+        # If the import failed, we might be looking for a search backend
         # distributed external to haystack. So we'll try that next.
         try:
-            return __import__('%s_backend' % backend_name, {}, {}, [''])
+            return importlib.import_module('%s_backend' % backend_name)
         except ImportError, e_user:
             # The search backend wasn't found. Display a helpful error message
             # listing all possible (built-in) database backends.
@@ -48,6 +70,7 @@ def load_backend(backend_name=None):
                 and not f.startswith('_') 
                 and not f.startswith('.') 
                 and not f.endswith('.pyc')
+                and not f.endswith('.pyo')
             ]
             available_backends.sort()
             if backend_name not in available_backends:
@@ -80,7 +103,7 @@ def autodiscover():
         # fails silently -- apps that do weird things with __path__ might
         # need to roll their own index registration.
         try:
-            app_path = __import__(app, {}, {}, [app.split('.')[-1]]).__path__
+            app_path = importlib.import_module(app).__path__
         except AttributeError:
             continue
         
@@ -95,9 +118,9 @@ def autodiscover():
         
         # Step 3: import the app's search_index file. If this has errors we want them
         # to bubble up.
-        __import__("%s.search_indexes" % app)
+        importlib.import_module("%s.search_indexes" % app)
 
-# Make sure the site gets loaded.
+
 def handle_registrations(*args, **kwargs):
     """
     Ensures that any configuration of the SearchSite(s) are handled when
@@ -106,6 +129,13 @@ def handle_registrations(*args, **kwargs):
     This makes it possible for scripts/management commands that affect models
     but know nothing of Haystack to keep the index up to date.
     """
+    if not getattr(settings, 'HAYSTACK_ENABLE_REGISTRATIONS', True):
+        # If the user really wants to disable this, they can, possibly at their
+        # own expense. This is generally only required in cases where other
+        # apps generate import errors and requires extra work on the user's
+        # part to make things work.
+        return
+    
     # This is a little dirty but we need to run the code that follows only
     # once, no matter how many times the main Haystack module is imported.
     # We'll look through the stack to see if we appear anywhere and simply
@@ -118,7 +148,7 @@ def handle_registrations(*args, **kwargs):
     
     # Pull in the config file, causing any SearchSite initialization code to
     # execute.
-    search_sites_conf = __import__(settings.HAYSTACK_SITECONF)
+    search_sites_conf = importlib.import_module(settings.HAYSTACK_SITECONF)
 
 
 handle_registrations()

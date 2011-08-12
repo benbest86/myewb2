@@ -1,9 +1,5 @@
-from django.db.models.base import ModelBase
+import copy
 from haystack.exceptions import AlreadyRegistered, NotRegistered, SearchFieldError
-try:
-    set
-except NameError:
-    from sets import Set as set
 
 
 class SearchSite(object):
@@ -24,6 +20,7 @@ class SearchSite(object):
     
     def __init__(self):
         self._registry = {}
+        self._cached_field_mapping = None
     
     def register(self, model, index_class=None):
         """
@@ -38,7 +35,7 @@ class SearchSite(object):
             from haystack.indexes import BasicSearchIndex
             index_class = BasicSearchIndex
         
-        if not isinstance(model, ModelBase):
+        if not hasattr(model, '_meta'):
             raise AttributeError('The model being registered must derive from Model.')
         
         if model in self._registry:
@@ -84,30 +81,116 @@ class SearchSite(object):
         instances registered with a site.
         
         This is useful when building a schema for an engine. A dictionary is
-        returned, with each key being a fieldname and the value being the
-        `SearchField` class assigned to it.
+        returned, with each key being a fieldname (or index_fieldname) and the
+        value being the `SearchField` class assigned to it.
         """
         content_field_name = ''
         fields = {}
-        field_names = set()
         
         for model, index in self.get_indexes().items():
             for field_name, field_object in index.fields.items():
-                if field_name in field_names:
-                    # We've already got this field in the list. Skip.
-                    continue
-                
-                field_names.add(field_name)
-                
                 if field_object.document is True:
-                    if content_field_name != '' and content_field_name != field_name:
+                    if content_field_name != '' and content_field_name != field_object.index_fieldname:
                         raise SearchFieldError("All SearchIndex fields with 'document=True' must use the same fieldname.")
                     
-                    content_field_name = field_name
+                    content_field_name = field_object.index_fieldname
                 
-                fields[field_name] = field_object
+                if not field_object.index_fieldname in fields:
+                    fields[field_object.index_fieldname] = field_object
+                    fields[field_object.index_fieldname] = copy.copy(field_object)
+                else:
+                    # If the field types are different, we can mostly
+                    # safely ignore this. The exception is ``MultiValueField``,
+                    # in which case we'll use it instead, copying over the
+                    # values.
+                    if field_object.is_multivalued == True:
+                        old_field = fields[field_object.index_fieldname]
+                        fields[field_object.index_fieldname] = field_object
+                        fields[field_object.index_fieldname] = copy.copy(field_object)
+                        
+                        # Switch it so we don't have to dupe the remaining
+                        # checks.
+                        field_object = old_field
+                    
+                    # We've already got this field in the list. Ensure that
+                    # what we hand back is a superset of all options that
+                    # affect the schema.
+                    if field_object.indexed is True:
+                        fields[field_object.index_fieldname].indexed = True
+                    
+                    if field_object.stored is True:
+                        fields[field_object.index_fieldname].stored = True
+                    
+                    if field_object.faceted is True:
+                        fields[field_object.index_fieldname].faceted = True
+                    
+                    if field_object.use_template is True:
+                        fields[field_object.index_fieldname].use_template = True
+                    
+                    if field_object.null is True:
+                        fields[field_object.index_fieldname].null = True
         
         return fields
+    
+    def get_index_fieldname(self, fieldname):
+        """
+        Returns the actual name of the field in the index.
+        
+        If not found, returns the fieldname provided.
+        
+        This is useful because it handles the case where a ``index_fieldname``
+        was provided, allowing the user to use the variable name from their
+        ``SearchIndex`` instead of having to remember & use the overridden
+        name.
+        """
+        if fieldname in self._field_mapping():
+            return self._field_mapping()[fieldname]['index_fieldname']
+        else:
+            return fieldname
+    
+    def get_facet_field_name(self, fieldname):
+        """
+        Returns the actual name of the facet field in the index.
+        
+        If not found, returns the fieldname provided.
+        """
+        facet_fieldname = None
+        
+        reverse_map = {}
+        
+        for field, info in self._field_mapping().items():
+            if info['facet_fieldname'] and info['facet_fieldname'] == fieldname:
+                return info['index_fieldname']
+        
+        return self.get_index_fieldname(fieldname)
+    
+    def _field_mapping(self):
+        mapping = {}
+        
+        if self._cached_field_mapping:
+            return self._cached_field_mapping
+        
+        for model, index in self.get_indexes().items():
+            for field_name, field_object in index.fields.items():
+                if field_name in mapping and field_object.index_fieldname != mapping[field_name]['index_fieldname']:
+                    # We've already seen this field in the list. Raise an exception if index_fieldname differs.
+                    raise SearchFieldError("All uses of the '%s' field need to use the same 'index_fieldname' attribute." % field_name)
+                
+                facet_fieldname = None
+                
+                if hasattr(field_object, 'facet_for'):
+                    if field_object.facet_for:
+                        facet_fieldname = field_object.facet_for
+                    else:
+                        facet_fieldname = field_object.instance_name
+                
+                mapping[field_name] = {
+                    'index_fieldname': field_object.index_fieldname,
+                    'facet_fieldname': facet_fieldname,
+                }
+        
+        self._cached_field_mapping = mapping
+        return mapping
     
     def update_object(self, instance):
         """

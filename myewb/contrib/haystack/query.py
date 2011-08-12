@@ -1,6 +1,7 @@
+import operator
 import re
+import warnings
 from django.conf import settings
-from haystack import backend
 from haystack.backends import SQ
 from haystack.constants import REPR_OUTPUT_SIZE, ITERATOR_LOAD_PER_QUERY, DEFAULT_OPERATOR
 from haystack.exceptions import NotRegistered
@@ -13,7 +14,12 @@ class SearchQuerySet(object):
     Supports chaining (a la QuerySet) to narrow the search.
     """
     def __init__(self, site=None, query=None):
-        self.query = query or backend.SearchQuery()
+        if query is not None:
+            self.query = query
+        else:
+            from haystack import backend
+            self.query = backend.SearchQuery(site=site)
+        
         self._result_cache = []
         self._result_count = None
         self._cache_full = False
@@ -33,7 +39,16 @@ class SearchQuerySet(object):
         len(self)
         obj_dict = self.__dict__.copy()
         obj_dict['_iter'] = None
+        del obj_dict['site']
         return obj_dict
+
+    def __setstate__(self, dict):
+        """
+        For unpickling.
+        """
+        self.__dict__ = dict
+        from haystack import site as main_site
+        self.site = main_site
     
     def __repr__(self):
         data = list(self[:REPR_OUTPUT_SIZE])
@@ -46,6 +61,10 @@ class SearchQuerySet(object):
     def __len__(self):
         if not self._result_count:
             self._result_count = self.query.get_count()
+            
+            # Some backends give weird, false-y values here. Convert to zero.
+            if not self._result_count:
+                self._result_count = 0
         
         # This needs to return the actual number of hits, not what's in the cache.
         return self._result_count - self._ignored_result_count
@@ -118,7 +137,7 @@ class SearchQuerySet(object):
         self.query.set_limits(start, end)
         results = self.query.get_results()
         
-        if len(results) == 0:
+        if results == None or len(results) == 0:
             return False
         
         # Setup the full cache now that we know how many results there are.
@@ -149,21 +168,27 @@ class SearchQuerySet(object):
             
             # Load the objects for each model in turn.
             for model in models_pks:
-                loaded_objects[model] = model._default_manager.in_bulk(models_pks[model])
-        
+                try:
+                    loaded_objects[model] = self.site.get_index(model).read_queryset().in_bulk(models_pks[model])
+                except NotRegistered:
+                    self.log.warning("Model not registered with search site '%s.%s'." % (self.app_label, self.model_name))
+                    # Revert to old behaviour
+                    loaded_objects[model] = model._default_manager.in_bulk(models_pks[model])
+
         to_cache = []
         
         for result in results:
             if self._load_all:
-                # We have to deal with integer keys being cast from strings; if this
-                # fails we've got a character pk.
+                # We have to deal with integer keys being cast from strings
+                model_objects = loaded_objects.get(result.model, {})
+                if not result.pk in model_objects:
+                    try:
+                        result.pk = int(result.pk)
+                    except ValueError:
+                        pass
                 try:
-                    result.pk = int(result.pk)
-                except ValueError:
-                    pass
-                try:
-                    result._object = loaded_objects[result.model][result.pk]
-                except (KeyError, IndexError):
+                    result._object = model_objects[result.pk]
+                except KeyError:
                     # The object was either deleted since we indexed or should
                     # be ignored; fail silently.
                     self._ignored_result_count += 1
@@ -229,7 +254,7 @@ class SearchQuerySet(object):
     
     def filter(self, *args, **kwargs):
         """Narrows the search based on certain attributes and the default operator."""
-        if getattr(settings, 'HAYSTACK_DEFAULT_OPERATOR', DEFAULT_OPERATOR) == 'OR':
+        if DEFAULT_OPERATOR == 'OR':
             return self.filter_or(*args, **kwargs)
         else:
             return self.filter_and(*args, **kwargs)
@@ -272,9 +297,22 @@ class SearchQuerySet(object):
         clone = self._clone()
         
         for model in models:
-            if model in self.site.get_indexed_models():
-                clone.query.add_model(model)
+            if not model in self.site.get_indexed_models():
+                warnings.warn('The model %r is not registered for search.' % model)
+            
+            clone.query.add_model(model)
         
+        return clone
+    
+    def result_class(self, klass):
+        """
+        Allows specifying a different class to use for results.
+        
+        Overrides any previous usages. If ``None`` is provided, Haystack will
+        revert back to the default ``SearchResult`` object.
+        """
+        clone = self._clone()
+        clone.query.set_result_class(klass)
         return clone
     
     def boost(self, term, boost):
@@ -319,11 +357,6 @@ class SearchQuerySet(object):
         clone._load_all = True
         return clone
     
-    def load_all_queryset(self, model, queryset):
-        # DRL_TODO: Remove before 1.0.
-        from haystack.exceptions import HaystackError
-        raise HaystackError("This method is deprecated. Please use the `RelatedSearchQuerySet` instead.")
-    
     def auto_query(self, query_string):
         """
         Performs a best guess constructing the search query.
@@ -334,21 +367,24 @@ class SearchQuerySet(object):
         clone = self._clone()
         
         # Pull out anything wrapped in quotes and do an exact match on it.
-        quote_regex = re.compile(r'([\'"])(.*?)\1')
-        result = quote_regex.search(query_string)
-        
-        while result is not None:
-            full_match = result.group()
-            query_string = query_string.replace(full_match, '', 1)
-            
-            exact_match = result.groups()[1]
-            clone = clone.filter(content=clone.query.clean(exact_match))
-            
-            # Re-search the string for other exact matches.
-            result = quote_regex.search(query_string)
+        open_quote_position = None
+        non_exact_query = query_string
+
+        for offset, char in enumerate(query_string):
+            if char == '"':
+                if open_quote_position != None:
+                    current_match = non_exact_query[open_quote_position + 1:offset]
+
+                    if current_match:
+                        clone = clone.filter(content=clone.query.clean(current_match))
+
+                    non_exact_query = non_exact_query.replace('"%s"' % current_match, '', 1)
+                    open_quote_position = None
+                else:
+                    open_quote_position = offset
         
         # Pseudo-tokenize the rest of the query.
-        keywords = query_string.split()
+        keywords = non_exact_query.split()
         
         # Loop through keywords and add filters to the query.
         for keyword in keywords:
@@ -367,17 +403,35 @@ class SearchQuerySet(object):
         
         return clone
     
+    def autocomplete(self, **kwargs):
+        """
+        A shortcut method to perform an autocomplete search.
+        
+        Must be run against fields that are either ``NgramField`` or
+        ``EdgeNgramField``.
+        """
+        clone = self._clone()
+        query_bits = []
+        
+        for field_name, query in kwargs.items():
+            for word in query.split(' '):
+                bit = clone.query.clean(word.strip())
+                kwargs = {
+                    field_name: bit,
+                }
+                query_bits.append(SQ(**kwargs))
+        
+        return clone.filter(reduce(operator.__and__, query_bits))
+    
     # Methods that do not return a SearchQuerySet.
     
     def count(self):
         """Returns the total number of matching results."""
-        clone = self._clone()
-        return len(clone)
+        return len(self)
     
     def best_match(self):
         """Returns the best/top search result that matches the query."""
-        clone = self._clone()
-        return clone[0]
+        return self[0]
     
     def latest(self, date_field):
         """Returns the most recent search result that matches the query."""
@@ -444,6 +498,12 @@ class EmptySearchQuerySet(SearchQuerySet):
         clone = super(EmptySearchQuerySet, self)._clone(klass=klass)
         clone._result_cache = []
         return clone
+    
+    def _fill_cache(self, start, end):
+        return False
+
+    def facet_counts(self):
+        return {}
 
 
 class RelatedSearchQuerySet(SearchQuerySet):

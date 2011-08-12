@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import re
 from copy import deepcopy
 from time import time
 from django.conf import settings
@@ -8,12 +7,13 @@ from django.db.models import Q
 from django.db.models.base import ModelBase
 from django.utils import tree
 from django.utils.encoding import force_unicode
-from haystack.constants import VALID_FILTERS, FILTER_SEPARATOR
+from haystack.constants import DJANGO_CT, VALID_FILTERS, FILTER_SEPARATOR
 from haystack.exceptions import SearchBackendError, MoreLikeThisError, FacetingError
+from haystack.models import SearchResult
 try:
-    set
-except NameError:
-    from sets import Set as set
+    from django.utils import importlib
+except ImportError:
+    from haystack.utils import importlib
 
 
 VALID_GAPS = ['year', 'month', 'day', 'hour', 'minute', 'second']
@@ -60,6 +60,20 @@ def log_query(func):
     return wrapper
 
 
+class EmptyResults(object):
+    hits = 0
+    docs = []
+    
+    def __len__(self):
+        return 0
+    
+    def __getitem__(self, k):
+        if isinstance(k, slice):
+            return []
+        else:
+            raise IndexError("It's not here.")
+
+
 class BaseSearchBackend(object):
     # Backends should include their own reserved words/characters.
     RESERVED_WORDS = []
@@ -96,7 +110,7 @@ class BaseSearchBackend(object):
         """
         raise NotImplementedError
     
-    def clear(self, models=[]):
+    def clear(self, models=[], commit=True):
         """
         Clears the backend of all documents/objects for a collection of models.
         
@@ -109,7 +123,7 @@ class BaseSearchBackend(object):
     def search(self, query_string, sort_by=None, start_offset=0, end_offset=None,
                fields='', highlight=False, facets=None, date_facets=None, query_facets=None,
                narrow_queries=None, spelling_query=None,
-               limit_to_registered_models=True, **kwargs):
+               limit_to_registered_models=None, result_class=None, **kwargs):
         """
         Takes a query to search on and returns dictionary.
         
@@ -132,7 +146,7 @@ class BaseSearchBackend(object):
         """
         return force_unicode(value)
     
-    def more_like_this(self, model_instance, additional_query_string=None):
+    def more_like_this(self, model_instance, additional_query_string=None, result_class=None):
         """
         Takes a model object and returns results the backend thinks are similar.
         
@@ -261,7 +275,7 @@ class BaseSearchQuery(object):
     implementation.
     """
     
-    def __init__(self, backend=None):
+    def __init__(self, site=None, backend=None):
         self.query_filter = SearchNode()
         self.order_by = []
         self.models = set()
@@ -271,7 +285,7 @@ class BaseSearchQuery(object):
         self.highlight = False
         self.facets = set()
         self.date_facets = {}
-        self.query_facets = {}
+        self.query_facets = []
         self.narrow_queries = set()
         self._raw_query = None
         self._raw_query_params = {}
@@ -281,7 +295,12 @@ class BaseSearchQuery(object):
         self._hit_count = None
         self._facet_counts = None
         self._spelling_suggestion = None
-        self.backend = backend or SearchBackend()
+        self.result_class = SearchResult
+        
+        if backend is not None:
+            self.backend = backend
+        else:
+            self.backend = SearchBackend(site=site)
     
     def __str__(self):
         return self.build_query()
@@ -290,9 +309,10 @@ class BaseSearchQuery(object):
         """For pickling."""
         obj_dict = self.__dict__.copy()
         del(obj_dict['backend'])
+        
         # Rip off the class bits as we'll be using this path when we go to load
         # the backend.
-        obj_dict['backend_used'] = ".".join(str(self.backend).replace("<class '", "").replace("'>", "").split(".")[0:-1])
+        obj_dict['backend_used'] = ".".join(str(self.backend).replace("<", "").split(".")[0:-1])
         return obj_dict
     
     def __setstate__(self, obj_dict):
@@ -301,7 +321,7 @@ class BaseSearchQuery(object):
         self.__dict__.update(obj_dict)
         
         try:
-            loaded_backend = __import__(backend_used)
+            loaded_backend = importlib.import_module(backend_used)
         except ImportError:
             raise SearchBackendError("The backend this query was pickled with '%s.SearchBackend' could not be loaded." % backend_used)
         
@@ -344,6 +364,9 @@ class BaseSearchQuery(object):
         if self.boost:
             kwargs['boost'] = self.boost
         
+        if self.result_class:
+            kwargs['result_class'] = self.result_class
+        
         return kwargs
     
     def run(self, spelling_query=None):
@@ -354,7 +377,7 @@ class BaseSearchQuery(object):
         results = self.backend.search(final_query, **kwargs)
         self._results = results.get('results', [])
         self._hit_count = results.get('hits', 0)
-        self._facet_counts = results.get('facets', {})
+        self._facet_counts = self.post_process_facets(results)
         self._spelling_suggestion = results.get('spelling_suggestion', None)
     
     def run_mlt(self):
@@ -365,8 +388,12 @@ class BaseSearchQuery(object):
         if self._more_like_this is False or self._mlt_instance is None:
             raise MoreLikeThisError("No instance was provided to determine 'More Like This' results.")
         
+        kwargs = {
+            'result_class': self.result_class,
+        }
+        
         additional_query_string = self.build_query()
-        results = self.backend.more_like_this(self._mlt_instance, additional_query_string)
+        results = self.backend.more_like_this(self._mlt_instance, additional_query_string, **kwargs)
         self._results = results.get('results', [])
         self._hit_count = results.get('hits', 0)
     
@@ -389,6 +416,11 @@ class BaseSearchQuery(object):
         the results.
         """
         if self._hit_count is None:
+            # Limit the slice to 10 so we get a count without consuming
+            # everything.
+            if not self.end_offset:
+                self.end_offset = 10
+            
             if self._more_like_this:
                 # Special case for MLT.
                 self.run_mlt()
@@ -463,9 +495,13 @@ class BaseSearchQuery(object):
             query = self.matching_all_fragment()
         
         if len(self.models):
-            models = ['django_ct:%s.%s' % (model._meta.app_label, model._meta.module_name) for model in self.models]
+            models = sorted(['%s:%s.%s' % (DJANGO_CT, model._meta.app_label, model._meta.module_name) for model in self.models])
             models_clause = ' OR '.join(models)
-            final_query = '(%s) AND (%s)' % (query, models_clause)
+            
+            if query != self.matching_all_fragment():
+                final_query = '(%s) AND (%s)' % (query, models_clause)
+            else:
+                final_query = models_clause
         else:
             final_query = query
         
@@ -618,12 +654,12 @@ class BaseSearchQuery(object):
     
     def add_field_facet(self, field):
         """Adds a regular facet on a field."""
-        self.facets.add(field)
+        self.facets.add(self.backend.site.get_facet_field_name(field))
     
     def add_date_facet(self, field, start_date, end_date, gap_by, gap_amount=1):
         """Adds a date-based facet on a field."""
         if not gap_by in VALID_GAPS:
-            raise FacetingError("The gap_by ('%s') must be one of the following: %s." (gap_by, ', '.join(VALID_GAPS)))
+            raise FacetingError("The gap_by ('%s') must be one of the following: %s." % (gap_by, ', '.join(VALID_GAPS)))
         
         details = {
             'start_date': start_date,
@@ -631,15 +667,50 @@ class BaseSearchQuery(object):
             'gap_by': gap_by,
             'gap_amount': gap_amount,
         }
-        self.date_facets[field] = details
+        self.date_facets[self.backend.site.get_facet_field_name(field)] = details
     
     def add_query_facet(self, field, query):
         """Adds a query facet on a field."""
-        self.query_facets[field] = query
+        self.query_facets.append((self.backend.site.get_facet_field_name(field), query))
     
     def add_narrow_query(self, query):
-        """Adds a existing facet on a field."""
+        """
+        Narrows a search to a subset of all documents per the query.
+        
+        Generally used in conjunction with faceting.
+        """
         self.narrow_queries.add(query)
+    
+    def set_result_class(self, klass):
+        """
+        Sets the result class to use for results.
+        
+        Overrides any previous usages. If ``None`` is provided, Haystack will
+        revert back to the default ``SearchResult`` object.
+        """
+        if klass is None:
+            klass = SearchResult
+        
+        self.result_class = klass
+    
+    def post_process_facets(self, results):
+        # Handle renaming the facet fields. Undecorate and all that.
+        revised_facets = {}
+        field_data = self.backend.site.all_searchfields()
+        
+        for facet_type, field_details in results.get('facets', {}).items():
+            temp_facets = {}
+            
+            for field, field_facets in field_details.items():
+                fieldname = field
+                if field in field_data and hasattr(field_data[field], 'get_facet_for_name'):
+                    fieldname = field_data[field].get_facet_for_name()
+                
+                temp_facets[fieldname] = field_facets
+            
+            revised_facets[facet_type] = temp_facets
+        
+        return revised_facets
     
     def _reset(self):
         """
@@ -663,11 +734,12 @@ class BaseSearchQuery(object):
         clone.highlight = self.highlight
         clone.facets = self.facets.copy()
         clone.date_facets = self.date_facets.copy()
-        clone.query_facets = self.query_facets.copy()
+        clone.query_facets = self.query_facets[:]
         clone.narrow_queries = self.narrow_queries.copy()
         clone.start_offset = self.start_offset
         clone.end_offset = self.end_offset
         clone.backend = self.backend
+        clone.result_class = self.result_class
         clone._raw_query = self._raw_query
         clone._raw_query_params = self._raw_query_params
         return clone

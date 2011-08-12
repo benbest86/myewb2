@@ -3,16 +3,11 @@ import sys
 from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
 from django.db.models.loading import get_model
-from django.utils.encoding import force_unicode
-from haystack.backends import BaseSearchBackend, BaseSearchQuery, log_query
+from haystack.backends import BaseSearchBackend, BaseSearchQuery, log_query, EmptyResults
+from haystack.constants import ID, DJANGO_CT, DJANGO_ID
 from haystack.exceptions import MissingDependency, MoreLikeThisError
-from haystack.fields import DateField, DateTimeField, IntegerField, FloatField, BooleanField, MultiValueField
 from haystack.models import SearchResult
 from haystack.utils import get_identifier
-try:
-    set
-except NameError:
-    from sets import Set as set
 try:
     from django.db.models.sql.query import get_proxied_model
 except ImportError:
@@ -25,11 +20,6 @@ except ImportError:
 
 
 BACKEND_NAME = 'solr'
-
-
-class EmptyResults(object):
-    hits = 0
-    docs = []
 
 
 class SearchBackend(BaseSearchBackend):
@@ -63,13 +53,13 @@ class SearchBackend(BaseSearchBackend):
         
         try:
             for obj in iterable:
-                docs.append(index.prepare(obj))
+                docs.append(index.full_prepare(obj))
         except UnicodeDecodeError:
             sys.stderr.write("Chunk failed.\n")
         
         if len(docs) > 0:
             try:
-                self.conn.add(docs, commit=commit)
+                self.conn.add(docs, commit=commit, boost=index.get_field_weights())
             except (IOError, SolrError), e:
                 self.log.error("Failed to add documents to Solr: %s", e)
     
@@ -77,7 +67,11 @@ class SearchBackend(BaseSearchBackend):
         solr_id = get_identifier(obj_or_string)
         
         try:
-            self.conn.delete(id=solr_id, commit=commit)
+            kwargs = {
+                'commit': commit,
+                ID: solr_id
+            }
+            self.conn.delete(**kwargs)
         except (IOError, SolrError), e:
             self.log.error("Failed to remove document '%s' from Solr: %s", solr_id, e)
     
@@ -90,7 +84,7 @@ class SearchBackend(BaseSearchBackend):
                 models_to_delete = []
                 
                 for model in models:
-                    models_to_delete.append("django_ct:%s.%s" % (model._meta.app_label, model._meta.module_name))
+                    models_to_delete.append("%s:%s.%s" % (DJANGO_CT, model._meta.app_label, model._meta.module_name))
                 
                 self.conn.delete(q=" OR ".join(models_to_delete), commit=commit)
             
@@ -106,7 +100,7 @@ class SearchBackend(BaseSearchBackend):
     def search(self, query_string, sort_by=None, start_offset=0, end_offset=None,
                fields='', highlight=False, facets=None, date_facets=None, query_facets=None,
                narrow_queries=None, spelling_query=None,
-               limit_to_registered_models=True, **kwargs):
+               limit_to_registered_models=None, result_class=None, **kwargs):
         if len(query_string) == 0:
             return {
                 'results': [],
@@ -148,21 +142,25 @@ class SearchBackend(BaseSearchBackend):
         if date_facets is not None:
             kwargs['facet'] = 'on'
             kwargs['facet.date'] = date_facets.keys()
+            kwargs['facet.date.other'] = 'none'
             
             for key, value in date_facets.items():
-                # Date-based facets in Solr kinda suck.
                 kwargs["f.%s.facet.date.start" % key] = self.conn._from_python(value.get('start_date'))
                 kwargs["f.%s.facet.date.end" % key] = self.conn._from_python(value.get('end_date'))
-                gap_string = value.get('gap_by').upper()
+                gap_by_string = value.get('gap_by').upper()
+                gap_string = "%d%s" % (value.get('gap_amount'), gap_by_string)
                 
                 if value.get('gap_amount') != 1:
-                    gap_string = "%d%sS" % (value.get('gap_amount'), gap_string)
+                    gap_string += "S"
                 
-                kwargs["f.%s.facet.date.gap" % key] = "/%s" % gap_string
+                kwargs["f.%s.facet.date.gap" % key] = '+%s/%s' % (gap_string, gap_by_string)
         
         if query_facets is not None:
             kwargs['facet'] = 'on'
-            kwargs['facet.query'] = ["%s:%s" % (field, value) for field, value in query_facets.items()]
+            kwargs['facet.query'] = ["%s:%s" % (field, value) for field, value in query_facets]
+        
+        if limit_to_registered_models is None:
+            limit_to_registered_models = getattr(settings, 'HAYSTACK_LIMIT_TO_REGISTERED_MODELS', True)
         
         if limit_to_registered_models:
             # Using narrow queries, limit the results to only models registered
@@ -173,7 +171,7 @@ class SearchBackend(BaseSearchBackend):
             registered_models = self.build_registered_models_list()
             
             if len(registered_models) > 0:
-                narrow_queries.add('django_ct:(%s)' % ' OR '.join(registered_models))
+                narrow_queries.add('%s:(%s)' % (DJANGO_CT, ' OR '.join(registered_models)))
         
         if narrow_queries is not None:
             kwargs['fq'] = list(narrow_queries)
@@ -184,11 +182,11 @@ class SearchBackend(BaseSearchBackend):
             self.log.error("Failed to query Solr using '%s': %s", query_string, e)
             raw_results = EmptyResults()
         
-        return self._process_results(raw_results, highlight=highlight)
+        return self._process_results(raw_results, highlight=highlight, result_class=result_class)
     
     def more_like_this(self, model_instance, additional_query_string=None,
                        start_offset=0, end_offset=None,
-                       limit_to_registered_models=True, **kwargs):
+                       limit_to_registered_models=None, result_class=None, **kwargs):
         # Handle deferred models.
         if get_proxied_model and hasattr(model_instance, '_deferred') and model_instance._deferred:
             model_klass = get_proxied_model(model_instance._meta)
@@ -209,6 +207,9 @@ class SearchBackend(BaseSearchBackend):
         
         narrow_queries = set()
         
+        if limit_to_registered_models is None:
+            limit_to_registered_models = getattr(settings, 'HAYSTACK_LIMIT_TO_REGISTERED_MODELS', True)
+        
         if limit_to_registered_models:
             # Using narrow queries, limit the results to only models registered
             # with the current site.
@@ -218,7 +219,7 @@ class SearchBackend(BaseSearchBackend):
             registered_models = self.build_registered_models_list()
             
             if len(registered_models) > 0:
-                narrow_queries.add('django_ct:(%s)' % ' OR '.join(registered_models))
+                narrow_queries.add('%s:(%s)' % (DJANGO_CT, ' OR '.join(registered_models)))
         
         if additional_query_string:
             narrow_queries.add(additional_query_string)
@@ -226,7 +227,7 @@ class SearchBackend(BaseSearchBackend):
         if narrow_queries:
             params['fq'] = list(narrow_queries)
         
-        query = "id:%s" % get_identifier(model_instance)
+        query = "%s:%s" % (ID, get_identifier(model_instance))
         
         try:
             raw_results = self.conn.more_like_this(query, field_name, **params)
@@ -234,14 +235,21 @@ class SearchBackend(BaseSearchBackend):
             self.log.error("Failed to fetch More Like This from Solr for document '%s': %s", query, e)
             raw_results = EmptyResults()
         
-        return self._process_results(raw_results)
+        return self._process_results(raw_results, result_class=result_class)
     
-    def _process_results(self, raw_results, highlight=False):
-        from haystack import site
+    def _process_results(self, raw_results, highlight=False, result_class=None):
+        if not self.site:
+            from haystack import site
+        else:
+            site = self.site
+        
         results = []
         hits = raw_results.hits
         facets = {}
         spelling_suggestion = None
+        
+        if result_class is None:
+            result_class = SearchResult
         
         if hasattr(raw_results, 'facets'):
             facets = {
@@ -266,7 +274,7 @@ class SearchBackend(BaseSearchBackend):
         indexed_models = site.get_indexed_models()
         
         for raw_result in raw_results.docs:
-            app_label, model_name = raw_result['django_ct'].split('.')
+            app_label, model_name = raw_result[DJANGO_CT].split('.')
             additional_fields = {}
             model = get_model(app_label, model_name)
             
@@ -280,14 +288,14 @@ class SearchBackend(BaseSearchBackend):
                     else:
                         additional_fields[string_key] = self.conn._to_python(value)
                 
-                del(additional_fields['django_ct'])
-                del(additional_fields['django_id'])
+                del(additional_fields[DJANGO_CT])
+                del(additional_fields[DJANGO_ID])
                 del(additional_fields['score'])
                 
-                if raw_result['id'] in getattr(raw_results, 'highlighting', {}):
-                    additional_fields['highlighted'] = raw_results.highlighting[raw_result['id']]
+                if raw_result[ID] in getattr(raw_results, 'highlighting', {}):
+                    additional_fields['highlighted'] = raw_results.highlighting[raw_result[ID]]
                 
-                result = SearchResult(app_label, model_name, raw_result['django_id'], raw_result['score'], **additional_fields)
+                result = result_class(app_label, model_name, raw_result[DJANGO_ID], raw_result['score'], searchsite=self.site, **additional_fields)
                 results.append(result)
             else:
                 hits -= 1
@@ -305,31 +313,37 @@ class SearchBackend(BaseSearchBackend):
         
         for field_name, field_class in fields.items():
             field_data = {
-                'field_name': field_name,
+                'field_name': field_class.index_fieldname,
                 'type': 'text',
                 'indexed': 'true',
+                'stored': 'true',
                 'multi_valued': 'false',
             }
             
             if field_class.document is True:
-                content_field_name = field_name
+                content_field_name = field_class.index_fieldname
             
             # DRL_FIXME: Perhaps move to something where, if none of these
             #            checks succeed, call a custom method on the form that
             #            returns, per-backend, the right type of storage?
-            # DRL_FIXME: Also think about removing `isinstance` and replacing
-            #            it with a method call/string returned (like 'text' or
-            #            'date').
-            if isinstance(field_class, (DateField, DateTimeField)):
+            if field_class.field_type in ['date', 'datetime']:
                 field_data['type'] = 'date'
-            elif isinstance(field_class, IntegerField):
+            elif field_class.field_type == 'integer':
                 field_data['type'] = 'slong'
-            elif isinstance(field_class, FloatField):
+            elif field_class.field_type == 'float':
                 field_data['type'] = 'sfloat'
-            elif isinstance(field_class, BooleanField):
+            elif field_class.field_type == 'boolean':
                 field_data['type'] = 'boolean'
-            elif isinstance(field_class, MultiValueField):
+            elif field_class.field_type == 'ngram':
+                field_data['type'] = 'ngram'
+            elif field_class.field_type == 'edge_ngram':
+                field_data['type'] = 'edge_ngram'
+            
+            if field_class.is_multivalued:
                 field_data['multi_valued'] = 'true'
+            
+            if field_class.stored is False:
+                field_data['stored'] = 'false'
             
             # Do this last to override `text` fields.
             if field_class.indexed is False:
@@ -340,15 +354,25 @@ class SearchBackend(BaseSearchBackend):
                 if field_data['type'] == 'text':
                     field_data['type'] = 'string'
             
+            # If it's a ``FacetField``, make sure we don't postprocess it.
+            if hasattr(field_class, 'facet_for'):
+                # If it's text, it ought to be a string.
+                if field_data['type'] == 'text':
+                    field_data['type'] = 'string'
+            
             schema_fields.append(field_data)
         
         return (content_field_name, schema_fields)
 
 
 class SearchQuery(BaseSearchQuery):
-    def __init__(self, backend=None):
-        super(SearchQuery, self).__init__(backend=backend)
-        self.backend = backend or SearchBackend()
+    def __init__(self, site=None, backend=None):
+        super(SearchQuery, self).__init__(site, backend)
+        
+        if backend is not None:
+            self.backend = backend
+        else:
+            self.backend = SearchBackend(site=site)
 
     def matching_all_fragment(self):
         return '*:*'
@@ -356,13 +380,19 @@ class SearchQuery(BaseSearchQuery):
     def build_query_fragment(self, field, filter_type, value):
         result = ''
         
-        if not isinstance(value, (list, tuple)):
+        # Handle when we've got a ``ValuesListQuerySet``...
+        if hasattr(value, 'values_list'):
+            value = list(value)
+        
+        if not isinstance(value, (set, list, tuple)):
             # Convert whatever we find to what pysolr wants.
             value = self.backend.conn._from_python(value)
         
         # Check to see if it's a phrase for an exact match.
         if ' ' in value:
             value = '"%s"' % value
+        
+        index_fieldname = self.backend.site.get_index_fieldname(field)
         
         # 'content' is a special reserved word, much like 'pk' in
         # Django's ORM layer. It indicates 'no special field'.
@@ -378,15 +408,19 @@ class SearchQuery(BaseSearchQuery):
                 'startswith': "%s:%s*",
             }
             
-            if filter_type != 'in':
-                result = filter_types[filter_type] % (field, value)
-            else:
+            if filter_type == 'in':
                 in_options = []
                 
                 for possible_value in value:
-                    in_options.append('%s:"%s"' % (field, self.backend.conn._from_python(possible_value)))
+                    in_options.append('%s:"%s"' % (index_fieldname, self.backend.conn._from_python(possible_value)))
                 
                 result = "(%s)" % " OR ".join(in_options)
+            elif filter_type == 'range':
+                start = self.backend.conn._from_python(value[0])
+                end = self.backend.conn._from_python(value[1])
+                return "%s:[%s TO %s]" % (index_fieldname, start, end)
+            else:
+                result = filter_types[filter_type] % (index_fieldname, value)
         
         return result
     
@@ -395,6 +429,7 @@ class SearchQuery(BaseSearchQuery):
         final_query = self.build_query()
         kwargs = {
             'start_offset': self.start_offset,
+            'result_class': self.result_class,
         }
         
         if self.order_by:
@@ -432,7 +467,7 @@ class SearchQuery(BaseSearchQuery):
         results = self.backend.search(final_query, **kwargs)
         self._results = results.get('results', [])
         self._hit_count = results.get('hits', 0)
-        self._facet_counts = results.get('facets', {})
+        self._facet_counts = self.post_process_facets(results)
         self._spelling_suggestion = results.get('spelling_suggestion', None)
     
     def run_mlt(self):
@@ -443,6 +478,7 @@ class SearchQuery(BaseSearchQuery):
         additional_query_string = self.build_query()
         kwargs = {
             'start_offset': self.start_offset,
+            'result_class': self.result_class,
         }
         
         if self.end_offset is not None:

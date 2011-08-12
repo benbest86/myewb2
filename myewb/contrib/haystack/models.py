@@ -8,6 +8,8 @@ from django.utils.text import capfirst
 
 # Not a Django model, but tightly tied to them and there doesn't seem to be a
 # better spot in the tree.
+from haystack.exceptions import NotRegistered
+
 class SearchResult(object):
     """
     A single search result. The actual object is loaded lazily by accessing
@@ -17,7 +19,7 @@ class SearchResult(object):
     result will do O(N) database queries, which may not fit your needs for
     performance.
     """
-    def __init__(self, app_label, model_name, pk, score, **kwargs):
+    def __init__(self, app_label, model_name, pk, score, searchsite=None, **kwargs):
         self.app_label, self.model_name = app_label, model_name
         self.pk = pk
         self.score = score
@@ -26,12 +28,21 @@ class SearchResult(object):
         self._verbose_name = None
         self._additional_fields = []
         self.stored_fields = None
-        self.log = logging.getLogger('haystack')
+        self.log = self._get_log()
+        
+        if searchsite:
+            self.searchsite = searchsite
+        else:
+            from haystack import site
+            self.searchsite = site
         
         for key, value in kwargs.items():
             if not key in self.__dict__:
                 self.__dict__[key] = value
                 self._additional_fields.append(key)
+    
+    def _get_log(self):
+        return logging.getLogger('haystack')
     
     def __repr__(self):
         return "<SearchResult: %s.%s (pk=%r)>" % (self.app_label, self.model_name, self.pk)
@@ -40,8 +51,16 @@ class SearchResult(object):
         return force_unicode(self.__repr__())
     
     def __getattr__(self, attr):
+        if attr == '__getnewargs__':
+            raise AttributeError
+        
         return self.__dict__.get(attr, None)
-    
+
+    def _get_searchindex(self):
+        return self.searchsite.get_index(self.model)
+
+    searchindex = property(_get_searchindex)
+
     def _get_object(self):
         if self._object is None:
             if self.model is None:
@@ -49,7 +68,12 @@ class SearchResult(object):
                 return None
             
             try:
-                self._object = self.model._default_manager.get(pk=self.pk)
+                try:
+                    self._object = self.searchindex.read_queryset().get(pk=self.pk)
+                except NotRegistered:
+                    self.log.warning("Model not registered with search site '%s.%s'." % (self.app_label, self.model_name))
+                    # Revert to old behaviour
+                    self._object = self.model._default_manager.get(pk=self.pk)
             except ObjectDoesNotExist:
                 self.log.error("Object could not be found in database for SearchResult '%s'." % self)
                 self._object = None
@@ -139,3 +163,22 @@ class SearchResult(object):
                     self._stored_fields[fieldname] = getattr(self, fieldname, u'')
         
         return self._stored_fields
+    
+    def __getstate__(self):
+        """
+        Returns a dictionary representing the ``SearchResult`` in order to
+        make it pickleable.
+        """
+        # The ``log`` is excluded because, under the hood, ``logging`` uses
+        # ``threading.Lock``, which doesn't pickle well.
+        ret_dict = self.__dict__.copy()
+        del(ret_dict['searchsite'])
+        del(ret_dict['log'])
+        return ret_dict
+    
+    def __setstate__(self, d):
+        """
+        Updates the object's attributes according to data passed by pickle.
+        """
+        self.__dict__.update(d)
+        self.log = self._get_log()
