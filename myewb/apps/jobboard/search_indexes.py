@@ -14,7 +14,7 @@ class JobBoardIndex(index_class):
     author = CharField(model_attr='owner')
     pub_date = DateTimeField(model_attr='posted_date')
     
-    def get_queryset(self):
+    def index_queryset(self):
         return JobPosting.objects.open()
     
     def prepare_author(self, obj):

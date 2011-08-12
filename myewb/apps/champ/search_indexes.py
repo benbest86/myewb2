@@ -16,7 +16,7 @@ class CHAMPIndex(index_class):
     rating = IntegerField(model_attr='rating', default=1)
     metrics = MultiValueField()
     
-    def get_queryset(self):
+    def index_queryset(self):
         return Activity.objects.filter(visible=True, confirmed=True)
     
     def prepare_author(self, obj):
