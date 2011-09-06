@@ -361,6 +361,27 @@ $(document).ready(function() {
                     <a href="{% url acct_passwd_reset %}">{% trans "Forgot password?" %}</a>
                 </div>
             </form>
+            <br/>
+            <div style="text-align: center;">
+            Or sign in using<br/>
+			<a href="{% url acct_login_facebook %}" id="facebook_login" >
+			<img src="{{ STATIC_URL }}images/facebook_button_small.png"/>
+			</a>
+			<script type="text/javascript">
+				$('#facebook_login').click(function() {
+					window.open('{% url acct_login_facebook %}',
+								'fb_login_window',
+								config='height=500, width=900, toolbar=no, menubar=no, location=no');
+					
+					return false;
+				});
+			
+				function finishAndRedirect() {
+					window.location.reload(true);
+				}
+				
+			</script>
+			</div>
         </div>
     {% endif %}
     

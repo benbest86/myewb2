@@ -11,7 +11,42 @@
     {% if user.is_authenticated %}
         <p>{% trans "You are already logged in." %}</p>
     {% else %}
-        <p>{% trans "Already have an account?" %} <a href="{% url acct_login %}">{% trans "Log In" %}</a>!</p>
+    
+        {#<p>{% trans "Already have an account?" %} <a href="{% url acct_login %}">{% trans "Log In" %}</a>!</p>#}
+        
+        <div style="float: left; width: 250px; height: 100px; font-size: 16px; font-weight: bold; text-align: center; border: 1px solid; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; background: #f0f0f0; padding: 10px;">
+        	<br/>
+        	Already have an account?<br/>
+        	<a href="{% url acct_login %}">Sign in here</a>
+        </div>
+        
+        <div style="margin-left: 300px; width: 250px; height: 100px; font-size: 16px; font-weight: bold; text-align: center; border: 1px solid; -moz-border-radius: 0.5em; -webkit-border-radius: 0.5em; background: #f0f0f0; padding: 10px;">
+            Sign up using<br/>
+			<a href="{% url acct_login_facebook %}" id="facebook_login" >
+			<img src="{{ STATIC_URL }}images/facebook_button.png"/>
+			</a>
+			<script type="text/javascript">
+				$('#facebook_login').click(function() {
+					window.open('{% url acct_login_facebook %}',
+								'fb_login_window',
+								config='height=500, width=900, toolbar=no, menubar=no, location=no');
+					
+					return false;
+				});
+			
+				function finishAndRedirect() {
+					window.location = '/';
+				}
+				
+			</script>
+        </div>
+        
+        <br style="clear: both;"/>
+        <br/>
+        
+        <div style="font-size: 16px; font-weight: bold;">
+        	Create a new myEWB account
+        </div>
         
         <form class="signup uniForm" id="signup_form" method="post" action="{% url acct_signup %}">
             <fieldset class="inlineLabels">

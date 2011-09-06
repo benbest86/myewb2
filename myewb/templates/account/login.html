@@ -44,9 +44,12 @@
         </fieldset>
     </form>
     
-    <p>Or...</p>
+    <p style="font-size: 16px; width: 200px; text-align: center; margin-left: 100px;">Or sign in using<br/>
+	<a href="{% url acct_login_facebook %}" id="facebook_login" >
+    <img src="{{ STATIC_URL }}images/facebook_button.png"/>
+    </a>
+    </p>
 
-<a href="{% url acct_login_facebook %}" id="facebook_login" >Login with Facebook</a>
 
 {#	<link type="text/css" href="{{STATIC_URL}}css/colorbox.css" rel="stylesheet" /> #}
 {#	<script type="text/javascript" src="{{STATIC_URL}}js/colorbox.js"></script> #}
