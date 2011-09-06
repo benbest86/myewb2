@@ -39,6 +39,78 @@ def login(request, form_class=EmailLoginForm,
     
     return pinaxlogin(request, form_class, template_name, success_url, 
             associate_openid, openid_success_url, url_required)
+    
+def login_facebook(request):
+    if request.GET.get('code', None):
+        if not request.session.get('fb_state_key', None) or not request.GET.get('state', None) or request.session['fb_state_key'] != request.GET['state']:
+            return HttpResponse('disallowed')
+        
+        print "starting up..."
+        code = request.GET['code']
+        token_url = "https://graph.facebook.com/oauth/access_token?client_id=%s&redirect_uri=%s%s&client_secret=%s&code=%s" % \
+                    (settings.FACEBOOK_APP_ID, 'http://test.ewb.ca:8000', reverse('acct_login_facebook'), settings.FACEBOOK_APP_SECRET, code)
+                    
+        import urllib, urlparse, simplejson, datetime
+        f = urllib.urlopen(token_url)
+        print "got a token"
+        
+        terms = urlparse.parse_qs(f.read())
+        #print "terms: " + terms
+        access_token = terms['access_token']
+        print "token: " + access_token[0]
+        
+        graph_url = "https://graph.facebook.com/me?access_token=%s" % access_token[0]
+        f = urllib.urlopen(graph_url)
+        print "graph get"
+
+        json = f.read()
+        info = simplejson.loads(json)
+        
+        if not info['verified']:
+            return HttpResponse("sorry, your facebook account is not confirmed")
+        
+        user = User.extras.create_silent_user(info['email'])
+
+        profile = user.get_profile()
+        if not profile.first_name:
+            profile.first_name=info['first_name']
+        if not profile.last_name:
+            profile.last_name=info['last_name']
+        if not profile.facebook_id:
+            profile.facebook_id = info['id']
+        if not profile.date_of_birth:
+            profile.date_of_birth = datetime.datetime.strptime(info['birthday'], '%m/%d/%Y')
+        if not profile.gender:
+            if info['gender'] == 'male':
+                profile.gender = 'M'
+            if info['gender'] == 'female':
+                profile.gender = 'F'
+        if not profile.facebook_profile_url:
+            profile.facebook_profile_url = info['link']
+        if not profile.raw_data:
+            profile.raw_data = json
+        profile.save()
+        
+        user.backend = "django.contrib.auth.backends.ModelBackend"
+        auth_login(request, user)
+        
+        return render_to_response("account/finish_and_redirect.html",
+                                  {},
+                                  context_instance=RequestContext(request))
+    
+    else:
+        import random, time, hashlib
+        key = hashlib.md5()
+        key.update("%d" % random.randint(0, 100))
+        key.update("%d" % time.time())
+        key.update("%d" % random.randint(0, 100))
+        key = key.hexdigest()
+        request.session['fb_state_key'] = key 
+        
+        return HttpResponseRedirect('https://www.facebook.com/dialog/oauth?client_id=%s&redirect_uri=%s%s&state=%s&scope=email,user_birthday' %
+                                    (settings.FACEBOOK_APP_ID, 'http://test.ewb.ca:8000', reverse('acct_login_facebook'), key))
+    
+    
 
 def signup(request, form_class=EmailSignupForm,
         template_name="account/signup.html", success_url=None,

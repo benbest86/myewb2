@@ -93,6 +93,45 @@ def create_bulk_user_method(self, email, verified=False):
     return new_user
 ExtraUserManager.create_bulk_user = create_bulk_user_method
 
+# creates a user with this email address, marking the email as verified
+def create_silent_user_method(self, email):
+    # ensure email is not already in use
+    emailaddress = EmailAddress.objects.filter(email=email, verified=True)
+    if emailaddress.count() > 0:
+        return emailaddress[0].user
+    
+    # unverified user already exists...
+    emailaddress3 = EmailAddress.objects.filter(email=email)
+    if emailaddress3.count() > 0:
+        e = emailaddress3[0]
+        e.verified = True
+        e.save()
+        
+        user = emailaddress3[0].user
+        if not user.email:
+            user.email = e.email
+            user.is_bulk = False
+            user.save()
+        return user
+    
+    # create random username
+    username = User.objects.make_random_password()
+    while User.objects.filter(username=username).count() > 0:   # ensure uniqueness
+        username = User.objects.make_random_password()
+    
+    # create the user
+    new_user = self.create_user(username=username, email=email)
+    new_user.is_bulk = False
+    new_user.save()
+
+    EmailAddress.objects.create(email=email, user=new_user, verified=True)
+    new_user.email = email
+    new_user.save()
+    
+    # and finish up
+    signals.signup.send(sender=new_user, user=new_user)
+    return new_user
+ExtraUserManager.create_silent_user = create_silent_user_method
 # add a delete function directly to the User model; doesn't delete the database
 # object, but deletes personal info, unsub's from groups, and marks user
 # as inactive

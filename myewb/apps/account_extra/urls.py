@@ -35,5 +35,7 @@ urlpatterns = patterns('',
     
     # silent signup API from the main site, etc
     url(r'^silent_signup/(.+)/$', 'account_extra.views.silent_signup', name="acct_silent_signup"),
-    
+
+    # facebook login
+    url(r'^login/facebook/$', 'account_extra.views.login_facebook', name="acct_login_facebook"),
 )

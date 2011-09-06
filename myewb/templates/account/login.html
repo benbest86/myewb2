@@ -44,7 +44,46 @@
         </fieldset>
     </form>
     
+    <p>Or...</p>
+
+<a href="{% url acct_login_facebook %}" id="facebook_login" >Login with Facebook</a>
+
+{#	<link type="text/css" href="{{STATIC_URL}}css/colorbox.css" rel="stylesheet" /> #}
+{#	<script type="text/javascript" src="{{STATIC_URL}}js/colorbox.js"></script> #}
+<script>
+/*
+	$('#facebook_login').colorbox({opacity: '0.5',
+		width: '50%',
+		height: '50%',
+								   iframe: true
+	});
+	*/
+	$('#facebook_login').click(function() {
+		window.open('{% url acct_login_facebook %}',
+					'fb_login_window',
+					config='height=500, width=900, toolbar=no, menubar=no, location=no');
+		
+		return false;
+	});
+
+	/* thanks http://papermashup.com/read-url-get-variables-withjavascript/ */
+	function getUrlVars() {
+		var vars = {};
+		var parts = window.location.href.replace(/[?&]+([^=&]+)=([^&]*)/gi, function(m,key,value) {
+			vars[key] = value;
+		});
+		return vars;
+	}
+
+	function finishAndRedirect() {
+		var url = getUrlVars()['url'];
+		window.location = url;
+	}
+	
+</script>
+
     {% comment %}
+
     {% if not openid %}
         <p>{% trans "Or sign in with your OpenID" %}:</p>
         {# @@@ why isn't this just does as a form object ? #}
