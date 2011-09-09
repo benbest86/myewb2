@@ -241,7 +241,7 @@ INSTALLED_APPS = (
 
     # our own third-party libs
     'contrib.django_evolution',
-    'contrib.haystack'
+    'contrib.haystack',
 )
 
 ABSOLUTE_URL_OVERRIDES = {
@@ -337,6 +337,10 @@ GOOGLE_APPS = False
 GOOGLE_ADMIN = ""
 GOOGLE_DOMAIN = ""
 GOOGLE_PASSWORD = ""
+
+# add these if doing Facebook logins, and orverride values in local_settings
+FACEBOOK_APP_ID = None
+FACEBOOK_APP_SECRET = None
 
 # Mailchimp integration.  Leave set to None to disable (or replace in local_settings)
 MAILCHIMP_KEY = None            # your API key with them

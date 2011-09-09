@@ -146,6 +146,12 @@ class MemberProfile(Profile):
     ldap_sync = models.BooleanField("Needs LDAP sync",
                                     default=False,
                                     editable=False)
+    
+    # from django-facebook
+    #facebook_id = models.BigIntegerField(blank=True, null=True, unique=True)
+    facebook_id = models.IntegerField(blank=True, null=True, unique=True)
+    facebook_profile_url = models.TextField(blank=True, null=True)
+    raw_data = models.TextField(blank=True, null=True)
 
     objects = MemberProfileManager()
     
@@ -314,7 +320,7 @@ class MemberProfile(Profile):
             self.save()
             
         return self.chapter
-
+    
 def create_member_profile(sender, instance=None, **kwargs):
     """Automatically creates a MemberProfile for a new User."""
     if instance is None:
