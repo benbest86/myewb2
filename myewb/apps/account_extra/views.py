@@ -50,6 +50,16 @@ def login_facebook(request):
             return HttpResponse('disallowed')
         
         code = request.GET['code']
+        request.session['fb_code'] = code
+        
+        return render_to_response("account/loading_redirect.html",
+                                  {},
+                                  context_instance=RequestContext(request))
+    
+    elif request.GET.get('stage', None):
+        code = request.session['fb_code']
+        del(request.session['fb_code'])
+        
         token_url = "https://graph.facebook.com/oauth/access_token?client_id=%s&redirect_uri=%s%s&client_secret=%s&code=%s" % \
                     (settings.FACEBOOK_APP_ID, myhost, reverse('acct_login_facebook'), settings.FACEBOOK_APP_SECRET, code)
                     
