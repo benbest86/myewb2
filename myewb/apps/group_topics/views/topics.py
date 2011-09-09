@@ -200,37 +200,43 @@ def new_topic(request, group_slug=None, bridge=None):
         if group.slug == "ewb" or is_member:
             # has been previewed.  mark it as good to go!
             if request.POST.get("previewed", None) and request.POST.get("postid", None):
-                topic = GroupTopic.objects.get(id=request.POST['postid'], pending=True, creator=request.user)
-                topic.pending = False
-                topic.save()
-                
-                # extra security check that sender isn't forged.
-                # can't hurt...
-                sender_valid = False
-                if group.user_is_admin(request.user) and request.POST.get('sender', None):
-                    if request.POST['sender'] == group.from_email:
-                        sender_valid = True
-                        sender = '"%s" <%s>' % (group.from_name, group.from_email)
-                        
-                    elif get_object_or_none(EmailAddress, email=request.POST['sender']) in request.user.get_profile().email_addresses():
-                        sender_valid = True
-                        sender = '"%s %s" <%s>' % (request.user.get_profile().first_name,
-                                                   request.user.get_profile().last_name,
-                                                   request.POST['sender'])
-                        
-                    elif request.user.is_staff and request.POST['sender'] == "info@ewb.ca":
-                        sender_valid = True
-                        sender = '"EWB-ISF Canada" <info@ewb.ca>'
-                        
-                if topic.send_as_email:
-                    if sender_valid:
-                        request.user.message_set.create(message=escape("Sent as %s" % sender))
-                        topic.send_email(sender=sender)
-                    else:
-                        request.user.message_set.create(message="Unable to send email.")
+                topic = GroupTopic.objects.get(id=request.POST['postid'], creator=request.user)
+                if topic.pending:
+                    topic.pending = False
+                    topic.save()
                     
-                # redirect out.
-                request.user.message_set.create(message=_("You have started the topic %(topic_title)s") % {"topic_title": topic.title})
+                    # extra security check that sender isn't forged.
+                    # can't hurt...
+                    sender_valid = False
+                    if group.user_is_admin(request.user) and request.POST.get('sender', None):
+                        if request.POST['sender'] == group.from_email:
+                            sender_valid = True
+                            sender = '"%s" <%s>' % (group.from_name, group.from_email)
+                            
+                        elif get_object_or_none(EmailAddress, email=request.POST['sender']) in request.user.get_profile().email_addresses():
+                            sender_valid = True
+                            sender = '"%s %s" <%s>' % (request.user.get_profile().first_name,
+                                                       request.user.get_profile().last_name,
+                                                       request.POST['sender'])
+                            
+                        elif request.user.is_staff and request.POST['sender'] == "info@ewb.ca":
+                            sender_valid = True
+                            sender = '"EWB-ISF Canada" <info@ewb.ca>'
+                            
+                    if topic.send_as_email:
+                        if sender_valid:
+                            request.user.message_set.create(message=escape("Sent as %s" % sender))
+                            topic.send_email(sender=sender)
+                        else:
+                            request.user.message_set.create(message="Unable to send email.")
+                        
+                    # redirect out.
+                    request.user.message_set.create(message=_("You have started the topic %(topic_title)s") % {"topic_title": topic.title})
+                    
+                else:
+                    # probably double-clicked the submit button and this is the dupe request... 
+                    pass
+                
                 return HttpResponseRedirect(topic.get_absolute_url())
             
             # confirmation was cancelled, so delete the temp post and bump back to edit screen

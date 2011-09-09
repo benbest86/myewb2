@@ -28,9 +28,13 @@
 	
 	{% if current %}
 		{% if empty %}
-			<a href="{% url monthlyreports_submit_confirm group_slug=group.slug year=year month=month %}" ><button>Submit Blank Report</button></a>
+			<form action="{% url monthlyreports_submit_confirm group_slug=group.slug year=year month=month %}" method="get">
+				<input type="submit" value="Submit Blank Report"/>
+			</form>
 		{% else %}
-			<a href="{% url monthlyreports_submit_confirm group_slug=group.slug %}" ><button>Submit Report</button></a>
+			<form action="{% url monthlyreports_submit_confirm group_slug=group.slug %}" method="get">
+				<input type="submit" value="Submit Report"/>
+			</form>
 		{% endif %}
 	{% else %}
 		[<a href="{% url csv_monthlyreport id=monthly_report.id group_slug=group.slug %}">Download to CSV</a>]

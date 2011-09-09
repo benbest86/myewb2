@@ -4,9 +4,21 @@
 	<h2>Confirm Submission</h2>
 	Are you sure you would like to submit this monthly report? You cannot make changes once submitted.<br/><br/>
 	{% if empty %}
-		<a href="{% url monthlyreports_submit group_slug=group.slug year=year month=month %}" ><button>Submit Blank Report</button></a> <a href="{% url monthlyreports_current group_slug=group.slug %}"><button>Cancel Submit</button></a>
+		<form action="{% url monthlyreports_submit group_slug=group.slug year=year month=month %}" method="get" style="float: left; margin-right: 25px;">
+			<input type="submit" value="Submit Blank Report"/>
+		</form>
+		
+		<form action="{% url monthlyreports_current group_slug=group.slug %}" method="get">
+			<input type="submit" value="Cancel Submit"/>
+		</form>
 	{% else %}
-		<a href="{% url monthlyreports_submit group_slug=group.slug %}" ><button>Submit Report</button></a> <a href="{% url monthlyreports_current group_slug=group.slug %}"><button>Cancel Submit</button></a>
+		<form action="{% url monthlyreports_submit group_slug=group.slug %}" method="get" style="float: left; margin-right: 25px;">
+			<input type="submit" value="Submit Report"/>
+		</form>
+		
+		<form action="{% url monthlyreports_current group_slug=group.slug %}" method="get">
+			<input type="submit" value="Cancel Submit"/>
+		</form>
 	{% endif %}
 	<br/><br/>
 	

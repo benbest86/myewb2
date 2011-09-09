@@ -10,7 +10,9 @@
 	<p>
 		There are no items in this budget so far. 
 	</p>
-		<a href="{% url input_budgetitems group_slug=group.slug budget=budget.id %}"><button type="button">Input Items</button></a>
+		<form action="{% url input_budgetitems group_slug=group.slug budget=budget.id %}" method="get">
+			<input type="submit" value="Input Items"/>
+		</form>
 	{% else %}
 		<table class="cellpadding8 standard" width="500" style="margin: 0 auto;">
 			<tr>

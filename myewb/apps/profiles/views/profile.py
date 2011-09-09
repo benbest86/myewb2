@@ -717,8 +717,12 @@ def pay_membership2(request, username):
                     context_instance=RequestContext(request)
                     )
                 
-        # what kind of error to throw...?
-         
+        else:
+            # you came here somehow... bookmarked page?
+            # (viewing your own upgrade page, but not as a POST request)
+            # bump you back to the form.
+            return HttpResponseRedirect(reverse('profile_pay_membership', kwargs={'username': username}))
+
     # Admins / chapter execs can upgrade anyone's membership
     elif request.user.has_module_perms("profiles") or is_exec_over(other_user, request.user):
         other_user.get_profile().pay_membership()

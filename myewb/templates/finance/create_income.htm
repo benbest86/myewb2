@@ -5,6 +5,6 @@
 {% block finance_subtitle %}Enter Income Transaction{% endblock finance_subtitle %}
 
 {% block formtitle %}
-Did you mean to enter in a donation? <a href="{% url create_donation group_slug=group.slug %}"><button type="button">Enter Donation</button></a>
+<a href="{% url create_donation group_slug=group.slug %}">Click here if this is a donation</a><br/>
 <form action="{% url create_income group_slug=group.slug %}" method="post">
 {% endblock formtitle %}

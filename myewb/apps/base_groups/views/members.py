@@ -184,8 +184,6 @@ def new_member(request, group_slug, group_model=None, form_class=None,
         if form.is_valid():
             for singleuser in form.cleaned_data['user']:
                 if group.user_is_admin(user):
-                    print form.cleaned_data['is_admin']
-                    print form.cleaned_data['admin_title']
                     single_new_member(group, user, singleuser,
                                       is_admin=form.cleaned_data['is_admin'],
                                       admin_title=form.cleaned_data['admin_title'])

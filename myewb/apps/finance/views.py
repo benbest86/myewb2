@@ -1524,7 +1524,7 @@ def monthlyreports_submit(request, group_slug, year=None, month=None):
         min_date = min_transaction["min_bankdate"]
     #    TODO: message box, saying they want to submit for sure!
     #    TODO: how to edit submitted transactions... NO only?
-        if (min_date.year*100 + min_date.month) < (datetime.datetime.now().year*100 + datetime.datetime.now().month):
+        if min_date and (min_date.year*100 + min_date.month) < (datetime.datetime.now().year*100 + datetime.datetime.now().month):
             transactions = trans.filter(bank_date__year = min_date.year, bank_date__month = min_date.month)    
             
             mr_check = monthly_chap.filter(date__year = min_date.year, date__month = min_date.month, type = "CH")

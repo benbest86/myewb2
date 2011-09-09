@@ -33,7 +33,9 @@
 				</tr>
 			</table>
 			</br></br>
-			<a href = "{% url delete_id id=trans.id group_slug=group.slug %}"><button>Delete Transaction</button></a>
+			<form action="{% url delete_id id=trans.id group_slug=group.slug %}" method="get">
+				<input type="submit" value="Delete Transaction"/>
+			</form>
 			{% endif %}
 			{% if delete %}
 				Transaction successfully deleted.

@@ -191,6 +191,9 @@ def address_detail(request, username, id):
                             'address': address,
                             },
                         )
+    else:
+        return HttpResponse("forbidden")
+    
 
 @owner_required(MemberProfile)
 def edit_address(request, username, id, object=None):

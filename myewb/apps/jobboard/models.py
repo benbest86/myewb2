@@ -57,7 +57,7 @@ class JobPostingManager(models.Manager):
     # find all postings where user1 is the owner and user2 is interested (bid/accepted)
     def connected(self, user1, user2):
         query = self.get_query_set()
-        query = query.filter(owner=user, active=True, interested_users=user2)
+        query = query.filter(owner=user1, active=True, interested_users=user2)
         return query
 
 class JobPosting(models.Model):

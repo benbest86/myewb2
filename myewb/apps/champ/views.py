@@ -689,8 +689,8 @@ def activity_as_pdf(request, group_slug, activity_id):
         p.append(Paragraph(metricname, h2))
         for x, y in m.get_values().items():
             if x and y:
-                p.append(Paragraph(str(x), bold))
-                p.append(Paragraph(str(y), lindent))
+                p.append(Paragraph(fix_encoding(str(x)), bold))
+                p.append(Paragraph(fix_encoding(str(y)), lindent))
                 p.append(Spacer(0, 10))
             
         p.append(Spacer(0, 10))
