@@ -1,6 +1,7 @@
 Installation instructions:
 
 Generic instructions:
+- install Python 2.6 from python.org - NOTE Python 2.7 is INCOMPATIBLE
 - install Pinax 0.7.1 (download at http://downloads.pinaxproject.com/Pinax-0.7.1-bundle.tar.gz)
   preferably in a virtual environment. See below for better instructions on
   Windows and Ubuntu for virtualenvs
@@ -13,12 +14,17 @@ Generic instructions:
     - templates/about/status.html
     - templates/conference/header.html
     - templates/conference/footer.html
+- create a local_settings.py file in the myewb directory with the following contents:
+import os
+DATABASE_NAME = os.path.join(os.path.dirname(__file__), 'db_name.db')
 
 NOTE: all of these edits are now contained in the patch in patches/pinax-0.7.1.patch
+NOTE: THE PATCH CURRENTLY DOESN'T WORK so ignore this for now.
 
 edit these files in your Pinax env:
-(the pinax installation insturctions recommend installing to pinax-env though you may have chosen a different directory)
-(and replaec python-2.6 with your version)
+(the pinax installation instructions recommend installing to pinax-env though you may have chosen a different directory)
+(and replace python-2.6 with your version)
+(on windows it will be something like C:\Python26\Lib\site-packages\etc...)
 
 pinax-env/lib/python-2.6/site-packages/pinax/apps/groups/base.py
 line 37, remove the uniqueness constraint, so it looks like
@@ -34,6 +40,13 @@ at the end of the file, comment out the last three lines: (we do our own email n
 #    from messages.utils import new_message_email
 #    signals.post_save.connect(new_message_email, sender=Message)
 
+- run $ python manage.py syncdb
+- run $ python manage.py loadsampledata
+- run $ python manage.py runserver
+- enjoy!
+
+
+
 
 ==========
 
@@ -41,7 +54,8 @@ On Ubuntu:
 # These instructions were last confirmed on a fresh Ubuntu Intrepid Ibex
 # 2009-10-08 by BBEST
 # Updated to reflect the changes in the generic instructions on 2010-10-25
-#
+# Updated to reflect changes based on install process (on windows) BBEST with AJOYCE on 2011-10-18
+
 # install necessary ubuntu packages
 $ sudo aptitude install build-essential python-dev libxml2 libxml2-dev libxslt1.1 libxslt1-dev python-virtualenv python-ldap python-imaging
 
@@ -83,6 +97,7 @@ $ easy_install pycountry
 # work:
 
 $ cd $WORKON_HOME/pinax-env/lib/python2.6/site-packages/
+# NOTE - THIS PATCH CURRENTLY WILL NOT APPLY. HOPEFULLY FIXING THIS
 $ patch -p0 --dry-run < $MYEWB_HOME/patches/pinax-0.7.1.patch
 # if all goes according to plan
 $ patch -p0 < $MYEWB_HOME/patches/pinax-0.7.1.patch
@@ -106,22 +121,24 @@ $ chmod u+x manage.py
 
 # sync the database and enter a root user if you'd like
 $ ./manage.py syncdb
+# load the sample data
+$ ./manage.py loadsampledata
 # run the local dev server
 $ ./manage.py runserver
 
 And you should be good to go! Navigate to http://localhost:8000/ for the home
 page.
 
-On Windows: NOTE: This instructions are now out of date - see the general instructions above for some changes
 # These instructions were last confirmed on Windows XP
 # # 2009-10-24 by BBEST and JBLIGHT
 # On Windows 7
 # 2010-01-04 by BBEST
+# on Windows XP 2011-10-18 by BBEST and AJOYCE
 
 0. **Seriously Consider** switching to Ubuntu if you're using this as a development
    machine. :)
 
-1. install python from http://python.org
+1. install python 2.6.4 from http://python.org - WARNING python 2.7 is INCOMPATIBLE
 
 2. install python setuptools from http://pypi.python.org/pypi/setuptools
 
@@ -157,6 +174,8 @@ NOTE: on windows 7 (and Vista?) you will have to run the command prompt with adm
 
 13. Upgrade to Django 1.1 by running
     > easy_install -U Django==1.1
+    Install python-memcached and django_piston
+    > easy_install python-memcached django_piston
 
 14. cd to the myewb folder in the code trunk. Add a file called
 local_settings.py and add the following two lines:
@@ -167,16 +186,34 @@ DATABASE_NAME = os.path.join(os.path.dirname(__file__), 'db_name.db')
 Substitue db_name with your preference.
 For some reason a fully qualified path is required here now.
 
-15.
+15. Make the following edits to the pinax source:
+edit these files in your Pinax env:
+
+C:\python26\Lib\site-packages\pinax\apps\groups\base.py
+line 37, remove the uniqueness constraint, so it looks like
+name = models.CharField(_('name'), max_length=80, unique=False)
+
+C:\python26\Lib\site-packages\pinax\topics\models.py
+line 31, increase the max_length to 255, so it looks like
+title = models.CharField(_('title'), max_length=255)
+
+C:\python26\Lib\site-packages\messages\models.py
+at the end of the file, comment out the last three lines: (we do our own email notifications)
+#if "notification" not in settings.INSTALLED_APPS:
+#    from messages.utils import new_message_email
+#    signals.post_save.connect(new_message_email, sender=Message)
+
+16.
 Run 
     > python manage.py syncdb
     enter a root user if you wish.
 
-16. run > python manage.py runserver
+17. run > python manage.py loadsampledata
+18. run > python manage.py runserver
 
-17. navigate to http://localhost:8000/ in your browser (or http://127.0.0.1:8000/ in IE)
+19. navigate to http://localhost:8000/ in your browser (or http://127.0.0.1:8000/ in IE)
 
-NOTES: Please see the patches/ folder in this directory for any patches to the Pinax or Django
+NOTES: Please see the patches/ folder in this directory for any additional patches to the Pinax or Django
 code that need to be applied
 
 Mac OS X 10.6 - NOTE: These instructions may be out of date - please
